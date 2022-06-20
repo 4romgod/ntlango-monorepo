@@ -1,16 +1,18 @@
 {
   "name": "ntlango-cdk",
+  "description": "AWS CDK Infrastructure for Dyondo muliti-user blogging platform",
   "version": "0.1.0",
-  "bin": {
-    "ntlango-cdk": "bin/ntlango-cdk.js"
-  },
+  "license": "UNLICENSED",
+  "main": "dist/lib/app.js",
   "scripts": {
-    "build": "tsc",
+    "build": "npm run clean && echo 'Transpilling typescript...' && tsc",
+    "clean": "echo 'Cleaning up...' && rm -rf dist && rm -rf cdk.out",
     "watch": "tsc -w",
-    "test": "jest",
+    "test": "jest --verbose",
     "cdk": "cdk"
   },
   "devDependencies": {
+    "@types/prettier": "2.6.0",
     "aws-cdk": "2.7.0",
     "@types/jest": "^26.0.10",
     "@types/node": "10.17.27",

@@ -6,6 +6,8 @@
       "es2018"
     ],
     "declaration": true,
+    "outDir": "./dist",
+    "declarationDir": "./dist/types",
     "strict": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
