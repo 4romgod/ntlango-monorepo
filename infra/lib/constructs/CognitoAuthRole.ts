@@ -1,10 +1,10 @@
-import { Construct } from 'constructs';
-import { CfnIdentityPool, CfnIdentityPoolRoleAttachment } from 'aws-cdk-lib/aws-cognito';
-import { Role, FederatedPrincipal, PolicyStatement, Effect } from 'aws-cdk-lib/aws-iam';
-import { serviceName } from '../constants/appConstants';
+import {Construct} from 'constructs';
+import {CfnIdentityPool, CfnIdentityPoolRoleAttachment} from 'aws-cdk-lib/aws-cognito';
+import {Role, FederatedPrincipal, PolicyStatement, Effect} from 'aws-cdk-lib/aws-iam';
+import {serviceName} from '../constants/appConstants';
 
 export interface CognitoAuthRoleProps {
-    identityPool: CfnIdentityPool
+    identityPool: CfnIdentityPool;
 }
 
 export class CognitoAuthRole extends Construct {
@@ -13,19 +13,19 @@ export class CognitoAuthRole extends Construct {
     constructor(scope: Construct, id: string, props: CognitoAuthRoleProps) {
         super(scope, id);
 
-        const { identityPool } = props;
+        const {identityPool} = props;
 
         const federatedPrincipal = new FederatedPrincipal(
             'cognito-identity.amazonaws.com',
             {
                 StringEquals: {
-                    'cognito-identity.amazonaws.com:aud': identityPool.ref
+                    'cognito-identity.amazonaws.com:aud': identityPool.ref,
                 },
                 'ForAnyValue:StringLike': {
-                    'cognito-identity.amazonaws.com:amr': 'authenticated'
+                    'cognito-identity.amazonaws.com:amr': 'authenticated',
                 },
             },
-            'sts:AssumeRoleWithWebIdentity'
+            'sts:AssumeRoleWithWebIdentity',
         );
 
         this.authRole = new Role(this, `${serviceName}CognitoDefaultAuthRole`, {
@@ -35,13 +35,9 @@ export class CognitoAuthRole extends Construct {
         this.authRole.addToPolicy(
             new PolicyStatement({
                 effect: Effect.ALLOW,
-                actions: [
-                    'mobileanalytics:PutEvents',
-                    'cognito-sync:*',
-                    'cognito-identity:*',
-                ],
+                actions: ['mobileanalytics:PutEvents', 'cognito-sync:*', 'cognito-identity:*'],
                 resources: ['*'],
-            })
+            }),
         );
 
         new CfnIdentityPoolRoleAttachment(this, `${serviceName}IdentityPoolRoleAttachment`, {
@@ -51,5 +47,5 @@ export class CognitoAuthRole extends Construct {
                 unauthenticated: this.authRole.roleArn,
             },
         });
-    };
-};
+    }
+}

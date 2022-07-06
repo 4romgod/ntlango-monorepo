@@ -1,5 +1,5 @@
-import { serviceName } from './constants/appConstants';
-import { ServiceAccount, Stage } from './constants/interfaces';
+import {serviceName} from './constants/appConstants';
+import {ServiceAccount, Stage} from './constants/interfaces';
 
 export const ALPHA_DUB: ServiceAccount = {
     name: `${serviceName} Api Alpha Dub`,
