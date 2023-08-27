@@ -1,4 +1,4 @@
-export const sendPostSignUpEmail = () => {
+export const postSignUpEmail = () => {
     const html = `
         <html>
             <body style="padding: 5px; font-family: PT Sans,Trebuchet MS,sans-serif;">

@@ -10,10 +10,8 @@
     "watch": "tsc -w",
     "test": "jest --verbose",
     "cdk": "cdk",
-    "lint": "npm run prettier-format && eslint lib/* --ext .ts --fix",
-    "prettier-format": "npm run prettier-format-lib && npm run prettier-format-test",
-    "prettier-format-lib": "prettier --no-error-on-unmatched-pattern --config .prettierrc.json 'lib/**/*.{js,ts}' --write",
-    "prettier-format-test": "prettier --no-error-on-unmatched-pattern --config .prettierrc.json 'test/**/*.{js,ts}' --write"
+    "lint": "npm run format && eslint lib/* --ext .ts --fix",
+    "format": "prettier --write --no-error-on-unmatched-pattern --config .prettierrc.json ./lib/**/*.{js,ts} ./test/**/*.{js,ts}"
   },
   "devDependencies": {
     "@types/jest": "^26.0.10",

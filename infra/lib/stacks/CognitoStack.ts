@@ -3,28 +3,71 @@ import {UserPool, UserPoolClient, CfnIdentityPool, AccountRecovery, StringAttrib
 import {CfnOutput} from 'aws-cdk-lib';
 import {APP_NAME} from '../constants/appConstants';
 import {CognitoAuthRole} from '../constructs/CognitoAuthRole';
-import {sendPostSignUpEmail} from '../utils';
+import {postSignUpEmail} from '../utils';
 
 /**
- * Documentaion https://branchv60--serverless-stack.netlify.app/chapters/configure-cognito-identity-pool-in-cdk.html
+ * Inspired by https://branchv60--serverless-stack.netlify.app/chapters/configure-cognito-identity-pool-in-cdk.html
  */
 export class CognitoStack extends Stack {
     constructor(scope: App, id: string, props?: StackProps) {
         super(scope, id, props);
 
-        const {subject, htmlContent} = sendPostSignUpEmail();
-        const userPool = new UserPool(this, `${APP_NAME}UserPool`, {
+        const {subject, htmlContent} = postSignUpEmail();
+        const userPool = new UserPool(this, `${APP_NAME}UserPoolId`, {
             standardAttributes: {
-                preferredUsername: {required: false, mutable: true},
-                email: {required: true, mutable: true},
-                address: {required: true, mutable: true},
-                gender: {required: true, mutable: true},
-                givenName: {required: true, mutable: true},
-                familyName: {required: true, mutable: true},
-                birthdate: {required: true, mutable: false},
+                address: {
+                    required: true,
+                    mutable: true,
+                },
+                birthdate: {
+                    required: true,
+                    mutable: false,
+                },
+                email: {
+                    required: true,
+                    mutable: true,
+                },
+                familyName: {
+                    required: true,
+                    mutable: true,
+                },
+                gender: {
+                    required: true,
+                    mutable: true,
+                },
+                givenName: {
+                    required: true,
+                    mutable: true,
+                },
+                lastUpdateTime: {
+                    required: false,
+                    mutable: true,
+                },
+                phoneNumber: {
+                    required: false,
+                    mutable: true,
+                },
+                preferredUsername: {
+                    required: false,
+                    mutable: true,
+                },
+                profilePage: {
+                    required: false,
+                    mutable: true,
+                },
+                profilePicture: {
+                    required: false,
+                    mutable: true,
+                },
+                website: {
+                    required: false,
+                    mutable: true,
+                },
             },
             customAttributes: {
-                isAdmin: new StringAttribute({mutable: true}),
+                role: new StringAttribute({
+                    mutable: true,
+                }),
             },
             passwordPolicy: {
                 minLength: 6,
@@ -34,9 +77,13 @@ export class CognitoStack extends Stack {
                 requireSymbols: false,
             },
             accountRecovery: AccountRecovery.EMAIL_ONLY,
-            autoVerify: {email: true},
+            autoVerify: {
+                email: true,
+            },
             selfSignUpEnabled: true,
-            signInAliases: {email: true},
+            signInAliases: {
+                email: true,
+            },
             userVerification: {
                 emailSubject: subject,
                 emailBody: htmlContent,
@@ -44,13 +91,13 @@ export class CognitoStack extends Stack {
             },
         });
 
-        userPool.addDomain(`${APP_NAME}UserPoolDomain`, {
+        userPool.addDomain(`${APP_NAME}UserPoolDomainId`, {
             cognitoDomain: {
                 domainPrefix: APP_NAME.toLowerCase(),
             },
         });
 
-        const userPoolClient = new UserPoolClient(this, `${APP_NAME}UserPoolClient`, {
+        const userPoolClient = new UserPoolClient(this, `${APP_NAME}UserPoolClientId`, {
             userPool,
             generateSecret: false,
             authFlows: {
@@ -59,7 +106,7 @@ export class CognitoStack extends Stack {
             },
         });
 
-        const identityPool = new CfnIdentityPool(this, `${APP_NAME}IdentityPool`, {
+        const identityPool = new CfnIdentityPool(this, `${APP_NAME}IdentityPoolId`, {
             allowUnauthenticatedIdentities: false,
             cognitoIdentityProviders: [
                 {
@@ -69,20 +116,20 @@ export class CognitoStack extends Stack {
             ],
         });
 
-        const cognitoAuthRole = new CognitoAuthRole(this, `${APP_NAME}CognitoAuthRole`, {
+        const cognitoAuthRole = new CognitoAuthRole(this, `${APP_NAME}CognitoAuthRoleId`, {
             identityPool,
         });
 
-        new CfnOutput(this, `${APP_NAME}UserPoolId`, {
+        new CfnOutput(this, `${APP_NAME}ExportedUserPoolId`, {
             value: userPool.userPoolId,
         });
-        new CfnOutput(this, `${APP_NAME}UserPoolClientId`, {
+        new CfnOutput(this, `${APP_NAME}ExportedUserPoolClientId`, {
             value: userPoolClient.userPoolClientId,
         });
-        new CfnOutput(this, `${APP_NAME}IdentityPoolId`, {
+        new CfnOutput(this, `${APP_NAME}ExportedIdentityPoolId`, {
             value: identityPool.ref,
         });
-        new CfnOutput(this, `${APP_NAME}AuthRoleName`, {
+        new CfnOutput(this, `${APP_NAME}ExportedAuthRoleName`, {
             value: cognitoAuthRole.authRole.roleName,
         });
     }
