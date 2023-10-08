@@ -32,7 +32,7 @@ export class CognitoStack extends Stack {
                     mutable: true,
                 },
                 gender: {
-                    required: true,
+                    required: false,
                     mutable: true,
                 },
                 givenName: {
