@@ -18,6 +18,7 @@ export const readEvents = gql`
       privacySetting
       eventLink
       organizers
+      rSVPs
     }
   }
 `;

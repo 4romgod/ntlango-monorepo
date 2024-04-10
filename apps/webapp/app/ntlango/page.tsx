@@ -1,11 +1,13 @@
 import EventAdvertBox from '@/components/events/event-advert-box';
 import EventTileGrid from '@/components/events/event-tile-grid';
 import SectionContainer from '@/components/section-container';
+import Search from '@/components/search/search-box';
 import Footer from '@/components/footer';
-import Nav from '@/components/nav';
+import Navbar from '@/components/navigation/navbar';
+import { groupEventsByCategory } from '@/lib/utils/dataManipulation';
 import { getClient } from '@/lib/graphql/apollo-client';
 import { readEvents } from '@/lib/graphql/queries';
-import { groupEventsByCategory } from '@/lib/utils/dataManipulation';
+import SearchBox from '@/components/search/search-box';
 
 export default async function Home() {
   const { data: events } = await getClient().query({ query: readEvents });
@@ -18,22 +20,21 @@ export default async function Home() {
 
   return (
     <>
-      <Nav />
+      <Navbar />
       <SectionContainer className="space-y-16">
         <div className="text-center">
           <h1 className="text-5xl">Let&apos;s Go!</h1>
           <h2 className="text-2xl">Find The Events You Like</h2>
         </div>
-        {/* Title */}
+
+        <div className="md:hidden">
+          <SearchBox placeholder="Search events..." />
+        </div>
+
         <div className="grid space-y-12 md:gap-8 lg:grid-cols-12 lg:gap-16 lg:space-y-0 xl:gap-16">
           <div className="lg:col-span-4 xl:col-span-3">
             {/* Horizontal link menu */}
             <div className="space-y-6">
-              {/* Search Bar */}
-
-              <div>
-                <h1>Search Box Goes here</h1>
-              </div>
               <div className="hidden lg:block">
                 <div className="text-scale-900 mb-2 text-sm">Categories</div>
                 <div className="space-y-1">
