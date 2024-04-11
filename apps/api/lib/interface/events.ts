@@ -164,6 +164,6 @@ export type IEvent = {
     updatedAt?: string;
 };
 
-export type ICreateEvent = Omit<IEvent, 'eventID'>;
+export type ICreateEvent = Omit<IEvent, 'id'>;
 
-export type IUpdateEvent = Omit<IEvent, 'eventID'>;
+export type IUpdateEvent = Omit<IEvent, 'id'>;

@@ -9,12 +9,24 @@ const EventSchema = new Schema<IEvent & Document>(
         startDate: {type: String, required: true, unique: false},
         endDate: {type: String, required: true, unique: false},
         location: {type: String, required: true, unique: false},
-        eventType: [{type: String, required: true, unique: false}],
-        eventCategory: [{type: String, required: true, unique: false}],
         capacity: {type: Number, required: false, unique: false},
         status: {type: String, required: true, unique: false},
-        organizers: [{type: String, required: true}],
-        rSVPs: [{type: String, required: true}],
+        eventType: [{type: String, required: true, unique: false}],
+        eventCategory: [{type: String, required: true, unique: false}],
+        organizers: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: 'User', // Reference to the User model
+                required: true,
+            },
+        ],
+        rSVPs: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: 'User', // Reference to the User model
+                required: true,
+            },
+        ],
         tags: {
             type: Schema.Types.Mixed,
             default: {},

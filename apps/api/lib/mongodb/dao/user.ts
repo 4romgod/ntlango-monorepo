@@ -1,7 +1,6 @@
 import {IUser, ICreateUser, UserQueryParams, IUpdateUser} from '../../interface';
 import {User} from '../models';
 import {ResourceNotFoundException, mongodbErrorHandler} from '../../utils';
-import {v4 as uuidv4} from 'uuid';
 
 class UserDAO {
     static async create(userData: ICreateUser): Promise<IUser> {
@@ -10,7 +9,6 @@ class UserDAO {
             return await User.create({
                 ...userData,
                 encrypted_password: encryptedPassword,
-                userID: uuidv4(),
             });
         } catch (error) {
             console.log(error);
@@ -35,7 +33,7 @@ class UserDAO {
         const query = User.find({...queryParams});
 
         if (queryParams?.userIDList && queryParams.userIDList.length > 0) {
-            query.where('userID').in(queryParams.userIDList);
+            query.where('id').in(queryParams.userIDList);
         }
 
         if (projections && projections.length) {

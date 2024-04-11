@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLList, GraphQLString, Thunk, GraphQLFieldConfigMap} from 'graphql';
+import {GraphQLID, GraphQLList, GraphQLString, Thunk, GraphQLFieldConfigMap, GraphQLNonNull} from 'graphql';
 import {EventType} from '../types';
 import {EventDAO} from '../../mongodb/dao';
 
@@ -6,24 +6,21 @@ const events: Thunk<GraphQLFieldConfigMap<any, any>> = {
     readEventById: {
         type: EventType,
         args: {
-            id: {type: GraphQLID},
+            id: {type: GraphQLNonNull(GraphQLID)},
         },
-        resolve(parent, args, context, resolveInfo) {
-            return EventDAO.readEventById(args.eventID);
+        resolve(parent, {id}, context, resolveInfo) {
+            return EventDAO.readEventById(id);
         },
     },
     readEvents: {
-        type: new GraphQLList(EventType),
+        type: GraphQLNonNull(GraphQLList(GraphQLNonNull(EventType))),
         resolve(parent, args, context, resolveInfo) {
             return EventDAO.readEvents();
         },
     },
     queryEvents: {
-        args: {
-            title: {type: GraphQLString},
-            // Write the other filters
-        },
-        type: new GraphQLList(EventType),
+        // TODO update this
+        type: GraphQLNonNull(GraphQLList(GraphQLNonNull(EventType))),
         resolve(parent, args, context, resolveInfo) {
             return EventDAO.readEvents({title: args.title});
         },

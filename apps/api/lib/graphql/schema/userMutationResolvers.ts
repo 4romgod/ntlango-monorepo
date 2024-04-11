@@ -8,8 +8,8 @@ const users: Thunk<GraphQLFieldConfigMap<any, any>> = {
         args: {
             input: {type: GraphQLNonNull(CreateUserInputType)},
         },
-        resolve(parent, args, context, resolveInfo) {
-            return UserDAO.create(args.input);
+        resolve(parent, {input}, context, resolveInfo) {
+            return UserDAO.create(input);
         },
     },
     updateUser: {
@@ -18,8 +18,8 @@ const users: Thunk<GraphQLFieldConfigMap<any, any>> = {
             id: {type: GraphQLNonNull(GraphQLID)},
             input: {type: GraphQLNonNull(UpdateUserInputType)},
         },
-        resolve(parent, args, context, resolveInfo) {
-            return UserDAO.updateUser(args.id, args.input);
+        resolve(parent, {id, input}, context, resolveInfo) {
+            return UserDAO.updateUser(id, input);
         },
     },
     deleteUser: {
@@ -27,8 +27,8 @@ const users: Thunk<GraphQLFieldConfigMap<any, any>> = {
         args: {
             id: {type: GraphQLNonNull(GraphQLID)},
         },
-        resolve(parent, args, context, resolveInfo) {
-            return UserDAO.deleteUser(args.id);
+        resolve(parent, {id}, context, resolveInfo) {
+            return UserDAO.deleteUser(id);
         },
     },
 };

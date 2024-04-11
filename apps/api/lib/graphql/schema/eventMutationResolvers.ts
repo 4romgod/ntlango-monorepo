@@ -8,8 +8,8 @@ const events: Thunk<GraphQLFieldConfigMap<any, any>> = {
         args: {
             input: {type: GraphQLNonNull(CreateEventInputType)},
         },
-        resolve(parent, args, context, resolveInfo) {
-            return EventDAO.create(args.input);
+        resolve(parent, {input}, context, resolveInfo) {
+            return EventDAO.create(input);
         },
     },
     updateEvent: {
@@ -18,8 +18,8 @@ const events: Thunk<GraphQLFieldConfigMap<any, any>> = {
             id: {type: GraphQLNonNull(GraphQLID)},
             input: {type: GraphQLNonNull(UpdateEventInputType)},
         },
-        resolve(parent, args, context, resolveInfo) {
-            return EventDAO.updateEvent(args.eventID, args.input);
+        resolve(parent, {id, input}, context, resolveInfo) {
+            return EventDAO.updateEvent(id, input);
         },
     },
     deleteEvent: {
@@ -27,8 +27,8 @@ const events: Thunk<GraphQLFieldConfigMap<any, any>> = {
         args: {
             id: {type: GraphQLNonNull(GraphQLID)},
         },
-        resolve(parent, args, context, resolveInfo) {
-            return EventDAO.deleteEvent(args.eventID);
+        resolve(parent, {id}, context, resolveInfo) {
+            return EventDAO.deleteEvent(id);
         },
     },
 };

@@ -83,4 +83,5 @@ export type ICreateUser = Omit<IUser, 'encrypted_password'> & {password: string}
 
 export type IUpdateUser = Omit<IUser, 'encrypted_password'> & {password: string};
 
+// TODO might need to look more into this userIDList attribute
 export type UserQueryParams = Partial<Record<keyof IUser, any>> & {userIDList?: Array<string>};

@@ -1,29 +1,25 @@
-import {GraphQLID, GraphQLList, GraphQLString, Thunk, GraphQLFieldConfigMap} from 'graphql';
-import {EventType, UserType} from '../types';
+import {GraphQLID, GraphQLList, GraphQLString, Thunk, GraphQLFieldConfigMap, GraphQLNonNull} from 'graphql';
+import {UserType} from '../types';
 import {UserDAO} from '../../mongodb/dao';
 
 const users: Thunk<GraphQLFieldConfigMap<any, any>> = {
     readUserById: {
         type: UserType,
         args: {
-            id: {type: GraphQLID},
+            id: {type: GraphQLNonNull(GraphQLID)},
         },
-        resolve(parent, args, context, resolveInfo) {
-            return UserDAO.readUserById(args.id);
+        resolve(parent, {id}, context, resolveInfo) {
+            return UserDAO.readUserById(id);
         },
     },
     readUsers: {
-        type: new GraphQLList(UserType),
+        type: GraphQLNonNull(GraphQLList(GraphQLNonNull(UserType))),
         resolve(parent, args, context, resolveInfo) {
             return UserDAO.readUsers();
         },
     },
     queryUsers: {
-        args: {
-            gender: {type: GraphQLString},
-            // Write the other filters
-        },
-        type: new GraphQLList(UserType),
+        type: GraphQLNonNull(GraphQLList(GraphQLNonNull(UserType))), // TODO work on this
         resolve(parent, args, context, resolveInfo) {
             return UserDAO.readUsers({gender: args.gender});
         },

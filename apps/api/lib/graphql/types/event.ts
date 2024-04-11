@@ -1,7 +1,6 @@
 import {GraphQLObjectType, GraphQLString, GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLInputObjectType} from 'graphql';
 import {GraphQLJSONObject} from 'graphql-type-json';
 import {UserType} from './user';
-import {usersMockData} from '../../mongodb/mockData';
 
 export const EventType = new GraphQLObjectType({
     name: 'Event',
@@ -12,22 +11,12 @@ export const EventType = new GraphQLObjectType({
         startDate: {type: GraphQLNonNull(GraphQLString)},
         endDate: {type: GraphQLNonNull(GraphQLString)},
         location: {type: GraphQLNonNull(GraphQLString)},
-        eventType: {type: GraphQLNonNull(GraphQLList(GraphQLString))},
-        eventCategory: {type: GraphQLNonNull(GraphQLList(GraphQLString))},
-        capacity: {type: GraphQLInt},
         status: {type: GraphQLNonNull(GraphQLString)},
-        organizers: {
-            type: GraphQLList(UserType),
-            resolve(parent, args, context, resolveInfo) {
-                return usersMockData.filter((user) => parent.organizers.includes(user.id)); // TODO fix
-            },
-        },
-        rSVPs: {
-            type: GraphQLList(UserType),
-            resolve(parent, args, context, resolveInfo) {
-                return usersMockData.filter((user) => parent.rSVPs.includes(user.id)); // TODO fix
-            },
-        },
+        capacity: {type: GraphQLInt},
+        eventType: {type: GraphQLNonNull(GraphQLList(GraphQLNonNull(GraphQLString)))},
+        eventCategory: {type: GraphQLNonNull(GraphQLList(GraphQLNonNull(GraphQLString)))},
+        organizers: {type: GraphQLNonNull(GraphQLList(GraphQLNonNull(UserType)))},
+        rSVPs: {type: GraphQLNonNull(GraphQLList(GraphQLNonNull(UserType)))},
         tags: {type: GraphQLJSONObject},
         media: {type: GraphQLJSONObject},
         additionalDetails: {type: GraphQLJSONObject},
@@ -45,12 +34,12 @@ export const CreateEventInputType = new GraphQLInputObjectType({
         startDate: {type: GraphQLNonNull(GraphQLString)},
         endDate: {type: GraphQLNonNull(GraphQLString)},
         location: {type: GraphQLNonNull(GraphQLString)},
-        eventType: {type: GraphQLNonNull(GraphQLList(GraphQLString))},
-        eventCategory: {type: GraphQLNonNull(GraphQLList(GraphQLString))},
-        capacity: {type: GraphQLInt},
         status: {type: GraphQLNonNull(GraphQLString)},
-        organizers: {type: new GraphQLList(GraphQLString)},
-        rSVPs: {type: GraphQLList(GraphQLString)},
+        capacity: {type: GraphQLInt},
+        eventType: {type: GraphQLNonNull(GraphQLList(GraphQLNonNull(GraphQLString)))},
+        eventCategory: {type: GraphQLNonNull(GraphQLList(GraphQLNonNull(GraphQLString)))},
+        organizers: {type: GraphQLNonNull(GraphQLList(GraphQLNonNull(GraphQLString)))}, // input is a string
+        rSVPs: {type: GraphQLNonNull(GraphQLList(GraphQLNonNull(GraphQLString)))}, // input is a string
         tags: {type: GraphQLJSONObject},
         media: {type: GraphQLJSONObject},
         additionalDetails: {type: GraphQLJSONObject},
@@ -69,12 +58,12 @@ export const UpdateEventInputType = new GraphQLInputObjectType({
         startDate: {type: GraphQLNonNull(GraphQLString)},
         endDate: {type: GraphQLNonNull(GraphQLString)},
         location: {type: GraphQLNonNull(GraphQLString)},
-        eventType: {type: GraphQLNonNull(GraphQLList(GraphQLString))},
-        eventCategory: {type: GraphQLNonNull(GraphQLList(GraphQLString))},
-        capacity: {type: GraphQLInt},
         status: {type: GraphQLNonNull(GraphQLString)},
-        organizers: {type: new GraphQLList(GraphQLString)},
-        rSVPs: {type: GraphQLList(GraphQLString)},
+        capacity: {type: GraphQLInt},
+        eventType: {type: GraphQLNonNull(GraphQLList(GraphQLNonNull(GraphQLString)))},
+        eventCategory: {type: GraphQLNonNull(GraphQLList(GraphQLNonNull(GraphQLString)))},
+        organizers: {type: GraphQLNonNull(GraphQLList(GraphQLNonNull(GraphQLString)))}, // input is a string
+        rSVPs: {type: GraphQLNonNull(GraphQLList(GraphQLNonNull(GraphQLString)))}, // input is a string
         tags: {type: GraphQLJSONObject},
         media: {type: GraphQLJSONObject},
         additionalDetails: {type: GraphQLJSONObject},

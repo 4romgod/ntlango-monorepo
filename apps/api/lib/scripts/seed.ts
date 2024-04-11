@@ -15,10 +15,17 @@ async function seedUsers(users: Array<IUser>) {
     }
 }
 
-async function seedEvents(events: Array<IEvent>) {
+async function seedEvents(events: Array<IEvent>, userIds: Array<string>) {
     for (const event of events) {
+        const randomIndex1 = Math.floor(Math.random() * 4);
+        const randomIndex2 = Math.floor(Math.random() * 4);
+        const randomIndex3 = Math.floor(Math.random() * 4);
+        const randomIndex4 = Math.floor(Math.random() * 4);
+
         await EventDAO.create({
             ...event,
+            organizers: [userIds.at(randomIndex1)!, userIds.at(randomIndex2)!],
+            rSVPs: [userIds.at(randomIndex3)!, userIds.at(randomIndex4)!],
             createdAt: undefined,
             updatedAt: undefined,
         });
@@ -28,7 +35,10 @@ async function seedEvents(events: Array<IEvent>) {
 async function main() {
     await MongoDbClient.connectToDatabase(MONGO_DB_URL);
     await seedUsers(usersMockData);
-    await seedEvents(eventsMockData);
+
+    const allUserIds = (await UserDAO.readUsers()).map((user) => user.id!);
+
+    await seedEvents(eventsMockData, allUserIds);
     await MongoDbClient.disconnectFromDatabase();
 }
 
