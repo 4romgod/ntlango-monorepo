@@ -4,15 +4,21 @@ import { ReactNode, useState } from 'react';
 import InputBase from '@mui/material/InputBase';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
-import { styled } from '@mui/material/styles';
+import Select from '@mui/material/Select';
 import { useRouter } from 'next/navigation';
+import { styled } from '@mui/material/styles';
 
-const BootstrapInput = styled(InputBase)(({ theme }) => ({
+const StyledSelect = styled(Select)(({ theme }) => ({
+  '& .MuiSelect-select': {
+    backgroundColor: theme.palette.primary.main,
+  },
+}));
+
+const StyledInput = styled(InputBase)(({ theme }) => ({
   '& .MuiInputBase-input': {
     borderRadius: 4,
     position: 'relative',
-    backgroundColor: 'blue',
+    backgroundColor: theme.palette.primary.main,
     fontSize: 16,
     padding: '10px 26px 10px 12px',
   },
@@ -37,7 +43,7 @@ export default function DropDown<T extends Item>({
   const [selectedItem, setSelectedItem] = useState<string>('');
   const router = useRouter();
 
-  const onSelectChangeHandler = (event: SelectChangeEvent) => {
+  const onSelectChangeHandler = (event: any) => {
     const selectedItemName = event.target.value;
     setSelectedItem(selectedItemName);
     const selectedItem = itemList.find(
@@ -51,19 +57,16 @@ export default function DropDown<T extends Item>({
   };
 
   return (
-    <FormControl fullWidth variant="standard">
-      <Select
+    <FormControl variant="standard">
+      <StyledSelect
         value={selectedItem}
         onChange={onSelectChangeHandler}
-        input={<BootstrapInput />}
-        sx={{
-          backgroundColor: 'blue',
-          color: 'white',
-          '&:hover': {
-            backgroundColor: 'green',
-          },
-        }}
+        input={<StyledInput />}
         displayEmpty={true}
+        sx={{
+          backgroundColor: 'primary',
+          color: 'black',
+        }}
       >
         <MenuItem value="">
           <em>{defaultItem}</em>
@@ -73,7 +76,7 @@ export default function DropDown<T extends Item>({
             <div>{renderItem(item)}</div>
           </MenuItem>
         ))}
-      </Select>
+      </StyledSelect>
     </FormControl>
   );
 }

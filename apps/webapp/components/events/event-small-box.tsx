@@ -7,6 +7,7 @@ import {
   UserIcon,
 } from '@heroicons/react/24/outline';
 import { Event } from '@/lib/graphql/types/graphql';
+import { Box } from '@mui/material';
 
 export default function EventSmallBox({ event }: { event: Event }) {
   const {
@@ -21,21 +22,28 @@ export default function EventSmallBox({ event }: { event: Event }) {
 
   return (
     <Link href={`/ntlango`}>
-      <div
-        className={`
-          bg-scale-100 dark:bg-scale-300 hover:bg-scale-200 hover:dark:bg-scale-400
-          group flex
-          h-full w-full flex-row gap-2
-          rounded border
-          px-2 py-4
-          shadow transition-all hover:shadow-lg
-          md:flex-col 
-          md:px-0 
-          md:py-0
-          md:pb-3
-        `}
+      <Box
+        component="div"
+        boxShadow={1}
+        className="gap-2"
+        sx={{
+          display: { xs: 'flex' },
+          flexDirection: { xs: 'row', md: 'column' },
+          px: { xs: 1, md: 0 },
+          py: { xs: 1, md: 0 },
+          pb: { md: 3 },
+          borderRadius: '0.375rem',
+          height: '100%',
+          width: '100%',
+        }}
       >
-        <div className="w-1/4 pt-1 md:w-full md:pt-0">
+        <Box
+          component="div"
+          sx={{
+            width: { xs: '25%', md: '100%' },
+            pt: { xs: 1, md: 0 },
+          }}
+        >
           <Image
             src={featuredImageUrl}
             alt="Event Image"
@@ -48,29 +56,36 @@ export default function EventSmallBox({ event }: { event: Event }) {
             }}
             className="rounded"
           />
-        </div>
-        <div className="w-3/4 md:w-full md:px-6 md:pt-2">
-          <div>
+        </Box>
+        <Box
+          component="div"
+          sx={{
+            width: { xs: '75%', md: '100%' },
+            pl: { md: 2 },
+            pt: { md: 2 },
+          }}
+        >
+          <Box component="div">
             <h4 className="text-xl font-bold">{title}</h4>
-          </div>
-          <div className="flex flex-row">
+          </Box>
+          <Box component="div" className="flex flex-row">
             <UserIcon className="mr-2 h-6 w-5" />
             <p className="text-base">{organizersText}</p>
-          </div>
-          <div className="flex flex-row">
+          </Box>
+          <Box component="div" className="flex flex-row">
             <CalendarIcon className="mr-2 h-6 w-5" />
             <p>{startDate}</p>
-          </div>
-          <div className="flex flex-row">
+          </Box>
+          <Box component="div" className="flex flex-row">
             <CheckCircleIcon className="mr-2 h-6 w-5" />
             <p>{rSVPs.length ?? 0} RSVP&lsquo;s</p>
-          </div>
-          <div className="flex flex-row">
+          </Box>
+          <Box component="div" className="flex flex-row">
             <TicketIcon className="mr-2 h-6 w-5" />
             <p>Free</p>
-          </div>
-        </div>
-      </div>
+          </Box>
+        </Box>
+      </Box>
     </Link>
   );
 }

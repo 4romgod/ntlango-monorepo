@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography, Grid } from '@mui/material';
+import { Typography, Grid, Box } from '@mui/material';
 import EventSmallBox from '@/components/events/event-small-box';
 import { Event } from '@/lib/graphql/types/graphql';
 
@@ -15,7 +15,7 @@ export default function EventTileGrid({
   return (
     <>
       {Object.keys(eventsByCategory).map((categoryName) => (
-        <div key={categoryName}>
+        <Box component="div" key={categoryName} marginBottom={10}>
           <Typography variant="h4" gutterBottom id={categoryName}>
             {categoryName}
           </Typography>
@@ -26,14 +26,13 @@ export default function EventTileGrid({
                 key={`EventTileGrid.${categoryName}.${event.id}`}
                 xs={12}
                 sm={6}
-                md={4}
-                lg={3}
+                lg={4}
               >
                 <EventSmallBox event={event} />
               </Grid>
             ))}
           </Grid>
-        </div>
+        </Box>
       ))}
     </>
   );
