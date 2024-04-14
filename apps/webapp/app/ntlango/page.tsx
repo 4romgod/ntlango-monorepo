@@ -1,10 +1,10 @@
-import EventTileGrid from '@/components/events/event-tile-grid';
 import Footer from '@/components/footer';
 import Navbar from '@/components/navigation/navbar';
+import EventTileGrid from '@/components/events/event-tile-grid';
+import DisplayCategoryList from '@/components/display-category-list';
 import { groupEventsByCategory } from '@/lib/utils/dataManipulation';
 import { getClient } from '@/lib/graphql/apollo-client';
 import { Typography, Container, Grid, Box } from '@mui/material';
-import DisplayCategoryList from '@/components/display-category-list';
 import {
   EventCategory,
   GetAllEventCategoriesDocument,
@@ -20,12 +20,10 @@ export default async function Home() {
   });
 
   const allCategories: EventCategory[] = eventCategories.readEventCategories;
-
   const eventsByCategory = groupEventsByCategory(events);
 
   return (
     <>
-      <Navbar />
       <Container>
         <Box component="div">
           <Typography variant="h1">
@@ -52,7 +50,6 @@ export default async function Home() {
           </Grid>
         </Grid>
       </Container>
-      <Footer />
     </>
   );
 }

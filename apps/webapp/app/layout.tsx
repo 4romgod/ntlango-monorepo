@@ -1,8 +1,9 @@
 import '@/components/global.css';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter';
-import { inter } from '@/components/theme/fonts';
 import { ThemeProvider } from '@mui/material/styles';
-import theme from '@/components/theme/theme';
+import CustomThemeProvider from '@/components/theme/theme';
+import { CssBaseline } from '@mui/material';
+import Navbar from '@/components/navigation/navbar';
 
 export default function RootLayout({
   children,
@@ -12,9 +13,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <AppRouterCacheProvider>
-        <ThemeProvider theme={theme}>
-          <body>{children}</body>
-        </ThemeProvider>
+        <CustomThemeProvider>{children}</CustomThemeProvider>
       </AppRouterCacheProvider>
     </html>
   );

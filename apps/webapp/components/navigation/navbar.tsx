@@ -3,10 +3,16 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import SearchBox from '@/components/search/search-box';
+import ToggleThemeMode, {
+  ToggleThemeModeProps,
+} from '@/components/theme/toggle-theme-mode';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
 
-export default function Navbar() {
+export default function Navbar({
+  setThemeMode,
+  themeMode,
+}: ToggleThemeModeProps) {
   const [nav, setNav] = useState(false);
 
   const handleNav = () => {
@@ -19,7 +25,7 @@ export default function Navbar() {
   ];
 
   return (
-    <div className="mx-auto flex h-24 items-center justify-between bg-black px-3 text-white">
+    <div className="mx-auto flex h-24 items-center justify-between px-3">
       <h1 className="text-3xl font-bold text-blue-500">
         <Link href={''} className="hover:cursor-pointer">
           LOGO.
@@ -28,6 +34,9 @@ export default function Navbar() {
       <div className="hidden md:block">
         <SearchBox placeholder="Search events..." />
       </div>
+
+      <ToggleThemeMode setThemeMode={setThemeMode} themeMode={themeMode} />
+
       <ul className="hidden md:flex">
         {navItems.map((item) => (
           <li
