@@ -1,7 +1,8 @@
 import React from 'react';
 import { Typography, Grid, Box } from '@mui/material';
-import EventSmallBox from '@/components/events/event-small-box';
 import { Event } from '@/lib/graphql/types/graphql';
+import EventBoxDesktop from '@/components/events/event-box/desktop';
+import EventBoxMobile from '@/components/events/event-box/mobile';
 
 export type EventTileGridProps = {
   eventsByCategory: {
@@ -28,7 +29,15 @@ export default function EventTileGrid({
                 sm={6}
                 lg={4}
               >
-                <EventSmallBox event={event} />
+                <Box component="div" sx={{ display: { sm: 'none' } }}>
+                  <EventBoxMobile event={event} />
+                </Box>
+                <Box
+                  component="div"
+                  sx={{ display: { xs: 'none', sm: 'block' } }}
+                >
+                  <EventBoxDesktop event={event} />
+                </Box>
               </Grid>
             ))}
           </Grid>
