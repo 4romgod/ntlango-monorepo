@@ -12,19 +12,22 @@ import Avatar from '@mui/material/Avatar';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import SearchInput from '@/components/search/search-box';
 import Link from 'next/link';
+import NotificationsMenu from './notifications-menu';
+import ProfilesMenu from './profiles-menu';
+import TemporaryDrawer from './temporary-drawer';
 import ToggleThemeMode, {
   ToggleThemeModeProps,
 } from '@/components/theme/toggle-theme-mode';
-import NotificationsMenu from './notifications-menu';
-import ProfilesMenu from './profiles-menu';
 
+export type PrimaryNavBarProps = { isAuthN: boolean } & ToggleThemeModeProps;
 /**
  * Inspired by: https://arshadalisoomro.hashnode.dev/creating-a-navigation-bar-with-mui-appbar-component-in-nextjs
  */
 export default function PrimaryNavBar({
   setThemeMode,
   themeMode,
-}: ToggleThemeModeProps) {
+  isAuthN,
+}: PrimaryNavBarProps) {
   const [profilesMenuAnchorEl, setProfilesMenuAnchorEl] =
     useState<null | HTMLElement>(null);
   const [notificationsMenuAnchorEl, setNotificationsMenuAnchorEl] =
@@ -81,58 +84,70 @@ export default function PrimaryNavBar({
 
           <ToggleThemeMode setThemeMode={setThemeMode} themeMode={themeMode} />
 
-          <Box sx={{ ml: 2, display: { xs: 'none', md: 'flex' } }}>
-            <IconButton size="large" aria-label="mails" color="primary">
-              <MailIcon />
-            </IconButton>
-            <IconButton size="large" aria-label="notifications" color="primary">
-              <NotificationsIcon />
-            </IconButton>
-          </Box>
-
-          <IconButton
-            size="large"
-            edge="end"
-            aria-label="account of current user"
-            aria-controls={profilesMenuId}
-            aria-haspopup="true"
-            onClick={handleProfilesMenuOpen}
-            color="primary"
-            sx={{ mr: 1 }}
+          <Box
+            component="div"
+            display="flex"
+            sx={{ display: { xs: isAuthN ? 'flex' : 'none' } }}
           >
-            <Avatar color={'primary'} sx={{ width: 32, height: 32 }}>
-              A
-            </Avatar>
-          </IconButton>
+            <Box sx={{ ml: 2, display: { xs: 'none', md: 'flex' } }}>
+              <IconButton size="large" aria-label="mails" color="primary">
+                <MailIcon />
+              </IconButton>
+              <IconButton
+                size="large"
+                aria-label="notifications"
+                color="primary"
+              >
+                <NotificationsIcon />
+              </IconButton>
+            </Box>
 
-          <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
             <IconButton
               size="large"
-              aria-label="show more"
+              edge="end"
+              aria-label="account of current user"
               aria-controls={profilesMenuId}
               aria-haspopup="true"
-              onClick={handleNotificationsMenuOpen}
+              onClick={handleProfilesMenuOpen}
               color="primary"
+              sx={{ mr: 1 }}
             >
-              <MoreIcon />
+              <Avatar color={'primary'} sx={{ width: 32, height: 32 }}>
+                A
+              </Avatar>
             </IconButton>
+
+            <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
+              <IconButton
+                size="large"
+                aria-label="show more"
+                aria-controls={profilesMenuId}
+                aria-haspopup="true"
+                onClick={handleNotificationsMenuOpen}
+                color="primary"
+              >
+                <MoreIcon />
+              </IconButton>
+            </Box>
           </Box>
         </Toolbar>
       </AppBar>
 
-      <ProfilesMenu
-        ProfilesMenuAnchorEl={profilesMenuAnchorEl}
-        ProfilesMenuId={profilesMenuId}
-        handleProfilesMenuClose={handleProfilesMenuClose}
-        isProfilesMenuOpen={isProfilesMenuOpen}
-      />
+      <Box component="div">
+        <ProfilesMenu
+          ProfilesMenuAnchorEl={profilesMenuAnchorEl}
+          ProfilesMenuId={profilesMenuId}
+          handleProfilesMenuClose={handleProfilesMenuClose}
+          isProfilesMenuOpen={isProfilesMenuOpen}
+        />
 
-      <NotificationsMenu
-        NotificationsMenuAnchorEl={notificationsMenuAnchorEl}
-        NotificationsMenuId={notificationsMenuId}
-        handleNotificationsMenuClose={handleNotificationsMenuClose}
-        isNotificationsMenuOpen={isNotificationsMenuOpen}
-      />
+        <NotificationsMenu
+          NotificationsMenuAnchorEl={notificationsMenuAnchorEl}
+          NotificationsMenuId={notificationsMenuId}
+          handleNotificationsMenuClose={handleNotificationsMenuClose}
+          isNotificationsMenuOpen={isNotificationsMenuOpen}
+        />
+      </Box>
     </Box>
   );
 }

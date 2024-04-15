@@ -18,11 +18,17 @@ export default function CustomThemeProvider({
     [themeMode],
   );
 
+  const isAuthN: boolean = false;
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <body>
-        <Navbar setThemeMode={setThemeMode} themeMode={themeMode} />
+        <Navbar
+          isAuthN={isAuthN}
+          setThemeMode={setThemeMode}
+          themeMode={themeMode}
+        />
         <Box
           component="div"
           id="main-content"
