@@ -1,6 +1,6 @@
 'use client';
 
-import * as React from 'react';
+import React, { useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -9,19 +9,14 @@ import IconButton from '@mui/material/IconButton';
 import MailIcon from '@mui/icons-material/Mail';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import Avatar from '@mui/material/Avatar';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import Divider from '@mui/material/Divider';
-import AccountCircle from '@mui/icons-material/AccountCircle';
-import Settings from '@mui/icons-material/Settings';
-import Logout from '@mui/icons-material/Logout';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import SearchInput from '@/components/search/search-box';
 import Link from 'next/link';
 import ToggleThemeMode, {
   ToggleThemeModeProps,
-} from '../theme/toggle-theme-mode';
+} from '@/components/theme/toggle-theme-mode';
+import NotificationsMenu from './notifications-menu';
+import ProfilesMenu from './profiles-menu';
 
 /**
  * Inspired by: https://arshadalisoomro.hashnode.dev/creating-a-navigation-bar-with-mui-appbar-component-in-nextjs
@@ -30,100 +25,35 @@ export default function PrimaryNavBar({
   setThemeMode,
   themeMode,
 }: ToggleThemeModeProps) {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const isMenuOpen = Boolean(anchorEl);
+  const [profilesMenuAnchorEl, setProfilesMenuAnchorEl] =
+    useState<null | HTMLElement>(null);
+  const [notificationsMenuAnchorEl, setNotificationsMenuAnchorEl] =
+    useState<null | HTMLElement>(null);
 
-  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
-    React.useState<null | HTMLElement>(null);
-  const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+  const isProfilesMenuOpen = Boolean(profilesMenuAnchorEl);
+  const isNotificationsMenuOpen = Boolean(notificationsMenuAnchorEl);
 
-  const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
+  const handleProfilesMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setProfilesMenuAnchorEl(event.currentTarget);
   };
 
-  const handleMobileMenuClose = () => {
-    setMobileMoreAnchorEl(null);
+  const handleProfilesMenuClose = () => {
+    setProfilesMenuAnchorEl(null);
+    handleNotificationsMenuClose();
   };
 
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-    handleMobileMenuClose();
+  const handleNotificationsMenuClose = () => {
+    setNotificationsMenuAnchorEl(null);
   };
 
-  const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setMobileMoreAnchorEl(event.currentTarget);
+  const handleNotificationsMenuOpen = (
+    event: React.MouseEvent<HTMLElement>,
+  ) => {
+    setNotificationsMenuAnchorEl(event.currentTarget);
   };
 
-  const desktopMenuId = 'account-menu';
-  const renderDesktopMenu = () => (
-    <Menu
-      anchorEl={anchorEl}
-      anchorOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
-      }}
-      id={desktopMenuId}
-      keepMounted
-      transformOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
-      }}
-      open={isMenuOpen}
-      onClose={handleMenuClose}
-    >
-      <MenuItem onClick={handleMenuClose}>
-        <ListItemIcon>
-          <AccountCircle fontSize="small" />
-        </ListItemIcon>
-        Profile
-      </MenuItem>
-      <Divider />
-      <MenuItem onClick={handleMenuClose}>
-        <ListItemIcon>
-          <Settings fontSize="small" />
-        </ListItemIcon>
-        Settings
-      </MenuItem>
-      <MenuItem onClick={handleMenuClose}>
-        <ListItemIcon>
-          <Logout fontSize="small" />
-        </ListItemIcon>
-        Logout
-      </MenuItem>
-    </Menu>
-  );
-
-  const mobileMenuId = 'account-menu-mobile';
-  const renderMobileMenu = () => (
-    <Menu
-      anchorEl={mobileMoreAnchorEl}
-      anchorOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
-      }}
-      id={mobileMenuId}
-      keepMounted
-      transformOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
-      }}
-      open={isMobileMenuOpen}
-      onClose={handleMobileMenuClose}
-    >
-      <MenuItem>
-        <IconButton size="large" aria-label="new mails" color="inherit">
-          <MailIcon />
-        </IconButton>
-        <p>Messages</p>
-      </MenuItem>
-      <MenuItem>
-        <IconButton size="large" aria-label="new notifications" color="inherit">
-          <NotificationsIcon />
-        </IconButton>
-        <p>Notifications</p>
-      </MenuItem>
-    </Menu>
-  );
+  const profilesMenuId = 'profiles-menu-id';
+  const notificationsMenuId = 'notifications-menu-id';
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -164,9 +94,9 @@ export default function PrimaryNavBar({
             size="large"
             edge="end"
             aria-label="account of current user"
-            aria-controls={desktopMenuId}
+            aria-controls={profilesMenuId}
             aria-haspopup="true"
-            onClick={handleProfileMenuOpen}
+            onClick={handleProfilesMenuOpen}
             color="primary"
             sx={{ mr: 1 }}
           >
@@ -179,9 +109,9 @@ export default function PrimaryNavBar({
             <IconButton
               size="large"
               aria-label="show more"
-              aria-controls={mobileMenuId}
+              aria-controls={profilesMenuId}
               aria-haspopup="true"
-              onClick={handleMobileMenuOpen}
+              onClick={handleNotificationsMenuOpen}
               color="primary"
             >
               <MoreIcon />
@@ -189,8 +119,20 @@ export default function PrimaryNavBar({
           </Box>
         </Toolbar>
       </AppBar>
-      {renderDesktopMenu()}
-      {renderMobileMenu()}
+
+      <ProfilesMenu
+        ProfilesMenuAnchorEl={profilesMenuAnchorEl}
+        ProfilesMenuId={profilesMenuId}
+        handleProfilesMenuClose={handleProfilesMenuClose}
+        isProfilesMenuOpen={isProfilesMenuOpen}
+      />
+
+      <NotificationsMenu
+        NotificationsMenuAnchorEl={notificationsMenuAnchorEl}
+        NotificationsMenuId={notificationsMenuId}
+        handleNotificationsMenuClose={handleNotificationsMenuClose}
+        isNotificationsMenuOpen={isNotificationsMenuOpen}
+      />
     </Box>
   );
 }
