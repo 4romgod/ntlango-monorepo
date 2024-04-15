@@ -62,6 +62,9 @@ export default function PrimaryNavBar({
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="fixed">
         <Toolbar disableGutters>
+          <Box component="div">
+            <TemporaryDrawer />
+          </Box>
           <Typography
             variant="h6"
             noWrap
