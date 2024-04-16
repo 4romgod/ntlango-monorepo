@@ -18,7 +18,7 @@ export default function CustomThemeProvider({
     [themeMode],
   );
 
-  const isAuthN: boolean = false;
+  const isAuthN: boolean = true;
 
   return (
     <ThemeProvider theme={theme}>

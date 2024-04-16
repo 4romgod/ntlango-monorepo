@@ -4,20 +4,22 @@ import React, { useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import MailIcon from '@mui/icons-material/Mail';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import Avatar from '@mui/material/Avatar';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import SearchInput from '@/components/search/search-box';
-import Link from 'next/link';
 import NotificationsMenu from './notifications-menu';
 import ProfilesMenu from './profiles-menu';
 import TemporaryDrawer from './temporary-drawer';
 import ToggleThemeMode, {
   ToggleThemeModeProps,
 } from '@/components/theme/toggle-theme-mode';
+import { Button } from '@mui/material';
+import SignupModal from '../signup/signup-modal';
+import Logo from '../logo';
+import LoginModal from '../login/login-modal';
 
 export type PrimaryNavBarProps = { isAuthN: boolean } & ToggleThemeModeProps;
 /**
@@ -65,27 +67,40 @@ export default function PrimaryNavBar({
           <Box component="div">
             <TemporaryDrawer />
           </Box>
-          <Typography
-            variant="h6"
-            noWrap
-            color={'secondary'}
-            sx={{
-              mx: 2,
-              display: { md: 'flex' },
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              letterSpacing: '.3rem',
-              textDecoration: 'none',
-            }}
-          >
-            <Link href={'/'}>Ntlango</Link>
-          </Typography>
+
+          <Logo />
 
           <Box sx={{ flexGrow: 1 }} />
 
           <SearchInput sx={{ display: { xs: 'none', md: 'flex' } }} />
 
           <ToggleThemeMode setThemeMode={setThemeMode} themeMode={themeMode} />
+
+          <Box
+            component="div"
+            display="flex"
+            sx={{ display: { xs: isAuthN ? 'flex' : 'none' } }}
+          >
+            <LoginModal
+              triggerButton={
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  sx={{ marginRight: '1' }}
+                >
+                  Log In
+                </Button>
+              }
+            />
+
+            <SignupModal
+              triggerButton={
+                <Button variant="contained" color="secondary">
+                  Sign Up
+                </Button>
+              }
+            />
+          </Box>
 
           <Box
             component="div"
