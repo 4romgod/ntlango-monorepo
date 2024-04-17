@@ -1,4 +1,4 @@
-import { Typography } from '@mui/material';
+import { Button, Typography, styled } from '@mui/material';
 import CustomModal from '../modal/custom-modal';
 import CustomModalContent from '../modal/custom-modal-content';
 import CustomModalButton from '../modal/custom-modal-button';
@@ -12,6 +12,14 @@ import Link from 'next/link';
 export type SignupModalProps = {
   triggerButton: ReactElement;
 };
+
+const StyledButton = styled(Button)(({ theme }) => ({
+  width: '100%',
+  marginBottom: theme.spacing(2),
+  backgroundColor: theme.palette.mode == 'dark' ? theme.palette.background.default : theme.palette.background.default,
+  color: theme.palette.mode == 'dark' ? theme.palette.text.primary : theme.palette.text.secondary,
+  borderColor: theme.palette.mode == 'dark' ? theme.palette.background.default : theme.palette.text.secondary,
+}));
 
 const SignupModal = (props: SignupModalProps) => {
   return (
@@ -32,15 +40,15 @@ const SignupModal = (props: SignupModalProps) => {
             Already a member?
             <Link href={'/#'}>{' Log in here'}</Link>
           </Typography>
-          <CustomModalButton
+          <StyledButton
             variant="outlined"
             color="primary"
             startIcon={<FacebookIcon />}
             size="large"
           >
             Continue with Facebook
-          </CustomModalButton>
-          <CustomModalButton
+          </StyledButton>
+          <StyledButton
             variant="outlined"
             color="primary"
             startIcon={<GoogleIcon />}
@@ -48,15 +56,15 @@ const SignupModal = (props: SignupModalProps) => {
             sx={{ paddingX: 10 }}
           >
             Continue with Google
-          </CustomModalButton>
-          <CustomModalButton
+          </StyledButton>
+          <StyledButton
             variant="outlined"
             color="primary"
             startIcon={<EmailIcon />}
             size="large"
           >
             Sign up with Email
-          </CustomModalButton>
+          </StyledButton>
         </CustomModalContent>
       }
     />

@@ -44,11 +44,11 @@ export default async function Home() {
               Discover Your Next Adventure
             </Typography>
             <Typography className="p" align="center">
-              Welcome to our vibrant community of event enthusiasts! Whether
+              Whether
               you&apos;re seeking cultural experiences, thrilling adventures, or
               professional networking opportunities, our platform connects you
               with the events that spark your curiosity and ignite your
-              imagination. Join us today and embark on a journey of discovery
+              imagination.
             </Typography>
           </Box>
         </Box>

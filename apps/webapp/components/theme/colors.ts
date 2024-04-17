@@ -14,6 +14,5 @@ export const Colors = {
   ///////////////
   // Solid Color
   ///////////////
-  white: '#fff',
-  black: '#000',
+
 };
