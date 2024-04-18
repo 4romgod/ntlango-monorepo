@@ -10,9 +10,7 @@ export type EventTileGridProps = {
   };
 };
 
-export default function EventTileGrid({
-  eventsByCategory,
-}: EventTileGridProps) {
+export default function EventTileGrid({ eventsByCategory }: EventTileGridProps) {
   return (
     <>
       {Object.keys(eventsByCategory).map((categoryName) => (
@@ -22,16 +20,8 @@ export default function EventTileGrid({
           </Typography>
           <Grid container spacing={5}>
             {eventsByCategory[categoryName].map((event) => (
-              <Grid
-                item
-                key={`EventTileGrid.${categoryName}.${event.id}`}
-                xs={12}
-                sm={6}
-              >
-                <Box
-                  component="div"
-                  sx={{ display: { xs: 'none', md: 'block' } }}
-                >
+              <Grid item key={`EventTileGrid.${categoryName}.${event.id}`} xs={12} sm={6}>
+                <Box component="div" sx={{ display: { xs: 'none', md: 'block' } }}>
                   <EventBoxMobile event={event} />
                 </Box>
                 <Box component="div" sx={{ display: { md: 'none' } }}>

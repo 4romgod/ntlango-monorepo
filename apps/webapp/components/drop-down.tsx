@@ -10,10 +10,7 @@ import { styled } from '@mui/material/styles';
 
 const StyledSelect = styled(Select)(({ theme }) => ({
   padding: 5,
-  backgroundColor:
-    theme.palette.mode === 'dark'
-      ? theme.palette.secondary.dark
-      : theme.palette.secondary.dark,
+  backgroundColor: theme.palette.mode === 'dark' ? theme.palette.secondary.dark : theme.palette.secondary.dark,
   color: 'white',
   borderRadius: 30,
 }));
@@ -38,20 +35,14 @@ interface DropDownProps<T extends Item> {
   renderItem: (item: T) => ReactNode;
 }
 
-export default function DropDown<T extends Item>({
-  itemList,
-  defaultItem,
-  renderItem,
-}: DropDownProps<T>) {
+export default function DropDown<T extends Item>({ itemList, defaultItem, renderItem }: DropDownProps<T>) {
   const [selectedItem, setSelectedItem] = useState<string>('');
   const router = useRouter();
 
   const onSelectChangeHandler = (event: any) => {
     const selectedItemName = event.target.value;
     setSelectedItem(selectedItemName);
-    const selectedItem = itemList.find(
-      (item) => item.name === selectedItemName,
-    );
+    const selectedItem = itemList.find((item) => item.name === selectedItemName);
 
     if (selectedItem && selectedItem.name) {
       console.log(`#${selectedItem.name}`);
@@ -61,12 +52,7 @@ export default function DropDown<T extends Item>({
 
   return (
     <FormControl variant="standard">
-      <StyledSelect
-        value={selectedItem}
-        onChange={onSelectChangeHandler}
-        input={<StyledInput />}
-        displayEmpty={true}
-      >
+      <StyledSelect value={selectedItem} onChange={onSelectChangeHandler} input={<StyledInput />} displayEmpty={true}>
         <MenuItem value="">
           <em>{defaultItem}</em>
         </MenuItem>

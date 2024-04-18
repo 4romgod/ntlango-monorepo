@@ -7,16 +7,9 @@ import Navbar from '@/components/navigation/navbar';
 import Footer from '@/components/footer';
 import { getDesignTokens } from '@/components/theme/design-tokens';
 
-export default function CustomThemeProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function CustomThemeProvider({ children }: { children: React.ReactNode }) {
   const [themeMode, setThemeMode] = useState<PaletteMode>('light');
-  const theme = useMemo(
-    () => createTheme(getDesignTokens(themeMode)),
-    [themeMode],
-  );
+  const theme = useMemo(() => createTheme(getDesignTokens(themeMode)), [themeMode]);
 
   const isAuthN: boolean = true;
 
@@ -24,17 +17,8 @@ export default function CustomThemeProvider({
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <body>
-        <Navbar
-          isAuthN={isAuthN}
-          setThemeMode={setThemeMode}
-          themeMode={themeMode}
-        />
-        <Box
-          component="div"
-          id="main-content"
-          position={'relative'}
-          marginTop={10}
-        >
+        <Navbar isAuthN={isAuthN} setThemeMode={setThemeMode} themeMode={themeMode} />
+        <Box component="div" id="main-content" position={'relative'} marginTop={10}>
           {children}
         </Box>
         <Footer setThemeMode={setThemeMode} themeMode={themeMode} />

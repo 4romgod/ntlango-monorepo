@@ -64,12 +64,7 @@ const LoginModal = (props: LoginModalProps) => {
                 alignItems: 'center',
               }}
             >
-              <Box
-                component="form"
-                onSubmit={handleSubmit}
-                noValidate
-                sx={{ mt: 1 }}
-              >
+              <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
                 <TextField
                   margin="normal"
                   required
@@ -90,10 +85,7 @@ const LoginModal = (props: LoginModalProps) => {
                   id="password"
                   autoComplete="current-password"
                 />
-                <FormControlLabel
-                  control={<Checkbox value="remember" color="primary" />}
-                  label="Remember me"
-                />
+                <FormControlLabel control={<Checkbox value="remember" color="primary" />} label="Remember me" />
                 <Grid container paddingTop={3}>
                   <Grid item xs>
                     <Link href="#">Forgot password?</Link>
@@ -103,23 +95,13 @@ const LoginModal = (props: LoginModalProps) => {
             </Box>
           </Container>
 
-          <CustomModalButton
-            variant="contained"
-            color="primary"
-            size="large"
-            sx={{ paddingX: 10 }}
-          >
+          <CustomModalButton variant="contained" color="primary" size="large" sx={{ paddingX: 10 }}>
             Log in
           </CustomModalButton>
 
           <Divider>or</Divider>
 
-          <CustomModalButton
-            variant="outlined"
-            color="primary"
-            startIcon={<FacebookIcon />}
-            size="large"
-          >
+          <CustomModalButton variant="outlined" color="primary" startIcon={<FacebookIcon />} size="large">
             Continue with Facebook
           </CustomModalButton>
           <CustomModalButton
@@ -131,12 +113,7 @@ const LoginModal = (props: LoginModalProps) => {
           >
             Continue with Google
           </CustomModalButton>
-          <CustomModalButton
-            variant="outlined"
-            color="primary"
-            startIcon={<EmailIcon />}
-            size="large"
-          >
+          <CustomModalButton variant="outlined" color="primary" startIcon={<EmailIcon />} size="large">
             Sign up with Email
           </CustomModalButton>
         </CustomModalContent>

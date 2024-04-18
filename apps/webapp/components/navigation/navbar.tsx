@@ -13,9 +13,7 @@ import SearchInput from '@/components/search/search-box';
 import NotificationsMenu from './notifications-menu';
 import ProfilesMenu from './profiles-menu';
 import TemporaryDrawer from './temporary-drawer';
-import ToggleThemeMode, {
-  ToggleThemeModeProps,
-} from '@/components/theme/toggle-theme-mode';
+import ToggleThemeMode, { ToggleThemeModeProps } from '@/components/theme/toggle-theme-mode';
 import { Button } from '@mui/material';
 import SignupModal from '../signup/signup-modal';
 import Logo from '../logo';
@@ -25,15 +23,9 @@ export type PrimaryNavBarProps = { isAuthN: boolean } & ToggleThemeModeProps;
 /**
  * Inspired by: https://arshadalisoomro.hashnode.dev/creating-a-navigation-bar-with-mui-appbar-component-in-nextjs
  */
-export default function PrimaryNavBar({
-  setThemeMode,
-  themeMode,
-  isAuthN,
-}: PrimaryNavBarProps) {
-  const [profilesMenuAnchorEl, setProfilesMenuAnchorEl] =
-    useState<null | HTMLElement>(null);
-  const [notificationsMenuAnchorEl, setNotificationsMenuAnchorEl] =
-    useState<null | HTMLElement>(null);
+export default function PrimaryNavBar({ setThemeMode, themeMode, isAuthN }: PrimaryNavBarProps) {
+  const [profilesMenuAnchorEl, setProfilesMenuAnchorEl] = useState<null | HTMLElement>(null);
+  const [notificationsMenuAnchorEl, setNotificationsMenuAnchorEl] = useState<null | HTMLElement>(null);
 
   const isProfilesMenuOpen = Boolean(profilesMenuAnchorEl);
   const isNotificationsMenuOpen = Boolean(notificationsMenuAnchorEl);
@@ -51,9 +43,7 @@ export default function PrimaryNavBar({
     setNotificationsMenuAnchorEl(null);
   };
 
-  const handleNotificationsMenuOpen = (
-    event: React.MouseEvent<HTMLElement>,
-  ) => {
+  const handleNotificationsMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setNotificationsMenuAnchorEl(event.currentTarget);
   };
 
@@ -76,18 +66,10 @@ export default function PrimaryNavBar({
 
           <ToggleThemeMode setThemeMode={setThemeMode} themeMode={themeMode} />
 
-          <Box
-            component="div"
-            display="flex"
-            sx={{ display: { xs: isAuthN ? 'flex' : 'none' } }}
-          >
+          <Box component="div" display="flex" sx={{ display: { xs: isAuthN ? 'flex' : 'none' } }}>
             <LoginModal
               triggerButton={
-                <Button
-                  variant="outlined"
-                  color="secondary"
-                  sx={{ marginRight: '1' }}
-                >
+                <Button variant="outlined" color="secondary" sx={{ marginRight: '1' }}>
                   Log In
                 </Button>
               }
@@ -102,20 +84,12 @@ export default function PrimaryNavBar({
             />
           </Box>
 
-          <Box
-            component="div"
-            display="flex"
-            sx={{ display: { xs: isAuthN ? 'flex' : 'none' } }}
-          >
+          <Box component="div" display="flex" sx={{ display: { xs: isAuthN ? 'flex' : 'none' } }}>
             <Box sx={{ ml: 2, display: { xs: 'none', md: 'flex' } }}>
               <IconButton size="large" aria-label="mails" color="primary">
                 <MailIcon />
               </IconButton>
-              <IconButton
-                size="large"
-                aria-label="notifications"
-                color="primary"
-              >
+              <IconButton size="large" aria-label="notifications" color="primary">
                 <NotificationsIcon />
               </IconButton>
             </Box>

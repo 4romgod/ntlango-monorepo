@@ -1,9 +1,4 @@
-import {
-  JSXElementConstructor,
-  ReactElement,
-  cloneElement,
-  useState,
-} from 'react';
+import { JSXElementConstructor, ReactElement, cloneElement, useState } from 'react';
 import { Modal } from '@mui/base/Modal';
 import CustomBackdrop from '@/components/modal/custom-backdrop';
 import { styled } from '@mui/material';

@@ -5,15 +5,9 @@ interface SectionContainerProps {
   className?: string;
 }
 
-const SectionContainer = ({
-  children,
-  className,
-}: PropsWithChildren<SectionContainerProps>) => (
+const SectionContainer = ({ children, className }: PropsWithChildren<SectionContainerProps>) => (
   <div
-    className={clsx(
-      'sm:py-18 container relative mx-auto px-0 py-16 md:py-24 lg:px-16 lg:py-24 xl:px-20',
-      className,
-    )}
+    className={clsx('sm:py-18 container relative mx-auto px-0 py-16 md:py-24 lg:px-16 lg:py-24 xl:px-20', className)}
   >
     {children}
   </div>

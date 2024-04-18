@@ -5,11 +5,7 @@ import DropDown from '@/components/drop-down';
 import EventCategoryComponent from '@/components/events/event-category';
 import { Box, Stack, Typography } from '@mui/material';
 
-export default function DisplayEventFilters({
-  categoryList,
-}: {
-  categoryList: EventCategory[];
-}) {
+export default function DisplayEventFilters({ categoryList }: { categoryList: EventCategory[] }) {
   return (
     <Box component="div" className="flex flex-col">
       <Stack
@@ -37,11 +33,7 @@ export default function DisplayEventFilters({
           }}
         />
       </Stack>
-      <Box
-        id="filters-desktop"
-        component="div"
-        sx={{ display: { xs: 'none', md: 'block' }, width: '100%' }}
-      >
+      <Box id="filters-desktop" component="div" sx={{ display: { xs: 'none', md: 'block' }, width: '100%' }}>
         <Typography variant="h5" className="mb-3">
           Categories
         </Typography>

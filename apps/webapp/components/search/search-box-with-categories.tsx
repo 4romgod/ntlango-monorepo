@@ -4,10 +4,7 @@ export default function SearchBoxWithCategories() {
   return (
     <form className="mx-auto max-w-lg">
       <div className="flex">
-        <label
-          htmlFor="search-dropdown"
-          className="sr-only mb-2 text-sm font-medium text-gray-900 dark:text-white"
-        >
+        <label htmlFor="search-dropdown" className="sr-only mb-2 text-sm font-medium text-gray-900 dark:text-white">
           Your Email
         </label>
         <button
@@ -37,10 +34,7 @@ export default function SearchBoxWithCategories() {
           id="dropdown"
           className="z-10 hidden w-44 divide-y divide-gray-100 rounded-lg bg-white shadow dark:bg-gray-700"
         >
-          <ul
-            className="py-2 text-sm text-gray-700 dark:text-gray-200"
-            aria-labelledby="dropdown-button"
-          >
+          <ul className="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdown-button">
             <li>
               <button
                 type="button"

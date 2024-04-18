@@ -3,11 +3,7 @@ import DisplayEventFilters from '@/components/events/display-event-filters';
 import { groupEventsByCategory } from '@/lib/utils/dataManipulation';
 import { getClient } from '@/lib/graphql/apollo-client';
 import { Typography, Container, Grid, Box } from '@mui/material';
-import {
-  EventCategory,
-  GetAllEventCategoriesDocument,
-  GetAllEventsDocument,
-} from '@/lib/graphql/types/graphql';
+import { EventCategory, GetAllEventCategoriesDocument, GetAllEventsDocument } from '@/lib/graphql/types/graphql';
 import SearchInput from '@/components/search/search-box';
 
 export default async function Home() {
@@ -35,29 +31,17 @@ export default async function Home() {
             />
           </Box>
           <Box component="div">
-            <Typography
-              variant="h4"
-              fontWeight="bold"
-              align="center"
-              paddingBottom={2}
-            >
+            <Typography variant="h4" fontWeight="bold" align="center" paddingBottom={2}>
               Discover Your Next Adventure
             </Typography>
             <Typography className="p" align="center">
-              Whether
-              you&apos;re seeking cultural experiences, thrilling adventures, or
-              professional networking opportunities, our platform connects you
-              with the events that spark your curiosity and ignite your
+              Whether you&apos;re seeking cultural experiences, thrilling adventures, or professional networking
+              opportunities, our platform connects you with the events that spark your curiosity and ignite your
               imagination.
             </Typography>
           </Box>
         </Box>
-        <Grid
-          container
-          spacing={3}
-          justifyContent="space-between"
-          className="pt-5"
-        >
+        <Grid container spacing={3} justifyContent="space-between" className="pt-5">
           <Grid item md={3} id="event-filters" width={'100%'}>
             <DisplayEventFilters categoryList={allCategories} />
           </Grid>

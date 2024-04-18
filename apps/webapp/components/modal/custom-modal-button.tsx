@@ -10,9 +10,6 @@ const StyledButton = styled(Button)(({ theme }) => ({
   marginBottom: theme.spacing(2),
 }));
 
-export default function CustomModalButton({
-  children,
-  ...props
-}: CustomModalButtonProps) {
+export default function CustomModalButton({ children, ...props }: CustomModalButtonProps) {
   return <StyledButton {...props}>{children}</StyledButton>;
 }

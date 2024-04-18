@@ -28,24 +28,14 @@ const SignupModal = (props: SignupModalProps) => {
       modalContent={
         <CustomModalContent>
           <Logo />
-          <Typography
-            textAlign="center"
-            variant="h4"
-            fontWeight="bold"
-            sx={{ marginBottom: 2 }}
-          >
+          <Typography textAlign="center" variant="h4" fontWeight="bold" sx={{ marginBottom: 2 }}>
             Sign Up
           </Typography>
           <Typography variant="body1" textAlign="center" paddingBottom={3}>
             Already a member?
             <Link href={'/#'}>{' Log in here'}</Link>
           </Typography>
-          <StyledButton
-            variant="outlined"
-            color="primary"
-            startIcon={<FacebookIcon />}
-            size="large"
-          >
+          <StyledButton variant="outlined" color="primary" startIcon={<FacebookIcon />} size="large">
             Continue with Facebook
           </StyledButton>
           <StyledButton
@@ -57,12 +47,7 @@ const SignupModal = (props: SignupModalProps) => {
           >
             Continue with Google
           </StyledButton>
-          <StyledButton
-            variant="outlined"
-            color="primary"
-            startIcon={<EmailIcon />}
-            size="large"
-          >
+          <StyledButton variant="outlined" color="primary" startIcon={<EmailIcon />} size="large">
             Sign up with Email
           </StyledButton>
         </CustomModalContent>

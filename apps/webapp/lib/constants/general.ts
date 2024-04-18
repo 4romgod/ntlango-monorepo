@@ -1,9 +1,7 @@
 import * as HeroIcons from '@heroicons/react/24/solid';
 
 export type EventCategoryIconComponents = {
-  [key: string]: React.ForwardRefExoticComponent<
-    React.SVGProps<SVGSVGElement> & React.RefAttributes<SVGSVGElement>
-  >;
+  [key: string]: React.ForwardRefExoticComponent<React.SVGProps<SVGSVGElement> & React.RefAttributes<SVGSVGElement>>;
 };
 
 export const EVENT_CATEGORY_ICON_MAPPING: EventCategoryIconComponents = {
@@ -21,8 +19,5 @@ export const EVENT_CATEGORY_ICON_MAPPING: EventCategoryIconComponents = {
 };
 
 export const getEventCategoryIcon = (iconName: string) => {
-  return (
-    EVENT_CATEGORY_ICON_MAPPING[iconName] ??
-    EVENT_CATEGORY_ICON_MAPPING.UserGroupIcon
-  );
+  return EVENT_CATEGORY_ICON_MAPPING[iconName] ?? EVENT_CATEGORY_ICON_MAPPING.UserGroupIcon;
 };

@@ -2,11 +2,7 @@ import { EventCategory } from '@/lib/graphql/types/graphql';
 import { getEventCategoryIcon } from '@/lib/constants';
 import { Box, Typography } from '@mui/material';
 
-export default function EventCategoryComponent({
-  eventCategory,
-}: {
-  eventCategory: EventCategory;
-}) {
+export default function EventCategoryComponent({ eventCategory }: { eventCategory: EventCategory }) {
   const IconComponent = getEventCategoryIcon(eventCategory.iconName);
 
   return (

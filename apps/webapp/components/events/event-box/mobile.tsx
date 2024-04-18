@@ -7,12 +7,7 @@ import { CardActionArea } from '@mui/material';
 import { Event } from '@/lib/graphql/types/graphql';
 import { Box } from '@mui/material';
 import Link from 'next/link';
-import {
-  CalendarIcon,
-  CheckCircleIcon,
-  TicketIcon,
-  UserIcon,
-} from '@heroicons/react/24/outline';
+import { CalendarIcon, CheckCircleIcon, TicketIcon, UserIcon } from '@heroicons/react/24/outline';
 
 export default function EventBoxMobile({ event }: { event: Event }) {
   const {
@@ -23,20 +18,13 @@ export default function EventBoxMobile({ event }: { event: Event }) {
     media: { featuredImageUrl },
   } = event;
 
-  const organizersText =
-    organizers?.map((user) => user.username).join(' and ') ?? '';
+  const organizersText = organizers?.map((user) => user.username).join(' and ') ?? '';
 
   return (
     <Link href={`/ntlango`}>
       <Card>
         <CardActionArea>
-          <CardMedia
-            component="img"
-            height="40"
-            sx={{ height: 220 }}
-            image={featuredImageUrl}
-            alt="green iguana"
-          />
+          <CardMedia component="img" height="40" sx={{ height: 220 }} image={featuredImageUrl} alt="green iguana" />
           <CardContent>
             <Box component="div">
               <h4 className="text-xl font-bold">{title}</h4>
