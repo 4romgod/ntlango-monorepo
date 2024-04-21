@@ -1,17 +1,17 @@
 'use client';
 
-import * as React from 'react';
 import '@/components/global.css';
+import { ReactNode } from 'react';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter';
 import { useState, useMemo, Dispatch, SetStateAction } from 'react';
 import { createTheme } from '@mui/material/styles';
 import { Box, CssBaseline, PaletteMode, ThemeProvider } from '@mui/material';
-import Footer from '@/components/footer';
 import { getDesignTokens } from '@/components/theme/design-tokens';
+import Footer from '@/components/footer';
 import PrimaryNavBar from '@/components/navigation/navbar';
 
 export type CustomRootLayoutProps = {
-  children: React.ReactNode;
+  children: ReactNode;
   params?: {
     isAuthN?: boolean;
     themeMode?: PaletteMode;

@@ -11,7 +11,6 @@ import MenuIcon from '@mui/icons-material/Menu';
 import ClearIcon from '@mui/icons-material/Clear';
 import HomeIcon from '@mui/icons-material/Home';
 import LoginIcon from '@mui/icons-material/Login';
-import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import { Button, IconButton } from '@mui/material';
 
 export default function TemporaryDrawer() {
@@ -25,7 +24,7 @@ export default function TemporaryDrawer() {
     <Box sx={{ width: 250 }} role="presentation" onClick={toggleDrawer(false)}>
       <ListItem>
         <ListItemButton>
-          <Button sx={{ textAlign: 'center' }}>
+          <Button sx={{ alignItems: 'center' }}>
             <ClearIcon fontSize="large" />
           </Button>
         </ListItemButton>
@@ -40,8 +39,6 @@ export default function TemporaryDrawer() {
           </ListItemButton>
         </ListItem>
 
-        <Divider />
-
         <ListItem disablePadding>
           <ListItemButton>
             <ListItemIcon>
@@ -51,21 +48,12 @@ export default function TemporaryDrawer() {
           </ListItemButton>
         </ListItem>
 
-        <ListItem disablePadding>
-          <ListItemButton>
-            <ListItemIcon>
-              <PersonAddAlt1Icon />
-            </ListItemIcon>
-            <ListItemText primary={'Sign up'} />
-          </ListItemButton>
-        </ListItem>
-
         <Divider />
 
         <ListItem disablePadding>
           <ListItemButton>
-            <Button variant="contained" color="secondary">
-              <ListItemText primary={'Promote an event'} />
+            <Button variant="contained" color="secondary" fullWidth>
+              <ListItemText primary={'Sign up'} />
             </Button>
           </ListItemButton>
         </ListItem>

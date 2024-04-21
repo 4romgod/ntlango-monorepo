@@ -11,13 +11,13 @@ import Avatar from '@mui/material/Avatar';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import SearchInput from '@/components/search/search-box';
 import NotificationsMenu from './notifications-menu';
-import ProfilesMenu from './profiles-menu';
-import TemporaryDrawer from './temporary-drawer';
+import ProfilesMenu from '@/components/navigation/profiles-menu';
+import TemporaryDrawer from '@/components/navigation/temporary-drawer';
 import ToggleThemeMode, { ToggleThemeModeProps } from '@/components/theme/toggle-theme-mode';
 import { Button } from '@mui/material';
-import SignupModal from '../signup/signup-modal';
-import Logo from '../logo';
-import LoginModal from '../login/login-modal';
+import SignupModal from '@/components/signup/signup-modal';
+import Logo from '@/components/logo';
+import LoginModal from '@/components/login/login-modal';
 
 export type PrimaryNavBarProps = { isAuthN: boolean } & ToggleThemeModeProps;
 /**
@@ -54,7 +54,7 @@ export default function PrimaryNavBar({ setThemeMode, themeMode, isAuthN }: Prim
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="fixed">
         <Toolbar disableGutters>
-          <Box component="div">
+          <Box component="div" sx={{ display: { xs: isAuthN ? 'none' : 'flex', md: 'none' } }}>
             <TemporaryDrawer />
           </Box>
 
@@ -66,10 +66,10 @@ export default function PrimaryNavBar({ setThemeMode, themeMode, isAuthN }: Prim
 
           <ToggleThemeMode setThemeMode={setThemeMode} themeMode={themeMode} />
 
-          <Box component="div" display="flex" sx={{ display: { xs: isAuthN ? 'flex' : 'none' } }}>
+          <Box component="div" sx={{ display: { xs: 'none', sm: isAuthN ? 'none' : 'flex' } }}>
             <LoginModal
               triggerButton={
-                <Button variant="outlined" color="secondary" sx={{ marginRight: '1' }}>
+                <Button variant="outlined" color="secondary">
                   Log In
                 </Button>
               }
