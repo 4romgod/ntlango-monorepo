@@ -1,7 +1,6 @@
 import { Button, Typography, styled } from '@mui/material';
 import CustomModal from '../modal/custom-modal';
 import CustomModalContent from '../modal/custom-modal-content';
-import CustomModalButton from '../modal/custom-modal-button';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import GoogleIcon from '@mui/icons-material/Google';
 import EmailIcon from '@mui/icons-material/Email';

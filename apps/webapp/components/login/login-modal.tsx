@@ -1,21 +1,15 @@
 'use client';
 
 import {
-  Avatar,
   Box,
-  Button,
   Checkbox,
   Container,
   Divider,
-  FormControl,
   FormControlLabel,
   Grid,
-  IconButton,
-  InputAdornment,
-  InputLabel,
-  OutlinedInput,
   TextField,
   Typography,
+  styled,
 } from '@mui/material';
 import CustomModal from '../modal/custom-modal';
 import CustomModalContent from '../modal/custom-modal-content';
@@ -23,14 +17,15 @@ import CustomModalButton from '../modal/custom-modal-button';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import GoogleIcon from '@mui/icons-material/Google';
 import EmailIcon from '@mui/icons-material/Email';
-import { ReactElement, useState } from 'react';
+import { ReactElement } from 'react';
 import Logo from '../logo';
-import { Copyright, Visibility, VisibilityOff } from '@mui/icons-material';
 import Link from 'next/link';
 
 export type LoginModalProps = {
   triggerButton: ReactElement;
 };
+
+const StyledTextField = styled(TextField)(({ theme }) => ({}));
 
 const LoginModal = (props: LoginModalProps) => {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -65,7 +60,7 @@ const LoginModal = (props: LoginModalProps) => {
               }}
             >
               <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-                <TextField
+                <StyledTextField
                   margin="normal"
                   required
                   fullWidth
@@ -75,7 +70,7 @@ const LoginModal = (props: LoginModalProps) => {
                   autoComplete="email"
                   autoFocus
                 />
-                <TextField
+                <StyledTextField
                   margin="normal"
                   required
                   fullWidth
@@ -84,6 +79,7 @@ const LoginModal = (props: LoginModalProps) => {
                   type="password"
                   id="password"
                   autoComplete="current-password"
+                  color="secondary"
                 />
                 <FormControlLabel control={<Checkbox value="remember" color="primary" />} label="Remember me" />
                 <Grid container paddingTop={3}>

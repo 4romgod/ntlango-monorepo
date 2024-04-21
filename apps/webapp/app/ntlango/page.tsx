@@ -23,6 +23,7 @@ export default async function Home() {
         <Box component="div">
           <Box component="div">
             <SearchInput
+              itemList={events.readEvents.map((item) => item.title)}
               sx={{
                 display: { xs: 'flex', md: 'none' },
                 marginBottom: 5,

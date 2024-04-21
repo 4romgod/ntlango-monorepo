@@ -7,8 +7,8 @@ type GroupedEventsByCategoryProps = {
 export const groupEventsByCategory = (events: GetAllEventsQuery): GroupedEventsByCategoryProps => {
   const groupedEvents: GroupedEventsByCategoryProps = {};
 
-  events.readEvents?.forEach((event) => {
-    event?.eventCategory.forEach((category: EventCategory) => {
+  events.readEvents.forEach((event) => {
+    event.eventCategory.forEach((category: EventCategory) => {
       if (!groupedEvents[category.name]) {
         groupedEvents[category.name] = [];
       }
