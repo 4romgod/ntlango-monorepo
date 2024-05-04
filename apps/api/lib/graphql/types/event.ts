@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import {InputType, Field, ObjectType, ID, Int} from 'type-graphql';
+import {InputType, Field, ObjectType, ID, Int, registerEnumType} from 'type-graphql';
 import GraphQLJSON from 'graphql-type-json';
 import {UserType} from './user';
 import {EventCategoryType} from './eventCategory';
@@ -16,6 +16,14 @@ export enum EventStatus {
     ONGOING = 'Ongoing',
     UPCOMING = 'Upcoming',
 }
+
+registerEnumType(EventPrivacySetting, {
+    name: 'EventPrivacySetting',
+});
+
+registerEnumType(EventStatus, {
+    name: 'EventStatus',
+});
 
 @ObjectType()
 class Media {

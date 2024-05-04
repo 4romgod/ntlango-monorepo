@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import {ObjectType, InputType, Field} from 'type-graphql';
+import {ObjectType, InputType, Field, registerEnumType} from 'type-graphql';
 
 export enum Gender {
     MALE = 'Male',
@@ -12,6 +12,14 @@ export enum UserRole {
     USER = 'User',
     HOST = 'Host',
 }
+
+registerEnumType(Gender, {
+    name: 'Gender',
+});
+
+registerEnumType(UserRole, {
+    name: 'UserRole',
+});
 
 @ObjectType()
 export class UserType {
