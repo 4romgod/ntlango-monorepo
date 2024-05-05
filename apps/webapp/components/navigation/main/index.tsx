@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { Dispatch, SetStateAction, useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -10,20 +10,26 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import Avatar from '@mui/material/Avatar';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import SearchInput from '@/components/search/search-box';
-import NotificationsMenu from './notifications-menu';
-import ProfilesMenu from '@/components/navigation/profiles-menu';
-import TemporaryDrawer from '@/components/navigation/temporary-drawer';
+import NotificationsMenu from '@/components/navigation/main/navigation-notifications-items';
+import ProfilesMenu from '@/components/navigation/main/navigation-profiles-items';
+import TemporaryDrawer from '@/components/navigation/main/navigation-temporary-drawer';
 import ToggleThemeMode, { ToggleThemeModeProps } from '@/components/theme/toggle-theme-mode';
 import { Button } from '@mui/material';
 import SignupModal from '@/components/signup/signup-modal';
 import Logo from '@/components/logo';
 import LoginModal from '@/components/login/login-modal';
+import Link from 'next/link';
 
-export type PrimaryNavBarProps = { isAuthN: boolean } & ToggleThemeModeProps;
+export type ToggleAuthNProps = {
+  isAuthN: boolean;
+  setIsAuthN: Dispatch<SetStateAction<boolean>>;
+};
+
+export type PrimaryNavBarProps = ToggleAuthNProps & ToggleThemeModeProps;
 /**
  * Inspired by: https://arshadalisoomro.hashnode.dev/creating-a-navigation-bar-with-mui-appbar-component-in-nextjs
  */
-export default function PrimaryNavBar({ setThemeMode, themeMode, isAuthN }: PrimaryNavBarProps) {
+export default function MainNavigation({ setThemeMode, themeMode, isAuthN, setIsAuthN }: PrimaryNavBarProps) {
   const [profilesMenuAnchorEl, setProfilesMenuAnchorEl] = useState<null | HTMLElement>(null);
   const [notificationsMenuAnchorEl, setNotificationsMenuAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -37,6 +43,7 @@ export default function PrimaryNavBar({ setThemeMode, themeMode, isAuthN }: Prim
   const handleProfilesMenuClose = () => {
     setProfilesMenuAnchorEl(null);
     handleNotificationsMenuClose();
+    setIsAuthN(false);
   };
 
   const handleNotificationsMenuClose = () => {
@@ -73,6 +80,7 @@ export default function PrimaryNavBar({ setThemeMode, themeMode, isAuthN }: Prim
                   Log In
                 </Button>
               }
+              setIsAuthN={setIsAuthN}
             />
 
             <SignupModal
@@ -87,10 +95,14 @@ export default function PrimaryNavBar({ setThemeMode, themeMode, isAuthN }: Prim
           <Box component="div" display="flex" sx={{ display: { xs: isAuthN ? 'flex' : 'none' } }}>
             <Box sx={{ ml: 2, display: { xs: 'none', md: 'flex' } }}>
               <IconButton size="large" aria-label="mails" color="primary">
-                <MailIcon />
+                <Link href={'/profile/messages'}>
+                  <MailIcon />
+                </Link>
               </IconButton>
               <IconButton size="large" aria-label="notifications" color="primary">
-                <NotificationsIcon />
+                <Link href={'/profile/notifications'}>
+                  <NotificationsIcon />
+                </Link>
               </IconButton>
             </Box>
 

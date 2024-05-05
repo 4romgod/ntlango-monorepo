@@ -1,18 +1,23 @@
-import Link from 'next/link';
-import NavLinks from '@/components/dashboard/nav-links';
-import NtlangoLogo from '@/components/ntlango-logo';
-import { PowerIcon } from '@heroicons/react/24/outline';
+'use server';
 
-export default function SideNav() {
+import NavLinks, { NavLinksProps } from '@/components/navigation/profile/navigation-links';
+import { PowerIcon } from '@heroicons/react/24/outline';
+import { Typography } from '@mui/material';
+
+export default async function ProfileSideNav({ links }: { links: NavLinksProps }) {
+  const { navTitle } = links;
+
   return (
     <div className="flex h-full flex-col px-3 py-4 md:px-2">
-      <Link className="mb-2 flex h-20 items-end justify-start rounded-md bg-blue-600 p-4 md:h-40" href="/">
+      <div className="mb-2 flex h-20 items-end justify-start rounded-md bg-blue-600 p-4">
         <div className="w-32 text-white md:w-40">
-          <NtlangoLogo />
+          <Typography variant="h4" fontWeight="bold" align="center" paddingBottom={2}>
+            {navTitle}
+          </Typography>
         </div>
-      </Link>
+      </div>
       <div className="flex grow flex-row justify-between space-x-2 md:flex-col md:space-x-0 md:space-y-2">
-        <NavLinks />
+        <NavLinks links={links} />
         <div className="hidden h-auto w-full grow rounded-md bg-gray-50 md:block"></div>
         <form>
           <button className="flex h-[48px] w-full grow items-center justify-center gap-2 rounded-md bg-gray-50 p-3 text-sm font-medium hover:bg-sky-100 hover:text-blue-600 md:flex-none md:justify-start md:p-2 md:px-3">

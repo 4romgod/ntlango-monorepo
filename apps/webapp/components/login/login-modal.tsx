@@ -17,12 +17,13 @@ import CustomModalButton from '../modal/custom-modal-button';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import GoogleIcon from '@mui/icons-material/Google';
 import EmailIcon from '@mui/icons-material/Email';
-import { ReactElement } from 'react';
+import { Dispatch, ReactElement, SetStateAction } from 'react';
 import Logo from '../logo';
 import Link from 'next/link';
 
 export type LoginModalProps = {
   triggerButton: ReactElement;
+  setIsAuthN: Dispatch<SetStateAction<boolean>>;
 };
 
 const StyledTextField = styled(TextField)(({ theme }) => ({}));
@@ -91,7 +92,13 @@ const LoginModal = (props: LoginModalProps) => {
             </Box>
           </Container>
 
-          <CustomModalButton variant="contained" color="primary" size="large" sx={{ paddingX: 10 }}>
+          <CustomModalButton
+            variant="contained"
+            color="primary"
+            size="large"
+            sx={{ paddingX: 10 }}
+            onClick={() => props.setIsAuthN(true)}
+          >
             Log in
           </CustomModalButton>
 

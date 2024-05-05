@@ -8,7 +8,7 @@ import { createTheme } from '@mui/material/styles';
 import { Box, CssBaseline, PaletteMode, ThemeProvider } from '@mui/material';
 import { getDesignTokens } from '@/components/theme/design-tokens';
 import Footer from '@/components/footer';
-import PrimaryNavBar from '@/components/navigation/navbar';
+import MainNavigation from '@/components/navigation/main';
 
 export type CustomRootLayoutProps = {
   children: ReactNode;
@@ -23,7 +23,7 @@ export type CustomRootLayoutProps = {
 export default function RootLayout({ children }: CustomRootLayoutProps) {
   const [themeMode, setThemeMode] = useState<PaletteMode>('light');
   const theme = useMemo(() => createTheme(getDesignTokens(themeMode)), [themeMode]);
-  const isAuthN = true;
+  const [isAuthN, setIsAuthN] = useState<boolean>(false);
 
   return (
     <html lang="en">
@@ -31,7 +31,12 @@ export default function RootLayout({ children }: CustomRootLayoutProps) {
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <body>
-            <PrimaryNavBar themeMode={themeMode} setThemeMode={setThemeMode} isAuthN={isAuthN} />
+            <MainNavigation
+              themeMode={themeMode}
+              setThemeMode={setThemeMode}
+              isAuthN={isAuthN}
+              setIsAuthN={setIsAuthN}
+            />
             <Box component="div" marginTop={15}>
               {children}
             </Box>
