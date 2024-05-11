@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "build": "npm run codegen && next build",
+    "build": "npm run codegen && npm run format && next build",
     "codegen": "graphql-codegen",
     "codegen:watch": "graphql-codegen --watch",
     "dev": "npm run codegen && next dev",

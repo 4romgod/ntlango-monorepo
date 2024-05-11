@@ -1,31 +1,68 @@
-'use server';
+'use client';
 
-import NavLinks, { NavLinksProps } from '@/components/navigation/profile/navigation-links';
-import { PowerIcon } from '@heroicons/react/24/outline';
-import { Typography } from '@mui/material';
+import { Box, Paper, Tab, Tabs, Typography } from '@mui/material';
+import { NavLinksProps } from '@/components/navigation/profile/navigation-links';
+import { useMediaQuery } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+import { SyntheticEvent, useState } from 'react';
 
-export default async function ProfileSideNav({ links }: { links: NavLinksProps }) {
-  const { navTitle } = links;
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
+
+function TabPanel(props: TabPanelProps) {
+  const { children, value, index, ...other } = props;
 
   return (
-    <div className="flex h-full flex-col px-3 py-4 md:px-2">
-      <div className="mb-2 flex h-20 items-end justify-start rounded-md bg-blue-600 p-4">
-        <div className="w-32 text-white md:w-40">
-          <Typography variant="h4" fontWeight="bold" align="center" paddingBottom={2}>
-            {navTitle}
-          </Typography>
-        </div>
-      </div>
-      <div className="flex grow flex-row justify-between space-x-2 md:flex-col md:space-x-0 md:space-y-2">
-        <NavLinks links={links} />
-        <div className="hidden h-auto w-full grow rounded-md bg-gray-50 md:block"></div>
-        <form>
-          <button className="flex h-[48px] w-full grow items-center justify-center gap-2 rounded-md bg-gray-50 p-3 text-sm font-medium hover:bg-sky-100 hover:text-blue-600 md:flex-none md:justify-start md:p-2 md:px-3">
-            <PowerIcon className="w-6" />
-            <div className="hidden md:block">Sign Out</div>
-          </button>
-        </form>
-      </div>
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`vertical-tabpanel-${index}`}
+      aria-labelledby={`vertical-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box sx={{ p: 3 }}>
+          <Typography>{children}</Typography>
+        </Box>
+      )}
     </div>
+  );
+}
+
+export default function ProfileSideNav({ links }: { links: NavLinksProps }) {
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
+  const [currentTabIndex, setCurrentTabIndex] = useState(0);
+  const { navTitle, navLinks } = links;
+
+  const handleTabChange = (event: SyntheticEvent<Element, Event>, tabIndex: number) => {
+    setCurrentTabIndex(tabIndex);
+  };
+
+  return (
+    <Box component="div">
+      <Paper elevation={2} sx={{ borderRadius: 2, backgroundColor: '#2196f3', padding: 2 }}>
+        <Typography variant="h4" fontWeight="bold" align="center">
+          {navTitle}
+        </Typography>
+      </Paper>
+      <Tabs
+        value={currentTabIndex}
+        onChange={handleTabChange}
+        textColor="secondary"
+        indicatorColor="secondary"
+        variant={isSmallScreen ? 'scrollable' : 'standard'}
+        scrollButtons={isSmallScreen ? true : false}
+        allowScrollButtonsMobile={isSmallScreen ? true : false}
+        orientation={isSmallScreen ? 'horizontal' : 'vertical'}
+      >
+        {navLinks.map(({ name, href }) => {
+          return <Tab label={name} key={name} />;
+        })}
+      </Tabs>
+    </Box>
   );
 }
