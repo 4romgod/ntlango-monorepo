@@ -19,6 +19,7 @@ import SignupModal from '@/components/signup/signup-modal';
 import Logo from '@/components/logo';
 import LoginModal from '@/components/login/login-modal';
 import Link from 'next/link';
+import { useCustomAppContext } from '@/components/app-context';
 
 export type ToggleAuthNProps = {
   isAuthN: boolean;
@@ -29,7 +30,9 @@ export type PrimaryNavBarProps = ToggleAuthNProps & ToggleThemeModeProps;
 /**
  * Inspired by: https://arshadalisoomro.hashnode.dev/creating-a-navigation-bar-with-mui-appbar-component-in-nextjs
  */
-export default function MainNavigation({ setThemeMode, themeMode, isAuthN, setIsAuthN }: PrimaryNavBarProps) {
+export default function MainNavigation() {
+  const { isAuthN, setIsAuthN, themeMode, setThemeMode } = useCustomAppContext();
+
   const [profilesMenuAnchorEl, setProfilesMenuAnchorEl] = useState<null | HTMLElement>(null);
   const [notificationsMenuAnchorEl, setNotificationsMenuAnchorEl] = useState<null | HTMLElement>(null);
 

@@ -31,7 +31,7 @@ export default async function Home() {
   const eventsByCategory = groupEventsByCategory(events);
 
   return (
-    <>
+    <main>
       <Container>
         <Box component="div">
           <Box component="div">
@@ -70,6 +70,6 @@ export default async function Home() {
           </Grid>
         </Grid>
       </Container>
-    </>
+    </main>
   );
 }

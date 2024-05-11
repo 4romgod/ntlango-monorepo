@@ -3,36 +3,35 @@
 import '@/components/global.css';
 import { ReactNode } from 'react';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter';
-import { useState, useMemo } from 'react';
-import { createTheme } from '@mui/material/styles';
-import { Box, CssBaseline, PaletteMode, ThemeProvider } from '@mui/material';
-import { getDesignTokens } from '@/components/theme/design-tokens';
-import Footer from '@/components/footer';
+import { Box, CssBaseline, ThemeProvider } from '@mui/material';
+import { useCustomAppContext, CustomAppContextProvider } from '@/components/app-context';
 import MainNavigation from '@/components/navigation/main';
+import Footer from '@/components/footer';
+
+function CustomThemeProvider({ children }: { children: ReactNode }) {
+  const { appTheme } = useCustomAppContext();
+
+  return (
+    <ThemeProvider theme={appTheme!}>
+      <CssBaseline />
+      <body>
+        <MainNavigation />
+        <Box component="div" marginTop={15} style={{ minHeight: '100vh' }}>
+          {children}
+        </Box>
+        <Footer />
+      </body>
+    </ThemeProvider>
+  );
+}
 
 export default function RootLayout({ children }: { children: ReactNode }) {
-  const [themeMode, setThemeMode] = useState<PaletteMode>('light');
-  const theme = useMemo(() => createTheme(getDesignTokens(themeMode)), [themeMode]);
-  const [isAuthN, setIsAuthN] = useState<boolean>(false);
-
   return (
     <html lang="en">
       <AppRouterCacheProvider>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <body>
-            <MainNavigation
-              themeMode={themeMode}
-              setThemeMode={setThemeMode}
-              isAuthN={isAuthN}
-              setIsAuthN={setIsAuthN}
-            />
-            <Box component="div" marginTop={15}>
-              {children}
-            </Box>
-            <Footer setThemeMode={setThemeMode} themeMode={themeMode} />
-          </body>
-        </ThemeProvider>
+        <CustomAppContextProvider>
+          <CustomThemeProvider>{children}</CustomThemeProvider>
+        </CustomAppContextProvider>
       </AppRouterCacheProvider>
     </html>
   );
