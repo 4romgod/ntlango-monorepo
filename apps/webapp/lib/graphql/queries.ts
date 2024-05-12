@@ -121,6 +121,26 @@ const GetEventBySlugDocument = graphql(`
 const GetAllUsersDocument = graphql(`
   query GetAllUsers {
     readUsers {
+      id
+      email
+      username
+      address
+      birthdate
+      family_name
+      gender
+      given_name
+      encrypted_password
+      phone_number
+      profile_picture
+      userType
+    }
+  }
+`);
+
+const GetUserByUsernameDocument = graphql(`
+  query GetUserByUsername($username: String!) {
+    readUserByUsername(username: $username) {
+      id
       email
       username
       address

@@ -1,8 +1,8 @@
+import Link from 'next/link';
 import { GetEventBySlugDocument } from '@/lib/graphql/types/graphql';
 import { getClient } from '@/lib/graphql/apollo-client';
 import { Box, Typography, Grid, Avatar, CardMedia, Container, Chip, Stack } from '@mui/material';
 import { getEventCategoryIcon } from '@/lib/constants';
-import Link from 'next/link';
 
 export default async function Page({ params }: { params: { slug: string } }) {
   const { data: eventRetrieved } = await getClient().query({
@@ -76,14 +76,18 @@ export default async function Page({ params }: { params: { slug: string } }) {
           <Grid container spacing={2}>
             {event.organizers.map((organizer) => (
               <Grid item key={organizer.id}>
-                {organizer.profile_picture ? (
-                  <Avatar src={organizer.profile_picture} alt={organizer.username} />
-                ) : (
+                <Link href={`/users/${organizer.username}`} passHref>
                   <Chip
-                    avatar={<Avatar>{organizer.username.charAt(0).toLocaleUpperCase()}</Avatar>}
+                    avatar={
+                      organizer.profile_picture ? (
+                        <Avatar src={organizer.profile_picture} alt={organizer.username} />
+                      ) : (
+                        <Avatar>{organizer.username.charAt(0).toLocaleUpperCase()}</Avatar>
+                      )
+                    }
                     label={organizer.username}
                   />
-                )}
+                </Link>
               </Grid>
             ))}
           </Grid>
@@ -96,11 +100,18 @@ export default async function Page({ params }: { params: { slug: string } }) {
           <Grid container spacing={2}>
             {event.rSVPs.map((rsvp) => (
               <Grid item key={rsvp.id}>
-                {rsvp.profile_picture ? (
-                  <Avatar src={rsvp.profile_picture} alt={rsvp.username} />
-                ) : (
-                  <Chip avatar={<Avatar>{rsvp.username.charAt(0).toLocaleUpperCase()}</Avatar>} label={rsvp.username} />
-                )}
+                <Link href={`/users/${rsvp.username}`} passHref>
+                  <Chip
+                    avatar={
+                      rsvp.profile_picture ? (
+                        <Avatar src={rsvp.profile_picture} alt={rsvp.username} />
+                      ) : (
+                        <Avatar>{rsvp.username.charAt(0).toLocaleUpperCase()}</Avatar>
+                      )
+                    }
+                    label={rsvp.username}
+                  />
+                </Link>
               </Grid>
             ))}
           </Grid>
