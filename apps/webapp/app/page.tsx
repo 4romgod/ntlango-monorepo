@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function Home() {
+export default async function HomePage() {
   const { data: events } = await getClient().query({
     query: GetAllEventsDocument,
   });

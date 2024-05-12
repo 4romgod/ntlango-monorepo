@@ -1,8 +1,8 @@
 import { graphql } from '@/lib/graphql/types';
 
 const GetAllEventsDocument = graphql(`
-  query GetAllEvents {
-    readEvents {
+  query GetAllEvents($queryParams: EventQueryParams) {
+    readEvents(queryParams: $queryParams) {
       id
       slug
       title
