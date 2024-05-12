@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { useState } from 'react';
 import {
   Box,
@@ -13,12 +14,11 @@ import {
 } from '@mui/material';
 import { Clear, Home, Login, Menu } from '@mui/icons-material';
 import { useCustomAppContext } from '@/components/app-context';
-import LoginModal from '@/components/login/login-modal';
-import SignupModal from '@/components/signup/signup-modal';
-import Link from 'next/link';
+import LoginModal from '@/components/modal/auth/login-modal';
+import SignupModal from '@/components/modal/auth/signup-modal';
 
 export default function TemporaryDrawer() {
-  const { isAuthN, setIsAuthN, themeMode, setThemeMode } = useCustomAppContext();
+  const { setIsAuthN } = useCustomAppContext();
   const [open, setOpen] = useState(false);
 
   const toggleDrawer = (newOpen: boolean) => () => {

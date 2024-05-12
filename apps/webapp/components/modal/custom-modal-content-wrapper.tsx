@@ -1,6 +1,6 @@
+import { ReactNode } from 'react';
 import { styled } from '@mui/system';
 import { Box } from '@mui/material';
-import { ReactNode } from 'react';
 
 const CustomModalContentWrapper = ({ children }: { children: ReactNode }) => {
   const CustomModalContent = styled(Box)(({ theme }) => ({

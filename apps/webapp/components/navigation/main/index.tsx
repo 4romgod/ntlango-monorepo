@@ -1,24 +1,21 @@
 'use client';
 
+import Link from 'next/link';
 import React, { Dispatch, SetStateAction, useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
-import MailIcon from '@mui/icons-material/Mail';
-import NotificationsIcon from '@mui/icons-material/Notifications';
+import { Mail, More, Notifications } from '@mui/icons-material';
 import Avatar from '@mui/material/Avatar';
-import MoreIcon from '@mui/icons-material/MoreVert';
-import SearchInput from '@/components/search/search-box';
 import NotificationsMenu from '@/components/navigation/main/navigation-notifications-items';
 import ProfilesMenu from '@/components/navigation/main/navigation-profiles-items';
 import TemporaryDrawer from '@/components/navigation/main/navigation-temporary-drawer';
 import ToggleThemeMode, { ToggleThemeModeProps } from '@/components/theme/toggle-theme-mode';
 import { Button } from '@mui/material';
 import Logo from '@/components/logo';
-import SignupModal from '@/components/signup/signup-modal';
-import LoginModal from '@/components/login/login-modal';
-import Link from 'next/link';
+import SignupModal from '@/components/modal/auth/signup-modal';
+import LoginModal from '@/components/modal/auth/login-modal';
 import { useCustomAppContext } from '@/components/app-context';
 
 export type ToggleAuthNProps = {
@@ -71,8 +68,6 @@ export default function MainNavigation() {
 
           <Box sx={{ flexGrow: 1 }} />
 
-          {/* <SearchInput sx={{ display: { xs: 'none', md: 'flex' } }} /> */}
-
           <ToggleThemeMode setThemeMode={setThemeMode} themeMode={themeMode} />
 
           <Box component="div" sx={{ display: { xs: 'none', sm: isAuthN ? 'none' : 'flex' } }}>
@@ -98,12 +93,12 @@ export default function MainNavigation() {
             <Box sx={{ ml: 2, display: { xs: 'none', md: 'flex' } }}>
               <IconButton size="large" aria-label="mails" color="primary">
                 <Link href={'/messages'}>
-                  <MailIcon />
+                  <Mail />
                 </Link>
               </IconButton>
               <IconButton size="large" aria-label="notifications" color="primary">
                 <Link href={'/notifications'}>
-                  <NotificationsIcon />
+                  <Notifications />
                 </Link>
               </IconButton>
             </Box>
@@ -132,7 +127,7 @@ export default function MainNavigation() {
                 onClick={handleNotificationsMenuOpen}
                 color="primary"
               >
-                <MoreIcon />
+                <More />
               </IconButton>
             </Box>
           </Box>

@@ -1,11 +1,11 @@
 'use client';
 
+import Link from 'next/link';
 import IconButton from '@mui/material/IconButton';
 import MailIcon from '@mui/icons-material/Mail';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import Link from 'next/link';
 
 type NotificationsMenuProps = {
   NotificationsMenuAnchorEl: HTMLElement | null;

@@ -1,10 +1,10 @@
 'use client';
 
+import Link from 'next/link';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { Divider, ListItemIcon } from '@mui/material';
 import { AccountCircle, Logout, Settings } from '@mui/icons-material';
-import Link from 'next/link';
 import { useCustomAppContext } from '@/components/app-context';
 
 type ProfilesMenuProps = {

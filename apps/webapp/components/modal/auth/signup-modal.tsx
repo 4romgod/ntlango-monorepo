@@ -1,14 +1,15 @@
 'use client';
 
-import { Button, Typography, styled } from '@mui/material';
-import CustomModal from '../modal/custom-modal';
-import CustomModalContent from '@/components/modal/custom-modal-content-wrapper';
-import FacebookIcon from '@mui/icons-material/Facebook';
-import GoogleIcon from '@mui/icons-material/Google';
-import EmailIcon from '@mui/icons-material/Email';
-import { ReactElement, useState } from 'react';
-import Logo from '../logo';
 import Link from 'next/link';
+import Logo from '@/components/logo';
+import { ReactElement, useState } from 'react';
+import { Button, Typography, styled } from '@mui/material';
+import CustomModal from '@/components/modal/custom-modal';
+import CustomModalContent from '@/components/modal/custom-modal-content-wrapper';
+import { Facebook, Google, Email } from '@mui/icons-material';
+import SignupWithEmailModal from '@/components/modal/auth/signup-modal-form-modal';
+import { useCustomAppContext } from '@/components/app-context';
+import CustomModalCloseButton from '@/components/modal/custom-modal-close-button';
 
 export type SignupModalProps = {
   triggerButton: ReactElement;
@@ -22,17 +23,22 @@ const StyledButton = styled(Button)(({ theme }) => ({
   borderColor: theme.palette.mode == 'dark' ? theme.palette.background.default : theme.palette.text.secondary,
 }));
 
-const SignupModal = (props: SignupModalProps) => {
+const SignupModal = ({ triggerButton }: SignupModalProps) => {
+  const { setIsAuthN } = useCustomAppContext();
   const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   return (
     <CustomModal
-      triggerButton={props.triggerButton}
+      triggerButton={triggerButton}
       isOpen={open}
-      handleClose={() => setOpen(false)}
-      handleOpen={() => setOpen(true)}
+      handleClose={handleClose}
+      handleOpen={handleOpen}
       modalContent={
         <CustomModalContent>
+          <CustomModalCloseButton handleClose={handleClose} />
+
           <Logo />
           <Typography textAlign="center" variant="h4" fontWeight="bold" sx={{ marginBottom: 2 }}>
             Sign Up
@@ -41,21 +47,22 @@ const SignupModal = (props: SignupModalProps) => {
             Already a member?
             <Link href={'/#'}>{' Log in here'}</Link>
           </Typography>
-          <StyledButton variant="outlined" color="primary" startIcon={<FacebookIcon />} size="large">
+          <StyledButton variant="outlined" color="primary" startIcon={<Facebook />} size="large">
             Continue with Facebook
           </StyledButton>
-          <StyledButton
-            variant="outlined"
-            color="primary"
-            startIcon={<GoogleIcon />}
-            size="large"
-            sx={{ paddingX: 10 }}
-          >
+
+          <StyledButton variant="outlined" color="secondary" startIcon={<Google />} size="large" sx={{ paddingX: 10 }}>
             Continue with Google
           </StyledButton>
-          <StyledButton variant="outlined" color="primary" startIcon={<EmailIcon />} size="large">
-            Sign up with Email
-          </StyledButton>
+
+          <SignupWithEmailModal
+            triggerButton={
+              <StyledButton variant="outlined" color="secondary" startIcon={<Email />} size="large">
+                Sign up with Email
+              </StyledButton>
+            }
+            setIsAuthN={setIsAuthN}
+          />
         </CustomModalContent>
       }
     />

@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+import Logo from '@/components/logo';
 import { Box, Checkbox, Container, Divider, FormControlLabel, Grid, TextField, Typography } from '@mui/material';
 import CustomModal from '@/components/modal/custom-modal';
 import CustomModalContentWrapper from '@/components/modal/custom-modal-content-wrapper';
@@ -8,8 +10,8 @@ import FacebookIcon from '@mui/icons-material/Facebook';
 import GoogleIcon from '@mui/icons-material/Google';
 import EmailIcon from '@mui/icons-material/Email';
 import { Dispatch, ReactElement, SetStateAction, useState } from 'react';
-import Logo from '@/components/logo';
-import Link from 'next/link';
+import CustomModalCloseButton from '@/components/modal/custom-modal-close-button';
+import SignupWithEmailModal from '@/components/modal/auth/signup-modal-form-modal';
 
 export type LoginModalProps = {
   triggerButton: ReactElement;
@@ -18,6 +20,8 @@ export type LoginModalProps = {
 
 const LoginModal = ({ triggerButton, setIsAuthN }: LoginModalProps) => {
   const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -32,14 +36,18 @@ const LoginModal = ({ triggerButton, setIsAuthN }: LoginModalProps) => {
     <CustomModal
       triggerButton={triggerButton}
       isOpen={open}
-      handleClose={() => setOpen(false)}
-      handleOpen={() => setOpen(true)}
+      handleClose={handleClose}
+      handleOpen={handleOpen}
       modalContent={
         <CustomModalContentWrapper>
+          <CustomModalCloseButton handleClose={handleClose} />
+
           <Logo />
+
           <Typography textAlign="center" variant="h4" fontWeight="bold">
             Log in
           </Typography>
+
           <Link href="#" style={{ width: '100%', textAlign: 'center' }}>
             {"Don't have an account? Sign Up"}
           </Link>
@@ -63,6 +71,7 @@ const LoginModal = ({ triggerButton, setIsAuthN }: LoginModalProps) => {
                   name="email"
                   autoComplete="email"
                   autoFocus
+                  color="secondary"
                 />
                 <TextField
                   margin="normal"
@@ -75,7 +84,7 @@ const LoginModal = ({ triggerButton, setIsAuthN }: LoginModalProps) => {
                   autoComplete="current-password"
                   color="secondary"
                 />
-                <FormControlLabel control={<Checkbox value="remember" color="primary" />} label="Remember me" />
+                <FormControlLabel control={<Checkbox value="remember" color="secondary" />} label="Remember me" />
                 <Grid container paddingTop={3}>
                   <Grid item xs>
                     <Link href="#">Forgot password?</Link>
@@ -87,7 +96,7 @@ const LoginModal = ({ triggerButton, setIsAuthN }: LoginModalProps) => {
 
           <CustomModalButton
             variant="contained"
-            color="primary"
+            color="secondary"
             size="large"
             sx={{ paddingX: 10 }}
             onClick={() => {
@@ -100,21 +109,28 @@ const LoginModal = ({ triggerButton, setIsAuthN }: LoginModalProps) => {
 
           <Divider>or</Divider>
 
-          <CustomModalButton variant="outlined" color="primary" startIcon={<FacebookIcon />} size="large">
+          <CustomModalButton variant="outlined" color="secondary" startIcon={<FacebookIcon />} size="large">
             Continue with Facebook
           </CustomModalButton>
+
           <CustomModalButton
             variant="outlined"
-            color="primary"
+            color="secondary"
             startIcon={<GoogleIcon />}
             size="large"
             sx={{ paddingX: 10 }}
           >
             Continue with Google
           </CustomModalButton>
-          <CustomModalButton variant="outlined" color="primary" startIcon={<EmailIcon />} size="large">
-            Sign up with Email
-          </CustomModalButton>
+
+          <SignupWithEmailModal
+            triggerButton={
+              <CustomModalButton variant="outlined" color="secondary" startIcon={<EmailIcon />} size="large">
+                Sign up with Email
+              </CustomModalButton>
+            }
+            setIsAuthN={setIsAuthN}
+          />
         </CustomModalContentWrapper>
       }
     />

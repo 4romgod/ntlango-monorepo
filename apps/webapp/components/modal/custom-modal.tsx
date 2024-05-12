@@ -1,7 +1,7 @@
 import { ReactElement, cloneElement } from 'react';
-import { Modal } from '@mui/base/Modal';
 import { Box, styled } from '@mui/material';
 import CustomBackdrop from '@/components/modal/custom-backdrop';
+import { Dialog } from '@mui/material';
 
 export type CustomModalProps = {
   triggerButton: ReactElement;
@@ -11,7 +11,7 @@ export type CustomModalProps = {
   isOpen: boolean;
 };
 
-const StyledModal = styled(Modal)({
+const StyledModal = styled(Dialog)({
   position: 'fixed',
   zIndex: 1300,
   inset: 0,
