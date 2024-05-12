@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import {Arg, Mutation, Resolver, Query} from 'type-graphql';
 import {EventDAO} from '../../mongodb/dao';
-import {CreateEventInputType, EventType, UpdateEventInputType} from '../types';
+import {CreateEventInputType, EventQueryParams, EventType, UpdateEventInputType} from '../types';
 
 @Resolver()
 export class EventResolver {
@@ -31,7 +31,7 @@ export class EventResolver {
     }
 
     @Query(() => [EventType])
-    async readEvents(): Promise<EventType[]> {
-        return EventDAO.readEvents();
+    async readEvents(@Arg('queryParams', {nullable: true}) queryParams?: EventQueryParams): Promise<EventType[]> {
+        return EventDAO.readEvents(queryParams);
     }
 }

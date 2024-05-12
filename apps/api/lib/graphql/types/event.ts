@@ -3,6 +3,7 @@ import {InputType, Field, ObjectType, ID, Int, registerEnumType} from 'type-grap
 import GraphQLJSON from 'graphql-type-json';
 import {UserType} from './user';
 import {EventCategoryType} from './eventCategory';
+import {QueryParams} from '../../utils/queries/events';
 
 export enum EventPrivacySetting {
     PUBLIC = 'Public',
@@ -151,4 +152,35 @@ export class UpdateEventInputType extends CreateEventInputType {
     id: string;
 }
 
-export type EventQueryParams = Partial<Record<keyof EventType, any>>;
+@InputType()
+export class EventQueryParams {
+    @Field({nullable: true})
+    id?: string;
+
+    @Field({nullable: true})
+    slug?: string;
+
+    @Field({nullable: true})
+    title?: string;
+
+    @Field({nullable: true})
+    description?: string;
+
+    @Field({nullable: true})
+    startDate?: string;
+
+    @Field({nullable: true})
+    endDate?: string;
+
+    @Field({nullable: true})
+    location?: string;
+
+    @Field({nullable: true})
+    status?: string;
+
+    @Field(() => [String], {nullable: true})
+    organizers?: string[];
+
+    @Field(() => [String], {nullable: true})
+    rSVPs?: string[];
+}

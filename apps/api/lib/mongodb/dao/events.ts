@@ -1,6 +1,7 @@
 import {Event} from '../models';
 import {ResourceNotFoundException, mongodbErrorHandler} from '../../utils';
 import {EventType, UpdateEventInputType, CreateEventInputType, EventQueryParams} from '../../graphql/types';
+import {transformReadEventsQueryParams} from '../../utils/queries/events';
 
 class EventDAO {
     static async create(eventData: CreateEventInputType): Promise<EventType> {
@@ -50,7 +51,8 @@ class EventDAO {
 
     static async readEvents(queryParams?: EventQueryParams, projections?: Array<string>): Promise<Array<EventType>> {
         try {
-            const query = Event.find({...queryParams})
+            const queryConditions = transformReadEventsQueryParams(queryParams);
+            const query = Event.find({...queryConditions})
                 .populate('organizers')
                 .populate('rSVPs')
                 .populate('eventCategory');
