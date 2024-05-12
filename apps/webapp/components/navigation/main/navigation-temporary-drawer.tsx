@@ -12,8 +12,13 @@ import {
   ListItemText,
 } from '@mui/material';
 import { Clear, Home, Login, Menu } from '@mui/icons-material';
+import { useCustomAppContext } from '@/components/app-context';
+import LoginModal from '@/components/login/login-modal';
+import SignupModal from '@/components/signup/signup-modal';
+import Link from 'next/link';
 
 export default function TemporaryDrawer() {
+  const { isAuthN, setIsAuthN, themeMode, setThemeMode } = useCustomAppContext();
   const [open, setOpen] = useState(false);
 
   const toggleDrawer = (newOpen: boolean) => () => {
@@ -28,29 +33,40 @@ export default function TemporaryDrawer() {
         </ListItemButton>
       </ListItem>
       <List>
-        <ListItem disablePadding>
-          <ListItemButton>
-            <ListItemIcon>
-              <Home />
-            </ListItemIcon>
-            <ListItemText primary={'Home'} />
-          </ListItemButton>
-        </ListItem>
+        <Link href={'/'}>
+          <ListItem disablePadding>
+            <ListItemButton>
+              <ListItemIcon>
+                <Home />
+              </ListItemIcon>
+              <ListItemText primary={'Home'} />
+            </ListItemButton>
+          </ListItem>
+        </Link>
 
-        <ListItem disablePadding>
-          <ListItemButton>
-            <ListItemIcon>
-              <Login />
-            </ListItemIcon>
-            <ListItemText primary={'Log in'} />
-          </ListItemButton>
-        </ListItem>
+        <LoginModal
+          triggerButton={
+            <ListItem disablePadding>
+              <ListItemButton>
+                <ListItemIcon>
+                  <Login />
+                </ListItemIcon>
+                <ListItemText primary={'Log in'} />
+              </ListItemButton>
+            </ListItem>
+          }
+          setIsAuthN={setIsAuthN}
+        />
 
         <Divider />
 
-        <Button variant="contained" color="secondary" fullWidth>
-          <ListItemText primary={'Sign up'} />
-        </Button>
+        <SignupModal
+          triggerButton={
+            <Button variant="contained" color="secondary" fullWidth>
+              <ListItemText primary={'Sign up'} />
+            </Button>
+          }
+        />
       </List>
     </Box>
   );

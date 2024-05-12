@@ -15,8 +15,8 @@ import ProfilesMenu from '@/components/navigation/main/navigation-profiles-items
 import TemporaryDrawer from '@/components/navigation/main/navigation-temporary-drawer';
 import ToggleThemeMode, { ToggleThemeModeProps } from '@/components/theme/toggle-theme-mode';
 import { Button } from '@mui/material';
-import SignupModal from '@/components/signup/signup-modal';
 import Logo from '@/components/logo';
+import SignupModal from '@/components/signup/signup-modal';
 import LoginModal from '@/components/login/login-modal';
 import Link from 'next/link';
 import { useCustomAppContext } from '@/components/app-context';
@@ -46,7 +46,6 @@ export default function MainNavigation() {
   const handleProfilesMenuClose = () => {
     setProfilesMenuAnchorEl(null);
     handleNotificationsMenuClose();
-    setIsAuthN(false);
   };
 
   const handleNotificationsMenuClose = () => {
