@@ -7,6 +7,7 @@ import { Box, CssBaseline, ThemeProvider } from '@mui/material';
 import { useCustomAppContext, CustomAppContextProvider } from '@/components/app-context';
 import MainNavigation from '@/components/navigation/main';
 import Footer from '@/components/footer';
+import { ApolloWrapper } from '@/lib/graphql/apollo-provider';
 
 function CustomThemeProvider({ children }: { children: ReactNode }) {
   const { appTheme } = useCustomAppContext();
@@ -28,11 +29,13 @@ function CustomThemeProvider({ children }: { children: ReactNode }) {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <AppRouterCacheProvider>
-        <CustomAppContextProvider>
-          <CustomThemeProvider>{children}</CustomThemeProvider>
-        </CustomAppContextProvider>
-      </AppRouterCacheProvider>
+      <ApolloWrapper>
+        <AppRouterCacheProvider>
+          <CustomAppContextProvider>
+            <CustomThemeProvider>{children}</CustomThemeProvider>
+          </CustomAppContextProvider>
+        </AppRouterCacheProvider>
+      </ApolloWrapper>
     </html>
   );
 }

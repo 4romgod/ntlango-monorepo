@@ -1,5 +1,25 @@
 import { graphql } from '@/lib/graphql/types';
 
+const LoginUserDocument = graphql(`
+  mutation LoginUser($input: LoginUserInputType!) {
+    loginUser(input: $input) {
+      id
+      email
+      username
+      address
+      birthdate
+      given_name
+      family_name
+      gender
+      encrypted_password
+      phone_number
+      profile_picture
+      userType
+      token
+    }
+  }
+`);
+
 const GetAllEventsDocument = graphql(`
   query GetAllEvents($queryParams: EventQueryParams) {
     readEvents(queryParams: $queryParams) {

@@ -26,6 +26,8 @@ import CustomModalCloseButton from '@/components/modal/custom-modal-close-button
 import SignupWithEmailModal from '@/components/modal/auth/signup-modal-form-modal';
 import { useCustomAppContext } from '@/components/app-context';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { LoginUserDocument, LoginUserInputType } from '@/lib/graphql/types/graphql';
+import { useMutation } from '@apollo/client';
 
 export type LoginModalProps = {
   triggerButton: ReactElement;
@@ -33,6 +35,7 @@ export type LoginModalProps = {
 
 const LoginModal = ({ triggerButton }: LoginModalProps) => {
   const { setIsAuthN } = useCustomAppContext();
+  const [loginUser, { data, loading, error }] = useMutation(LoginUserDocument);
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
 
@@ -42,14 +45,23 @@ const LoginModal = ({ triggerButton }: LoginModalProps) => {
   const handleModalOpen = () => setIsModalOpen(true);
   const handleModalClose = () => setIsModalOpen(false);
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const loginData = {
-      email: emailRef.current?.value,
-      password: passwordRef.current?.value,
-    };
-    console.log(loginData);
+  console.log('render modal');
 
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const loginData: LoginUserInputType = {
+      email: emailRef.current?.value ?? '',
+      password: passwordRef.current?.value ?? '',
+    };
+
+    const login = async () => {
+      await loginUser({ variables: { input: loginData } });
+    };
+    login();
+
+    const user = data?.loginUser;
+
+    console.log('user', user);
     // setIsAuthN(true);
     // setIsModalOpen(false);
   };
@@ -89,8 +101,6 @@ const LoginModal = ({ triggerButton }: LoginModalProps) => {
                     name="email"
                     type="email"
                     autoFocus
-                    // value={loginData.email}
-                    // onChange={handleChange}
                     inputRef={emailRef}
                   />
                 </FormControl>
@@ -101,8 +111,6 @@ const LoginModal = ({ triggerButton }: LoginModalProps) => {
                     id="password"
                     name="password"
                     type={showPassword ? 'text' : 'password'}
-                    // value={loginData.password}
-                    // onChange={handleChange}
                     inputRef={passwordRef}
                     InputProps={{
                       endAdornment: (
