@@ -1,14 +1,19 @@
 import {EventCategory} from '../models';
-import {ResourceNotFoundException, mongodbErrorHandler} from '../../utils';
 import {EventCategoryType, UpdateEventCategoryInputType, CreateEventCategoryInputType} from '../../graphql/types';
+import {GraphQLError} from 'graphql';
+import {CustomError, ErrorTypes, KnownCommonError} from '../../utils';
 
 class EventDAO {
     static async create(category: CreateEventCategoryInputType): Promise<EventCategoryType> {
         try {
             return await EventCategory.create(category);
         } catch (error) {
-            console.error('Error creating event category:', error);
-            throw mongodbErrorHandler(error);
+            if (error instanceof GraphQLError) {
+                throw error;
+            } else {
+                console.log('Error creating event category', error);
+                throw KnownCommonError(error);
+            }
         }
     }
 
@@ -21,12 +26,16 @@ class EventDAO {
             const event = await query.exec();
 
             if (!event) {
-                throw ResourceNotFoundException('Event Category not found');
+                throw CustomError(`Event Categiry with id ${id} does not exist`, ErrorTypes.NOT_FOUND);
             }
             return event;
         } catch (error) {
-            console.error('Error reading event category by id:', error);
-            throw error;
+            if (error instanceof GraphQLError) {
+                throw error;
+            } else {
+                console.log(`Error reading event category by id ${id}`, error);
+                throw KnownCommonError(error);
+            }
         }
     }
 
@@ -39,12 +48,16 @@ class EventDAO {
             const event = await query.exec();
 
             if (!event) {
-                throw ResourceNotFoundException('Event Category not found');
+                throw CustomError(`Event Category with slug ${slug} not found`, ErrorTypes.NOT_FOUND);
             }
             return event;
         } catch (error) {
-            console.error('Error reading event category by slug:', error);
-            throw error;
+            if (error instanceof GraphQLError) {
+                throw error;
+            } else {
+                console.error('Error reading event category by slug:', error);
+                throw KnownCommonError(error);
+            }
         }
     }
 
@@ -53,8 +66,12 @@ class EventDAO {
             const query = EventCategory.find();
             return await query.exec();
         } catch (error) {
-            console.error('Error reading event categories:', error);
-            throw error;
+            if (error instanceof GraphQLError) {
+                throw error;
+            } else {
+                console.error('Error reading event categories:', error);
+                throw KnownCommonError(error);
+            }
         }
     }
 
@@ -62,25 +79,33 @@ class EventDAO {
         try {
             const updatedEventCategory = await EventCategory.findByIdAndUpdate(category.id, {...category}, {new: true}).exec();
             if (!updatedEventCategory) {
-                throw ResourceNotFoundException('Event Category not found');
+                throw CustomError('Event Category not found', ErrorTypes.NOT_FOUND);
             }
             return updatedEventCategory;
         } catch (error) {
-            console.error('Error updating event category:', error);
-            throw error;
+            if (error instanceof GraphQLError) {
+                throw error;
+            } else {
+                console.error('Error updating event category', error);
+                throw KnownCommonError(error);
+            }
         }
     }
 
     static async deleteEventCategory(id: string): Promise<EventCategoryType> {
         try {
-            const deletedEventCategory = await EventCategory.findOneAndDelete({id}).exec();
+            const deletedEventCategory = await EventCategory.findOneAndDelete({_id: id}).exec();
             if (!deletedEventCategory) {
-                throw ResourceNotFoundException('Event Category not found');
+                throw CustomError(`Event Category with id ${id} not found`, ErrorTypes.NOT_FOUND);
             }
             return deletedEventCategory;
         } catch (error) {
-            console.error('Error deleting event category by id:', error);
-            throw error;
+            if (error instanceof GraphQLError) {
+                throw error;
+            } else {
+                console.error('Error deleting event category by id:', error);
+                throw KnownCommonError(error);
+            }
         }
     }
 }

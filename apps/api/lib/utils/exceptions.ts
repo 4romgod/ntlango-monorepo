@@ -1,64 +1,92 @@
+import {GraphQLError} from 'graphql';
 import {HttpStatusCode} from '../constants';
+import {ApolloServerErrorCode} from '@apollo/server/errors';
+
+export type CustomErrorType = {
+    errorCode: string;
+    errorStatus: number;
+};
+
+export const ErrorTypes: {[key: string]: CustomErrorType} = {
+    BAD_USER_INPUT: {
+        errorCode: ApolloServerErrorCode.BAD_USER_INPUT,
+        errorStatus: HttpStatusCode.BAD_REQUEST,
+    },
+    BAD_REQUEST: {
+        errorCode: ApolloServerErrorCode.BAD_REQUEST,
+        errorStatus: HttpStatusCode.BAD_REQUEST,
+    },
+    ALREADY_EXISTS: {
+        errorCode: 'ALREADY_EXISTS',
+        errorStatus: HttpStatusCode.BAD_REQUEST,
+    },
+    NOT_FOUND: {
+        errorCode: 'NOT_FOUND',
+        errorStatus: HttpStatusCode.NOT_FOUND,
+    },
+    UNAUTHENTICATED: {
+        errorCode: 'UNAUTHENTICATED',
+        errorStatus: HttpStatusCode.UNAUTHENTICATED,
+    },
+    UNAUTHORIZED: {
+        errorCode: 'UNAUTHORIZED',
+        errorStatus: HttpStatusCode.UNAUTHORIZED,
+    },
+    INTERNAL_SERVER_ERROR: {
+        errorCode: ApolloServerErrorCode.INTERNAL_SERVER_ERROR,
+        errorStatus: HttpStatusCode.INTERNAL_SERVER_ERROR,
+    },
+};
+
+export const CustomError = (errorMessage: string, errorType: CustomErrorType): GraphQLError => {
+    return new GraphQLError(errorMessage, {
+        extensions: {
+            code: errorType.errorCode,
+            http: {
+                status: errorType.errorStatus,
+            },
+        },
+    });
+};
 
 /**
- * @desc Return HTTP Exception for given statusCode, errorType and errorMsg
- * @param {string} statusCode - the HTTP status code of the HTTP Exception
- * @param {string} errorType - the error type of the HTTP Exception
- * @param {string} errorMsg - the error message of the HTTP Exception
- * @return {object} Error object
+ * Get unique error field name
  */
-export class NtlangoHttpError extends Error {
-    statusCode: number;
-    errorType: string;
-
-    constructor(statusCode: number, errorType: string, message: string) {
-        super(message);
-        this.statusCode = statusCode;
-        this.errorType = errorType;
+export const uniqueMessage = (error: any) => {
+    let output: string;
+    try {
+        const fieldName = error.message.substring(error.message.lastIndexOf('.$') + 2, error.message.lastIndexOf('_1'));
+        output = fieldName.charAt(0).toUpperCase() + fieldName.slice(1) + ' already exists';
+    } catch (ex) {
+        output = 'Unique field already exists';
     }
-}
 
-/**
- * @desc Return InvalidArgumentException Exception for given errorMsg
- * @param {string} errorMsg - the error message of the InvalidArgumentException Exception
- * @return {object} Error object
- */
-export const InvalidArgumentException = (errorMsg: string): NtlangoHttpError => {
-    return new NtlangoHttpError(HttpStatusCode.BAD_REQUEST, 'InvalidArgumentException', errorMsg);
+    return output;
 };
 
 /**
- * @desc Return UnauthenticatedException Exception for given errorMsg
- * @param {string} errorMsg - the error message of the UnauthenticatedException Exception
- * @return {object} Error object
+ * Get the errors that we are familiar with
+ * //TODO Maybe use this in a middleware https://mongoosejs.com/docs/middleware.html
  */
-export const UnauthenticatedException = (errorMsg: string): NtlangoHttpError => {
-    return new NtlangoHttpError(HttpStatusCode.UNAUTHENTICATED, 'UnauthenticatedException', errorMsg);
-};
+export const KnownCommonError = (error: any): GraphQLError => {
+    let message = 'Oops, something is broken';
 
-/**
- * @desc Return UnauthorizedException Exception for given errorMsg
- * @param {string} errorMsg - the error message of the UnauthorizedException Exception
- * @return {object} Error object
- */
-export const UnauthorizedException = (errorMsg: string): NtlangoHttpError => {
-    return new NtlangoHttpError(HttpStatusCode.UNAUTHORIZED, 'UnauthorizedException', errorMsg);
-};
+    const {code, keyValue} = error;
+    if (code) {
+        switch (code) {
+            case 11000: {
+                const key = Object.keys(keyValue)[0];
+                message = `(${key} = ${keyValue[key]}), already exists`;
+                return CustomError(message, ErrorTypes.ALREADY_EXISTS);
+            }
+            case 11001:
+                message = uniqueMessage(error);
+                return CustomError(message, ErrorTypes.BAD_REQUEST);
+            case 10334:
+                message = 'Your Content is Too Large, Max size is 15MB';
+                return CustomError(message, ErrorTypes.BAD_USER_INPUT);
+        }
+    }
 
-/**
- * @desc ResourceNotFoundException 404 when the resource is not found
- * @param {string} errorMsg - the error message of the ResourceNotFoundException Exception
- * @return {object} Error object
- */
-export const ResourceNotFoundException = (errorMsg: string): NtlangoHttpError => {
-    return new NtlangoHttpError(HttpStatusCode.NOT_FOUND, 'ResourceNotFoundException', errorMsg);
-};
-
-/**
- * @desc Return InternalServiceErrorException Exception for given errorMsg
- * @param {string} errorMsg - the error message of the InternalServiceErrorException Exception
- * @return {object} Error object
- */
-export const InternalServiceErrorException = (errorMsg: string): NtlangoHttpError => {
-    return new NtlangoHttpError(HttpStatusCode.INTERNAL_SERVER, 'InternalServiceErrorException', errorMsg);
+    return CustomError(message, ErrorTypes.INTERNAL_SERVER_ERROR);
 };

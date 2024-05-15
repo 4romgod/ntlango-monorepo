@@ -5,7 +5,7 @@ export enum HttpStatusCode {
     UNAUTHENTICATED = 401,
     UNAUTHORIZED = 403,
     NOT_FOUND = 404,
-    INTERNAL_SERVER = 500,
+    INTERNAL_SERVER_ERROR = 500,
 }
 
 export enum STAGES {

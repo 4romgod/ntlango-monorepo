@@ -1,9 +1,10 @@
 import {User} from '../models';
 import {UserType, UpdateUserInputType, CreateUserInputType, UserQueryParams, LoginUserInputType, JwtUserPayload} from '../../graphql/types';
-import {InvalidArgumentException, ResourceNotFoundException, mongodbErrorHandler} from '../../utils';
+import {ErrorTypes, CustomError, KnownCommonError} from '../../utils';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import {JWT_SECRET} from '../../constants';
+import {GraphQLError} from 'graphql';
 
 class UserDAO {
     static async create(userData: CreateUserInputType): Promise<UserType> {
@@ -20,8 +21,12 @@ class UserDAO {
 
             return await newUser.save();
         } catch (error) {
-            console.log('Error when creating a new user', error);
-            throw mongodbErrorHandler(error);
+            if (error instanceof GraphQLError) {
+                throw error;
+            } else {
+                console.log('Error when creating a new user', error);
+                throw KnownCommonError(error);
+            }
         }
     }
 
@@ -37,14 +42,18 @@ class UserDAO {
                     console.log(user);
                     return await user.save();
                 } else {
-                    throw InvalidArgumentException(`Email and Password do not match`);
+                    throw CustomError(`Email and Password do not match`, ErrorTypes.BAD_USER_INPUT);
                 }
             } else {
-                throw ResourceNotFoundException(`User with email ${loginData.email} does not exist`);
+                throw CustomError(`User with email ${loginData.email} does not exist`, ErrorTypes.NOT_FOUND);
             }
         } catch (error) {
-            console.log('Could not login user', error);
-            throw mongodbErrorHandler(error);
+            if (error instanceof GraphQLError) {
+                throw error;
+            } else {
+                console.log('Error when user logging in', error);
+                throw KnownCommonError(error);
+            }
         }
     }
 
@@ -57,12 +66,17 @@ class UserDAO {
             const user = await query.exec();
 
             if (!user) {
-                throw ResourceNotFoundException('User not found');
+                throw CustomError(`User with id ${id} does not exist`, ErrorTypes.NOT_FOUND);
             }
+
             return user;
         } catch (error) {
-            console.error('Error reading user by id:', error);
-            throw error;
+            if (error instanceof GraphQLError) {
+                throw error;
+            } else {
+                console.log('Error reading user by id', error);
+                throw KnownCommonError(error);
+            }
         }
     }
 
@@ -75,43 +89,74 @@ class UserDAO {
             const user = await query.exec();
 
             if (!user) {
-                throw ResourceNotFoundException('User not found');
+                throw CustomError(`User with username ${username} does not exist`, ErrorTypes.NOT_FOUND);
             }
             return user;
         } catch (error) {
-            console.error('Error reading user by id:', error);
-            throw error;
+            if (error instanceof GraphQLError) {
+                throw error;
+            } else {
+                console.log('Error reading user by username', error);
+                throw KnownCommonError(error);
+            }
         }
     }
 
     static async readUsers(queryParams?: UserQueryParams, projections?: Array<string>): Promise<Array<UserType>> {
-        const query = User.find({...queryParams});
+        try {
+            const query = User.find({...queryParams});
 
-        if (queryParams?.userIDList && queryParams.userIDList.length > 0) {
-            query.where('id').in(queryParams.userIDList);
+            if (queryParams?.userIDList && queryParams.userIDList.length > 0) {
+                query.where('id').in(queryParams.userIDList);
+            }
+
+            if (projections && projections.length) {
+                query.select(projections.join(' '));
+            }
+
+            return await query.exec();
+        } catch (error) {
+            if (error instanceof GraphQLError) {
+                throw error;
+            } else {
+                console.log('Error querying users', error);
+                throw KnownCommonError(error);
+            }
         }
-
-        if (projections && projections.length) {
-            query.select(projections.join(' '));
-        }
-
-        return await query.exec();
     }
 
     static async updateUser(user: UpdateUserInputType) {
-        const updatedUser = await User.findByIdAndUpdate(user.id, {...user}, {new: true}).exec();
-        if (!updatedUser) {
-            throw ResourceNotFoundException('User not found');
+        try {
+            const updatedUser = await User.findByIdAndUpdate(user.id, {...user}, {new: true}).exec();
+            if (!updatedUser) {
+                throw CustomError('User not found', ErrorTypes.NOT_FOUND);
+            }
+            return updatedUser;
+        } catch (error) {
+            if (error instanceof GraphQLError) {
+                throw error;
+            } else {
+                console.log('Error updating users', error);
+                throw KnownCommonError(error);
+            }
         }
-        return updatedUser;
     }
 
     static async deleteUser(id: string): Promise<UserType> {
-        const deletedUser = await User.findByIdAndDelete(id).exec();
-        if (!deletedUser) {
-            throw ResourceNotFoundException('User not found');
+        try {
+            const deletedUser = await User.findByIdAndDelete(id).exec();
+            if (!deletedUser) {
+                throw CustomError('User not found', ErrorTypes.NOT_FOUND);
+            }
+            return deletedUser;
+        } catch (error) {
+            if (error instanceof GraphQLError) {
+                throw error;
+            } else {
+                console.log(`Error deleting user with id ${id}`, error);
+                throw KnownCommonError(error);
+            }
         }
-        return deletedUser;
     }
 }
 
