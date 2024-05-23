@@ -45,7 +45,7 @@ export class UserType {
     family_name: string;
 
     @Field(() => Gender)
-    gender: Gender;
+    gender?: Gender;
 
     @Field()
     encrypted_password: string;
@@ -84,7 +84,7 @@ export class CreateUserInputType {
     family_name: string;
 
     @Field(() => Gender)
-    gender: Gender;
+    gender?: Gender;
 
     @Field()
     password: string;

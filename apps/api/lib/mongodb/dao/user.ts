@@ -6,7 +6,6 @@ import {
     UserQueryParams,
     LoginUserInputType,
     JwtUserPayload,
-    Gender,
     UserRole,
 } from '../../graphql/types';
 import {ErrorTypes, CustomError, KnownCommonError} from '../../utils';

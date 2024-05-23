@@ -33,7 +33,7 @@ const UserSchema = new Schema<UserType & Document>(
         },
         gender: {
             type: String,
-            required: true,
+            required: false,
         },
         encrypted_password: {
             type: String,
