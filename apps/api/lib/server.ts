@@ -2,7 +2,7 @@ import express, {Express} from 'express';
 import bodyParser from 'body-parser';
 import morgan from 'morgan';
 import {MongoDbClient} from './clients';
-import {API_PORT, API_DOMAIN, NODE_ENV, STAGES, MONGO_DB_URL} from './constants';
+import {API_PORT, API_DOMAIN, MONGO_DB_URL} from './constants';
 import createSchema from './graphql/schema';
 import {ApolloServer} from '@apollo/server';
 import {expressMiddleware} from '@apollo/server/express4';
