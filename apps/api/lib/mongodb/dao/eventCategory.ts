@@ -4,7 +4,7 @@ import {GraphQLError} from 'graphql';
 import {CustomError, ErrorTypes, KnownCommonError} from '../../utils';
 import {kebabCase} from 'lodash';
 
-class EventDAO {
+class EventCategoryDAO {
     static async create(category: CreateEventCategoryInputType): Promise<EventCategoryType> {
         try {
             const slug = kebabCase(category.name);
@@ -113,4 +113,4 @@ class EventDAO {
     }
 }
 
-export default EventDAO;
+export default EventCategoryDAO;
