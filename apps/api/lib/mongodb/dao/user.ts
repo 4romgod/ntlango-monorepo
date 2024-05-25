@@ -5,9 +5,13 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import {JWT_SECRET} from '../../constants';
 import {GraphQLError} from 'graphql';
+import mongoose from 'mongoose';
+import {validateMongodbId} from '../../utils/validators/common';
+import {UserValidator} from '../../utils/validators';
 
 class UserDAO {
     static async create(userData: CreateUserInputType): Promise<UserType> {
+        UserValidator.create(userData);
         try {
             const userProps: JwtUserPayload = {
                 ...userData,
@@ -32,6 +36,7 @@ class UserDAO {
     }
 
     static async login(loginData: LoginUserInputType): Promise<UserType> {
+        UserValidator.login(loginData);
         try {
             const user = await User.findOne({email: loginData.email});
             if (user) {
@@ -58,16 +63,17 @@ class UserDAO {
         }
     }
 
-    static async readUserById(id: string, projections?: Array<string>): Promise<UserType> {
+    static async readUserById(userId: string, projections?: Array<string>): Promise<UserType> {
+        UserValidator.readUserById(userId);
         try {
-            const query = User.findById(id);
+            const query = User.findById(userId);
             if (projections && projections.length) {
                 query.select(projections.join(' '));
             }
             const user = await query.exec();
 
             if (!user) {
-                throw CustomError(`User with id ${id} does not exist`, ErrorTypes.NOT_FOUND);
+                throw CustomError(`User with id ${userId} does not exist`, ErrorTypes.NOT_FOUND);
             }
 
             return user;
@@ -82,6 +88,7 @@ class UserDAO {
     }
 
     static async readUserByUsername(username: string, projections?: Array<string>): Promise<UserType> {
+        UserValidator.readUserByUsername(username);
         try {
             const query = User.findOne({username});
             if (projections && projections.length) {
@@ -104,6 +111,7 @@ class UserDAO {
     }
 
     static async readUsers(queryParams?: UserQueryParams, projections?: Array<string>): Promise<Array<UserType>> {
+        UserValidator.readUsers();
         try {
             const query = User.find({...queryParams});
 
@@ -127,8 +135,14 @@ class UserDAO {
     }
 
     static async updateUser(user: UpdateUserInputType) {
+        UserValidator.updateUser(user);
         try {
-            const updatedUser = await User.findByIdAndUpdate(user.id, {...user, userType: UserRole.User}, {new: true}).exec();
+            let encrypted_password: string | undefined;
+            if (user.password) {
+                encrypted_password = await bcrypt.hash(user.password, 10);
+            }
+            const {id, ...updatableFields} = user;
+            const updatedUser = await User.findByIdAndUpdate(user.id, {...updatableFields, encrypted_password}, {new: true}).exec();
             if (!updatedUser) {
                 throw CustomError('User not found', ErrorTypes.NOT_FOUND);
             }
@@ -143,9 +157,11 @@ class UserDAO {
         }
     }
 
-    static async deleteUser(id: string): Promise<UserType> {
+    static async deleteUserById(userId: string): Promise<UserType> {
+        UserValidator.deleteUserById(userId);
+        validateMongodbId(userId, `User with id ${userId} does not exist`);
         try {
-            const deletedUser = await User.findByIdAndDelete(id).exec();
+            const deletedUser = await User.findByIdAndDelete(userId).exec();
             if (!deletedUser) {
                 throw CustomError('User not found', ErrorTypes.NOT_FOUND);
             }
@@ -154,7 +170,25 @@ class UserDAO {
             if (error instanceof GraphQLError) {
                 throw error;
             } else {
-                console.log(`Error deleting user with id ${id}`, error);
+                console.log(`Error deleting user with id ${userId}`, error);
+                throw KnownCommonError(error);
+            }
+        }
+    }
+
+    static async deleteUserByEmail(email: string): Promise<UserType> {
+        UserValidator.deleteUserByEmail(email);
+        try {
+            const deletedUser = await User.findOneAndDelete({email}).exec();
+            if (!deletedUser) {
+                throw CustomError('User not found', ErrorTypes.NOT_FOUND);
+            }
+            return deletedUser;
+        } catch (error) {
+            if (error instanceof GraphQLError) {
+                throw error;
+            } else {
+                console.log(`Error deleting user with email ${email}`, error);
                 throw KnownCommonError(error);
             }
         }

@@ -21,8 +21,8 @@ export class EventCategoryResolver {
     }
 
     @Query(() => EventCategoryType)
-    async readEventCategoryById(@Arg('id') id: string): Promise<EventCategoryType | null> {
-        return EventCategoryDAO.readEventCategoryById(id);
+    async readEventCategoryById(@Arg('eventCategoryId') eventCategoryId: string): Promise<EventCategoryType | null> {
+        return EventCategoryDAO.readEventCategoryById(eventCategoryId);
     }
 
     @Query(() => EventCategoryType)

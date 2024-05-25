@@ -1,6 +1,7 @@
 import {GraphQLError} from 'graphql';
 import {HttpStatusCode} from '../constants';
 import {ApolloServerErrorCode} from '@apollo/server/errors';
+import {capitalize} from 'lodash';
 
 export type CustomErrorType = {
     errorCode: string;
@@ -16,9 +17,9 @@ export const ErrorTypes: {[key: string]: CustomErrorType} = {
         errorCode: ApolloServerErrorCode.BAD_REQUEST,
         errorStatus: HttpStatusCode.BAD_REQUEST,
     },
-    ALREADY_EXISTS: {
-        errorCode: 'ALREADY_EXISTS',
-        errorStatus: HttpStatusCode.BAD_REQUEST,
+    CONFLICT: {
+        errorCode: 'CONFLICT',
+        errorStatus: HttpStatusCode.CONFLICT,
     },
     NOT_FOUND: {
         errorCode: 'NOT_FOUND',
@@ -56,7 +57,7 @@ export const uniqueMessage = (error: any) => {
     let output: string;
     try {
         const fieldName = error.message.substring(error.message.lastIndexOf('.$') + 2, error.message.lastIndexOf('_1'));
-        output = fieldName.charAt(0).toUpperCase() + fieldName.slice(1) + ' already exists';
+        output = `${capitalize(fieldName)} already exists`;
     } catch (ex) {
         output = 'Unique field already exists';
     }
@@ -76,12 +77,12 @@ export const KnownCommonError = (error: any): GraphQLError => {
         switch (code) {
             case 11000: {
                 const key = Object.keys(keyValue)[0];
-                message = `(${key} = ${keyValue[key]}), already exists`;
-                return CustomError(message, ErrorTypes.ALREADY_EXISTS);
+                message = `${capitalize(key)} ${keyValue[key]} already exists`;
+                return CustomError(message, ErrorTypes.CONFLICT);
             }
             case 11001:
                 message = uniqueMessage(error);
-                return CustomError(message, ErrorTypes.BAD_REQUEST);
+                return CustomError(message, ErrorTypes.CONFLICT);
             case 10334:
                 message = 'Your Content is Too Large, Max size is 15MB';
                 return CustomError(message, ErrorTypes.BAD_USER_INPUT);

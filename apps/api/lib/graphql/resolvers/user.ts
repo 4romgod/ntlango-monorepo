@@ -21,8 +21,8 @@ export class UserResolver {
     }
 
     @Mutation(() => UserType)
-    async deleteUser(@Arg('id') id: string): Promise<UserType> {
-        return UserDAO.deleteUser(id);
+    async deleteUserById(@Arg('id') id: string): Promise<UserType> {
+        return UserDAO.deleteUserById(id);
     }
 
     @Query(() => UserType)

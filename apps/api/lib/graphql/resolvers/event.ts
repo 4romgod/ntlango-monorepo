@@ -16,13 +16,13 @@ export class EventResolver {
     }
 
     @Mutation(() => EventType)
-    async deleteEvent(@Arg('id') id: string): Promise<EventType> {
-        return EventDAO.deleteEvent(id);
+    async deleteEvent(@Arg('eventId') eventId: string): Promise<EventType> {
+        return EventDAO.deleteEvent(eventId);
     }
 
     @Query(() => EventType)
-    async readEventById(@Arg('id') id: string): Promise<EventType | null> {
-        return EventDAO.readEventById(id);
+    async readEventById(@Arg('eventId') eventId: string): Promise<EventType | null> {
+        return EventDAO.readEventById(eventId);
     }
 
     @Query(() => EventType)

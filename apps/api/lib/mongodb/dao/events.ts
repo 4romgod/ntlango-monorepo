@@ -4,9 +4,11 @@ import {transformReadEventsQueryParams} from '../../utils/queries/events';
 import {GraphQLError} from 'graphql';
 import {CustomError, ErrorTypes, KnownCommonError} from '../../utils';
 import {kebabCase} from 'lodash';
+import {EventValidator} from '../../utils/validators';
 
 class EventDAO {
     static async create(event: CreateEventInputType): Promise<EventType> {
+        EventValidator.create(event);
         try {
             const slug = kebabCase(event.title);
             return await Event.create({...event, slug});
@@ -20,16 +22,17 @@ class EventDAO {
         }
     }
 
-    static async readEventById(id: string, projections?: Array<string>): Promise<EventType> {
+    static async readEventById(eventId: string, projections?: Array<string>): Promise<EventType> {
+        EventValidator.readEventById(eventId);
         try {
-            const query = Event.findById(id).populate('organizers').populate('rSVPs').populate('eventCategory');
+            const query = Event.findById(eventId).populate('organizers').populate('rSVPs').populate('eventCategory');
             if (projections && projections.length) {
                 query.select(projections.join(' '));
             }
             const event = await query.exec();
 
             if (!event) {
-                throw CustomError(`Event with id ${id} not found`, ErrorTypes.NOT_FOUND);
+                throw CustomError(`Event with id ${eventId} not found`, ErrorTypes.NOT_FOUND);
             }
             return event;
         } catch (error) {
@@ -43,6 +46,7 @@ class EventDAO {
     }
 
     static async readEventBySlug(slug: string, projections?: Array<string>): Promise<EventType> {
+        EventValidator.readEventBySlug(slug);
         try {
             const query = Event.findOne({slug: slug}).populate('organizers').populate('rSVPs').populate('eventCategory');
             if (projections && projections.length) {
@@ -65,6 +69,7 @@ class EventDAO {
     }
 
     static async readEvents(queryParams?: EventQueryParams, projections?: Array<string>): Promise<Array<EventType>> {
+        EventValidator.readEvents();
         try {
             const queryConditions = transformReadEventsQueryParams(queryParams);
             const query = Event.find({...queryConditions})
@@ -87,6 +92,7 @@ class EventDAO {
     }
 
     static async updateEvent(event: UpdateEventInputType): Promise<EventType> {
+        EventValidator.updateEvent(event);
         try {
             const slug = kebabCase(event.title);
             const updatedEvent = await Event.findByIdAndUpdate(event.id, {...event, slug}, {new: true}).exec();
@@ -104,11 +110,12 @@ class EventDAO {
         }
     }
 
-    static async deleteEvent(id: string): Promise<EventType> {
+    static async deleteEvent(eventId: string): Promise<EventType> {
+        EventValidator.deleteEvent(eventId);
         try {
-            const deletedEvent = await Event.findByIdAndDelete(id).exec();
+            const deletedEvent = await Event.findByIdAndDelete(eventId).exec();
             if (!deletedEvent) {
-                throw CustomError(`Event with ID ${id} not found`, ErrorTypes.NOT_FOUND);
+                throw CustomError(`Event with ID ${eventId} not found`, ErrorTypes.NOT_FOUND);
             }
             return deletedEvent;
         } catch (error) {
@@ -122,9 +129,10 @@ class EventDAO {
     }
 
     //TODO look deeper into this, its very suspecious. Why not just push 1 userID
-    static async rsvp(id: string, userIDs: Array<string>) {
+    static async rsvp(eventId: string, userIDs: Array<string>) {
+        EventValidator.rsvp(eventId);
         try {
-            const event = await Event.findOneAndUpdate({_id: id}, {$addToSet: {rSVPs: {$each: userIDs}}}, {new: true}).exec();
+            const event = await Event.findOneAndUpdate({_id: eventId}, {$addToSet: {rSVPs: {$each: userIDs}}}, {new: true}).exec();
             return event;
         } catch (error) {
             console.error("Error updating event RSVP's", error);
@@ -137,9 +145,10 @@ class EventDAO {
     }
 
     //TODO look deeper into this, its very suspecious. Why not just pop 1 userID
-    static async cancelRsvp(id: string, userIDs: Array<string>) {
+    static async cancelRsvp(eventId: string, userIDs: Array<string>) {
+        EventValidator.cancelRsvp(eventId);
         try {
-            const event = await Event.findOneAndUpdate({_id: id}, {$pull: {rSVPs: {$in: userIDs}}}, {new: true}).exec();
+            const event = await Event.findOneAndUpdate({_id: eventId}, {$pull: {rSVPs: {$in: userIDs}}}, {new: true}).exec();
             return event;
         } catch (error) {
             console.error("Error cancelling event RSVP's", error);

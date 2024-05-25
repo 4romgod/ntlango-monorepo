@@ -101,29 +101,29 @@ export class UpdateUserInputType {
     @Field()
     id: string;
 
-    @Field()
-    email: string;
+    @Field({nullable: true})
+    email?: string;
 
     @Field({nullable: true})
     username?: string;
 
-    @Field()
-    address: string;
+    @Field({nullable: true})
+    address?: string;
 
-    @Field()
-    birthdate: string;
+    @Field({nullable: true})
+    birthdate?: string;
 
-    @Field()
-    given_name: string;
+    @Field({nullable: true})
+    given_name?: string;
 
-    @Field()
-    family_name: string;
+    @Field({nullable: true})
+    family_name?: string;
 
-    @Field(() => Gender)
-    gender: Gender;
+    @Field(() => Gender, {nullable: true})
+    gender?: Gender;
 
-    @Field()
-    password: string;
+    @Field({nullable: true})
+    password?: string;
 
     @Field({nullable: true})
     phone_number?: string;
