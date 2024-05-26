@@ -1,5 +1,6 @@
 'use client';
 
+import { GRAPHQL_URL } from '@/lib/constants';
 import { HttpLink } from '@apollo/client';
 import {
   ApolloNextAppProvider,
@@ -9,7 +10,7 @@ import {
 
 const makeClient = () => {
   const httpLink = new HttpLink({
-    uri: 'http://localhost:9000/api/v1/graphql',
+    uri: GRAPHQL_URL,
     fetchOptions: { next: { revalidate: 0 } },
   });
 

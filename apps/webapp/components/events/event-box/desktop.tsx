@@ -19,7 +19,7 @@ export default function EventBoxDesktop({ event }: { event: EventType }) {
   } = event;
 
   const organizersText = organizers?.map((user) => user.username).join(' and ') ?? '';
-  const eventSlug = kebabCase(title);
+  const eventSlug = kebabCase(title); // TODO get from the DB
 
   return (
     <Link href={`/events/${eventSlug}`}>
