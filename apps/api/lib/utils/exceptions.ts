@@ -51,21 +51,6 @@ export const CustomError = (errorMessage: string, errorType: CustomErrorType): G
 };
 
 /**
- * Get unique error field name
- */
-export const uniqueMessage = (error: any) => {
-    let output: string;
-    try {
-        const fieldName = error.message.substring(error.message.lastIndexOf('.$') + 2, error.message.lastIndexOf('_1'));
-        output = `${capitalize(fieldName)} already exists`;
-    } catch (ex) {
-        output = 'Unique field already exists';
-    }
-
-    return output;
-};
-
-/**
  * Get the errors that we are familiar with
  * //TODO Maybe use this in a middleware https://mongoosejs.com/docs/middleware.html
  */
@@ -90,4 +75,19 @@ export const KnownCommonError = (error: any): GraphQLError => {
     }
 
     return CustomError(message, ErrorTypes.INTERNAL_SERVER_ERROR);
+};
+
+/**
+ * Get unique error field name
+ */
+export const uniqueMessage = (error: any) => {
+    let output: string;
+    try {
+        const fieldName = error.message.substring(error.message.lastIndexOf('.$') + 2, error.message.lastIndexOf('_1'));
+        output = `${capitalize(fieldName)} already exists`;
+    } catch (ex) {
+        output = 'Unique field already exists';
+    }
+
+    return output;
 };

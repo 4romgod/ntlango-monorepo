@@ -2,7 +2,7 @@ import express, {Express} from 'express';
 import bodyParser from 'body-parser';
 import morgan from 'morgan';
 import {MongoDbClient} from './clients';
-import {API_DOMAIN, MONGO_DB_URL, API_PATH} from './constants';
+import {API_DOMAIN, MONGO_DB_URL, API_PATH, HttpStatusCode} from './constants';
 import {ApolloServer} from '@apollo/server';
 import {expressMiddleware} from '@apollo/server/express4';
 import {ApolloServerPluginDrainHttpServer} from '@apollo/server/plugin/drainHttpServer';
@@ -10,6 +10,8 @@ import createSchema from './graphql/schema';
 import {createServer} from 'http';
 import cors from 'cors';
 import type {ListenOptions} from 'net';
+import {GraphQLFormattedError} from 'graphql';
+import {ApolloServerErrorCode} from '@apollo/server/errors';
 
 export interface ServerContext {
     token?: string;
@@ -30,6 +32,17 @@ export const createGraphQlServer = async (listenOptions: ListenOptions) => {
                 httpServer: createServer(expressApp),
             }),
         ],
+        includeStacktraceInErrorResponses: false,
+        status400ForVariableCoercionErrors: true,
+        formatError: (formattedError: GraphQLFormattedError, error: unknown) => {
+            if (formattedError.extensions?.code === ApolloServerErrorCode.GRAPHQL_VALIDATION_FAILED) {
+                return {
+                    ...formattedError,
+                    message: "Your query doesn't match the schema. Try double-checking it!",
+                };
+            }
+            return formattedError;
+        },
     });
 
     await apolloServer.start();
@@ -42,6 +55,10 @@ export const createGraphQlServer = async (listenOptions: ListenOptions) => {
             context: async ({req}) => ({token: req.headers.token}),
         }),
     );
+
+    expressApp.get('/health', (req, res) => {
+        res.status(HttpStatusCode.OK).send('Okay!');
+    });
 
     const url = `${API_DOMAIN}:${listenOptions.port}${API_PATH}`;
     const httpServer = expressApp.listen(listenOptions.port, () => {
