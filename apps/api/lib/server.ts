@@ -18,6 +18,8 @@ export interface ServerContext {
 }
 
 export const createGraphQlServer = async (listenOptions: ListenOptions) => {
+    console.log('Creating Apollo with Express middleware server...');
+
     await MongoDbClient.connectToDatabase(MONGO_DB_URL);
 
     const expressApp: Express = express();
@@ -35,6 +37,7 @@ export const createGraphQlServer = async (listenOptions: ListenOptions) => {
         includeStacktraceInErrorResponses: false,
         status400ForVariableCoercionErrors: true,
         formatError: (formattedError: GraphQLFormattedError, error: unknown) => {
+            console.log(error);
             if (formattedError.extensions?.code === ApolloServerErrorCode.GRAPHQL_VALIDATION_FAILED) {
                 return {
                     ...formattedError,
@@ -45,8 +48,10 @@ export const createGraphQlServer = async (listenOptions: ListenOptions) => {
         },
     });
 
+    console.log('Starting the apollo server...');
     await apolloServer.start();
 
+    console.log('Adding express middleware to apollo server...');
     expressApp.use(
         API_PATH,
         cors<cors.CorsRequest>(),
@@ -65,5 +70,6 @@ export const createGraphQlServer = async (listenOptions: ListenOptions) => {
         console.log(`⚡️[server]: Server is running at ${url}`);
         expressApp.emit('appInitialized');
     });
+    console.log('Server has been created!');
     return {url, expressApp, apolloServer, httpServer};
 };

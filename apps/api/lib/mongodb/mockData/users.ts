@@ -11,7 +11,7 @@ const users: CreateUserInputType[] = [
         gender: Gender.Male,
         given_name: 'Jack',
         password: 'dfuyihjknbsndhj',
-        phone_number: '',
+        phone_number: '+12345678990',
         profile_picture: '',
     },
     {
@@ -24,7 +24,7 @@ const users: CreateUserInputType[] = [
         gender: Gender.Male,
         given_name: 'Sean',
         password: 'tryuik',
-        phone_number: '',
+        phone_number: '+12345678990',
         profile_picture: '',
     },
     {
@@ -37,7 +37,7 @@ const users: CreateUserInputType[] = [
         gender: Gender.Female,
         given_name: 'Celin',
         password: 'wreiujk22',
-        phone_number: '',
+        phone_number: '+12345678990',
         profile_picture: '',
     },
     {
@@ -50,7 +50,7 @@ const users: CreateUserInputType[] = [
         gender: Gender.Male,
         given_name: 'Jeff',
         password: 'sdjhjkj34',
-        phone_number: '',
+        phone_number: '+12345678990',
         profile_picture: '',
     },
 ];

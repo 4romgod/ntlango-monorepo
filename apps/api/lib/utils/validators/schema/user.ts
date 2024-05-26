@@ -1,65 +1,54 @@
 import {z} from 'zod';
-import {REGEX_DATE, REGEX_EMAIL, REGEX_PHONE_NUMBER} from '../../../constants';
-import {isEmpty} from 'lodash';
+import {REGEX_DATE, REGEX_PHONE_NUMBER} from '../../../constants';
+import {Gender} from '../../../graphql/types';
+import {ERROR_MESSAGES} from '../common';
 
 export const CreateUserInputTypeSchema = z.object({
-    address: z.string().nullish(),
-    birthdate: z.string().regex(REGEX_DATE, {message: 'Birthdate should be in DD/MM/YYYY format'}),
-    email: z.string().email({message: 'Invalid email format'}),
-    family_name: z.string().min(1, {message: 'Last name is required'}),
-    given_name: z.string().min(1, {message: 'First name is required'}),
-    password: z.string().min(8, {message: 'Password should be at least 8 characters long'}),
-    phone_number: z
+    address: z
         .string()
-        .nullish()
-        .refine((value) => isEmpty(value) || (value && REGEX_PHONE_NUMBER.test(value)), {message: 'Invalid phone number format'}),
+        .min(3, {message: `Address ${ERROR_MESSAGES.TOO_SHORT}`})
+        .nullish(),
+    birthdate: z.string().regex(REGEX_DATE, {message: `Birthdate ${ERROR_MESSAGES.INVALID_DATE}`}),
+    email: z.string().email({message: ERROR_MESSAGES.INVALID_EMAIL}),
+    family_name: z.string().min(1, {message: `Last name ${ERROR_MESSAGES.REQUIRED}`}),
+    gender: z.nativeEnum(Gender, {message: ERROR_MESSAGES.INVALID_GENDER}),
+    given_name: z.string().min(1, {message: `First name ${ERROR_MESSAGES.REQUIRED}`}),
+    password: z.string().min(8, {message: ERROR_MESSAGES.INVALID_PASSWORD}),
+    phone_number: z.string().regex(REGEX_PHONE_NUMBER, {message: ERROR_MESSAGES.INVALID_PHONE_NUMBER}),
     profile_picture: z.string().nullish(),
-    username: z.string().nullish(),
+    username: z.string().min(3, `username ${ERROR_MESSAGES.TOO_SHORT}`).nullish(),
 });
 
 export const UpdateUserInputTypeSchema = z.object({
     address: z.string().nullish(),
     birthdate: z
         .string()
-        .nullish()
-        .refine((value) => isEmpty(value) || (value && REGEX_DATE.test(value)), {message: 'Birthdate should be in DD/MM/YYYY format'}),
-    email: z
-        .string()
-        .nullish()
-        .refine((value) => isEmpty(value) || (value && REGEX_EMAIL.test(value)), {message: 'Invalid email format'}),
+        .regex(REGEX_DATE, {message: `Birthdate ${ERROR_MESSAGES.INVALID_DATE}`})
+        .nullish(),
+    email: z.string().email({message: ERROR_MESSAGES.INVALID_EMAIL}).nullish(),
     family_name: z
         .string()
-        .nullish()
-        .refine((value) => isEmpty(value) || (value && value.length >= 2), {message: 'Last name is too short'}),
+        .min(1, {message: `Last name ${ERROR_MESSAGES.INVALID}`})
+        .nullish(),
     given_name: z
         .string()
-        .nullish()
-        .refine((value) => isEmpty(value) || (value && value.length >= 2), {message: 'First name is too short'}),
-    password: z
-        .string()
-        .nullish()
-        .refine((value) => isEmpty(value) || (value && value.length >= 9), {message: 'Password should be at least 8 characters long'}),
-    phone_number: z
-        .string()
-        .nullish()
-        .refine((value) => isEmpty(value) || (value && REGEX_PHONE_NUMBER.test(value)), {message: 'Invalid phone number format'}),
+        .min(1, {message: `First name ${ERROR_MESSAGES.INVALID}`})
+        .nullish(),
+    password: z.string().min(8, {message: ERROR_MESSAGES.INVALID_PASSWORD}).nullish(),
+    phone_number: z.string().regex(REGEX_PHONE_NUMBER, {message: ERROR_MESSAGES.INVALID_PHONE_NUMBER}).nullish(),
     profile_picture: z.string().nullish(),
-    username: z
-        .string()
-        .nullish()
-        .refine((value) => isEmpty(value) || (value && value.length >= 3), {message: 'Username is too short'}),
+    username: z.string().nullish(),
 });
 
 export const LoginUserInputTypeSchema = z.object({
-    email: z.string().email({message: 'Invalid email format'}),
-    password: z.string().min(8, {message: 'Password should be at least 8 characters long'}),
+    email: z.string().email({message: ERROR_MESSAGES.INVALID_EMAIL}),
+    password: z.string().min(8, {message: ERROR_MESSAGES.INVALID_PASSWORD}),
 });
 
 export const ForgotPasswordInputTypeSchema = z.object({
-    email: z.string().email({message: 'Invalid email format'}),
+    email: z.string().email({message: ERROR_MESSAGES.INVALID_EMAIL}),
 });
 
 export const ResetPasswordInputTypeSchema = z.object({
-    password: z.string().min(8, {message: 'Password should be at least 8 characters long'}),
-    'confirm-password': z.string().min(8, {message: 'Password should be at least 8 characters long'}),
+    password: z.string().min(8, {message: ERROR_MESSAGES.INVALID_PASSWORD}),
 });

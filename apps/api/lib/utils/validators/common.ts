@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import {CustomError, ErrorTypes} from '../exceptions';
 import {ZodSchema} from 'zod';
+import {EventStatus, Gender} from '../../graphql/types';
 
 export const validateMongodbId = (id: string, message?: string) => {
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -8,10 +9,25 @@ export const validateMongodbId = (id: string, message?: string) => {
     }
 };
 
+// https://www.apollographql.com/docs/apollo-server/data/errors/
 export const validateInput = <Type>(schema: ZodSchema, input: Type) => {
     const {error, success} = schema.safeParse(input);
     if (!success && error) {
         const {message, path} = error.issues[0];
         throw CustomError(message, ErrorTypes.BAD_USER_INPUT, {argumentName: path[0]});
     }
+};
+
+export const ERROR_MESSAGES = {
+    INVALID: 'is invalid',
+    INVALID_DATE: 'should be in DD/MM/YYYY format',
+    INVALID_EMAIL: 'Invalid email format',
+    INVALID_ID: (type: string, id: string) => `${type} with id ${id} does not exist`,
+    INVALID_PASSWORD: 'Password should be at least 8 characters long',
+    INVALID_PHONE_NUMBER: 'Invalid phone number format',
+    TOO_SHORT: 'is too short',
+    REQUIRED: 'is required',
+    INVALID_GENDER: `Invalid gender input, should be ${Object.values(Gender).slice(0, -1).join(', ') + ', or ' + Object.values(Gender).slice(-1)}`,
+    INVALID_EVENT_STATUS: `Invalid event status, should be ${Object.values(EventStatus).slice(0, -1).join(', ') + ', or ' + Object.values(EventStatus).slice(-1)}`,
+    ATLEAST_ONE: (type: string) => `Atleast one ${type} is required`,
 };

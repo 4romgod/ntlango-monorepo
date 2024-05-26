@@ -3,7 +3,6 @@ import {InputType, Field, ObjectType, ID, Int, registerEnumType} from 'type-grap
 import GraphQLJSON from 'graphql-type-json';
 import {UserType} from './user';
 import {EventCategoryType} from './eventCategory';
-import {QueryParams} from '../../utils/queries/events';
 
 export enum EventPrivacySetting {
     Public = 'Public',
@@ -110,7 +109,7 @@ export class CreateEventInputType {
     location: string;
 
     @Field(() => EventStatus)
-    status: EventStatus;
+    status: EventStatus; // TODO set this according to date
 
     @Field(() => Int, {nullable: true})
     capacity?: number;

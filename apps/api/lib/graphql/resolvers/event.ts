@@ -2,30 +2,32 @@ import 'reflect-metadata';
 import {Arg, Mutation, Resolver, Query} from 'type-graphql';
 import {EventDAO} from '../../mongodb/dao';
 import {CreateEventInputType, EventQueryParams, EventType, UpdateEventInputType} from '../types';
-import {validateMongodbId} from '../../utils/validators';
+import {ERROR_MESSAGES, validateInput, validateMongodbId} from '../../utils/validators';
+import {CreateEventInputTypeSchema} from '../../utils/validators/schema/event';
 
 @Resolver()
 export class EventResolver {
     @Mutation(() => EventType)
     async createEvent(@Arg('input', () => CreateEventInputType) input: CreateEventInputType): Promise<EventType> {
+        validateInput<CreateEventInputType>(CreateEventInputTypeSchema, input);
         return EventDAO.create(input);
     }
 
     @Mutation(() => EventType)
     async updateEvent(@Arg('input', () => UpdateEventInputType) input: UpdateEventInputType): Promise<EventType> {
-        validateMongodbId(input.id, `Event with id ${input.id} does not exist`);
+        validateMongodbId(input.id, ERROR_MESSAGES.INVALID_ID('Event', input.id));
         return EventDAO.updateEvent(input);
     }
 
     @Mutation(() => EventType)
     async deleteEvent(@Arg('eventId') eventId: string): Promise<EventType> {
-        validateMongodbId(eventId, `Event with id ${eventId} does not exist`);
+        validateMongodbId(eventId, ERROR_MESSAGES.INVALID_ID('Event', eventId));
         return EventDAO.deleteEvent(eventId);
     }
 
     @Query(() => EventType)
     async readEventById(@Arg('eventId') eventId: string): Promise<EventType | null> {
-        validateMongodbId(eventId, `Event with id ${eventId} does not exist`);
+        validateMongodbId(eventId, ERROR_MESSAGES.INVALID_ID('Event', eventId));
         return EventDAO.readEventById(eventId);
     }
 

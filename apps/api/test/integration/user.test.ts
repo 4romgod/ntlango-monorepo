@@ -8,6 +8,7 @@ import {Server} from 'http';
 import {getCreateUserMutation, getUpdateUserMutation} from '../../lib/utils';
 import {UserDAO} from '../../lib/mongodb/dao';
 
+// https://www.apollographql.com/docs/apollo-server/testing/testing/
 describe('User Resolver', () => {
     let expressApp: Express;
     let apolloServer: ApolloServer<ServerContext>;
