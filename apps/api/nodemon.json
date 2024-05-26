@@ -1,0 +1,10 @@
+{
+    "verbose": true,
+    "ignore": [
+        "**/test/**",
+        "**/lib/mongodb/mockData/",
+        ".prettierrc.json",
+        "jest.config.ts",
+        "README.md"
+    ]
+}

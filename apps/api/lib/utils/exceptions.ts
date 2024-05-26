@@ -1,4 +1,4 @@
-import {GraphQLError} from 'graphql';
+import {GraphQLError, GraphQLErrorExtensions} from 'graphql';
 import {HttpStatusCode} from '../constants';
 import {ApolloServerErrorCode} from '@apollo/server/errors';
 import {capitalize} from 'lodash';
@@ -39,9 +39,10 @@ export const ErrorTypes: {[key: string]: CustomErrorType} = {
     },
 };
 
-export const CustomError = (errorMessage: string, errorType: CustomErrorType): GraphQLError => {
+export const CustomError = (errorMessage: string, errorType: CustomErrorType, extensions?: GraphQLErrorExtensions): GraphQLError => {
     return new GraphQLError(errorMessage, {
         extensions: {
+            ...(extensions && {...extensions}),
             code: errorType.errorCode,
             http: {
                 status: errorType.errorStatus,

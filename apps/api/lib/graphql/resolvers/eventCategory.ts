@@ -2,6 +2,7 @@ import 'reflect-metadata';
 import {Arg, Mutation, Resolver, Query} from 'type-graphql';
 import {CreateEventCategoryInputType, EventCategoryType, UpdateEventCategoryInputType} from '../types';
 import {EventCategoryDAO} from '../../mongodb/dao';
+import {validateMongodbId} from '../../utils/validators';
 
 @Resolver()
 export class EventCategoryResolver {
@@ -17,6 +18,7 @@ export class EventCategoryResolver {
 
     @Mutation(() => EventCategoryType)
     async deleteEvent(@Arg('id') id: string): Promise<EventCategoryType> {
+        validateMongodbId(id);
         return EventCategoryDAO.deleteEventCategory(id);
     }
 

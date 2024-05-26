@@ -7,7 +7,7 @@
   "scripts": {
     "build": "npm-run-all format test:unit build:ts",
     "build:ts": "echo '\nTranspilling ts source code...' && tsc --build --pretty --verbose && echo 'All done with the build!'",
-    "dev": "nodemon lib/scripts/startServer.ts",
+    "dev": "nodemon lib/scripts/startServer.ts --config nodemon.json",
     "start": "npm-run-all build start:ts",
     "start:ts": "ts-node --trace-warnings lib/scripts/startServer.ts",
     "format": "prettier --no-error-on-unmatched-pattern --config .prettierrc.json 'lib/**/*.{js,ts}' 'test/**/*.{js,ts}' --write",
@@ -23,6 +23,7 @@
     "@apollo/server": "^4.10.4",
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.2",
+    "class-validator": "^0.14.1",
     "cors": "^2.8.5",
     "express": "^4.19.2",
     "graphql": "^16.8.1",
@@ -37,7 +38,8 @@
     "supertest": "^7.0.0",
     "ts-jest": "^29.1.3",
     "ts-node": "^10.9.2",
-    "type-graphql": "^2.0.0-rc.1"
+    "type-graphql": "^2.0.0-rc.1",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",

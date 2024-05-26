@@ -43,6 +43,7 @@ describe('User Resolver', () => {
 
             it('should create new user when valid input is provided', async () => {
                 const createUserResponse = await request(url).post('').send(createUserInput);
+                console.log('createUserResponse', createUserResponse);
                 expect(createUserResponse.status).toBe(200);
                 expect(createUserResponse.error).toBeFalsy();
 

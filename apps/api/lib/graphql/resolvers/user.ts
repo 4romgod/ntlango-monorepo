@@ -2,31 +2,39 @@ import 'reflect-metadata';
 import {Arg, Mutation, Resolver, Query} from 'type-graphql';
 import {UserDAO} from '../../mongodb/dao';
 import {UserType, CreateUserInputType, UpdateUserInputType, LoginUserInputType} from '../types';
+import {validateInput, validateMongodbId} from '../../utils/validators';
+import {CreateUserInputTypeSchema, LoginUserInputTypeSchema, UpdateUserInputTypeSchema} from '../../utils/validators/schema';
 
 @Resolver()
 export class UserResolver {
     @Mutation(() => UserType)
     async createUser(@Arg('input', () => CreateUserInputType) input: CreateUserInputType): Promise<UserType> {
+        validateInput<CreateUserInputType>(CreateUserInputTypeSchema, input);
         return UserDAO.create(input);
     }
 
     @Mutation(() => UserType)
     async loginUser(@Arg('input', () => LoginUserInputType) input: LoginUserInputType): Promise<UserType> {
+        validateInput<LoginUserInputType>(LoginUserInputTypeSchema, input);
         return UserDAO.login(input);
     }
 
     @Mutation(() => UserType)
     async updateUser(@Arg('input', () => UpdateUserInputType) input: UpdateUserInputType): Promise<UserType> {
+        validateMongodbId(input.id, `User with id ${input.id} does not exist`);
+        validateInput<UpdateUserInputType>(UpdateUserInputTypeSchema, input);
         return UserDAO.updateUser(input);
     }
 
     @Mutation(() => UserType)
     async deleteUserById(@Arg('id') id: string): Promise<UserType> {
+        validateMongodbId(id, `User with id ${id} does not exist`);
         return UserDAO.deleteUserById(id);
     }
 
     @Query(() => UserType)
     async readUserById(@Arg('id') id: string): Promise<UserType | null> {
+        validateMongodbId(id, `User with id ${id} does not exist`);
         return UserDAO.readUserById(id);
     }
 
