@@ -5,6 +5,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import {JWT_SECRET} from '../../constants';
 import {GraphQLError} from 'graphql';
+import {ERROR_MESSAGES} from '../../utils/validators';
 
 class UserDAO {
     static async create(userData: CreateUserInputType): Promise<UserType> {
@@ -135,7 +136,7 @@ class UserDAO {
             const {id, ...updatableFields} = user;
             const updatedUser = await User.findByIdAndUpdate(user.id, {...updatableFields, encrypted_password}, {new: true}).exec();
             if (!updatedUser) {
-                throw CustomError('User not found', ErrorTypes.NOT_FOUND);
+                throw CustomError(ERROR_MESSAGES.NOT_FOUND('User', 'ID', id), ErrorTypes.NOT_FOUND);
             }
             return updatedUser;
         } catch (error) {
@@ -152,7 +153,7 @@ class UserDAO {
         try {
             const deletedUser = await User.findByIdAndDelete(userId).exec();
             if (!deletedUser) {
-                throw CustomError('User not found', ErrorTypes.NOT_FOUND);
+                throw CustomError(ERROR_MESSAGES.NOT_FOUND('User', 'ID', userId), ErrorTypes.NOT_FOUND);
             }
             return deletedUser;
         } catch (error) {

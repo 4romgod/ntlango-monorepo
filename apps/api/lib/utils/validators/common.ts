@@ -5,7 +5,7 @@ import {EventStatus, Gender} from '../../graphql/types';
 
 export const validateMongodbId = (id: string, message?: string) => {
     if (!mongoose.Types.ObjectId.isValid(id)) {
-        throw CustomError(message || `Invalid id: ${id}`, ErrorTypes.BAD_USER_INPUT);
+        throw CustomError(message || `id: ${id} does not exist`, ErrorTypes.NOT_FOUND);
     }
 };
 
@@ -22,9 +22,11 @@ export const ERROR_MESSAGES = {
     INVALID: 'is invalid',
     INVALID_DATE: 'should be in DD/MM/YYYY format',
     INVALID_EMAIL: 'Invalid email format',
-    INVALID_ID: (type: string, id: string) => `${type} with id ${id} does not exist`,
     INVALID_PASSWORD: 'Password should be at least 8 characters long',
     INVALID_PHONE_NUMBER: 'Invalid phone number format',
+    INVALID_QUERY: "Your query doesn't match the schema. Try double-checking it!",
+    NOT_FOUND: (type: string, searchParamType: string, searchParamValue: string) =>
+        `${type} with ${searchParamType} ${searchParamValue} does not exist`,
     TOO_SHORT: 'is too short',
     REQUIRED: 'is required',
     INVALID_GENDER: `Invalid gender input, should be ${Object.values(Gender).slice(0, -1).join(', ') + ', or ' + Object.values(Gender).slice(-1)}`,

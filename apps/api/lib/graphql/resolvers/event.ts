@@ -15,19 +15,19 @@ export class EventResolver {
 
     @Mutation(() => EventType)
     async updateEvent(@Arg('input', () => UpdateEventInputType) input: UpdateEventInputType): Promise<EventType> {
-        validateMongodbId(input.id, ERROR_MESSAGES.INVALID_ID('Event', input.id));
+        validateMongodbId(input.id, ERROR_MESSAGES.NOT_FOUND('Event', 'ID', input.id));
         return EventDAO.updateEvent(input);
     }
 
     @Mutation(() => EventType)
     async deleteEvent(@Arg('eventId') eventId: string): Promise<EventType> {
-        validateMongodbId(eventId, ERROR_MESSAGES.INVALID_ID('Event', eventId));
+        validateMongodbId(eventId, ERROR_MESSAGES.NOT_FOUND('Event', 'ID', eventId));
         return EventDAO.deleteEvent(eventId);
     }
 
     @Query(() => EventType)
     async readEventById(@Arg('eventId') eventId: string): Promise<EventType | null> {
-        validateMongodbId(eventId, ERROR_MESSAGES.INVALID_ID('Event', eventId));
+        validateMongodbId(eventId, ERROR_MESSAGES.NOT_FOUND('Event', 'ID', eventId));
         return EventDAO.readEventById(eventId);
     }
 

@@ -12,6 +12,7 @@ import cors from 'cors';
 import type {ListenOptions} from 'net';
 import {GraphQLFormattedError} from 'graphql';
 import {ApolloServerErrorCode} from '@apollo/server/errors';
+import {ERROR_MESSAGES} from './utils/validators';
 
 export interface ServerContext {
     token?: string;
@@ -36,12 +37,12 @@ export const createGraphQlServer = async (listenOptions: ListenOptions) => {
         ],
         includeStacktraceInErrorResponses: false,
         status400ForVariableCoercionErrors: true,
-        formatError: (formattedError: GraphQLFormattedError, error: unknown) => {
-            console.log(error);
+        formatError: (formattedError: GraphQLFormattedError, error: any) => {
+            console.error('Failed to process request. Returning formatted Error\n', error);
             if (formattedError.extensions?.code === ApolloServerErrorCode.GRAPHQL_VALIDATION_FAILED) {
                 return {
                     ...formattedError,
-                    message: "Your query doesn't match the schema. Try double-checking it!",
+                    message: ERROR_MESSAGES.INVALID_QUERY,
                 };
             }
             return formattedError;
