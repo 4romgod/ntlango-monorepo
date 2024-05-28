@@ -7,6 +7,7 @@ export const validateMongodbId = (id: string, message?: string) => {
     if (!mongoose.Types.ObjectId.isValid(id)) {
         throw CustomError(message || `id: ${id} does not exist`, ErrorTypes.NOT_FOUND);
     }
+    return true;
 };
 
 // https://www.apollographql.com/docs/apollo-server/data/errors/
@@ -18,18 +19,22 @@ export const validateInput = <Type>(schema: ZodSchema, input: Type) => {
     }
 };
 
+const transforomEnumToErrorMessage = (enumType: any) => {
+    return Object.values(enumType).slice(0, -1).join(', ') + ', or ' + Object.values(enumType).slice(-1);
+};
+
 export const ERROR_MESSAGES = {
+    ATLEAST_ONE: (type: string) => `Atleast one ${type} is required`,
     INVALID: 'is invalid',
     INVALID_DATE: 'should be in DD/MM/YYYY format',
     INVALID_EMAIL: 'Invalid email format',
+    INVALID_EVENT_STATUS: `Invalid event status, should be ${Object.values(EventStatus).slice(0, -1).join(', ') + ', or ' + Object.values(EventStatus).slice(-1)}`,
+    INVALID_GENDER: `Invalid gender input, should be ${transforomEnumToErrorMessage(Gender)}`,
     INVALID_PASSWORD: 'Password should be at least 8 characters long',
     INVALID_PHONE_NUMBER: 'Invalid phone number format',
     INVALID_QUERY: "Your query doesn't match the schema. Try double-checking it!",
-    NOT_FOUND: (type: string, searchParamType: string, searchParamValue: string) =>
-        `${type} with ${searchParamType} ${searchParamValue} does not exist`,
-    TOO_SHORT: 'is too short',
+    NOT_FOUND: (searchedItemType: string, searchParamType: string, searchParamValue: string) =>
+        `${searchedItemType} with ${searchParamType} ${searchParamValue} does not exist`,
     REQUIRED: 'is required',
-    INVALID_GENDER: `Invalid gender input, should be ${Object.values(Gender).slice(0, -1).join(', ') + ', or ' + Object.values(Gender).slice(-1)}`,
-    INVALID_EVENT_STATUS: `Invalid event status, should be ${Object.values(EventStatus).slice(0, -1).join(', ') + ', or ' + Object.values(EventStatus).slice(-1)}`,
-    ATLEAST_ONE: (type: string) => `Atleast one ${type} is required`,
+    TOO_SHORT: 'is too short',
 };

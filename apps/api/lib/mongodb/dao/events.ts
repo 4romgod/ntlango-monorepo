@@ -4,11 +4,9 @@ import {transformReadEventsQueryParams} from '../../utils/queries/events';
 import {GraphQLError} from 'graphql';
 import {CustomError, ErrorTypes, KnownCommonError} from '../../utils';
 import {kebabCase} from 'lodash';
-import {EventValidator} from '../../utils/validators';
 
 class EventDAO {
     static async create(event: CreateEventInputType): Promise<EventType> {
-        EventValidator.create(event);
         try {
             const slug = kebabCase(event.title);
             return await Event.create({...event, slug});
@@ -23,7 +21,6 @@ class EventDAO {
     }
 
     static async readEventById(eventId: string, projections?: Array<string>): Promise<EventType> {
-        EventValidator.readEventById(eventId);
         try {
             const query = Event.findById(eventId).populate('organizers').populate('rSVPs').populate('eventCategory');
             if (projections && projections.length) {
@@ -46,7 +43,6 @@ class EventDAO {
     }
 
     static async readEventBySlug(slug: string, projections?: Array<string>): Promise<EventType> {
-        EventValidator.readEventBySlug(slug);
         try {
             const query = Event.findOne({slug: slug}).populate('organizers').populate('rSVPs').populate('eventCategory');
             if (projections && projections.length) {
@@ -69,7 +65,6 @@ class EventDAO {
     }
 
     static async readEvents(queryParams?: EventQueryParams, projections?: Array<string>): Promise<Array<EventType>> {
-        EventValidator.readEvents();
         try {
             const queryConditions = transformReadEventsQueryParams(queryParams);
             const query = Event.find({...queryConditions})
@@ -92,7 +87,6 @@ class EventDAO {
     }
 
     static async updateEvent(event: UpdateEventInputType): Promise<EventType> {
-        EventValidator.updateEvent(event);
         try {
             const slug = kebabCase(event.title);
             const updatedEvent = await Event.findByIdAndUpdate(event.id, {...event, slug}, {new: true}).exec();
@@ -111,7 +105,6 @@ class EventDAO {
     }
 
     static async deleteEvent(eventId: string): Promise<EventType> {
-        EventValidator.deleteEvent(eventId);
         try {
             const deletedEvent = await Event.findByIdAndDelete(eventId).exec();
             if (!deletedEvent) {
@@ -130,7 +123,6 @@ class EventDAO {
 
     //TODO look deeper into this, its very suspecious. Why not just push 1 userID
     static async rsvp(eventId: string, userIDs: Array<string>) {
-        EventValidator.rsvp(eventId);
         try {
             const event = await Event.findOneAndUpdate({_id: eventId}, {$addToSet: {rSVPs: {$each: userIDs}}}, {new: true}).exec();
             return event;
@@ -146,7 +138,6 @@ class EventDAO {
 
     //TODO look deeper into this, its very suspecious. Why not just pop 1 userID
     static async cancelRsvp(eventId: string, userIDs: Array<string>) {
-        EventValidator.cancelRsvp(eventId);
         try {
             const event = await Event.findOneAndUpdate({_id: eventId}, {$pull: {rSVPs: {$in: userIDs}}}, {new: true}).exec();
             return event;

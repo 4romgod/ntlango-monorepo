@@ -1,16 +1,15 @@
 import {Express} from 'express';
-import {ServerContext, createGraphQlServer} from '../../lib/server';
+import {ServerContext, createGraphQlServer} from '../../../lib/server';
 import {ApolloServer} from '@apollo/server';
 import request from 'supertest';
-import {usersMockData} from '../../lib/mongodb/mockData';
-import {API_DOMAIN, API_PATH} from '../../lib/constants';
+import {usersMockData} from '../../../lib/mongodb/mockData';
+import {API_DOMAIN, API_PATH} from '../../../lib/constants';
 import {Server} from 'http';
-import {getCreateUserMutation, getUpdateUserMutation} from '../../lib/utils';
-import {UserDAO} from '../../lib/mongodb/dao';
-import {CreateUserInputType, UpdateUserInputType, UserType} from '../../lib/graphql/types';
-import {ERROR_MESSAGES} from '../../lib/utils/validators';
+import {getCreateUserMutation, getUpdateUserMutation} from '../../../lib/utils';
+import {UserDAO} from '../../../lib/mongodb/dao';
+import {CreateUserInputType, UpdateUserInputType, UserType} from '../../../lib/graphql/types';
+import {ERROR_MESSAGES} from '../../../lib/utils/validators';
 
-// https://www.apollographql.com/docs/apollo-server/testing/testing/
 describe('User Resolver', () => {
     let expressApp: Express;
     let apolloServer: ApolloServer<ServerContext>;
@@ -97,9 +96,6 @@ describe('User Resolver', () => {
              * 1. user creates runs into conflicts with other existing items
              * 2. user enters correct schema, but invalid values (handled by zod schema)
              * 3. user enters incorrect input schema (e.g. leaves out a required attribute)
-             * 4. user tries calling an invalid operation (expect GRAPHQL_VALIDATION_FAILED) (this doesn't fit here)
-             * text: '{"errors":[{"message":"GraphQL operations must contain a non-empty `query` or a `persistedQuery` extension.","extensions":{"code":"BAD_REQUEST"}}]}\n',
-             *
              */
             it('should throw CONFLICT error when unique attribute already exists', async () => {
                 const createUserMutation = getCreateUserMutation(createUserInput);
@@ -149,8 +145,6 @@ describe('User Resolver', () => {
          * 3. user enters correct schema, but id does not exist (gets a 404) XX
          * 4. user enters correct schema, but id is invalid (gets a 404) XX
          * 5. user enters incorrect input schema (e.g. adds a non existing attribute attribute) XX
-         * 6. user tries calling an invalid operation (expect GRAPHQL_VALIDATION_FAILED) (this doesn't fit here)
-         * text: '{"errors":[{"message":"GraphQL operations must contain a non-empty `query` or a `persistedQuery` extension.","extensions":{"code":"BAD_REQUEST"}}]}\n',
          *
          */
         describe('updateUser Mutation', () => {

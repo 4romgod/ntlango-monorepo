@@ -1,7 +1,7 @@
 import {z} from 'zod';
 import {REGEX_DATE, REGEX_PHONE_NUMBER} from '../../../constants';
 import {Gender} from '../../../graphql/types';
-import {ERROR_MESSAGES} from '../common';
+import {ERROR_MESSAGES, validateMongodbId} from '../common';
 
 export const CreateUserInputTypeSchema = z.object({
     address: z
@@ -20,6 +20,7 @@ export const CreateUserInputTypeSchema = z.object({
 });
 
 export const UpdateUserInputTypeSchema = z.object({
+    id: z.string().refine(validateMongodbId),
     address: z.string().nullish(),
     birthdate: z
         .string()

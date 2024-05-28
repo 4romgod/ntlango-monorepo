@@ -3,11 +3,9 @@ import {EventCategoryType, UpdateEventCategoryInputType, CreateEventCategoryInpu
 import {GraphQLError} from 'graphql';
 import {CustomError, ErrorTypes, KnownCommonError} from '../../utils';
 import {kebabCase} from 'lodash';
-import {EventCategoryValidator} from '../../utils/validators';
 
 class EventCategoryDAO {
     static async create(category: CreateEventCategoryInputType): Promise<EventCategoryType> {
-        EventCategoryValidator.create(category);
         try {
             const slug = kebabCase(category.name);
             return await EventCategory.create({...category, slug});
@@ -22,7 +20,6 @@ class EventCategoryDAO {
     }
 
     static async readEventCategoryById(eventId: string, projections?: Array<string>): Promise<EventCategoryType> {
-        EventCategoryValidator.readEventCategoryById(eventId);
         try {
             const query = EventCategory.findById({id: eventId});
             if (projections && projections.length) {
@@ -45,7 +42,6 @@ class EventCategoryDAO {
     }
 
     static async readEventCategoryBySlug(slug: string, projections?: Array<string>): Promise<EventCategoryType> {
-        EventCategoryValidator.readEventCategoryBySlug(slug);
         try {
             const query = EventCategory.findOne({slug: slug});
             if (projections && projections.length) {
@@ -68,7 +64,6 @@ class EventCategoryDAO {
     }
 
     static async readEventCategories(): Promise<Array<EventCategoryType>> {
-        EventCategoryValidator.readEventCategories();
         try {
             const query = EventCategory.find();
             return await query.exec();
@@ -83,7 +78,6 @@ class EventCategoryDAO {
     }
 
     static async updateEventCategory(category: UpdateEventCategoryInputType) {
-        EventCategoryValidator.updateEventCategory(category);
         try {
             const slug = kebabCase(category.name);
             const updatedEventCategory = await EventCategory.findByIdAndUpdate(category.id, {...category, slug}, {new: true}).exec();
@@ -102,7 +96,6 @@ class EventCategoryDAO {
     }
 
     static async deleteEventCategory(eventId: string): Promise<EventCategoryType> {
-        EventCategoryValidator.deleteEventCategory(eventId);
         try {
             const deletedEventCategory = await EventCategory.findOneAndDelete({_id: eventId}).exec();
             if (!deletedEventCategory) {
