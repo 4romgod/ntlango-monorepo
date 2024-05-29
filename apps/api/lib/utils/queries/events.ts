@@ -1,4 +1,4 @@
-import {EventQueryParams} from '../../graphql/types';
+import {EventQueryParams} from '@/graphql/types';
 
 export type QueryParams<T> = Partial<{[K in keyof T]: T[K]}>;
 

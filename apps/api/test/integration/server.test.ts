@@ -1,8 +1,8 @@
 import {Express} from 'express';
-import {ServerContext, createGraphQlServer} from '../../lib/server';
+import {ServerContext, createGraphQlServer} from '@/server';
 import {ApolloServer} from '@apollo/server';
 import request from 'supertest';
-import {API_DOMAIN, API_PATH} from '../../lib/constants';
+import {API_DOMAIN, API_PATH} from '@/constants';
 import {Server} from 'http';
 
 // https://www.apollographql.com/docs/apollo-server/testing/testing/
@@ -62,7 +62,6 @@ describe('Server', () => {
                     variables: {},
                 };
                 const response = await request(url).post('').send(malformedQuery);
-                console.log('response', response);
                 expect(response.status).toBe(400);
                 expect(response.body.errors[0].extensions.code).toBe('GRAPHQL_PARSE_FAILED');
             });

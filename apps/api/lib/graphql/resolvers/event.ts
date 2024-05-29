@@ -1,9 +1,9 @@
 import 'reflect-metadata';
 import {Arg, Mutation, Resolver, Query} from 'type-graphql';
-import {EventDAO} from '../../mongodb/dao';
-import {CreateEventInputType, EventQueryParams, EventType, UpdateEventInputType} from '../types';
-import {ERROR_MESSAGES, validateInput, validateMongodbId} from '../../utils/validators';
-import {CreateEventInputTypeSchema} from '../types/schema/event';
+import {EventDAO} from '@/mongodb/dao';
+import {CreateEventInputType, EventQueryParams, EventType, UpdateEventInputType} from '@/graphql/types';
+import {ERROR_MESSAGES, validateInput, validateMongodbId} from '@/utils/validators';
+import {CreateEventInputTypeSchema} from '@/graphql/types/schema';
 
 @Resolver()
 export class EventResolver {

@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
-import {CustomError, ErrorTypes} from '../exceptions';
+import {CustomError, ErrorTypes} from '@/utils/exceptions';
 import {ZodSchema} from 'zod';
-import {EventStatus, Gender} from '../../graphql/types';
+import {EventStatus, Gender} from '@/graphql/types';
 
 export const validateMongodbId = (id: string, message?: string) => {
     if (!mongoose.Types.ObjectId.isValid(id)) {

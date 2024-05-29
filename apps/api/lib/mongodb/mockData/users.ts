@@ -1,4 +1,4 @@
-import {Gender, CreateUserInputType} from '../../graphql/types';
+import {Gender, CreateUserInputType} from '@/graphql/types';
 
 const users: CreateUserInputType[] = [
     {

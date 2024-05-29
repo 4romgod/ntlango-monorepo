@@ -1,4 +1,4 @@
-import {CreateEventCategoryInputType} from '../../graphql/types';
+import {CreateEventCategoryInputType} from '@/graphql/types';
 
 export const eventCategories: CreateEventCategoryInputType[] = [
     {

@@ -1,4 +1,5 @@
 import type {Config} from 'jest';
+import {pathsToModuleNameMapper} from 'ts-jest';
 
 const config: Config = {
     verbose: true,
@@ -11,6 +12,9 @@ const config: Config = {
         '<rootDir>/test/integration/**/*.test.[jt]s?(x)',
         '<rootDir>/test/unit/**/*.test.[jt]s?(x)',
     ],
+    moduleNameMapper: {
+        '^@/(.*)$': '<rootDir>/lib/$1',
+    },
 };
 
 export default config;

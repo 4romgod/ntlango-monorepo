@@ -1,4 +1,4 @@
-import {CreateEventInputType, EventPrivacySetting, EventStatus} from '../../graphql/types';
+import {CreateEventInputType, EventPrivacySetting, EventStatus} from '@/graphql/types';
 
 const events: CreateEventInputType[] = [
     {

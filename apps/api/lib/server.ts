@@ -1,24 +1,27 @@
+import cors from 'cors';
+import morgan from 'morgan';
+import {ListenOptions} from 'net';
 import express, {Express} from 'express';
 import bodyParser from 'body-parser';
-import morgan from 'morgan';
-import {MongoDbClient} from './clients';
-import {API_DOMAIN, MONGO_DB_URL, API_PATH, HttpStatusCode} from './constants';
+import {MongoDbClient} from '@/clients';
+import {API_DOMAIN, MONGO_DB_URL, API_PATH, HttpStatusCode} from '@/constants';
 import {ApolloServer} from '@apollo/server';
 import {expressMiddleware} from '@apollo/server/express4';
 import {ApolloServerPluginDrainHttpServer} from '@apollo/server/plugin/drainHttpServer';
-import createSchema from './graphql/schema';
+import createSchema from '@/graphql/schema';
 import {createServer} from 'http';
-import cors from 'cors';
-import type {ListenOptions} from 'net';
 import {GraphQLFormattedError} from 'graphql';
 import {ApolloServerErrorCode} from '@apollo/server/errors';
-import {ERROR_MESSAGES} from './utils/validators';
+import {ERROR_MESSAGES} from '@/utils/validators';
 
 export interface ServerContext {
     token?: string;
 }
 
+const serverStartTimeLabel = 'Server started after';
+
 export const createGraphQlServer = async (listenOptions: ListenOptions) => {
+    console.time(serverStartTimeLabel);
     console.log('Creating Apollo with Express middleware server...');
 
     await MongoDbClient.connectToDatabase(MONGO_DB_URL);
@@ -72,5 +75,6 @@ export const createGraphQlServer = async (listenOptions: ListenOptions) => {
         expressApp.emit('appInitialized');
     });
     console.log('Server has been created!');
+    console.timeEnd(serverStartTimeLabel);
     return {url, expressApp, apolloServer, httpServer};
 };

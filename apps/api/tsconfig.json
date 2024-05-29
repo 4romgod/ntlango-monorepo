@@ -12,6 +12,14 @@
     "skipLibCheck": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "strictPropertyInitialization": false
+    "strictPropertyInitialization": false,
+    "preserveSymlinks": true,
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["lib/*"]
+    }
+  },
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
   }
 }

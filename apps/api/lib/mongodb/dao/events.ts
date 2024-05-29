@@ -1,8 +1,8 @@
-import {Event} from '../models';
-import {EventType, UpdateEventInputType, CreateEventInputType, EventQueryParams} from '../../graphql/types';
-import {transformReadEventsQueryParams} from '../../utils/queries/events';
 import {GraphQLError} from 'graphql';
-import {CustomError, ErrorTypes, KnownCommonError} from '../../utils';
+import {Event} from '@/mongodb/models';
+import {EventType, UpdateEventInputType, CreateEventInputType, EventQueryParams} from '@/graphql/types';
+import {transformReadEventsQueryParams} from '@/utils/queries/events';
+import {CustomError, ErrorTypes, KnownCommonError} from '@/utils';
 import {kebabCase} from 'lodash';
 
 class EventDAO {

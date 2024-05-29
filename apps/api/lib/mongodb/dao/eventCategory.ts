@@ -1,7 +1,7 @@
-import {EventCategory} from '../models';
-import {EventCategoryType, UpdateEventCategoryInputType, CreateEventCategoryInputType} from '../../graphql/types';
+import {EventCategory} from '@/mongodb/models';
+import {EventCategoryType, UpdateEventCategoryInputType, CreateEventCategoryInputType} from '@/graphql/types';
 import {GraphQLError} from 'graphql';
-import {CustomError, ErrorTypes, KnownCommonError} from '../../utils';
+import {CustomError, ErrorTypes, KnownCommonError} from '@/utils';
 import {kebabCase} from 'lodash';
 
 class EventCategoryDAO {

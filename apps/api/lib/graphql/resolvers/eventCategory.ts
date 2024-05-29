@@ -1,8 +1,8 @@
 import 'reflect-metadata';
 import {Arg, Mutation, Resolver, Query} from 'type-graphql';
-import {CreateEventCategoryInputType, EventCategoryType, UpdateEventCategoryInputType} from '../types';
-import {EventCategoryDAO} from '../../mongodb/dao';
-import {validateMongodbId} from '../../utils/validators';
+import {CreateEventCategoryInputType, EventCategoryType, UpdateEventCategoryInputType} from '@/graphql/types';
+import {EventCategoryDAO} from '@/mongodb/dao';
+import {validateMongodbId} from '@/utils/validators';
 
 @Resolver()
 export class EventCategoryResolver {

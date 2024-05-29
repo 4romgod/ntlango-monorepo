@@ -1,4 +1,4 @@
-import {EventType} from '../../graphql/types';
+import {EventType} from '@/graphql/types';
 import {Document, model, Schema} from 'mongoose';
 
 // TODO use mongoose middleware to validate all params, especially arrays for unique items

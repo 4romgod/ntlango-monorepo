@@ -1,5 +1,5 @@
 import {GraphQLError, GraphQLErrorExtensions} from 'graphql';
-import {HttpStatusCode} from '../constants';
+import {HttpStatusCode} from '@/constants';
 import {ApolloServerErrorCode} from '@apollo/server/errors';
 import {capitalize} from 'lodash';
 

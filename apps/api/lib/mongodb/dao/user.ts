@@ -1,11 +1,11 @@
-import {User} from '../models';
-import {UserType, UpdateUserInputType, CreateUserInputType, UserQueryParams, LoginUserInputType, JwtUserPayload, UserRole} from '../../graphql/types';
-import {ErrorTypes, CustomError, KnownCommonError} from '../../utils';
+import {User} from '@/mongodb/models';
+import {UserType, UpdateUserInputType, CreateUserInputType, UserQueryParams, LoginUserInputType, JwtUserPayload, UserRole} from '@/graphql/types';
+import {ErrorTypes, CustomError, KnownCommonError} from '@/utils';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import {JWT_SECRET} from '../../constants';
+import {JWT_SECRET} from '@/constants';
 import {GraphQLError} from 'graphql';
-import {ERROR_MESSAGES} from '../../utils/validators';
+import {ERROR_MESSAGES} from '@/utils/validators';
 
 class UserDAO {
     static async create(userData: CreateUserInputType): Promise<UserType> {

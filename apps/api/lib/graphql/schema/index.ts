@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import {buildSchema} from 'type-graphql';
-import {EventCategoryResolver, EventResolver, UserResolver} from '../resolvers';
+import {EventCategoryResolver, EventResolver, UserResolver} from '@/graphql/resolvers';
 
 const createSchema = async () => {
     const schema = await buildSchema({

@@ -1,4 +1,4 @@
-import {EventCategoryType} from '../../graphql/types';
+import {EventCategoryType} from '@/graphql/types';
 import {model, Schema, Document} from 'mongoose';
 
 const EventCategorySchema = new Schema<EventCategoryType & Document>(

@@ -1,9 +1,9 @@
 import 'reflect-metadata';
 import {Arg, Mutation, Resolver, Query} from 'type-graphql';
-import {UserDAO} from '../../mongodb/dao';
-import {UserType, CreateUserInputType, UpdateUserInputType, LoginUserInputType} from '../types';
-import {ERROR_MESSAGES, validateInput, validateMongodbId} from '../../utils/validators';
-import {CreateUserInputTypeSchema, LoginUserInputTypeSchema, UpdateUserInputTypeSchema} from '../types/schema';
+import {UserDAO} from '@/mongodb/dao';
+import {UserType, CreateUserInputType, UpdateUserInputType, LoginUserInputType} from '@/graphql/types';
+import {CreateUserInputTypeSchema, LoginUserInputTypeSchema, UpdateUserInputTypeSchema} from '@/graphql/types/schema';
+import {ERROR_MESSAGES, validateInput, validateMongodbId} from '@/utils/validators';
 
 @Resolver()
 export class UserResolver {

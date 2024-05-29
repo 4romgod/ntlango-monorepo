@@ -1,8 +1,8 @@
-import {MongoDbClient} from '../clients';
-import {EventCategoryDAO, EventDAO, UserDAO} from '../mongodb/dao';
-import {usersMockData, eventsMockData, eventCategoryData} from '../mongodb/mockData';
-import {MONGO_DB_URL} from '../constants';
-import {CreateEventCategoryInputType, CreateEventInputType, CreateUserInputType} from '../graphql/types';
+import {MongoDbClient} from '@/clients';
+import {EventCategoryDAO, EventDAO, UserDAO} from '@/mongodb/dao';
+import {usersMockData, eventsMockData, eventCategoryData} from '@/mongodb/mockData';
+import {MONGO_DB_URL} from '@/constants';
+import {CreateEventCategoryInputType, CreateEventInputType, CreateUserInputType} from '@/graphql/types';
 
 function getRandomUniqueItems(array: Array<string>, count: number) {
     const copyArray = [...array];

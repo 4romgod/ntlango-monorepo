@@ -1,14 +1,14 @@
 import {Express} from 'express';
-import {ServerContext, createGraphQlServer} from '../../../lib/server';
+import {ServerContext, createGraphQlServer} from '@/server';
 import {ApolloServer} from '@apollo/server';
 import request from 'supertest';
-import {usersMockData} from '../../../lib/mongodb/mockData';
-import {API_DOMAIN, API_PATH} from '../../../lib/constants';
+import {usersMockData} from '@/mongodb/mockData';
+import {API_DOMAIN, API_PATH} from '@/constants';
 import {Server} from 'http';
-import {getCreateUserMutation, getUpdateUserMutation} from '../../../lib/utils';
-import {UserDAO} from '../../../lib/mongodb/dao';
-import {CreateUserInputType, UpdateUserInputType, UserType} from '../../../lib/graphql/types';
-import {ERROR_MESSAGES} from '../../../lib/utils/validators';
+import {getCreateUserMutation, getUpdateUserMutation} from '@/utils';
+import {UserDAO} from '@/mongodb/dao';
+import {CreateUserInputType, UpdateUserInputType, UserType} from '@/graphql/types';
+import {ERROR_MESSAGES} from '@/utils/validators';
 
 describe('User Resolver', () => {
     let expressApp: Express;

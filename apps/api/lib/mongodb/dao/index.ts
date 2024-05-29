@@ -1,3 +1,3 @@
-export {default as EventDAO} from './events';
-export {default as UserDAO} from './user';
-export {default as EventCategoryDAO} from './eventCategory';
+export {default as EventDAO} from '@/mongodb/dao/events';
+export {default as UserDAO} from '@/mongodb/dao/user';
+export {default as EventCategoryDAO} from '@/mongodb/dao/eventCategory';
