@@ -37,7 +37,11 @@ export const getUpdateUserMutation = (user: any) => {
 export const getLoginUserMutation = (loginData: any) => {
     return {
         query: `mutation LoginUser($input: LoginUserInputType!) {
-            loginUser(input: $input)
+            loginUser(input: $input) {
+                id
+                email
+                token
+            }
         }`,
         variables: {
             input: loginData,

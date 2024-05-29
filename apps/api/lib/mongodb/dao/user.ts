@@ -35,14 +35,14 @@ class UserDAO {
         }
     }
 
-    static async login(loginData: LoginUserInputType): Promise<string> {
+    static async login(loginData: LoginUserInputType): Promise<UserWithTokenType> {
         try {
             const user = await User.findOne({email: loginData.email});
             if (user) {
                 if (await bcrypt.compare(loginData.password, user.encrypted_password)) {
                     const jwtPayload = {...user.toObject({getters: true})};
                     const jwtToken = generateToken(jwtPayload);
-                    return jwtToken;
+                    return {token: jwtToken, ...jwtPayload};
                 } else {
                     throw CustomError(ERROR_MESSAGES.PASSWORD_MISSMATCH, ErrorTypes.UNAUTHENTICATED);
                 }

@@ -115,7 +115,7 @@ describe('User Resolver', () => {
                 expect(loginUserResponse.status).toBe(200);
                 expect(loginUserResponse.error).toBeFalsy();
 
-                const tokenData = loginUserResponse.body.data.loginUser;
+                const tokenData = loginUserResponse.body.data.loginUser.token;
                 const decodedUser = verifyToken(tokenData) as UserType;
                 expect(decodedUser.id).toBe(createdUser.id);
             });

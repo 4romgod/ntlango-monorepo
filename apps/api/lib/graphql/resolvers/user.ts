@@ -14,8 +14,8 @@ export class UserResolver {
     }
 
     // TODO https://hygraph.com/learn/graphql/authentication-and-authorization
-    @Mutation(() => String)
-    async loginUser(@Arg('input', () => LoginUserInputType) input: LoginUserInputType): Promise<string> {
+    @Mutation(() => UserWithTokenType)
+    async loginUser(@Arg('input', () => LoginUserInputType) input: LoginUserInputType): Promise<UserWithTokenType> {
         validateInput<LoginUserInputType>(LoginUserInputTypeSchema, input);
         return UserDAO.login(input);
     }
