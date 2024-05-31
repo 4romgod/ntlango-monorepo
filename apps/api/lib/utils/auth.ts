@@ -30,10 +30,7 @@ export const authChecker: AuthChecker<ServerContext> = async ({context, args, in
 
         const isAuthorized = await isAuthorizedByOperation(info.fieldName, args, user);
         if (isAuthorized) {
-            console.log(
-                `${userRole} type user: '${user.username}' has 'isAuthorizedByOperation' permission for operation ${operationName} and resource:`,
-            );
-            console.log(args);
+            console.log(`${userRole} type user: '${user.username}' has 'isAuthorizedByOperation' permission for operation ${operationName}`);
             return true;
         }
 

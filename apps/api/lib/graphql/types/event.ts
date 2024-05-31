@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import {InputType, Field, ObjectType, ID, Int, registerEnumType} from 'type-graphql';
+import {InputType, Field, ObjectType, Int, registerEnumType} from 'type-graphql';
 import GraphQLJSON from 'graphql-type-json';
 import {UserType} from './user';
 import {EventCategoryType} from './eventCategory';
@@ -26,9 +26,9 @@ registerEnumType(EventStatus, {
 });
 
 @ObjectType()
-class Media {
-    @Field()
-    featuredImageUrl: string;
+export class Media {
+    @Field({nullable: true})
+    featuredImageUrl?: string;
 
     @Field(() => GraphQLJSON, {nullable: true})
     otherMediaData?: Record<string, any>;
@@ -48,11 +48,14 @@ export class EventType {
     @Field()
     description: string;
 
-    @Field()
-    startDate: string;
+    @Field(() => Date)
+    startDateTime: Date;
 
-    @Field()
-    endDate: string;
+    @Field(() => Date)
+    endDateTime: Date;
+
+    @Field({nullable: true})
+    recurrenceRule?: string;
 
     @Field()
     location: string;
@@ -75,8 +78,8 @@ export class EventType {
     @Field(() => GraphQLJSON, {nullable: true})
     tags?: Record<string, any>;
 
-    @Field(() => Media)
-    media: Media;
+    @Field(() => Media, {nullable: true})
+    media?: Media;
 
     @Field(() => GraphQLJSON, {nullable: true})
     additionalDetails?: Record<string, any>;
@@ -100,10 +103,13 @@ export class CreateEventInputType {
     description: string;
 
     @Field()
-    startDate: string;
+    startDateTime: string;
 
     @Field()
-    endDate: string;
+    endDateTime: string;
+
+    @Field({nullable: true})
+    recurrenceRule?: string;
 
     @Field()
     location: string;
@@ -154,10 +160,13 @@ export class UpdateEventInputType {
     description?: string;
 
     @Field({nullable: true})
-    startDate?: string;
+    startDateTime?: string;
 
     @Field({nullable: true})
-    endDate?: string;
+    endDateTime?: string;
+
+    @Field({nullable: true})
+    recurrenceRule?: string;
 
     @Field({nullable: true})
     location?: string;
@@ -215,6 +224,15 @@ export class EventQueryParams {
 
     @Field({nullable: true})
     endDate?: string;
+
+    @Field({nullable: true})
+    startTime?: string;
+
+    @Field({nullable: true})
+    endTime?: string;
+
+    @Field({nullable: true})
+    recurrenceRule?: string;
 
     @Field({nullable: true})
     location?: string;

@@ -7,7 +7,7 @@ const EventCategorySchema = new Schema<EventCategoryType & Document>(
         name: {type: String, required: true, unique: true},
         iconName: {type: String, required: true},
         description: {type: String, required: true},
-        color: {type: String, required: true},
+        color: {type: String, required: false},
     },
     {timestamps: true},
 );

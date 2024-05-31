@@ -38,7 +38,7 @@ export const createGraphQlServer = async (listenOptions: ListenOptions) => {
                 httpServer: createServer(expressApp),
             }),
         ],
-        includeStacktraceInErrorResponses: false,
+        includeStacktraceInErrorResponses: true, // TODO turn this off in prod
         status400ForVariableCoercionErrors: true,
         formatError: (formattedError: GraphQLFormattedError, error: any) => {
             console.error('Failed to process request. Returning formatted Error\n', error);

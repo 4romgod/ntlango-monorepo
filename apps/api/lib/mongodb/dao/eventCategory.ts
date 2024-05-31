@@ -28,7 +28,7 @@ class EventCategoryDAO {
             const event = await query.exec();
 
             if (!event) {
-                throw CustomError(`Event Categiry with id ${eventId} does not exist`, ErrorTypes.NOT_FOUND);
+                throw CustomError(`Event Category with id ${eventId} does not exist`, ErrorTypes.NOT_FOUND);
             }
             return event;
         } catch (error) {
@@ -95,7 +95,7 @@ class EventCategoryDAO {
         }
     }
 
-    static async deleteEventCategory(eventId: string): Promise<EventCategoryType> {
+    static async deleteEventCategoryById(eventId: string): Promise<EventCategoryType> {
         try {
             const deletedEventCategory = await EventCategory.findOneAndDelete({_id: eventId}).exec();
             if (!deletedEventCategory) {
