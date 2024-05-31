@@ -29,13 +29,13 @@ describe('User Resolver', () => {
     };
 
     beforeAll(() => {
-        const initializeServer = async () => {
+        const initialSetup = async () => {
             const createServerResults = await createGraphQlServer({port: TEST_PORT});
             expressApp = createServerResults.expressApp;
             apolloServer = createServerResults.apolloServer;
             httpServer = createServerResults.httpServer;
         };
-        return initializeServer();
+        return initialSetup();
     });
 
     afterAll(() => {
@@ -158,7 +158,7 @@ describe('User Resolver', () => {
                 expect(createUserResponse.body.errors[0].message).toBe(ERROR_MESSAGES.INVALID_PHONE_NUMBER);
             });
 
-            it('should throw error when invalid input schema is provided', async () => {
+            it('should throw BAD_USER_INPUT error when invalid input schema is provided', async () => {
                 const invalidCreateUserMutation = getCreateUserMutation({
                     ...createUserInput,
                     email: null,
@@ -167,7 +167,7 @@ describe('User Resolver', () => {
                 const createUserResponse = await request(url).post('').send(invalidCreateUserMutation);
                 expect(createUserResponse.error).toBeTruthy();
                 expect(createUserResponse.status).toBe(400);
-                expect(createUserResponse.status).toBe(400);
+                // TODO assert the error message
             });
         });
 

@@ -20,14 +20,21 @@ const EventSchema = new Schema<EventType & Document>(
             required: true,
             unique: false,
         },
-        startDate: {
-            type: String,
+        startDateTime: {
+            type: Date,
             required: true,
             unique: false,
+            min: Date.now(),
         },
-        endDate: {
-            type: String,
+        endDateTime: {
+            type: Date,
             required: true,
+            unique: false,
+            min: Date.now(),
+        },
+        recurrenceRule: {
+            type: String,
+            required: false,
             unique: false,
         },
         location: {
@@ -75,7 +82,10 @@ const EventSchema = new Schema<EventType & Document>(
             default: {},
         },
         media: {
-            featuredImageUrl: {type: String},
+            featuredImageUrl: {
+                type: String,
+                required: false,
+            },
             otherMediaData: {
                 type: Schema.Types.Mixed,
                 default: {},
@@ -92,7 +102,7 @@ const EventSchema = new Schema<EventType & Document>(
         },
         privacySetting: {
             type: String,
-            required: true,
+            required: false,
             unique: false,
         },
     },

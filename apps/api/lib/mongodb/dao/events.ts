@@ -9,7 +9,7 @@ class EventDAO {
     static async create(event: CreateEventInputType): Promise<EventType> {
         try {
             const slug = kebabCase(event.title);
-            return await Event.create({...event, slug});
+            return (await Event.create({...event, slug})).populate('organizers rSVPs eventCategory');
         } catch (error) {
             if (error instanceof GraphQLError) {
                 throw error;
@@ -86,7 +86,7 @@ class EventDAO {
     static async updateEvent(event: UpdateEventInputType): Promise<EventType> {
         try {
             const slug = kebabCase(event.title);
-            const updatedEvent = await Event.findByIdAndUpdate(event.id, {...event, slug}, {new: true})
+            const updatedEvent = await Event.findByIdAndUpdate(event.id, {...event, ...(slug && {slug})}, {new: true})
                 .populate('organizers rSVPs eventCategory')
                 .exec();
             if (!updatedEvent) {
@@ -103,11 +103,28 @@ class EventDAO {
         }
     }
 
-    static async deleteEvent(eventId: string): Promise<EventType> {
+    static async deleteEventById(eventId: string): Promise<EventType> {
         try {
             const deletedEvent = await Event.findByIdAndDelete(eventId).populate('organizers rSVPs eventCategory').exec();
             if (!deletedEvent) {
                 throw CustomError(`Event with ID ${eventId} not found`, ErrorTypes.NOT_FOUND);
+            }
+            return deletedEvent;
+        } catch (error) {
+            console.error('Error deleting event', error);
+            if (error instanceof GraphQLError) {
+                throw error;
+            } else {
+                throw KnownCommonError(error);
+            }
+        }
+    }
+
+    static async deleteEventBySlug(slug: string): Promise<EventType> {
+        try {
+            const deletedEvent = await Event.findOneAndDelete({slug}).populate('organizers rSVPs eventCategory').exec();
+            if (!deletedEvent) {
+                throw CustomError(`Event with slug ${slug} not found`, ErrorTypes.NOT_FOUND);
             }
             return deletedEvent;
         } catch (error) {

@@ -1,14 +1,14 @@
 import {z} from 'zod';
-import {REGEX_DATE, REGEX_PHONE_NUMBER} from '@/constants';
+import {REGEX_PHONE_NUMBER} from '@/constants';
 import {Gender} from '@/graphql/types';
-import {ERROR_MESSAGES, validateMongodbId} from '@/utils/validators/common';
+import {ERROR_MESSAGES, validateDate, validateMongodbId} from '@/utils/validators/common';
 
 export const CreateUserInputTypeSchema = z.object({
     address: z
         .string()
         .min(3, {message: `Address ${ERROR_MESSAGES.TOO_SHORT}`})
         .optional(),
-    birthdate: z.string().regex(REGEX_DATE, {message: `Birthdate ${ERROR_MESSAGES.INVALID_DATE}`}),
+    birthdate: z.string().refine(validateDate, {message: `Birth date ${ERROR_MESSAGES.INVALID}`}), // TODO Should be greater than Date.now()
     email: z.string().email({message: ERROR_MESSAGES.INVALID_EMAIL}),
     family_name: z.string().min(1, {message: `Last name ${ERROR_MESSAGES.REQUIRED}`}),
     gender: z.nativeEnum(Gender, {message: ERROR_MESSAGES.INVALID_GENDER}),
@@ -24,7 +24,7 @@ export const UpdateUserInputTypeSchema = z.object({
     address: z.string().optional(),
     birthdate: z
         .string()
-        .regex(REGEX_DATE, {message: `Birthdate ${ERROR_MESSAGES.INVALID_DATE}`})
+        .refine(validateDate, {message: `Birth date ${ERROR_MESSAGES.INVALID_DATE}`}) // TODO Should be greater than Date.now()
         .optional(),
     email: z.string().email({message: ERROR_MESSAGES.INVALID_EMAIL}).optional(),
     family_name: z

@@ -22,7 +22,7 @@ export class EventCategoryResolver {
     @Mutation(() => EventCategoryType)
     async deleteEventCategory(@Arg('id') id: string): Promise<EventCategoryType> {
         validateMongodbId(id);
-        return EventCategoryDAO.deleteEventCategory(id);
+        return EventCategoryDAO.deleteEventCategoryById(id);
     }
 
     @Query(() => EventCategoryType)

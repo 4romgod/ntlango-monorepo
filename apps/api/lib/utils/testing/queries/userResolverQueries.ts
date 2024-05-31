@@ -1,5 +1,3 @@
-import {UpdateUserInputType} from '@/graphql/types';
-
 export const getCreateUserMutation = (user: any) => {
     return {
         query: `mutation CreateUser($input: CreateUserInputType!) {
