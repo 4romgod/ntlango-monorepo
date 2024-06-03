@@ -30,6 +30,7 @@ describe('Event Resolver', () => {
     };
 
     beforeAll(() => {
+        console.log('starting event.test.ts');
         const initialSetup = async () => {
             const createServerResults = await createGraphQlServer({port: TEST_PORT});
             expressApp = createServerResults.expressApp;
@@ -68,6 +69,7 @@ describe('Event Resolver', () => {
             });
 
             it('should create a new event when valid input is provided', async () => {
+                console.log('createEvent Mutation');
                 const createEventMutation = getCreateEventMutation({
                     ...createEventInput,
                     organizers: [testUser.id],

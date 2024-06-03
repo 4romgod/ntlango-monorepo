@@ -6,14 +6,12 @@ const config: Config = {
     testEnvironment: 'node',
     testPathIgnorePatterns: ['<rootDir>/dist/', '<rootDir>/node_modules/'],
     testTimeout: 10000,
-    testMatch: [
-        '<rootDir>/test/canary/**/*.test.[jt]s?(x)',
-        '<rootDir>/test/integration/**/*.test.[jt]s?(x)',
-        '<rootDir>/test/unit/**/*.test.[jt]s?(x)',
-    ],
+    testMatch: ['<rootDir>/**/*.test.[jt]s?(x)'],
     moduleNameMapper: {
-        '^@/(.*)$': '<rootDir>/lib/$1',
+        '^@/(.*)$': '<rootDir>/../../lib/$1',
     },
+    globalSetup: '<rootDir>/setup.ts',
+    globalTeardown: '<rootDir>/teardown.ts',
 };
 
 export default config;

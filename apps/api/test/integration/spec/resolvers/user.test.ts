@@ -39,11 +39,11 @@ describe('User Resolver', () => {
     });
 
     afterAll(() => {
-        const terminateServer = async () => {
+        const cleanup = async () => {
             apolloServer.stop();
             httpServer.close();
         };
-        return terminateServer();
+        return cleanup();
     });
 
     describe('Positive', () => {
@@ -53,6 +53,7 @@ describe('User Resolver', () => {
             });
 
             it('should create new user when valid input is provided', async () => {
+                console.log('createUser Mutation');
                 const createUserMutation = getCreateUserMutation(createUserInput);
 
                 const createUserResponse = await request(url).post('').send(createUserMutation);
@@ -124,12 +125,6 @@ describe('User Resolver', () => {
 
     describe('Negative', () => {
         describe('createUser Mutation', () => {
-            /**
-             * Tests variations
-             * 1. user creates runs into conflicts with other existing items
-             * 2. user enters correct schema, but invalid values (handled by zod schema)
-             * 3. user enters incorrect input schema (e.g. leaves out a required attribute)
-             */
             it('should throw CONFLICT error when unique attribute already exists', async () => {
                 const createUserMutation = getCreateUserMutation(createUserInput);
 
@@ -171,15 +166,6 @@ describe('User Resolver', () => {
             });
         });
 
-        /**
-         * Tests variations
-         * 1. user updates runs into conflicts with other existing items XX
-         * 2. user enters correct schema, but invalid values (handled by zod schema) XX
-         * 3. user enters correct schema, but id does not exist (gets a 404) XX
-         * 4. user enters correct schema, but id is invalid (gets a 404) XX
-         * 5. user enters incorrect input schema (e.g. adds a non existing attribute attribute) XX
-         *
-         */
         describe('updateUser Mutation', () => {
             let createdUser: UserWithTokenType;
             beforeEach(async () => {

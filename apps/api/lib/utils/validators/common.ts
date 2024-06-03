@@ -14,7 +14,6 @@ export const validateMongodbId = (id: string, message?: string) => {
 // https://www.apollographql.com/docs/apollo-server/data/errors/
 export const validateInput = <Type>(schema: ZodSchema, input: Type) => {
     const {error, success} = schema.safeParse(input);
-    console.log('validateInput error', error);
     if (!success && error) {
         const {message, path} = error.issues[0];
         throw CustomError(message, ErrorTypes.BAD_USER_INPUT, {argumentName: path[0]});

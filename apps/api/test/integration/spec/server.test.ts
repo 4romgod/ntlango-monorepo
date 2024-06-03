@@ -14,6 +14,8 @@ describe('Server', () => {
     const url = `${API_DOMAIN}:${TEST_PORT}${API_PATH}`;
 
     beforeAll(() => {
+        console.log('starting server.test.ts');
+
         const initialSetup = async () => {
             const createServerResults = await createGraphQlServer({port: TEST_PORT});
             expressApp = createServerResults.expressApp;

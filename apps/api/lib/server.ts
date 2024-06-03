@@ -9,10 +9,11 @@ import {ApolloServer} from '@apollo/server';
 import {expressMiddleware} from '@apollo/server/express4';
 import {ApolloServerPluginDrainHttpServer} from '@apollo/server/plugin/drainHttpServer';
 import createSchema from '@/graphql/schema';
-import {createServer} from 'http';
+import {createServer, Server} from 'http';
 import {GraphQLFormattedError} from 'graphql';
 import {ApolloServerErrorCode} from '@apollo/server/errors';
 import {ERROR_MESSAGES} from '@/utils/validators';
+import {reject} from 'lodash';
 
 export interface ServerContext {
     token?: string;
@@ -72,11 +73,27 @@ export const createGraphQlServer = async (listenOptions: ListenOptions) => {
     });
 
     const url = `${API_DOMAIN}:${listenOptions.port}${API_PATH}`;
-    const httpServer = expressApp.listen(listenOptions.port, () => {
-        console.log(`⚡️[server]: Server is running at ${url}`);
-        expressApp.emit('appInitialized');
-    });
-    console.log('Server has been created!');
+
+    const listenForConnections = () => {
+        return new Promise<Server>((resolve) => {
+            const httpServer = expressApp.listen(listenOptions.port);
+            httpServer
+                .once('listening', () => {
+                    console.log(`⚡️[server]: Server is running at ${url}`);
+                    return resolve(httpServer);
+                })
+                .once('close', () => {
+                    console.log(`Server runnin on ${url} is CLOSED!`);
+                    resolve;
+                })
+                .once('error', (error) => {
+                    console.log(`Server failed to listen on port: ${listenOptions.port}`, error);
+                    reject;
+                });
+        });
+    };
+
+    const httpServer = await listenForConnections();
     console.timeEnd(serverStartTimeLabel);
     return {url, expressApp, apolloServer, httpServer};
 };
