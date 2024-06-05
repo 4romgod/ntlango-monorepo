@@ -13,6 +13,7 @@ import {
   ResetPasswordInputTypeSchema,
 } from '../validation';
 import { getClient } from '@/data/graphql/apollo-client';
+import { authenticateServerSide } from '@/lib/utils';
 
 export async function registerUserAction(prevState: any, formData: FormData) {
   const inputData: CreateUserInputType = {
@@ -40,7 +41,11 @@ export async function registerUserAction(prevState: any, formData: FormData) {
       mutation: RegisterUserDocument,
       variables: { input: inputData },
     });
-    console.log('registerResponse', registerResponse);
+
+    const responseData = registerResponse.data?.createUser;
+    if (responseData) {
+      authenticateServerSide(responseData);
+    }
   } catch (error) {
     console.error('Failed when calling Register User Mutation', error);
     const networkError = (error as any).networkError;
@@ -57,11 +62,11 @@ export async function registerUserAction(prevState: any, formData: FormData) {
 
 // TODO Will use this instead of useMutation
 export async function loginUserAction(prevState: any, formData: FormData) {
+  // TODO make input lowercase values
   const inputData: LoginUserInputType = {
     email: formData.get('email')?.toString() ?? '',
     password: formData.get('password')?.toString() ?? '',
   };
-  console.debug('inputData', inputData);
 
   const validatedFields = LoginUserInputTypeSchema.safeParse(inputData);
   if (!validatedFields.success) {
@@ -77,11 +82,15 @@ export async function loginUserAction(prevState: any, formData: FormData) {
       mutation: LoginUserDocument,
       variables: { input: inputData },
     });
-    console.log('loginResponse', loginResponse);
+
+    const responseData = loginResponse.data?.loginUser;
+    if (responseData) {
+      authenticateServerSide(responseData);
+    }
 
     return {
       ...prevState,
-      data: loginResponse.data,
+      data: responseData,
       apiError: null,
       zodErrors: null,
     };

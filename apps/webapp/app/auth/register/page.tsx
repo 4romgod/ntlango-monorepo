@@ -58,8 +58,6 @@ const RegisterPage = () => {
         severity: 'success',
         message: 'You have successfully registered!',
       });
-
-      // TODO Store token, Move to next page
     }
   }, [formState]);
 

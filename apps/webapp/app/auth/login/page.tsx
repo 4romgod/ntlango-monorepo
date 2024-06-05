@@ -27,6 +27,7 @@ import { useFormState } from 'react-dom';
 import { loginUserAction } from '@/data/actions/auth-actions';
 import { SERVER_ACTION_INITIAL_STATE } from '@/lib/constants';
 import { ZodErrors } from '@/components/zod-errors';
+import { jwtDecode } from 'jwt-decode';
 
 const LoginPage = () => {
   const router = useRouter();
@@ -40,11 +41,8 @@ const LoginPage = () => {
     event.preventDefault();
   };
 
-  console.log('formState', formState);
-
   useEffect(() => {
     if (formState.apiError) {
-      console.log(formState.apiError);
       setToastProps({
         ...toastProps,
         open: true,
@@ -61,7 +59,15 @@ const LoginPage = () => {
         message: 'You have successfully logged in!',
       });
 
-      // TODO Store token, Move to next page
+      setIsAuthN(() => {
+        const user = jwtDecode(formState.data.token);
+        console.log(user);
+        if (user) {
+          // TODO do more to validate token
+          return true;
+        }
+        return false;
+      });
     }
   }, [formState]);
 
