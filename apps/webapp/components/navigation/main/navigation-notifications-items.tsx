@@ -5,6 +5,7 @@ import IconButton from '@mui/material/IconButton';
 import { Mail, Notifications } from '@mui/icons-material';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import { ROUTES } from '@/lib/constants';
 
 type NotificationsMenuProps = {
   NotificationsMenuAnchorEl: HTMLElement | null;
@@ -36,7 +37,7 @@ export default function NotificationsMenu({
       onClose={handleNotificationsMenuClose}
     >
       <MenuItem>
-        <Link href="/messages">
+        <Link href={ROUTES.ACCOUNT.MESSAGES}>
           <IconButton size="large" aria-label="new mails" color="inherit">
             <Mail />
           </IconButton>
@@ -44,7 +45,7 @@ export default function NotificationsMenu({
         </Link>
       </MenuItem>
       <MenuItem>
-        <Link href="/notifications">
+        <Link href={ROUTES.ACCOUNT.NOTIFICATIONS}>
           <IconButton size="large" aria-label="new notifications" color="inherit">
             <Notifications />
           </IconButton>

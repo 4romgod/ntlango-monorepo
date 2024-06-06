@@ -1,8 +1,8 @@
 'use client';
 
 import Logo from '@/components/logo';
-import { ZodErrors } from '@/components/zod-errors';
-import { resetPasswordAction } from '@/data/actions/auth-actions';
+import { FormErrors } from '@/components/form-errors';
+import { resetPasswordAction } from '@/data/actions/auth';
 import { SERVER_ACTION_INITIAL_STATE } from '@/lib/constants';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import {
@@ -66,7 +66,7 @@ const ResetPasswordPage = () => {
               </InputAdornment>
             }
           />
-          <ZodErrors error={formState?.zodErrors?.password} />
+          <FormErrors error={formState?.zodErrors?.password} />
         </FormControl>
 
         <FormControl fullWidth margin="normal">
@@ -90,7 +90,7 @@ const ResetPasswordPage = () => {
               </InputAdornment>
             }
           />
-          <ZodErrors error={formState?.zodErrors?.['confirm-password']} />
+          <FormErrors error={formState?.zodErrors?.['confirm-password']} />
         </FormControl>
 
         <Button variant="contained" color="secondary" fullWidth={true} sx={{ mt: 3, mb: 2 }} type="submit">

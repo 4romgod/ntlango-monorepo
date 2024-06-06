@@ -5,9 +5,7 @@ import SearchInput from '@/components/search/search-box';
 import UserBox from '@/components/users/user-box';
 
 export default async function Page() {
-  const { data: usersRetrieved } = await getClient().query({
-    query: GetAllUsersDocument,
-  });
+  const { data: usersRetrieved } = await getClient().query({ query: GetAllUsersDocument });
 
   const users = usersRetrieved.readUsers;
 

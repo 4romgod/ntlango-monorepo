@@ -18,16 +18,16 @@ import {
   OutlinedInput,
   Typography,
 } from '@mui/material';
-import FacebookIcon from '@mui/icons-material/Facebook';
-import GoogleIcon from '@mui/icons-material/Google';
-import EmailIcon from '@mui/icons-material/Email';
 import { useCustomAppContext } from '@/components/app-context';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useFormState } from 'react-dom';
-import { loginUserAction } from '@/data/actions/auth-actions';
+import { loginUserAction } from '@/data/actions/auth';
 import { SERVER_ACTION_INITIAL_STATE } from '@/lib/constants';
-import { ZodErrors } from '@/components/zod-errors';
-import { jwtDecode } from 'jwt-decode';
+import { FormErrors } from '@/components/form-errors';
+import { FcGoogle } from 'react-icons/fc';
+import { FaFacebookF } from 'react-icons/fa';
+import { MdEmail } from 'react-icons/md';
+import { decode } from 'jsonwebtoken';
 
 const LoginPage = () => {
   const router = useRouter();
@@ -59,8 +59,8 @@ const LoginPage = () => {
         message: 'You have successfully logged in!',
       });
 
+      const user = decode(formState.data.token);
       setIsAuthN(() => {
-        const user = jwtDecode(formState.data.token);
         console.log(user);
         if (user) {
           // TODO do more to validate token
@@ -90,7 +90,7 @@ const LoginPage = () => {
             autoComplete="email"
             autoFocus={true}
           />
-          <ZodErrors error={formState?.zodErrors?.email} />
+          <FormErrors error={formState?.zodErrors?.email} />
         </FormControl>
         <FormControl required fullWidth margin="normal">
           <InputLabel htmlFor="password">Password</InputLabel>
@@ -113,7 +113,7 @@ const LoginPage = () => {
               </InputAdornment>
             }
           />
-          <ZodErrors error={formState?.zodErrors?.password} />
+          <FormErrors error={formState?.zodErrors?.password} />
         </FormControl>
 
         <FormControlLabel control={<Checkbox value="remember" color="secondary" />} label="Remember me" />
@@ -141,15 +141,36 @@ const LoginPage = () => {
 
       <Divider sx={{ marginY: 2 }}>or</Divider>
 
-      <Button variant="outlined" color="primary" fullWidth={true} startIcon={<FacebookIcon />} sx={{ mt: 1, mb: 1 }}>
+      <Button
+        variant="outlined"
+        size="large"
+        color="primary"
+        fullWidth={true}
+        startIcon={<FaFacebookF />}
+        sx={{ mt: 1, mb: 1 }}
+      >
         Continue with Facebook
       </Button>
 
-      <Button variant="outlined" color="primary" fullWidth={true} startIcon={<GoogleIcon />} sx={{ mt: 1, mb: 1 }}>
+      <Button
+        variant="outlined"
+        size="large"
+        color="primary"
+        fullWidth={true}
+        startIcon={<FcGoogle />}
+        sx={{ mt: 1, mb: 1 }}
+      >
         Continue with Google
       </Button>
 
-      <Button variant="outlined" color="primary" fullWidth={true} startIcon={<EmailIcon />} sx={{ mt: 1, mb: 1 }}>
+      <Button
+        variant="outlined"
+        size="large"
+        color="primary"
+        fullWidth={true}
+        startIcon={<MdEmail />}
+        sx={{ mt: 1, mb: 1 }}
+      >
         Sign up with Email
       </Button>
     </Container>

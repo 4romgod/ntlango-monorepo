@@ -1,8 +1,8 @@
 'use client';
 
 import Logo from '@/components/logo';
-import { ZodErrors } from '@/components/zod-errors';
-import { forgotPasswordAction } from '@/data/actions/auth-actions';
+import { FormErrors } from '@/components/form-errors';
+import { forgotPasswordAction } from '@/data/actions/auth';
 import { SERVER_ACTION_INITIAL_STATE } from '@/lib/constants';
 import { Box, Button, Container, FormControl, InputLabel, OutlinedInput, Typography } from '@mui/material';
 import { useFormState } from 'react-dom';
@@ -31,7 +31,7 @@ const ForgotPasswordPage = () => {
             autoComplete="email"
             autoFocus={true}
           />
-          <ZodErrors error={formState?.zodErrors?.email} />
+          <FormErrors error={formState?.zodErrors?.email} />
         </FormControl>
 
         <Button variant="contained" color="secondary" fullWidth={true} sx={{ mt: 3, mb: 2 }} type="submit">

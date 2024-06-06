@@ -16,15 +16,17 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { Facebook, Google, Visibility, VisibilityOff } from '@mui/icons-material';
-import { registerUserAction } from '@/data/actions/auth-actions';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { registerUserAction } from '@/data/actions/auth';
 import { useFormState } from 'react-dom';
-import { ZodErrors } from '@/components/zod-errors';
+import { FormErrors } from '@/components/form-errors';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { useCustomAppContext } from '@/components/app-context';
 import { useEffect, useState } from 'react';
 import { SERVER_ACTION_INITIAL_STATE } from '@/lib/constants';
+import { FcGoogle } from 'react-icons/fc';
+import { FaFacebookF } from 'react-icons/fa';
 
 const RegisterPage = () => {
   const router = useRouter();
@@ -81,19 +83,19 @@ const RegisterPage = () => {
           <Grid item xs={12} sm={6}>
             <FormControl fullWidth margin="normal">
               <TextField required label="First Name" name="given_name" variant="outlined" />
-              <ZodErrors error={formState?.zodErrors?.given_name} />
+              <FormErrors error={formState?.zodErrors?.given_name} />
             </FormControl>
           </Grid>
           <Grid item xs={12} sm={6}>
             <FormControl fullWidth margin="normal">
               <TextField required label="Last Name" name="family_name" variant="outlined" />
-              <ZodErrors error={formState?.zodErrors?.family_name} />
+              <FormErrors error={formState?.zodErrors?.family_name} />
             </FormControl>
           </Grid>
         </Grid>
         <FormControl fullWidth margin="normal">
           <TextField required label="Email Address" name="email" variant="outlined" />
-          <ZodErrors error={formState?.zodErrors?.email} />
+          <FormErrors error={formState?.zodErrors?.email} />
         </FormControl>
         <FormControl fullWidth margin="normal">
           <InputLabel htmlFor="password">Password</InputLabel>
@@ -116,13 +118,13 @@ const RegisterPage = () => {
               </InputAdornment>
             }
           />
-          <ZodErrors error={formState?.zodErrors?.password} />
+          <FormErrors error={formState?.zodErrors?.password} />
         </FormControl>
         <FormControl fullWidth margin="normal">
           <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en">
             <DatePicker label="Date of Birth" format="D/M/YYYY" name="birthdate" />
           </LocalizationProvider>
-          <ZodErrors error={formState?.zodErrors?.birthdate} />
+          <FormErrors error={formState?.zodErrors?.birthdate} />
         </FormControl>
 
         <Button variant="contained" color="secondary" fullWidth={true} sx={{ mt: 2 }} type="submit">
@@ -132,11 +134,11 @@ const RegisterPage = () => {
 
       <Divider sx={{ marginY: 2 }}>or</Divider>
 
-      <Button variant="outlined" fullWidth={true} startIcon={<Facebook />} sx={{ mt: 1, mb: 1 }}>
+      <Button variant="outlined" size="large" fullWidth={true} startIcon={<FaFacebookF />} sx={{ mt: 1, mb: 1 }}>
         Continue with Facebook
       </Button>
 
-      <Button variant="outlined" fullWidth={true} startIcon={<Google />} sx={{ mt: 1, mb: 1 }}>
+      <Button variant="outlined" size="large" fullWidth={true} startIcon={<FcGoogle />} sx={{ mt: 1, mb: 1 }}>
         Continue with Google
       </Button>
     </Container>

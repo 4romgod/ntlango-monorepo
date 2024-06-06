@@ -6,6 +6,7 @@ import MenuItem from '@mui/material/MenuItem';
 import { Divider, ListItemIcon } from '@mui/material';
 import { AccountCircle, Logout, Settings } from '@mui/icons-material';
 import { useCustomAppContext } from '@/components/app-context';
+import { ROUTES } from '@/lib/constants';
 
 type ProfilesMenuProps = {
   ProfilesMenuAnchorEl: HTMLElement | null;
@@ -42,14 +43,14 @@ export default function ProfilesMenu({
         <ListItemIcon>
           <AccountCircle fontSize="small" />
         </ListItemIcon>
-        <Link href="/profile">Profile</Link>
+        <Link href={ROUTES.ACCOUNT.PROFILE}>Profile</Link>
       </MenuItem>
       <Divider />
       <MenuItem onClick={handleProfilesMenuClose}>
         <ListItemIcon>
           <Settings fontSize="small" />
         </ListItemIcon>
-        <Link href="/account">Settings</Link>
+        <Link href={ROUTES.ACCOUNT.ROOT}>Settings</Link>
       </MenuItem>
       <MenuItem
         onClick={() => {

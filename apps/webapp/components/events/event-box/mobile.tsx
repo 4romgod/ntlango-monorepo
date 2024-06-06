@@ -6,18 +6,16 @@ import CardMedia from '@mui/material/CardMedia';
 import { CardActionArea } from '@mui/material';
 import { EventType } from '@/data/graphql/types/graphql';
 import { Box } from '@mui/material';
-import Link from 'next/link';
 import { CalendarIcon, CheckCircleIcon, TicketIcon, UserIcon } from '@heroicons/react/24/outline';
-import { kebabCase } from 'lodash';
+import Link from 'next/link';
+import { ROUTES } from '@/lib/constants';
 
 export default function EventBoxMobile({ event }: { event: EventType }) {
-  const { title, organizers, startDateTime, rSVPs, media } = event;
-
+  const { slug, title, organizers, startDateTime, rSVPs, media } = event;
   const organizersText = organizers?.map((user) => user.username).join(' and ') ?? '';
-  const eventSlug = kebabCase(title);
 
   return (
-    <Link href={`/events/${eventSlug}`}>
+    <Link href={ROUTES.EVENTS.EVENT(slug)}>
       <Card>
         <CardActionArea>
           {media && media.featuredImageUrl && (

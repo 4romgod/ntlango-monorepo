@@ -13,12 +13,11 @@ import {
   ListItemText,
 } from '@mui/material';
 import { Clear, Home, Login, Menu } from '@mui/icons-material';
-import { useCustomAppContext } from '@/components/app-context';
 import { useRouter } from 'next/navigation';
+import { ROUTES } from '@/lib/constants';
 
 export default function TemporaryDrawer() {
   const router = useRouter();
-  const { setIsAuthN } = useCustomAppContext();
   const [open, setOpen] = useState(false);
 
   const toggleDrawer = (newOpen: boolean) => () => {
@@ -33,7 +32,7 @@ export default function TemporaryDrawer() {
         </ListItemButton>
       </ListItem>
       <List>
-        <Link href={'/'}>
+        <Link href={ROUTES.ROOT}>
           <ListItem disablePadding>
             <ListItemButton>
               <ListItemIcon>
@@ -49,14 +48,14 @@ export default function TemporaryDrawer() {
             <ListItemIcon>
               <Login />
             </ListItemIcon>
-            <ListItemText onClick={() => router.push('/auth/login')} primary={'Log in'} />
+            <ListItemText onClick={() => router.push(ROUTES.AUTH.LOGIN)} primary={'Log in'} />
           </ListItemButton>
         </ListItem>
 
         <Divider />
 
         <Button variant="contained" color="secondary" fullWidth>
-          <ListItemText onClick={() => router.push('/auth/register')} primary={'Sign up'} />
+          <ListItemText onClick={() => router.push(ROUTES.AUTH.REGISTER)} primary={'Sign up'} />
         </Button>
       </List>
     </Box>

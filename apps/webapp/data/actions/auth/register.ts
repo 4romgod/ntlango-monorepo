@@ -1,0 +1,50 @@
+'use server';
+
+import { CreateUserInputType, RegisterUserDocument } from '@/data/graphql/types/graphql';
+import { CreateUserInputTypeSchema } from '@/data/validation';
+import { getClient } from '@/data/graphql/apollo-client';
+import { authenticateServerSide } from '@/lib/utils';
+
+export async function registerUserAction(prevState: any, formData: FormData) {
+  const inputData: CreateUserInputType = {
+    address: formData.get('address')?.toString() ?? '',
+    birthdate: formData.get('birthdate')?.toString() ?? '',
+    email: formData.get('email')?.toString().toLowerCase() ?? '',
+    family_name: formData.get('family_name')?.toString() ?? '',
+    given_name: formData.get('given_name')?.toString() ?? '',
+    password: formData.get('password')?.toString() ?? '',
+    phone_number: formData.get('phone_number')?.toString() ?? '',
+  };
+
+  const validatedFields = CreateUserInputTypeSchema.safeParse(inputData);
+  if (!validatedFields.success) {
+    return {
+      ...prevState,
+      apiError: null,
+      zodErrors: validatedFields.error.flatten().fieldErrors,
+    };
+  }
+
+  try {
+    const registerResponse = await getClient().mutate({
+      mutation: RegisterUserDocument,
+      variables: { input: inputData },
+    });
+
+    const responseData = registerResponse.data?.createUser;
+    if (responseData) {
+      authenticateServerSide(responseData);
+    }
+  } catch (error) {
+    console.error('Failed when calling Register User Mutation', error);
+    const networkError = (error as any).networkError;
+    if (networkError) {
+      console.error('Error Message', networkError.result.errors[0].message);
+      return {
+        ...prevState,
+        apiError: networkError.result.errors[0].message,
+        zodErrors: null,
+      };
+    }
+  }
+}

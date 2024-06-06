@@ -16,6 +16,7 @@ import ToggleThemeMode from '@/components/theme/toggle-theme-mode';
 import { Button } from '@mui/material';
 import Logo from '@/components/logo';
 import { useCustomAppContext } from '@/components/app-context';
+import { ROUTES } from '@/lib/constants';
 
 /**
  * Inspired by: https://arshadalisoomro.hashnode.dev/creating-a-navigation-bar-with-mui-appbar-component-in-nextjs
@@ -65,11 +66,11 @@ export default function MainNavigation() {
           <ToggleThemeMode setThemeMode={setThemeMode} themeMode={themeMode} />
 
           <Box component="div" sx={{ display: { xs: 'none', sm: isAuthN ? 'none' : 'flex' } }}>
-            <Button variant="outlined" color="secondary" onClick={() => router.push('/auth/login')}>
+            <Button variant="outlined" color="secondary" onClick={() => router.push(ROUTES.AUTH.LOGIN)}>
               Log In
             </Button>
 
-            <Button variant="contained" color="secondary" onClick={() => router.push('/auth/register')}>
+            <Button variant="contained" color="secondary" onClick={() => router.push(ROUTES.AUTH.REGISTER)}>
               Sign Up
             </Button>
           </Box>
@@ -77,12 +78,12 @@ export default function MainNavigation() {
           <Box component="div" display="flex" sx={{ display: { xs: isAuthN ? 'flex' : 'none' } }}>
             <Box sx={{ ml: 2, display: { xs: 'none', md: 'flex' } }}>
               <IconButton size="large" aria-label="mails" color="primary">
-                <Link href={'/messages'}>
+                <Link href={ROUTES.ACCOUNT.MESSAGES}>
                   <Mail />
                 </Link>
               </IconButton>
               <IconButton size="large" aria-label="notifications" color="primary">
-                <Link href={'/notifications'}>
+                <Link href={ROUTES.ACCOUNT.NOTIFICATIONS}>
                   <Notifications />
                 </Link>
               </IconButton>

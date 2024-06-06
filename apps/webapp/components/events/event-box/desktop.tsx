@@ -8,15 +8,14 @@ import { EventType } from '@/data/graphql/types/graphql';
 import Link from 'next/link';
 import { CalendarIcon, CheckCircleIcon, TicketIcon, UserIcon } from '@heroicons/react/24/outline';
 import { kebabCase } from 'lodash';
+import { ROUTES } from '@/lib/constants';
 
 export default function EventBoxDesktop({ event }: { event: EventType }) {
-  const { title, organizers, startDateTime, rSVPs, media } = event;
-
+  const { slug, title, organizers, startDateTime, rSVPs, media } = event;
   const organizersText = organizers?.map((user) => user.username).join(' and ') ?? '';
-  const eventSlug = kebabCase(title); // TODO get from the DB
 
   return (
-    <Link href={`/events/${eventSlug}`}>
+    <Link href={ROUTES.EVENTS.EVENT(slug)}>
       <Card sx={{ display: 'flex' }}>
         {media && media.featuredImageUrl && (
           <CardMedia
