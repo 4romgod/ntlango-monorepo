@@ -4,7 +4,7 @@ import {CustomError, ErrorTypes} from '@/utils/exceptions';
 import {ERROR_MESSAGES} from '@/utils/validators';
 import {JWT_SECRET, OPERATION_NAMES} from '@/constants';
 import {UserRole, UserType} from '@/graphql/types';
-import jwt from 'jsonwebtoken';
+import jwt, {JwtPayload} from 'jsonwebtoken';
 import {EventDAO} from '@/mongodb/dao';
 
 export const authChecker: AuthChecker<ServerContext> = async ({context, args, info}, roles) => {
@@ -40,15 +40,25 @@ export const authChecker: AuthChecker<ServerContext> = async ({context, args, in
     throw CustomError(ERROR_MESSAGES.UNAUTHENTICATED, ErrorTypes.UNAUTHENTICATED);
 };
 
-export const generateToken = (user: UserType) => {
-    const token = jwt.sign(user, JWT_SECRET, {expiresIn: '1h'});
-    return token;
+/**
+ * @param user The user to encode into a JWT token
+ * @param secret The secret string for JWT encoding
+ * @param expiresIn expressed in seconds or a string describing a time span [zeit/ms](https://github.com/zeit/ms.js).  Eg: 60, "2 days", "10h", "7d"
+ * @returns A JWT token as a string
+ */
+export const generateToken = (user: UserType, secret?: string, expiresIn?: string | number) => {
+    return jwt.sign(user, secret ?? JWT_SECRET, {expiresIn: expiresIn ?? '1h'});
 };
 
-export const verifyToken = (token: string) => {
+/**
+ * @param token A JWT token as a string
+ * @param secret The secret string for JWT encoding
+ * @returns The user decoded from the JWT token
+ */
+export const verifyToken = (token: string, secret?: string) => {
     try {
-        const user = jwt.verify(token, JWT_SECRET) as UserType;
-        return user;
+        const {iat, exp, ...user} = jwt.verify(token, secret ?? JWT_SECRET) as JwtPayload;
+        return user as UserType;
     } catch (err) {
         throw CustomError(ERROR_MESSAGES.UNAUTHENTICATED, ErrorTypes.UNAUTHENTICATED);
     }
