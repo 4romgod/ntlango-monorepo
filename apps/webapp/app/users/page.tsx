@@ -1,4 +1,4 @@
-import { getClient } from '@/data/graphql/apollo-client';
+import { getClient } from '@/data/graphql';
 import { GetAllUsersDocument } from '@/data/graphql/types/graphql';
 import { Container, Typography, Grid, Avatar, Box, Divider } from '@mui/material';
 import SearchInput from '@/components/search/search-box';

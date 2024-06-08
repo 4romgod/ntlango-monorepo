@@ -1,20 +1,22 @@
 'use server';
 
-import { CreateUserInputType, RegisterUserDocument } from '@/data/graphql/types/graphql';
+import { CreateUserInputType, Gender, RegisterUserDocument } from '@/data/graphql/types/graphql';
 import { CreateUserInputTypeSchema } from '@/data/validation';
-import { getClient } from '@/data/graphql/apollo-client';
-import { authenticateServerSide } from '@/lib/utils';
+import { getClient } from '@/data/graphql';
 
 export async function registerUserAction(prevState: any, formData: FormData) {
   const inputData: CreateUserInputType = {
-    address: formData.get('address')?.toString() ?? '',
+    address: 'A default address',
+    gender: Gender.Male,
+    phone_number: '+27670153447',
     birthdate: formData.get('birthdate')?.toString() ?? '',
     email: formData.get('email')?.toString().toLowerCase() ?? '',
     family_name: formData.get('family_name')?.toString() ?? '',
     given_name: formData.get('given_name')?.toString() ?? '',
     password: formData.get('password')?.toString() ?? '',
-    phone_number: formData.get('phone_number')?.toString() ?? '',
   };
+
+  console.log(inputData);
 
   const validatedFields = CreateUserInputTypeSchema.safeParse(inputData);
   if (!validatedFields.success) {
@@ -34,10 +36,6 @@ export async function registerUserAction(prevState: any, formData: FormData) {
     });
 
     const responseData = registerResponse.data?.createUser;
-    if (responseData) {
-      authenticateServerSide(responseData);
-    }
-
     return {
       ...prevState,
       data: responseData,

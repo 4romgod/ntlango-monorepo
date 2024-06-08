@@ -17,7 +17,7 @@ import {
   Typography,
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { registerUserAction } from '@/data/actions/auth';
+import { registerUserAction } from '@/data/actions/server/auth';
 import { useFormState } from 'react-dom';
 import { FormErrors } from '@/components/form-errors';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
@@ -120,7 +120,7 @@ const RegisterPage = () => {
         </FormControl>
         <FormControl fullWidth margin="normal">
           <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en">
-            <DatePicker label="Date of Birth" format="D/M/YYYY" name="birthdate" />
+            <DatePicker label="Date of Birth" format="YYYY-MM-DD" name="birthdate" />
           </LocalizationProvider>
           <FormErrors error={formState?.zodErrors?.birthdate} />
         </FormControl>

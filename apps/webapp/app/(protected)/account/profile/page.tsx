@@ -1,12 +1,11 @@
-import { getClient } from '@/data/graphql/apollo-client';
+import { getClient } from '@/data/graphql';
 import { GetUserByUsernameDocument } from '@/data/graphql/types/graphql';
 import { Container, Typography, Avatar, Box, Divider } from '@mui/material';
 import { Person } from '@mui/icons-material';
-import { auth } from '@/auth';
+import { auth, signOut } from '@/auth';
 
 export default async function ProfilePage() {
   const session = await auth();
-  console.log('session', session);
 
   const { data: userRetrieved } = await getClient().query({
     query: GetUserByUsernameDocument,
@@ -17,6 +16,13 @@ export default async function ProfilePage() {
 
   return (
     <Container maxWidth="md">
+      <div>{JSON.stringify(session)}</div>
+      <form action={async () => {
+        'use server';
+        await signOut();
+      }}>
+        <button type='submit'>Sign Out</button>
+      </form>
       <Box my={4}>
         <Typography variant="h4" fontWeight="bold" align="center" paddingBottom={2}>
           {`${user.given_name} ${user.family_name}`}

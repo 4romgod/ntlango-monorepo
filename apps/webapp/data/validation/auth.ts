@@ -1,10 +1,13 @@
 import { z } from 'zod';
+import { isValid, parseISO } from 'date-fns';
 
 const InputMaybe = z.union([z.string(), z.undefined()]);
 
 export const CreateUserInputTypeSchema = z.object({
   // address: z.string().min(2, { message: 'Address is required' }),
-  birthdate: z.string().regex(/^\d{2}\/\d{2}\/\d{4}$/, { message: 'Birthdate should be in DD/MM/YYYY format' }),
+  birthdate: z
+    .string()
+    .refine((date) => isValid(parseISO(date)), { message: 'Birthdate should be in YYYY-MM-DD format' }),
   email: z.string().email({ message: 'Invalid email format' }),
   family_name: z.string().min(1, { message: 'Last name is required' }),
   given_name: z.string().min(1, { message: 'First name is required' }),

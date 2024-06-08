@@ -21,7 +21,7 @@ import {
 import { useCustomAppContext } from '@/components/app-context';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useFormState } from 'react-dom';
-import { loginUserAction } from '@/data/actions/auth';
+import { loginUserAction } from '@/data/actions/server/auth';
 import { SERVER_ACTION_INITIAL_STATE } from '@/lib/constants';
 import { FormErrors } from '@/components/form-errors';
 import { FcGoogle } from 'react-icons/fc';

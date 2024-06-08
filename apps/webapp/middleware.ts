@@ -15,10 +15,12 @@ export default auth((req) => {
   const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
 
+  // 1. Allow all API aut routes
   if (isApiAuthRoute) {
     return NextResponse.next();
   }
 
+  // 2. Allow all auth routes for unauthenticated users
   if (isAuthRoute) {
     if (isLoggedIn) {
       return NextResponse.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
@@ -26,6 +28,7 @@ export default auth((req) => {
     return NextResponse.next();
   }
 
+  // 3. Deny all NON public routes for unauthenticated users
   if (!isLoggedIn && !isPublicRoute) {
     return NextResponse.redirect(new URL(ROUTES.AUTH.LOGIN, nextUrl));
   }
@@ -34,5 +37,6 @@ export default auth((req) => {
 });
 
 export const config = {
-  matcher: ['/((?!.*\\..*|_next).*)', '/', '/(api|trpc)(.*)'], // https://clerk.com/docs/references/nextjs/auth-middleware#usage
+  // https://clerk.com/docs/references/nextjs/auth-middleware#usage
+  matcher: ['/((?!.*\\..*|_next).*)', '/', '/(api|trpc)(.*)'],
 };

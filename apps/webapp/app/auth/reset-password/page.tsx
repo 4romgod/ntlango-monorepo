@@ -2,7 +2,7 @@
 
 import Logo from '@/components/logo';
 import { FormErrors } from '@/components/form-errors';
-import { resetPasswordAction } from '@/data/actions/auth';
+import { resetPasswordAction } from '@/data/actions/server/auth';
 import { SERVER_ACTION_INITIAL_STATE } from '@/lib/constants';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import {

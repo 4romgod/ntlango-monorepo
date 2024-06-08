@@ -1,6 +1,6 @@
 import EventBoxDesktop from '@/components/events/event-box/desktop';
 import EventBoxMobile from '@/components/events/event-box/mobile';
-import { getClient } from '@/data/graphql/apollo-client';
+import { getClient } from '@/data/graphql';
 import { GetAllEventsDocument, GetUserByUsernameDocument } from '@/data/graphql/types/graphql';
 import { Person } from '@mui/icons-material';
 import { Container, Typography, Avatar, Box, Divider, Grid } from '@mui/material';
