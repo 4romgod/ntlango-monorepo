@@ -2,7 +2,7 @@
 
 import Logo from '@/components/logo';
 import { FormErrors } from '@/components/form-errors';
-import { forgotPasswordAction } from '@/data/actions/auth';
+import { forgotPasswordAction } from '@/data/actions/server';
 import { SERVER_ACTION_INITIAL_STATE } from '@/lib/constants';
 import { Box, Button, Container, FormControl, InputLabel, OutlinedInput, Typography } from '@mui/material';
 import { useFormState } from 'react-dom';
