@@ -1,5 +1,10 @@
 export const ROUTES = {
   ACCOUNT: {
+    EVENTS: {
+      EVENT: (slug: string) => `/account/events/${slug}`,
+      EDIT_EVENT: (slug: string) => `/account/events/${slug}/edit`,
+      ROOT: '/account/events',
+    },
     MESSAGES: '/account/messages',
     NOTIFICATIONS: '/account/notifications',
     PROFILE: '/account/profile',

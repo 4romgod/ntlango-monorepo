@@ -18,7 +18,7 @@ export default {
           const loginResponse = await loginUserGlobalAction(loginInput);
 
           if (loginResponse) {
-            const { token, __typename, ...user } = loginResponse;
+            const { __typename, ...user } = loginResponse;
             return user;
           }
         }

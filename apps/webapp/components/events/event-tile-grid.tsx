@@ -1,8 +1,10 @@
 import React from 'react';
 import { Typography, Grid, Box } from '@mui/material';
 import { EventType } from '@/data/graphql/types/graphql';
-import EventBoxMobile from '@/components/events/event-box/desktop';
-import EventBoxDesktop from '@/components/events/event-box/mobile';
+import EventBoxDesktop from '@/components/events/event-box/desktop';
+import EventBoxMobile from '@/components/events/event-box/mobile';
+import Link from 'next/link';
+import { ROUTES } from '@/lib/constants';
 
 export type EventTileGridProps = {
   eventsByCategory: {
@@ -22,10 +24,14 @@ export default function EventTileGrid({ eventsByCategory }: EventTileGridProps) 
             {eventsByCategory[categoryName].map((event) => (
               <Grid item key={`EventTileGrid.${categoryName}.${event.id}`} xs={12} sm={6}>
                 <Box component="div" sx={{ display: { xs: 'none', md: 'block' } }}>
-                  <EventBoxMobile event={event} />
+                  <Link href={ROUTES.EVENTS.EVENT(event.slug)}>
+                    <EventBoxDesktop event={event} />
+                  </Link>
                 </Box>
                 <Box component="div" sx={{ display: { md: 'none' } }}>
-                  <EventBoxDesktop event={event} />
+                  <Link href={ROUTES.EVENTS.EVENT(event.slug)}>
+                    <EventBoxMobile event={event} />
+                  </Link>
                 </Box>
               </Grid>
             ))}

@@ -1,7 +1,7 @@
 import { UserWithTokenType, UserType } from '@/data/graphql/types/graphql';
 import { DefaultSession } from 'next-auth';
 
-export type ExtendedUserType = DefaultSession['user'] & UserType;
+export type ExtendedUserType = DefaultSession['user'] & UserWithTokenType;
 
 declare module 'next-auth' {
   interface Session {

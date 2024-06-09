@@ -158,6 +158,29 @@ const GetEventBySlugDocument = graphql(`
   }
 `);
 
+const DeleteEventByIdDocument = graphql(`
+  mutation DeleteEventById($eventId: String!) {
+    deleteEventById(eventId: $eventId) {
+      id
+      slug
+      title
+      description
+      startDateTime
+      endDateTime
+      location
+      organizers {
+        id
+        email
+        username
+        address
+        birthdate
+        family_name
+        userRole
+      }
+    }
+  }
+`);
+
 const GetAllUsersDocument = graphql(`
   query GetAllUsers {
     readUsers {
