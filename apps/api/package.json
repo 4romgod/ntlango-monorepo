@@ -14,9 +14,9 @@
     "format": "prettier 'lib/**/*.{js,ts}' 'test/**/*.{js,ts}' --write",
     "seed": "ts-node lib/scripts/seed.ts",
     "test": "npm-run-all test:*",
-    "test:canary": "jest --config=test/canary/jest.config.ts --testPathPattern=test/canary",
-    "test:integration": "jest --config=test/integration/jest.config.ts --testPathPattern=test/integration --detectOpenHandles --forceExit",
-    "test:unit": "jest --config=test/unit/jest.config.ts --testPathPattern=test/unit"
+    "test:canary": "jest --config=test/canary/jest.config.ts",
+    "test:integration": "jest --config=test/integration/jest.config.ts",
+    "test:unit": "jest --config=test/unit/jest.config.ts"
   },
   "author": "",
   "license": "ISC",

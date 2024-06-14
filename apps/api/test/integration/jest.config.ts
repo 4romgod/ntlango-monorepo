@@ -12,6 +12,8 @@ const config: Config = {
     },
     globalSetup: '<rootDir>/setup.ts',
     globalTeardown: '<rootDir>/teardown.ts',
+    detectOpenHandles: true,
+    forceExit: true,
 };
 
 export default config;
