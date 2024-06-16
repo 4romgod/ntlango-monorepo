@@ -44,4 +44,9 @@ export class EventResolver {
     async readEvents(@Arg('options', () => QueryOptionsInput, {nullable: true}) options?: QueryOptionsInput): Promise<EventType[]> {
         return EventDAO.readEvents(options);
     }
+
+    @Query(() => EventType)
+    async RSVP(@Arg('options', () => QueryOptionsInput, {nullable: true}) options?: QueryOptionsInput): Promise<EventType[]> {
+        return EventDAO.readEvents(options);
+    }
 }

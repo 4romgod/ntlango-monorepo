@@ -1,8 +1,9 @@
 import {GraphQLError} from 'graphql';
 import {Event} from '@/mongodb/models';
-import {EventType, UpdateEventInputType, CreateEventInputType, QueryOptionsInput} from '@/graphql/types';
+import {EventType, UpdateEventInputType, CreateEventInputType, QueryOptionsInput, RSVPInputType, CancelRSVPInputType} from '@/graphql/types';
 import {CustomError, ErrorTypes, KnownCommonError, transformIdFields, transformOptionsToQuery, transformOptionsToPipeline} from '@/utils';
 import {kebabCase} from 'lodash';
+import {UpdateQuery} from 'mongoose';
 
 class EventDAO {
     static async create(event: CreateEventInputType): Promise<EventType> {
@@ -126,11 +127,23 @@ class EventDAO {
     }
 
     //TODO look deeper into this, its very suspecious. Why not just push 1 userID
-    static async rsvp(eventId: string, userIDs: Array<string>) {
+    static async RSVP(input: RSVPInputType) {
+        const {eventId, userIdList = []} = input;
         try {
-            const event = await Event.findOneAndUpdate({_id: eventId}, {$addToSet: {rSVPList: {$each: userIDs}}}, {new: true})
+            const updateQuery: UpdateQuery<EventType> = {
+                $addToSet: {
+                    rSVPList: {
+                        $each: userIdList,
+                    },
+                },
+            };
+            const event = await Event.findOneAndUpdate({id: eventId}, updateQuery, {new: true})
                 .populate('organizerList rSVPList eventCategoryList')
                 .exec();
+
+            if (!event) {
+                throw CustomError(`Event with id ${eventId} not found`, ErrorTypes.NOT_FOUND);
+            }
             return event;
         } catch (error) {
             console.error("Error updating event RSVP's", error);
@@ -143,11 +156,23 @@ class EventDAO {
     }
 
     //TODO look deeper into this, its very suspecious. Why not just pop 1 userID
-    static async cancelRsvp(eventId: string, userIDs: Array<string>) {
+    static async cancelRSVP(input: CancelRSVPInputType) {
+        const {eventId, userIdList = []} = input;
         try {
-            const event = await Event.findOneAndUpdate({_id: eventId}, {$pull: {rSVPList: {$in: userIDs}}}, {new: true})
+            const updateQuery: UpdateQuery<EventType> = {
+                $pull: {
+                    rSVPList: {
+                        $in: userIdList,
+                    },
+                },
+            };
+            const event = await Event.findOneAndUpdate({id: eventId}, updateQuery, {new: true})
                 .populate('organizerList rSVPList eventCategoryList')
                 .exec();
+
+            if (!event) {
+                throw CustomError(`Event with id ${eventId} not found`, ErrorTypes.NOT_FOUND);
+            }
             return event;
         } catch (error) {
             console.error("Error cancelling event RSVP's", error);

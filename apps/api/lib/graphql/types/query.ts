@@ -1,5 +1,6 @@
 import {InputType, Field, Int, registerEnumType} from 'type-graphql';
 import {AnyType} from './customTypes';
+import {QUERY_DESCRIPTIONS} from '@/constants/descriptions';
 
 export enum SortOrderInput {
     asc = 'asc',
@@ -25,61 +26,61 @@ export enum SelectorOperatorInput {
 
 registerEnumType(SortOrderInput, {
     name: 'SortOrderInput',
-    description: 'The order to sort the results ("asc" or "desc")',
+    description: QUERY_DESCRIPTIONS.SORT.ORDER,
 });
 
 registerEnumType(FilterOperatorInput, {
     name: 'FilterOperatorInput',
-    description: "The operator to apply ('eq', 'ne', 'gt', 'lt', 'gte', 'lte')",
+    description: QUERY_DESCRIPTIONS.FILTER.OPERATOR,
 });
 
 registerEnumType(SelectorOperatorInput, {
     name: 'SelectorOperatorInput',
-    description: "The selector operator to apply ('and', 'nor', 'or', 'search', 'caseSensitive')",
+    description: QUERY_DESCRIPTIONS.FILTER.SELECTOR_OPERATOR,
 });
 
-@InputType({description: 'Pagination options for limiting and skipping results'})
+@InputType({description: QUERY_DESCRIPTIONS.PAGINATION.INPUT})
 export class PaginationInput {
-    @Field(() => Int, {nullable: true, description: 'The number of results to return'})
+    @Field(() => Int, {nullable: true, description: QUERY_DESCRIPTIONS.PAGINATION.LIMIT})
     limit?: number;
 
-    @Field(() => Int, {nullable: true, description: 'The number of results to skip'})
+    @Field(() => Int, {nullable: true, description: QUERY_DESCRIPTIONS.PAGINATION.SKIP})
     skip?: number;
 }
 
-@InputType({description: 'Sorting options for ordering results'})
+@InputType({description: QUERY_DESCRIPTIONS.SORT.INPUT})
 export class SortInput {
-    @Field({description: 'The field to sort by'})
+    @Field({description: QUERY_DESCRIPTIONS.SORT.FIELD})
     field: string;
 
-    @Field(() => SortOrderInput, {defaultValue: SortOrderInput.asc, description: "The order to sort the results ('asc' or 'desc')"})
+    @Field(() => SortOrderInput, {defaultValue: SortOrderInput.asc, description: QUERY_DESCRIPTIONS.SORT.ORDER})
     order: SortOrderInput;
 }
 
-@InputType({description: 'Filter options for querying specific fields'})
+@InputType({description: QUERY_DESCRIPTIONS.FILTER.INPUT})
 export class FilterInput {
-    @Field({description: 'The field to filter by'})
+    @Field({description: QUERY_DESCRIPTIONS.FILTER.FIELD})
     field: string;
 
-    @Field((type) => AnyType, {description: 'The value to filter the field by'})
+    @Field((type) => AnyType, {description: QUERY_DESCRIPTIONS.FILTER.VALUE})
     value: string | number | boolean;
 
     @Field(() => FilterOperatorInput, {
         nullable: true,
         defaultValue: FilterOperatorInput.eq,
-        description: "The operator to apply ('eq', 'ne', 'gt', 'lt', 'gte', 'lte')",
+        description: QUERY_DESCRIPTIONS.FILTER.OPERATOR,
     })
     operator?: FilterOperatorInput;
 }
 
-@InputType({description: 'Options for querying a model, including pagination, sorting, and filtering'})
+@InputType({description: QUERY_DESCRIPTIONS.QUERY.INPUT})
 export class QueryOptionsInput {
-    @Field(() => PaginationInput, {nullable: true, description: 'Pagination options'})
+    @Field(() => PaginationInput, {nullable: true, description: QUERY_DESCRIPTIONS.QUERY.PAGINATION})
     pagination?: PaginationInput;
 
-    @Field(() => [SortInput], {nullable: true, description: 'Sorting options'})
+    @Field(() => [SortInput], {nullable: true, description: QUERY_DESCRIPTIONS.QUERY.SORT})
     sort?: SortInput[];
 
-    @Field(() => [FilterInput], {nullable: true, description: 'Filtering options'})
+    @Field(() => [FilterInput], {nullable: true, description: QUERY_DESCRIPTIONS.QUERY.FILTER})
     filters?: FilterInput[];
 }

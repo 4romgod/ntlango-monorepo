@@ -1,8 +1,9 @@
+import {COMMON_DESCRIPTIONS} from '@/constants';
 import {GraphQLScalarType} from 'graphql';
 
 export const AnyType = new GraphQLScalarType({
     name: 'AnyType',
-    description: 'Type can be anything',
+    description: COMMON_DESCRIPTIONS.TYPE_ANY,
     serialize(value: unknown): any {
         return value;
     },

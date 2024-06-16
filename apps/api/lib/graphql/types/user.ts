@@ -1,4 +1,5 @@
 import 'reflect-metadata';
+import {USER_DESCRIPTIONS} from '@/constants';
 import {ObjectType, InputType, Field, registerEnumType, Authorized} from 'type-graphql';
 
 export enum Gender {
@@ -16,137 +17,138 @@ export enum UserRole {
 
 registerEnumType(Gender, {
     name: 'Gender',
+    description: USER_DESCRIPTIONS.GENDER,
 });
 
 registerEnumType(UserRole, {
     name: 'UserRole',
+    description: USER_DESCRIPTIONS.USER_ROLE,
 });
 
-@ObjectType()
+@ObjectType({description: USER_DESCRIPTIONS.TYPE})
 export class UserType {
-    @Field()
+    @Field({description: USER_DESCRIPTIONS.ID})
     id: string;
 
-    @Field()
+    @Field({description: USER_DESCRIPTIONS.EMAIL})
     email: string;
 
-    @Field()
+    @Field({description: USER_DESCRIPTIONS.USERNAME})
     username: string;
 
-    @Field()
+    @Field({description: USER_DESCRIPTIONS.ADDRESS})
     address: string;
 
-    @Field()
+    @Field({description: USER_DESCRIPTIONS.BIRTHDATE})
     birthdate: string;
 
-    @Field()
+    @Field({description: USER_DESCRIPTIONS.GIVEN_NAME})
     given_name: string;
 
-    @Field()
+    @Field({description: USER_DESCRIPTIONS.FAMILY_NAME})
     family_name: string;
 
-    @Field(() => Gender, {nullable: true})
+    @Field(() => Gender, {nullable: true, description: USER_DESCRIPTIONS.GENDER})
     gender?: Gender;
 
-    @Field()
+    @Field({description: USER_DESCRIPTIONS.ENCRYPTED_PASSWORD})
     encrypted_password: string;
 
-    @Field({nullable: true})
+    @Field({nullable: true, description: USER_DESCRIPTIONS.PHONE_NUMBER})
     phone_number?: string;
 
-    @Field({nullable: true})
+    @Field({nullable: true, description: USER_DESCRIPTIONS.PROFILE_PICTURE})
     profile_picture?: string;
 
-    @Field(() => UserRole)
+    @Field(() => UserRole, {description: USER_DESCRIPTIONS.USER_ROLE})
     userRole: UserRole;
 }
 
-@ObjectType()
+@ObjectType({description: USER_DESCRIPTIONS.WITH_TOKEN})
 export class UserWithTokenType extends UserType {
-    @Field()
+    @Field({description: USER_DESCRIPTIONS.TOKEN})
     token: string;
 }
 
-@InputType()
+@InputType({description: USER_DESCRIPTIONS.CREATE_INPUT})
 export class CreateUserInputType {
-    @Field()
+    @Field({description: USER_DESCRIPTIONS.EMAIL})
     email: string;
 
-    @Field({nullable: true})
+    @Field({nullable: true, description: USER_DESCRIPTIONS.USERNAME})
     username?: string;
 
-    @Field()
+    @Field({description: USER_DESCRIPTIONS.ADDRESS})
     address: string;
 
-    @Field()
+    @Field({description: USER_DESCRIPTIONS.BIRTHDATE})
     birthdate: string;
 
-    @Field()
+    @Field({description: USER_DESCRIPTIONS.GIVEN_NAME})
     given_name: string;
 
-    @Field()
+    @Field({description: USER_DESCRIPTIONS.FAMILY_NAME})
     family_name: string;
 
-    @Field(() => Gender, {nullable: true})
+    @Field(() => Gender, {nullable: true, description: USER_DESCRIPTIONS.GENDER})
     gender?: Gender;
 
-    @Field()
+    @Field({description: USER_DESCRIPTIONS.PASSWORD})
     password: string;
 
-    @Field({nullable: true})
+    @Field({nullable: true, description: USER_DESCRIPTIONS.PHONE_NUMBER})
     phone_number?: string;
 
-    @Field({nullable: true})
+    @Field({nullable: true, description: USER_DESCRIPTIONS.PROFILE_PICTURE})
     profile_picture?: string;
 }
 
-@InputType()
+@InputType({description: USER_DESCRIPTIONS.UPDATE_INPUT})
 export class UpdateUserInputType {
-    @Field()
+    @Field({description: USER_DESCRIPTIONS.ID})
     id: string;
 
-    @Field({nullable: true})
+    @Field({nullable: true, description: USER_DESCRIPTIONS.EMAIL})
     email?: string;
 
-    @Field({nullable: true})
+    @Field({nullable: true, description: USER_DESCRIPTIONS.USERNAME})
     username?: string;
 
-    @Field({nullable: true})
+    @Field({nullable: true, description: USER_DESCRIPTIONS.ADDRESS})
     address?: string;
 
-    @Field({nullable: true})
+    @Field({nullable: true, description: USER_DESCRIPTIONS.BIRTHDATE})
     birthdate?: string;
 
-    @Field({nullable: true})
+    @Field({nullable: true, description: USER_DESCRIPTIONS.GIVEN_NAME})
     given_name?: string;
 
-    @Field({nullable: true})
+    @Field({nullable: true, description: USER_DESCRIPTIONS.FAMILY_NAME})
     family_name?: string;
 
-    @Field(() => Gender, {nullable: true})
+    @Field(() => Gender, {nullable: true, description: USER_DESCRIPTIONS.GENDER})
     gender?: Gender;
 
-    @Field({nullable: true})
+    @Field({nullable: true, description: USER_DESCRIPTIONS.PASSWORD})
     password?: string;
 
-    @Field({nullable: true})
+    @Field({nullable: true, description: USER_DESCRIPTIONS.PHONE_NUMBER})
     phone_number?: string;
 
-    @Field({nullable: true})
+    @Field({nullable: true, description: USER_DESCRIPTIONS.PROFILE_PICTURE})
     profile_picture?: string;
 
     @Authorized([UserRole.Admin])
-    @Field(() => UserRole, {nullable: true})
+    @Field(() => UserRole, {nullable: true, description: USER_DESCRIPTIONS.USER_ROLE})
     userRole?: string;
 }
 
-@InputType()
+// TODO make this also work with username
+@InputType({description: USER_DESCRIPTIONS.LOGIN_INPUT})
 export class LoginUserInputType {
-    @Field()
+    @Field({description: USER_DESCRIPTIONS.EMAIL})
     email: string;
 
-    @Field()
+    @Field({description: USER_DESCRIPTIONS.PASSWORD})
     password: string;
 }
-
-export type UserQueryParams = Partial<Record<keyof UserType, any>> & {userIDList?: Array<string>};

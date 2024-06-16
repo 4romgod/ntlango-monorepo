@@ -1,56 +1,57 @@
 import 'reflect-metadata';
+import {EVENT_CATEGORY_DESCRIPTIONS} from '@/constants';
 import {Field, InputType, ObjectType} from 'type-graphql';
 
-@ObjectType()
+@ObjectType({description: EVENT_CATEGORY_DESCRIPTIONS.TYPE})
 export class EventCategoryType {
-    @Field()
+    @Field({description: EVENT_CATEGORY_DESCRIPTIONS.ID})
     id: string;
 
-    @Field()
+    @Field({description: EVENT_CATEGORY_DESCRIPTIONS.SLUG})
     slug: string;
 
-    @Field()
+    @Field({description: EVENT_CATEGORY_DESCRIPTIONS.NAME})
     name: string;
 
-    @Field()
+    @Field({description: EVENT_CATEGORY_DESCRIPTIONS.ICON_NAME})
     iconName: string;
 
-    @Field()
+    @Field({description: EVENT_CATEGORY_DESCRIPTIONS.DESCRIPTION})
     description: string;
 
-    @Field({nullable: true})
+    @Field({nullable: true, description: EVENT_CATEGORY_DESCRIPTIONS.COLOR})
     color?: string;
 }
 
-@InputType()
+@InputType({description: EVENT_CATEGORY_DESCRIPTIONS.CREATE_INPUT})
 export class CreateEventCategoryInputType {
-    @Field()
+    @Field({description: EVENT_CATEGORY_DESCRIPTIONS.NAME})
     name: string;
 
-    @Field()
+    @Field({description: EVENT_CATEGORY_DESCRIPTIONS.ICON_NAME})
     iconName: string;
 
-    @Field()
+    @Field({description: EVENT_CATEGORY_DESCRIPTIONS.DESCRIPTION})
     description: string;
 
-    @Field({nullable: true})
+    @Field({nullable: true, description: EVENT_CATEGORY_DESCRIPTIONS.COLOR})
     color?: string;
 }
 
-@InputType()
+@InputType({description: EVENT_CATEGORY_DESCRIPTIONS.UPDATE_INPUT})
 export class UpdateEventCategoryInputType {
-    @Field()
+    @Field({description: EVENT_CATEGORY_DESCRIPTIONS.ID})
     id: string;
 
-    @Field({nullable: true})
+    @Field({nullable: true, description: EVENT_CATEGORY_DESCRIPTIONS.NAME})
     name?: string;
 
-    @Field({nullable: true})
+    @Field({nullable: true, description: EVENT_CATEGORY_DESCRIPTIONS.ICON_NAME})
     iconName?: string;
 
-    @Field({nullable: true})
+    @Field({nullable: true, description: EVENT_CATEGORY_DESCRIPTIONS.DESCRIPTION})
     description?: string;
 
-    @Field({nullable: true})
+    @Field({nullable: true, description: EVENT_CATEGORY_DESCRIPTIONS.COLOR})
     color?: string;
 }
