@@ -6,7 +6,7 @@ import {isValid, parseISO} from 'date-fns';
 
 export const validateMongodbId = (id: string, message?: string) => {
     if (!mongoose.Types.ObjectId.isValid(id)) {
-        throw CustomError(message || `id: ${id} does not exist`, ErrorTypes.NOT_FOUND);
+        throw CustomError(message || `ID '${id}' does not exist`, ErrorTypes.NOT_FOUND);
     }
     return true;
 };
@@ -31,6 +31,7 @@ const transforomEnumToErrorMessage = (enumType: any) => {
 export const ERROR_MESSAGES = {
     ATLEAST_ONE: (type: string) => `Atleast one ${type} is required`,
     CONTENT_TOO_LARGE: 'Your Content is Too Large, Max size is 15MB',
+    DOES_NOT_EXIST: 'does not exist',
     INTERNAL_SERVER_ERROR: 'Oops, something is broken',
     INVALID: 'is invalid',
     INVALID_DATE: 'should be in YYYY-MM-DD format',

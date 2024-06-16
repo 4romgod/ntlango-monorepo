@@ -27,7 +27,6 @@ export class UserResolver {
     @Authorized([UserRole.Admin, UserRole.User, UserRole.Host])
     @Mutation(() => UserType, {description: RESOLVER_DESCRIPTIONS.USER.updateUser})
     async updateUser(@Arg('input', () => UpdateUserInputType) input: UpdateUserInputType): Promise<UserType> {
-        validateMongodbId(input.id, ERROR_MESSAGES.NOT_FOUND('User', 'ID', input.id));
         validateInput<UpdateUserInputType>(UpdateUserInputTypeSchema, input);
         return UserDAO.updateUser(input);
     }

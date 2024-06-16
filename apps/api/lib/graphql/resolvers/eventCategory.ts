@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import {Arg, Mutation, Resolver, Query, Authorized} from 'type-graphql';
 import {CreateEventCategoryInputType, EventCategoryType, UpdateEventCategoryInputType, UserRole} from '@/graphql/types';
 import {EventCategoryDAO} from '@/mongodb/dao';
-import {validateMongodbId} from '@/validation';
+import {CreateEventCategoryTypeSchema, UpdateEventCategoryTypeSchema, validateInput, validateMongodbId} from '@/validation';
 import {QueryOptionsInput} from '../types/query';
 import {RESOLVER_DESCRIPTIONS} from '@/constants';
 
@@ -11,12 +11,14 @@ export class EventCategoryResolver {
     @Authorized([UserRole.Admin])
     @Mutation(() => EventCategoryType, {description: RESOLVER_DESCRIPTIONS.EVENT_CATEGORY.createEventCategory})
     async createEventCategory(@Arg('input', () => CreateEventCategoryInputType) input: CreateEventCategoryInputType): Promise<EventCategoryType> {
+        validateInput<CreateEventCategoryInputType>(CreateEventCategoryTypeSchema, input);
         return EventCategoryDAO.create(input);
     }
 
     @Authorized([UserRole.Admin])
     @Mutation(() => EventCategoryType, {description: RESOLVER_DESCRIPTIONS.EVENT_CATEGORY.updateEventCategory})
     async updateEventCategory(@Arg('input', () => UpdateEventCategoryInputType) input: UpdateEventCategoryInputType): Promise<EventCategoryType> {
+        validateInput<UpdateEventCategoryInputType>(UpdateEventCategoryTypeSchema, input);
         return EventCategoryDAO.updateEventCategory(input);
     }
 
@@ -29,6 +31,7 @@ export class EventCategoryResolver {
 
     @Query(() => EventCategoryType, {description: RESOLVER_DESCRIPTIONS.EVENT_CATEGORY.readEventCategoryById})
     async readEventCategoryById(@Arg('eventCategoryId') eventCategoryId: string): Promise<EventCategoryType | null> {
+        validateMongodbId(eventCategoryId);
         return EventCategoryDAO.readEventCategoryById(eventCategoryId);
     }
 

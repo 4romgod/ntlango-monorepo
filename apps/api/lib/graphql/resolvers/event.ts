@@ -1,11 +1,11 @@
 import 'reflect-metadata';
 import {Arg, Mutation, Resolver, Query, Authorized} from 'type-graphql';
-import {EventDAO} from '@/mongodb/dao';
 import {CreateEventInputType, EventType, UpdateEventInputType, UserRole} from '@/graphql/types';
 import {ERROR_MESSAGES, validateInput, validateMongodbId} from '@/validation';
-import {CreateEventInputTypeSchema} from '@/validation/zod';
+import {CreateEventInputTypeSchema, UpdateEventInputTypeSchema} from '@/validation/zod';
 import {QueryOptionsInput} from '../types/query';
 import {RESOLVER_DESCRIPTIONS} from '@/constants';
+import {EventDAO} from '@/mongodb/dao';
 
 @Resolver()
 export class EventResolver {
@@ -19,7 +19,7 @@ export class EventResolver {
     @Authorized([UserRole.Admin, UserRole.Host, UserRole.User])
     @Mutation(() => EventType, {description: RESOLVER_DESCRIPTIONS.EVENT.updateEvent})
     async updateEvent(@Arg('input', () => UpdateEventInputType) input: UpdateEventInputType): Promise<EventType> {
-        validateMongodbId(input.id, ERROR_MESSAGES.NOT_FOUND('Event', 'ID', input.id));
+        validateInput<UpdateEventInputType>(UpdateEventInputTypeSchema, input);
         return EventDAO.updateEvent(input);
     }
 

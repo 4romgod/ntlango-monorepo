@@ -1,10 +1,11 @@
 import {z} from 'zod';
 import {REGEX_PHONE_NUMBER} from '@/constants';
 import {Gender} from '@/graphql/types';
-import {ERROR_MESSAGES, validateDate, validateMongodbId} from '@/validation/common';
+import {ERROR_MESSAGES, validateDate} from '@/validation/common';
+import mongoose from 'mongoose';
 
 export const UserTypeSchema = z.object({
-    id: z.string().refine(validateMongodbId),
+    id: z.string().refine(mongoose.Types.ObjectId.isValid, {message: `User with ID ${ERROR_MESSAGES.DOES_NOT_EXIST}`}),
 
     address: z
         .string()
@@ -39,7 +40,7 @@ export const CreateUserInputTypeSchema = UserTypeSchema.extend({
 
 export const UpdateUserInputTypeSchema = UserTypeSchema.partial()
     .extend({
-        id: z.string().refine(validateMongodbId),
+        id: z.string().refine(mongoose.Types.ObjectId.isValid, {message: `User with ID ${ERROR_MESSAGES.DOES_NOT_EXIST}`}),
         password: z.string().min(8, {message: ERROR_MESSAGES.INVALID_PASSWORD}).optional(),
     })
     .omit({encrypted_password: true});

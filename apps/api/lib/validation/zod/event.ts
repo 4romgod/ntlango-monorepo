@@ -1,17 +1,12 @@
 import {z} from 'zod';
-import {EventPrivacySetting, EventStatus, EventType} from '@/graphql/types';
-import {ERROR_MESSAGES, validateDate, validateMongodbId} from '@/validation';
-
-const validateEventInput = (input: any) => {
-    if (input.startDateTime >= input.endDateTime) {
-        return {message: 'End date must be greater than start date'};
-    }
-};
+import {EventPrivacySetting, EventStatus} from '@/graphql/types';
+import {ERROR_MESSAGES, validateDate} from '@/validation';
+import mongoose from 'mongoose';
 
 export const EventTypeSchema = z.object({
     id: z
         .string()
-        .refine(validateMongodbId, {message: `Event ID ${ERROR_MESSAGES.INVALID}`})
+        .refine(mongoose.Types.ObjectId.isValid, {message: `Event ID ${ERROR_MESSAGES.INVALID}`})
         .describe('The unique ID of the Event.'),
 
     slug: z
@@ -62,12 +57,12 @@ export const EventTypeSchema = z.object({
         .describe('The categories associated with the event.'),
 
     organizerList: z
-        .array(z.string().refine(validateMongodbId, {message: `Event ID ${ERROR_MESSAGES.INVALID}`}))
+        .array(z.string().refine(mongoose.Types.ObjectId.isValid, {message: `Event ID ${ERROR_MESSAGES.INVALID}`}))
         .min(1, {message: 'At least one organizer is required'})
         .describe('The list of organizers for the event, identified by their IDs.'),
 
     rSVPList: z
-        .array(z.string().refine(validateMongodbId, {message: `Event ID ${ERROR_MESSAGES.INVALID}`}))
+        .array(z.string().refine(mongoose.Types.ObjectId.isValid, {message: `Event ID ${ERROR_MESSAGES.INVALID}`}))
         .describe('The list of RSVPs for the event, identified by their IDs.'),
 
     tags: z.record(z.any()).optional().describe('A set of tags associated with the event for categorization or search purposes.'),
@@ -89,14 +84,13 @@ export const EventTypeSchema = z.object({
     eventLink: z.string().optional().describe('A link to the event page or further information about the event.'),
 });
 
-export const CreateEventInputTypeSchema = EventTypeSchema.extend({}).omit({id: true, slug: true}).refine(validateEventInput);
+export const CreateEventInputTypeSchema = EventTypeSchema.extend({}).omit({id: true, slug: true});
 
 export const UpdateEventInputTypeSchema = EventTypeSchema.partial()
     .extend({
         id: z
             .string()
             .describe('The unique ID of the Event. (It is a required field)')
-            .refine(validateMongodbId, {message: `Event ID ${ERROR_MESSAGES.INVALID}`}),
+            .refine(mongoose.Types.ObjectId.isValid, {message: `Event with ID ${ERROR_MESSAGES.DOES_NOT_EXIST}`}),
     })
-    .omit({slug: true})
-    .refine(validateEventInput);
+    .omit({slug: true});
