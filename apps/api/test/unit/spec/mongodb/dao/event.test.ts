@@ -77,9 +77,10 @@ describe('EventDAO', () => {
 
         it('should throw INTERNAL_SERVER_ERROR GraphQLError when Event.create throws an UNKNOWN error', async () => {
             (Event.create as jest.Mock).mockRejectedValue(new Error('Mongodb Error'));
-            const mockGraphqlError = new GraphQLError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR);
 
-            await expect(EventDAO.create(mockEventInput)).rejects.toThrow(mockGraphqlError);
+            await expect(EventDAO.create(mockEventInput)).rejects.toThrow(
+                CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR),
+            );
             expect(Event.create).toHaveBeenCalledWith(expect.objectContaining(mockEventInput));
         });
 
@@ -295,10 +296,11 @@ describe('EventDAO', () => {
 
         it('should throw INTERNAL_SERVER_ERROR GraphQLError when Event.findByIdAndUpdate throws an UNKNOWN error', async () => {
             (Event.findByIdAndUpdate as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(new MockMongoError(0)));
-            const mockGraphqlError = new GraphQLError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR);
 
             const {id, ...calledWithInput} = mockUpdatedEventInput;
-            await expect(EventDAO.updateEvent(mockUpdatedEventInput)).rejects.toThrow(mockGraphqlError);
+            await expect(EventDAO.updateEvent(mockUpdatedEventInput)).rejects.toThrow(
+                CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR),
+            );
             expect(Event.findByIdAndUpdate).toHaveBeenCalledWith(id, expect.objectContaining({...calledWithInput, slug: 'updated-event-title'}), {
                 new: true,
             });
