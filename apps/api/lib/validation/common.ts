@@ -25,7 +25,7 @@ export const validateDate = (date: string) => {
 };
 
 const transforomEnumToErrorMessage = (enumType: any) => {
-    return Object.values(enumType).slice(0, -1).join(', ') + ', or ' + Object.values(enumType).slice(-1);
+    return Object.values(enumType).slice(0).join(', ');
 };
 
 export const ERROR_MESSAGES = {

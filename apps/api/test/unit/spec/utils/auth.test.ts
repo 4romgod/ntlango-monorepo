@@ -1,60 +1,274 @@
-import {Gender, UserRole, UserType} from '@/graphql/types';
-import {generateToken, verifyToken} from '@/utils/auth';
-import {GraphQLError} from 'graphql';
-import {ErrorTypes} from '@/utils';
+import {authChecker, generateToken, verifyToken, isAuthorizedByOperation} from '@/utils';
+import {CustomError, ErrorTypes} from '@/utils/exceptions';
+import {ERROR_MESSAGES} from '@/validation';
+import {UserRole, UserType} from '@/graphql/types';
+import {OPERATION_NAMES} from '@/constants';
+import {verify, sign} from 'jsonwebtoken';
+import {EventDAO} from '@/mongodb/dao';
+import {ServerContext} from '@/server';
+import {ArgsDictionary} from 'type-graphql';
+import {GraphQLResolveInfo} from 'graphql';
 
-describe('auth', () => {
-    const createUserInput: UserType = {
-        id: 'user001',
-        email: 'user001@gmail.com',
-        username: 'jackBaur',
-        address: 'KZN, Durban, 8000',
-        birthdate: '1994-06-26',
-        family_name: 'Baur',
-        gender: Gender.Male,
-        given_name: 'Jack',
-        encrypted_password: 'dfuyihjknbsndhj',
-        phone_number: '+12345678990',
-        profile_picture: '',
+jest.mock('jsonwebtoken');
+jest.mock('@/mongodb/dao');
+
+describe('Auth Utilities', () => {
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+
+    const mockUser: UserType = {
+        id: 'user-id',
+        email: 'user@example.com',
+        username: 'user',
+        address: '123 Street',
+        birthdate: '2000-01-01',
+        given_name: 'First',
+        family_name: 'Last',
+        encrypted_password: 'hashedpassword',
+        userRole: UserRole.User,
+    };
+
+    const mockAdminUser: UserType = {
+        ...mockUser,
         userRole: UserRole.Admin,
     };
 
-    describe('generateToken and verifyToken', () => {
-        it('should return a valid user when valid token and secret string is provided', async () => {
-            const token = generateToken(createUserInput);
-            const decodedUser = verifyToken(token);
-            expect(createUserInput).toEqual(decodedUser);
+    describe('generateToken', () => {
+        it('should generate a token', () => {
+            (sign as jest.Mock).mockReturnValue('token');
+            const token = generateToken(mockUser);
+            expect(token).toBe('token');
+            expect(sign).toHaveBeenCalledWith(mockUser, expect.any(String), {expiresIn: '1h'});
+        });
+    });
+
+    describe('verifyToken', () => {
+        it('should verify a valid token', () => {
+            (verify as jest.Mock).mockReturnValue({...mockUser, iat: 123, exp: 456});
+            const user = verifyToken('valid-token');
+            expect(user).toEqual(mockUser);
         });
 
-        it('should throw UNAUTHENTICATED error when incorrect secret string is used to decode token', async () => {
-            const token = generateToken(createUserInput);
-            try {
-                verifyToken(token, 'invalid_secret');
-            } catch (error) {
-                expect(error instanceof GraphQLError).toBeTruthy();
-                if (error instanceof GraphQLError) {
-                    expect(error.extensions.code).toBe(ErrorTypes.UNAUTHENTICATED.errorCode);
-                    expect(error.extensions.http).toEqual({status: 401});
-                }
-            }
+        it('should throw an error for an invalid token', () => {
+            (verify as jest.Mock).mockImplementation(() => {
+                throw new Error('Invalid token');
+            });
+            expect(() => verifyToken('invalid-token')).toThrow(CustomError(ERROR_MESSAGES.UNAUTHENTICATED, ErrorTypes.UNAUTHENTICATED));
         });
     });
 
     describe('isAuthorizedByOperation', () => {
-        it('mock test', () => {
-            // TODO write real tests
+        it('should authorize user for their own update', async () => {
+            const result = await isAuthorizedByOperation(OPERATION_NAMES.UPDATE_USER, {input: {id: 'user-id'}}, mockUser);
+            expect(result).toBe(true);
         });
-    });
 
-    describe('isAuthorizedToUpdateEvent', () => {
-        it('mock test', () => {
-            // TODO write real tests
+        it("should deny user for another user's update", async () => {
+            const result = await isAuthorizedByOperation(OPERATION_NAMES.UPDATE_USER, {input: {id: 'another-id'}}, mockUser);
+            expect(result).toBe(false);
+        });
+
+        it('should authorize user for their own event update', async () => {
+            (EventDAO.readEventById as jest.Mock).mockResolvedValue({organizerList: [{id: 'user-id'}]});
+            const result = await isAuthorizedByOperation(OPERATION_NAMES.UPDATE_EVENT, {eventId: 'event-id'}, mockUser);
+            expect(result).toBe(true);
+        });
+
+        it("should deny user for another user's event update", async () => {
+            (EventDAO.readEventById as jest.Mock).mockResolvedValue({organizerList: [{id: 'another-id'}]});
+            const result = await isAuthorizedByOperation(OPERATION_NAMES.UPDATE_EVENT, {eventId: 'event-id'}, mockUser);
+            expect(result).toBe(false);
         });
     });
 
     describe('authChecker', () => {
-        it('mock test', () => {
-            // TODO write real tests
+        const mockContext: ServerContext = {token: 'valid-token'};
+        const root = null;
+
+        beforeEach(() => {
+            (verify as jest.Mock).mockReturnValue({...mockUser, id: 'current-user-id', iat: 123, exp: 456});
+        });
+
+        describe('operation tests', () => {
+            const testCases = [
+                {
+                    operationName: OPERATION_NAMES.UPDATE_USER,
+                    args: {input: {id: 'current-user-id'}},
+                    roles: [UserRole.User],
+                    expectAuthorized: true,
+                    testDescription: `should AUTHORIZE a user with the correct role and permission for ${OPERATION_NAMES.UPDATE_USER} on item`,
+                },
+                {
+                    operationName: OPERATION_NAMES.UPDATE_USER,
+                    args: {input: {id: 'another-id'}},
+                    roles: [UserRole.User],
+                    expectAuthorized: false,
+                    testDescription: `should throw UNAUTHORIZED Error when user lacks permission for ${OPERATION_NAMES.UPDATE_USER} on item`,
+                },
+                {
+                    operationName: OPERATION_NAMES.UPDATE_USER,
+                    args: {input: {id: 'current-user-id'}},
+                    roles: [UserRole.Guest],
+                    expectAuthorized: false,
+                    testDescription: `should throw UNAUTHORIZED Error for user with inccorrect role ${OPERATION_NAMES.UPDATE_USER} on item`,
+                },
+                {
+                    operationName: OPERATION_NAMES.DELETE_USER_BY_ID,
+                    args: {id: 'current-user-id'},
+                    roles: [UserRole.User],
+                    expectAuthorized: true,
+                    testDescription: `should AUTHORIZE a user with the correct role and permission for ${OPERATION_NAMES.DELETE_USER_BY_ID} on item`,
+                },
+                {
+                    operationName: OPERATION_NAMES.DELETE_USER_BY_ID,
+                    args: {id: 'another-id'},
+                    roles: [UserRole.User],
+                    expectAuthorized: false,
+                    testDescription: `should throw UNAUTHORIZED Error when user lacks permission for ${OPERATION_NAMES.DELETE_USER_BY_ID} on item`,
+                },
+                {
+                    operationName: OPERATION_NAMES.DELETE_USER_BY_ID,
+                    args: {input: {id: 'current-user-id'}},
+                    roles: [UserRole.Guest],
+                    expectAuthorized: false,
+                    testDescription: `should throw UNAUTHORIZED Error for user with inccorrect role ${OPERATION_NAMES.DELETE_USER_BY_ID} on item`,
+                },
+                {
+                    operationName: OPERATION_NAMES.UPDATE_EVENT,
+                    args: {eventId: 'event-id'},
+                    roles: [UserRole.User],
+                    expectAuthorized: true,
+                    mockDAO: true,
+                    eventDAOResult: [{id: 'current-user-id'}],
+                    testDescription: `should AUTHORIZE a user with the correct role and permission for ${OPERATION_NAMES.UPDATE_EVENT} on item`,
+                },
+                {
+                    operationName: OPERATION_NAMES.UPDATE_EVENT,
+                    args: {eventId: 'event-id'},
+                    roles: [UserRole.User],
+                    expectAuthorized: false,
+                    mockDAO: true,
+                    eventDAOResult: [{id: 'another-id'}],
+                    testDescription: `should throw UNAUTHORIZED Error when user lacks permission for ${OPERATION_NAMES.UPDATE_EVENT} on item`,
+                },
+                {
+                    operationName: OPERATION_NAMES.UPDATE_EVENT,
+                    args: {input: {id: 'current-user-id'}},
+                    roles: [UserRole.Guest],
+                    expectAuthorized: false,
+                    testDescription: `should throw UNAUTHORIZED Error for user with inccorrect role ${OPERATION_NAMES.UPDATE_EVENT} on item`,
+                },
+                {
+                    operationName: OPERATION_NAMES.CREATE_EVENT,
+                    args: {},
+                    roles: [UserRole.User],
+                    expectAuthorized: true,
+                    testDescription: `should AUTHORIZE a user with the correct role for ${OPERATION_NAMES.UPDATE_EVENT} on item`,
+                },
+            ];
+
+            testCases.forEach(({operationName, args, roles, expectAuthorized, mockDAO, eventDAOResult, testDescription}) => {
+                it(testDescription, async () => {
+                    const mockResolveInfo: GraphQLResolveInfo = {fieldName: operationName} as any;
+
+                    if (mockDAO) {
+                        (EventDAO.readEventById as jest.Mock).mockResolvedValue({organizerList: eventDAOResult});
+                    }
+                    if (expectAuthorized) {
+                        const result = await authChecker({context: mockContext, args: args, info: mockResolveInfo, root}, roles);
+                        expect(result).toBe(true);
+                    } else {
+                        await expect(authChecker({context: mockContext, args: args, info: mockResolveInfo, root}, roles)).rejects.toThrow(
+                            CustomError(ERROR_MESSAGES.UNAUTHORIZED, ErrorTypes.UNAUTHORIZED),
+                        );
+                    }
+                });
+            });
+        });
+
+        describe('Admin permissions', () => {
+            beforeEach(() => {
+                (verify as jest.Mock).mockReturnValue({...mockAdminUser, id: 'current-user-id', iat: 123, exp: 456});
+            });
+
+            const testCases = [
+                {
+                    operationName: OPERATION_NAMES.UPDATE_USER,
+                    args: {input: {id: 'another-id'}},
+                    roles: [UserRole.Admin],
+                    testDescription: `should AUTHORIZE Admin user for ${OPERATION_NAMES.UPDATE_USER} on any item`,
+                },
+                {
+                    operationName: OPERATION_NAMES.DELETE_USER_BY_ID,
+                    args: {id: 'another-id'},
+                    roles: [UserRole.Admin],
+                    testDescription: `should AUTHORIZE Admin user for ${OPERATION_NAMES.DELETE_USER_BY_ID} on any item`,
+                },
+                {
+                    operationName: OPERATION_NAMES.UPDATE_EVENT,
+                    args: {eventId: 'event-id'},
+                    roles: [UserRole.Admin],
+                    testDescription: `should AUTHORIZE Admin user for ${OPERATION_NAMES.UPDATE_EVENT} on any item`,
+                },
+                {
+                    operationName: OPERATION_NAMES.CREATE_EVENT,
+                    args: {},
+                    roles: [UserRole.Admin],
+                    testDescription: `should AUTHORIZE Admin user for ${OPERATION_NAMES.CREATE_EVENT} on any item`,
+                },
+            ];
+
+            testCases.forEach(({operationName, args, roles, testDescription}) => {
+                it(testDescription, async () => {
+                    const mockResolveInfo: GraphQLResolveInfo = {fieldName: operationName} as any;
+
+                    const result = await authChecker({context: mockContext, args: args, info: mockResolveInfo, root}, roles);
+                    expect(result).toBe(true);
+                });
+            });
+        });
+
+        describe('invalid token', () => {
+            const root = null;
+
+            it('should throw UNAUTHENTICATED Error for a user WITHOUT a token', async () => {
+                const mockResolveInfo = {fieldName: OPERATION_NAMES.CREATE_EVENT} as GraphQLResolveInfo;
+                const mockContext: ServerContext = {token: undefined};
+                const args: ArgsDictionary = {input: {title: 'mock event title'}};
+
+                await expect(authChecker({context: mockContext, info: mockResolveInfo, args, root}, [UserRole.User])).rejects.toThrow(
+                    CustomError(ERROR_MESSAGES.UNAUTHENTICATED, ErrorTypes.UNAUTHENTICATED),
+                );
+            });
+
+            it('should throw UNAUTHENTICATED Error for a user with INVALID token', async () => {
+                (verify as jest.Mock).mockImplementation(() => {
+                    throw new Error('Invalid token');
+                });
+
+                const mockResolveInfo = {fieldName: OPERATION_NAMES.CREATE_EVENT} as GraphQLResolveInfo;
+                const mockContext: ServerContext = {token: 'invalid-token'};
+                const args: ArgsDictionary = {input: {title: 'mock event title'}};
+
+                await expect(authChecker({context: mockContext, info: mockResolveInfo, args, root}, [UserRole.User])).rejects.toThrow(
+                    CustomError(ERROR_MESSAGES.UNAUTHENTICATED, ErrorTypes.UNAUTHENTICATED),
+                );
+            });
+
+            it('should throw UNAUTHENTICATED Error for a user with EXPIRED token', async () => {
+                (verify as jest.Mock).mockImplementation(() => {
+                    throw new Error('TokenExpiredError');
+                });
+
+                const mockResolveInfo = {fieldName: OPERATION_NAMES.CREATE_EVENT} as GraphQLResolveInfo;
+                const mockContext: ServerContext = {token: 'expired-token'};
+                const args: ArgsDictionary = {input: {title: 'mock event title'}};
+
+                await expect(authChecker({context: mockContext, info: mockResolveInfo, args, root}, [UserRole.User])).rejects.toThrow(
+                    CustomError(ERROR_MESSAGES.UNAUTHENTICATED, ErrorTypes.UNAUTHENTICATED),
+                );
+            });
         });
     });
 });

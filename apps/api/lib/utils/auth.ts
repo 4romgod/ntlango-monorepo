@@ -1,5 +1,5 @@
 import {ServerContext} from '@/server';
-import {ArgsDictionary, AuthChecker} from 'type-graphql';
+import {ArgsDictionary, ResolverData, AuthChecker} from 'type-graphql';
 import {CustomError, ErrorTypes} from '@/utils/exceptions';
 import {ERROR_MESSAGES} from '@/validation';
 import {JWT_SECRET, OPERATION_NAMES} from '@/constants';
@@ -7,7 +7,20 @@ import {UserRole, UserType} from '@/graphql/types';
 import {verify, sign, JwtPayload} from 'jsonwebtoken';
 import {EventDAO} from '@/mongodb/dao';
 
-export const authChecker: AuthChecker<ServerContext> = async ({context, args, info}, roles) => {
+/**
+ * Authorization checker function for GraphQL resolver operations
+ *
+ * Note: We removed the AuthChecker type to accommodate unit tests.
+ * We can declare the authChecker like:
+ *
+ * const authChecker: AuthChecker<ServerContext> = ...
+ *
+ * @param resolverData Resolver data containing context, arguments, and GraphQL resolve info.
+ * @param roles Array of roles permitted to access the resolver operation.
+ * @returns Returns true if the user is authorized, throws error otherwise.
+ */
+export const authChecker = async (resolverData: ResolverData<ServerContext>, roles: string[]) => {
+    const {context, args, info} = resolverData;
     const token = context.token;
 
     if (token) {
@@ -15,15 +28,13 @@ export const authChecker: AuthChecker<ServerContext> = async ({context, args, in
         const userRole = user.userRole;
         const operationName = info.fieldName;
 
-        // Check if the user has the required role
         if (!roles.includes(userRole)) {
             console.log(`${userRole} type user: '${user.username}' was denied for operation ${operationName} and resource:`);
-            console.log(args);
             throw CustomError(ERROR_MESSAGES.UNAUTHORIZED, ErrorTypes.UNAUTHORIZED);
         }
 
-        if (userRole === UserRole.Admin) {
-            console.log(`${userRole} type user: '${user.username}' has permission for operation ${operationName} and resource`);
+        if (user.userRole === UserRole.Admin) {
+            console.log(`${user.userRole} type user: '${user.username}' has permission for operation ${operationName} and resource`);
             console.log(args);
             return true;
         }
@@ -60,11 +71,12 @@ export const verifyToken = (token: string, secret?: string) => {
         const {iat, exp, ...user} = verify(token, secret ?? JWT_SECRET) as JwtPayload;
         return user as UserType;
     } catch (err) {
+        console.log('Error when verifying token', err);
         throw CustomError(ERROR_MESSAGES.UNAUTHENTICATED, ErrorTypes.UNAUTHENTICATED);
     }
 };
 
-export const isAuthorizedByOperation = async (operationName: string, args: ArgsDictionary, user: UserType) => {
+export const isAuthorizedByOperation = async (operationName: string, args: ArgsDictionary, user: UserType): Promise<boolean> => {
     switch (operationName) {
         case OPERATION_NAMES.UPDATE_USER:
             return args.input.id == user.id;
@@ -74,7 +86,7 @@ export const isAuthorizedByOperation = async (operationName: string, args: ArgsD
         case OPERATION_NAMES.DELETE_EVENT:
             return await isAuthorizedToUpdateEvent(args.eventId, user);
         case OPERATION_NAMES.CREATE_EVENT:
-            return true; // allows all role based users
+            return true;
         default:
             return false;
     }
