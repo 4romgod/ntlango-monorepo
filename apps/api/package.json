@@ -7,6 +7,7 @@
   "scripts": {
     "build": "npm-run-all format build:ts test:unit",
     "build:ts": "echo '\nTranspilling ts source code...' && tsc --build --pretty --verbose && echo 'All done with the build!'",
+    "build:node": "node -r ts-node/register",
     "dev": "nodemon lib/scripts/startServer.ts",
     "start": "npm-run-all start:ts",
     "start:ts": "ts-node lib/scripts/startServer.ts",

@@ -16,8 +16,8 @@
     "preserveSymlinks": true,
     "baseUrl": "./",
     "paths": {
-      "@/*": ["lib/*"],
       "@/test/*": ["test/*"],
+      "@/*": ["lib/*"],
     }
   },
   "ts-node": {

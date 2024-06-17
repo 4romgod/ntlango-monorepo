@@ -151,10 +151,184 @@ These are things we do every now and then to keep this repository clean.
    npx depcheck
    ```
 
-## Contributing
+## Common Issues/Bugs and Their Fixes
 
-Contributions to this project are welcome! If you find any issues or have suggestions for improvements, please open an issue or submit a pull request.
+### Issue: Incorrect Jest `moduleNameMapper` Configuration
 
-## License
+### Symptom
+When running Jest tests, you encounter errors like:
+Could not locate module some modules like @/test/utils mapped as: rootDir/test/$1.
 
-[MIT License](LICENSE)
+### Solution
+* **Problem Description**: Jest's `moduleNameMapper` incorrectly maps paths, leading to module resolution errors.
+
+* **Fix**: Correctly configure `moduleNameMapper` in your Jest configuration (usually `jest.config.js`) to handle path aliases.
+
+   ```javascript
+   moduleNameMapper: {
+     '^@/(?!test)(.*)$': '<rootDir>/../../lib/$1',
+     '^@/test/(.*)$': '<rootDir>/../../test/$1',
+   }
+> Explanation: Our Integration tests and Canaries are within their own ROOT directory. This means, for Jest's `moduleNameMapper`, we need to go out of the test's ROOT, and map our modules into the project's ROOT directory, hence `rootDir/../../lib/$1`
+
+
+### Issue: TypeScript Path Alias Issue with JavaScript Build Output
+
+### Symptom
+After configuring TypeScript path aliases (`paths`) in `tsconfig.json`, the project fails to resolve paths correctly in the built JavaScript output. This leads to runtime errors due to module resolution failures.
+
+### Solution
+* **Problem Description**: TypeScript path aliases (`paths`) are specific configurations in `tsconfig.json` used for aliasing module imports to physical paths. However, these aliases are not recognized at runtime.
+
+* **Workaround**: Use `tsconfig-paths/register` module to resolve TypeScript path aliases at runtime.
+
+   - **Installation**: Install `tsconfig-paths/register`:
+     ```bash
+     npm install tsconfig-paths/register
+     ```
+
+   - **Usage**:
+
+      Update your scripts to include `-r tsconfig-paths/register` flag to enable path alias resolution during runtime:
+
+      Inside `package.json`
+      ```json
+      "scripts": {
+        "start:ts": "ts-node lib/scripts/startServer.ts",
+        "start:js": "node -r ts-node/register dist/lib/scripts/startServer.js"
+      }
+      ```
+
+      Insight `tsconfig.json`
+
+      ```json
+      "ts-node": {
+        "require": ["tsconfig-paths/register"]
+      }
+      ```
+
+   - **Explanation**: 
+     - `tsconfig-paths/register` registers TypeScript path aliases (`paths`) at runtime.
+     - This allows Node.js to resolve modules correctly based on the configured paths in `tsconfig.json`.
+     - For our `start:ts` script, we use `ts-node`, which is already configured inside our `tsconfig.json` file to use `tsconfig-paths/register` to register TypeScript aliases (`paths`) at runtime.
+
+3. **Additional Notes**: 
+   - Ensure that `tsconfig-paths/register` is included in your build and start scripts (`start` for development and `build` for production) to handle path aliases effectively.
+   - Test the build output thoroughly to confirm that all modules are resolved correctly in the production environment.
+
+## Backlog
+
+### Unit Testing
+
+Unit testing ensures that individual units or components of our code are working correctly. It's crucial for maintaining code quality and catching bugs early.
+
+-----------------------------|---------|----------|---------|---------|--------------------------------------------
+File                         | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s                          
+-----------------------------|---------|----------|---------|---------|--------------------------------------------
+All files                    |   81.41 |    71.51 |    45.8 |   79.87 |                                            
+ lib/graphql/types           |   82.73 |      100 |   15.87 |   80.44 |                                            
+  event.ts                   |    70.8 |      100 |    4.76 |      68 | ...192,195,198,201,204,207,216,219,228,231 
+  query.ts                   |   84.61 |      100 |   27.27 |   81.81 | 44,47,56,65,68,78,81,84                    
+  user.ts                    |   92.95 |      100 |   28.57 |    91.8 | 51,63,93,129,142                           
+ lib/mongodb/dao             |   67.04 |    46.37 |   67.85 |   66.66 |                                            
+  eventCategory.ts           |    8.06 |        0 |       0 |    8.06 | 9-110                                      
+  events.ts                  |   69.89 |    52.38 |      70 |   69.89 | 54-60,131-182                              
+  index.ts                   |     100 |      100 |     100 |     100 |                                            
+  user.ts                    |   98.05 |     87.5 |     100 |   98.05 | 35,123                                     
+ lib/mongodb/models          |     100 |      100 |       0 |     100 |                                            
+  index.ts                   |     100 |      100 |       0 |     100 |                                            
+ lib/utils                   |   88.42 |     86.2 |      90 |    87.2 |                                            
+  auth.ts                    |   97.95 |    93.75 |     100 |   97.72 | 91                                         
+  exceptions.ts              |   66.66 |       50 |   66.66 |   62.96 | 66-71,86-93                                
+  index.ts                   |     100 |      100 |     100 |     100 |                                            
+ lib/utils/queries           |   77.77 |     64.7 |     100 |    75.6 |                                            
+  index.ts                   |     100 |      100 |     100 |     100 |                                            
+  query.ts                   |   76.74 |     64.7 |     100 |   74.35 | 31-32,37-47                                
+ test/utils/queries          |   70.58 |      100 |       0 |   58.33 |                                            
+  invalidQueries.ts          |   66.66 |      100 |       0 |      50 | 2                                          
+  userResolverQueries.ts     |   66.66 |      100 |       0 |      50 | 2,18,36,51                                 
+-----------------------------|---------|----------|---------|---------|--------------------------------------------
+Test Suites: 14 passed, 14 total
+Tests:       156 passed, 156 total
+Snapshots:   0 total
+Time:        23.149 s, estimated 53 s
+
+### Integration Testing
+
+Integration testing verifies the interaction between different parts of your application. It ensures that various components work together as expected.
+
+* User Resolver
+    * <s>createUser Mutation</s>
+    * <s>loginUser Mutation</s>
+    * <s>updateUser Mutation</s>
+    * deleteUserById
+    * readUserById
+    * readUserByUsername
+    * readUsers
+    * queryUsers
+* Event Resolver
+    * createEvent
+    * updateEvent
+    * deleteEvent
+    * readEventById
+    * readEventBySlug
+    * readEvents
+* Event Category Resolver
+    * createEventCategory
+    * updateEventCategory
+    * deleteEventCategory
+    * readEventCategoryById
+    * readEventCategoryBySlug
+    * readEventCategories
+
+### Canary Testing
+
+### Load Testing
+Load testing simulates real-world usage scenarios to evaluate how your system performs under varying loads.
+
+## Authentication & Authorization
+Authentication verifies users' identities, while authorization controls their access to resources.
+
+### Authentication
+Implementing secure authentication mechanisms such as JWT (JSON Web Tokens) or OAuth.
+
+### Authorization
+Setting up role-based access control (RBAC) or attribute-based access control (ABAC) to enforce permissions.
+
+## DevOps
+### Infrastructure (IaC)
+Infrastructure as Code (IaC) automates the provisioning and management of infrastructure.
+
+### CI/CD Pipeline (with different stages (beta, gamma, prod))
+Setting up Continuous Integration/Continuous Deployment pipelines to automate testing and deployment across different environments.
+
+## DNS
+Managing Domain Name System (DNS) settings to associate domain names with IP addresses.
+
+### Getting a domain name
+Managing Domain Name System (DNS) settings to associate domain names with IP addresses.
+
+### Setup the domain
+Registering a domain name for your application.
+
+## Graphql functionality
+Enhancing your GraphQL API with advanced features and best practices.
+
+### Take advantage of type-graphql scalars
+* https://typegraphql.com/docs/scalars.html#custom-scalars
+
+### Look into graphql ID (and other Scalars)
+* https://typegraphql.com/docs/scalars.html#custom-scalars
+* https://graphql.org/learn/global-object-identification
+
+### Look into Middleware and guards
+* https://typegraphql.com/docs/middlewares.html#class-based-middleware
+
+## Other
+### Look into `rrule` for Recurrence Rules
+* https://github.com/jkbrzt/rrule
+* https://jkbrzt.github.io/rrule
+* https://www.nylas.com/blog/create-recurring-events-using-rrule-dev
+
+### Some resources for nested filters
+* https://dev.to/riyadhossain/mastering-mongodb-aggregation-framework-unraveling-the-power-of-pipelines-4oa0
