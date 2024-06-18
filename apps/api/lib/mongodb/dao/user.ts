@@ -24,7 +24,6 @@ class UserDAO {
                 email: userData.email.toLocaleLowerCase(),
                 encrypted_password: await bcrypt.hash(userData.password, 10),
             };
-            console.log('userProps', userProps);
             const savedUser = await User.create(userProps);
             const tokenPayload = savedUser.toObject({getters: true});
             const token = generateToken(tokenPayload);

@@ -1,5 +1,5 @@
 import {GraphQLError, GraphQLErrorExtensions} from 'graphql';
-import {HttpStatusCode} from '@/constants';
+import {HttpStatusCode, REGEXT_MONGO_DB_ERROR} from '@/constants';
 import {ApolloServerErrorCode} from '@apollo/server/errors';
 import {capitalize} from 'lodash';
 import {ERROR_MESSAGES} from '@/validation';
@@ -67,7 +67,7 @@ export const KnownCommonError = (error: any): GraphQLError => {
                 message = `${capitalize(key)} ${keyValue[key]} already exists`;
                 return CustomError(message, ErrorTypes.CONFLICT);
             case 11001:
-                message = uniqueMessage(error);
+                message = duplicateFieldMessage(error);
                 return CustomError(message, ErrorTypes.CONFLICT);
             case 10334:
                 message = ERROR_MESSAGES.CONTENT_TOO_LARGE;
@@ -79,16 +79,26 @@ export const KnownCommonError = (error: any): GraphQLError => {
 };
 
 /**
- * Get unique error field name
+ * @param mongoError MongoDB Error
+ * @returns An error message pointing to what value is being duplicated
  */
-export const uniqueMessage = (error: any) => {
-    let output: string;
+export const duplicateFieldMessage = (mongoError: any) => {
     try {
-        const fieldName = error.message.substring(error.message.lastIndexOf('.$') + 2, error.message.lastIndexOf('_1'));
-        output = `${capitalize(fieldName)} already exists`;
-    } catch (ex) {
-        output = 'Unique field already exists';
+        const errorMessage = mongoError.message;
+        if (errorMessage.includes('duplicate key error')) {
+            const splitError = errorMessage.split('dup key:');
+            if (splitError.length > 1) {
+                const fieldValuePart = splitError[1].trim();
+                const match = fieldValuePart.match(REGEXT_MONGO_DB_ERROR);
+                if (match) {
+                    const fieldName = match[1];
+                    const fieldValue = match[2];
+                    return `The '${fieldName}' with value '${fieldValue}' already exists.`;
+                }
+            }
+        }
+        return 'An error occurred.';
+    } catch (error) {
+        return 'An error occurred while processing the error message.';
     }
-
-    return output;
 };
