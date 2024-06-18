@@ -9,7 +9,7 @@ import * as paginationModule from '@/utils/queries/aggregate/pagination';
 describe('transformOptionsToPipeline', () => {
     it('should return an empty pipeline when no options are provided', () => {
         const pipeline = transformOptionsToPipeline();
-        expect(pipeline).toEqual([]);
+        expect(pipeline).toEqual([...lookupModule.createEventLookupStages()]);
     });
 
     it('should include lookup stages always', () => {
