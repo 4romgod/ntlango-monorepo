@@ -1,10 +1,10 @@
 import 'reflect-metadata';
 import {EVENT_CATEGORY_DESCRIPTIONS} from '@/constants';
-import {Field, InputType, ObjectType} from 'type-graphql';
+import {ID, Field, InputType, ObjectType} from 'type-graphql';
 
 @ObjectType({description: EVENT_CATEGORY_DESCRIPTIONS.TYPE})
 export class EventCategoryType {
-    @Field({description: EVENT_CATEGORY_DESCRIPTIONS.ID})
+    @Field((type) => ID, {description: EVENT_CATEGORY_DESCRIPTIONS.ID})
     eventCategoryId: string;
 
     @Field({description: EVENT_CATEGORY_DESCRIPTIONS.SLUG})
@@ -40,7 +40,7 @@ export class CreateEventCategoryInputType {
 
 @InputType({description: EVENT_CATEGORY_DESCRIPTIONS.UPDATE_INPUT})
 export class UpdateEventCategoryInputType {
-    @Field({description: EVENT_CATEGORY_DESCRIPTIONS.ID})
+    @Field((type) => ID, {description: EVENT_CATEGORY_DESCRIPTIONS.ID})
     eventCategoryId: string;
 
     @Field({nullable: true, description: EVENT_CATEGORY_DESCRIPTIONS.NAME})

@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import {USER_DESCRIPTIONS} from '@/constants';
-import {ObjectType, InputType, Field, registerEnumType, Authorized} from 'type-graphql';
+import {ID, ObjectType, InputType, Field, registerEnumType, Authorized} from 'type-graphql';
 import {Document} from 'mongoose';
 
 export enum Gender {
@@ -28,7 +28,7 @@ registerEnumType(UserRole, {
 
 @ObjectType({description: USER_DESCRIPTIONS.TYPE})
 export class UserType {
-    @Field({description: USER_DESCRIPTIONS.ID})
+    @Field((type) => ID, {description: USER_DESCRIPTIONS.ID})
     userId: string;
 
     @Field({description: USER_DESCRIPTIONS.EMAIL})
@@ -108,7 +108,7 @@ export class CreateUserInputType {
 
 @InputType({description: USER_DESCRIPTIONS.UPDATE_INPUT})
 export class UpdateUserInputType {
-    @Field({description: USER_DESCRIPTIONS.ID})
+    @Field((type) => ID, {description: USER_DESCRIPTIONS.ID})
     userId: string;
 
     @Field({nullable: true, description: USER_DESCRIPTIONS.EMAIL})

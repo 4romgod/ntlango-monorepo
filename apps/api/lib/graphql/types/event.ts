@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import {InputType, Field, ObjectType, Int, registerEnumType} from 'type-graphql';
+import {ID, InputType, Field, ObjectType, Int, registerEnumType} from 'type-graphql';
 import GraphQLJSON from 'graphql-type-json';
 import {UserType} from './user';
 import {EventCategoryType} from './eventCategory';
@@ -39,7 +39,7 @@ export class Media {
 
 @ObjectType({description: EVENT_DESCRIPTIONS.EVENT.TYPE})
 export class EventType {
-    @Field({description: EVENT_DESCRIPTIONS.EVENT.ID})
+    @Field((type) => ID, {description: EVENT_DESCRIPTIONS.EVENT.ID})
     eventId: string;
 
     @Field({description: EVENT_DESCRIPTIONS.EVENT.SLUG})
@@ -153,7 +153,7 @@ export class CreateEventInputType {
 
 @InputType({description: EVENT_DESCRIPTIONS.EVENT.UPDATE_INPUT})
 export class UpdateEventInputType {
-    @Field({description: EVENT_DESCRIPTIONS.EVENT.ID})
+    @Field((type) => ID, {description: EVENT_DESCRIPTIONS.EVENT.ID})
     eventId: string;
 
     @Field({nullable: true, description: EVENT_DESCRIPTIONS.EVENT.TITLE})
@@ -210,7 +210,7 @@ export class UpdateEventInputType {
 
 @InputType({description: EVENT_DESCRIPTIONS.EVENT.RSVP_INPUT_TYPE})
 export class RSVPInputType {
-    @Field({description: EVENT_DESCRIPTIONS.EVENT.ID})
+    @Field((type) => ID, {description: EVENT_DESCRIPTIONS.EVENT.ID})
     eventId: string;
 
     @Field(() => [String], {nullable: true, description: EVENT_DESCRIPTIONS.RSVP.USER_ID_LIST})
@@ -227,7 +227,7 @@ export class RSVPInputType {
 
 @InputType({description: EVENT_DESCRIPTIONS.EVENT.RSVP_INPUT_TYPE})
 export class CancelRSVPInputType {
-    @Field({description: EVENT_DESCRIPTIONS.EVENT.ID})
+    @Field((type) => ID, {description: EVENT_DESCRIPTIONS.EVENT.ID})
     eventId: string;
 
     @Field(() => [String], {nullable: true, description: EVENT_DESCRIPTIONS.RSVP.USER_ID_LIST})

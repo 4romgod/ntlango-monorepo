@@ -137,7 +137,7 @@ type EventCategoryType {
   description: String!
 
   """Unique identifier for the event category (e.g., 'category123')"""
-  eventCategoryId: String!
+  eventCategoryId: ID!
 
   """Name of the icon representing the event category (e.g., 'music_note')"""
   iconName: String!
@@ -189,7 +189,7 @@ type EventType {
   eventCategoryList: [EventCategoryType!]!
 
   """Unique identifier for the event (e.g., 'event123')"""
-  eventId: String!
+  eventId: ID!
 
   """Link or URL associated with the event"""
   eventLink: String
@@ -458,7 +458,7 @@ input UpdateEventCategoryInputType {
   description: String
 
   """Unique identifier for the event category (e.g., 'category123')"""
-  eventCategoryId: String!
+  eventCategoryId: ID!
 
   """Name of the icon representing the event category (e.g., 'music_note')"""
   iconName: String
@@ -492,7 +492,7 @@ input UpdateEventInputType {
   eventCategoryList: [String!]
 
   """Unique identifier for the event (e.g., 'event123')"""
-  eventId: String!
+  eventId: ID!
 
   """Link or URL associated with the event"""
   eventLink: String
@@ -568,7 +568,7 @@ input UpdateUserInputType {
   """
   Unique identifier for the user (e.g., '123e4567-e89b-12d3-a456-426614174000')
   """
-  userId: String!
+  userId: ID!
 
   """
   Role assigned to the user within the system, ("Admin", "User", "Host", "Guest")
@@ -620,7 +620,7 @@ type UserType {
   """
   Unique identifier for the user (e.g., '123e4567-e89b-12d3-a456-426614174000')
   """
-  userId: String!
+  userId: ID!
 
   """
   Role assigned to the user within the system, ("Admin", "User", "Host", "Guest")
@@ -667,7 +667,7 @@ type UserWithTokenType {
   """
   Unique identifier for the user (e.g., '123e4567-e89b-12d3-a456-426614174000')
   """
-  userId: String!
+  userId: ID!
 
   """
   Role assigned to the user within the system, ("Admin", "User", "Host", "Guest")
