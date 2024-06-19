@@ -4,7 +4,7 @@ import {ERROR_MESSAGES, validateDate} from '@/validation';
 import mongoose from 'mongoose';
 
 export const EventTypeSchema = z.object({
-    id: z
+    eventId: z
         .string()
         .refine(mongoose.Types.ObjectId.isValid, {message: `Event ID ${ERROR_MESSAGES.INVALID}`})
         .describe('The unique ID of the Event.'),
@@ -84,13 +84,13 @@ export const EventTypeSchema = z.object({
     eventLink: z.string().optional().describe('A link to the event page or further information about the event.'),
 });
 
-export const CreateEventInputTypeSchema = EventTypeSchema.extend({}).omit({id: true, slug: true});
+export const CreateEventInputTypeSchema = EventTypeSchema.extend({}).omit({eventId: true, slug: true});
 
 export const UpdateEventInputTypeSchema = EventTypeSchema.partial()
     .extend({
-        id: z
+        eventId: z
             .string()
             .describe('The unique ID of the Event. (It is a required field)')
-            .refine(mongoose.Types.ObjectId.isValid, {message: `Event with ID ${ERROR_MESSAGES.DOES_NOT_EXIST}`}),
+            .refine(mongoose.Types.ObjectId.isValid, {message: `Event with eventCategoryId ${ERROR_MESSAGES.DOES_NOT_EXIST}`}),
     })
     .omit({slug: true});

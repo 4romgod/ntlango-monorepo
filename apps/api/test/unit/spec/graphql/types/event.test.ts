@@ -57,7 +57,7 @@ describe('EventType', () => {
     it('should have fields with correct decorators', () => {
         const eventType = new EventType();
 
-        expect(eventType.id).toBeUndefined(); // Because we are testing default values
+        expect(eventType.eventId).toBeUndefined(); // Because we are testing default values
         expect(eventType.slug).toBeUndefined();
         expect(eventType.title).toBeUndefined();
         expect(eventType.description).toBeUndefined();
@@ -117,7 +117,7 @@ describe('UpdateEventInputType', () => {
     it('should have fields with correct decorators', () => {
         const updateEventInputType = new UpdateEventInputType();
 
-        expect(updateEventInputType.id).toBeUndefined();
+        expect(updateEventInputType.eventId).toBeUndefined();
         expect(updateEventInputType.title).toBeUndefined();
         expect(updateEventInputType.description).toBeUndefined();
         expect(updateEventInputType.startDateTime).toBeUndefined();

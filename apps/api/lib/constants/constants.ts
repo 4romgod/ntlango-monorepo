@@ -28,6 +28,8 @@ export const OPERATION_NAMES = {
     LOGIN_USER: 'loginUser',
     UPDATE_USER: 'updateUser',
     DELETE_USER_BY_ID: 'deleteUserById',
+    DELETE_USER_BY_EMAIL: 'deleteUserByEmail',
+    DELETE_USER_BY_USERNAME: 'deleteUserByUsername',
     READ_USER_BY_ID: 'readUserById',
     READ_USER_BY_USERNAME: 'readUserByUsername',
     READ_USERS: 'readUsers',

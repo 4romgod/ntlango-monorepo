@@ -3,9 +3,9 @@ import {ERROR_MESSAGES} from '@/validation';
 import mongoose from 'mongoose';
 
 export const EventCategoryTypeSchema = z.object({
-    id: z
+    eventCategoryId: z
         .string()
-        .refine(mongoose.Types.ObjectId.isValid, {message: `Event Category ID ${ERROR_MESSAGES.INVALID}`})
+        .refine(mongoose.Types.ObjectId.isValid, {message: `Event Category eventCategoryId ${ERROR_MESSAGES.INVALID}`})
         .describe('The unique ID of the Event Category.'),
 
     color: z.string().min(2).optional().describe('The color associated with the Event Category.'),
@@ -32,14 +32,14 @@ export const EventCategoryTypeSchema = z.object({
 });
 
 export const CreateEventCategoryTypeSchema = EventCategoryTypeSchema.extend({})
-    .omit({id: true})
+    .omit({eventCategoryId: true})
     .describe('Schema for creating a new Event Category. All fields except ID are required.');
 
 export const UpdateEventCategoryTypeSchema = EventCategoryTypeSchema.partial()
     .extend({
-        id: z
+        eventCategoryId: z
             .string()
-            .refine(mongoose.Types.ObjectId.isValid, {message: `Event Category ID ${ERROR_MESSAGES.INVALID}`})
+            .refine(mongoose.Types.ObjectId.isValid, {message: `Event Category eventCategoryId ${ERROR_MESSAGES.INVALID}`})
             .describe('The unique ID of the Event Category. This field is required for updates.'),
     })
     .describe('Schema for updating an existing Event Category. Fields are optional.');

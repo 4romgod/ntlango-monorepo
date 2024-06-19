@@ -136,11 +136,11 @@ type EventCategoryType {
   """
   description: String!
 
+  """Unique identifier for the event category (e.g., 'category123')"""
+  eventCategoryId: String!
+
   """Name of the icon representing the event category (e.g., 'music_note')"""
   iconName: String!
-
-  """Unique identifier for the event category (e.g., 'category123')"""
-  id: String!
 
   """Name of the event category (e.g., 'Music Festivals')"""
   name: String!
@@ -188,11 +188,11 @@ type EventType {
   """List of categories associated with the event"""
   eventCategoryList: [EventCategoryType!]!
 
+  """Unique identifier for the event (e.g., 'event123')"""
+  eventId: String!
+
   """Link or URL associated with the event"""
   eventLink: String
-
-  """Unique identifier for the event (e.g., 'event123')"""
-  id: String!
 
   """Location of the event (e.g., '123 Main St, Springfield, IL')"""
   location: String!
@@ -320,9 +320,19 @@ type Mutation {
   deleteEventCategoryById(eventCategoryId: String!): EventCategoryType!
 
   """
+  Delete a user by their Email. Requires the user email and returns the deleted user or 404 Error if not found.
+  """
+  deleteUserByEmail(email: String!): UserType!
+
+  """
   Delete a user by their ID. Requires the user ID and returns the deleted user or 404 Error if not found.
   """
   deleteUserById(userId: String!): UserType!
+
+  """
+  Delete a user by their username. Requires the user username and returns the deleted user or 404 Error if not found.
+  """
+  deleteUserByUsername(username: String!): UserType!
 
   """
   Log in a user. Requires input data for logging in and returns the user along with an authentication token.
@@ -447,11 +457,11 @@ input UpdateEventCategoryInputType {
   """
   description: String
 
+  """Unique identifier for the event category (e.g., 'category123')"""
+  eventCategoryId: String!
+
   """Name of the icon representing the event category (e.g., 'music_note')"""
   iconName: String
-
-  """Unique identifier for the event category (e.g., 'category123')"""
-  id: String!
 
   """Name of the event category (e.g., 'Music Festivals')"""
   name: String
@@ -481,11 +491,11 @@ input UpdateEventInputType {
   """List of categories associated with the event"""
   eventCategoryList: [String!]
 
+  """Unique identifier for the event (e.g., 'event123')"""
+  eventId: String!
+
   """Link or URL associated with the event"""
   eventLink: String
-
-  """Unique identifier for the event (e.g., 'event123')"""
-  id: String!
 
   """Location of the event (e.g., '123 Main St, Springfield, IL')"""
   location: String
@@ -544,11 +554,6 @@ input UpdateUserInputType {
   """User's given (first) name (e.g., 'Zoro')"""
   given_name: String
 
-  """
-  Unique identifier for the user (e.g., '123e4567-e89b-12d3-a456-426614174000')
-  """
-  id: String!
-
   """User's password in plain text (e.g., 12345678)"""
   password: String
 
@@ -559,6 +564,11 @@ input UpdateUserInputType {
   URL to the user's profile picture (e.g., 'https://example.com/profile.jpg')
   """
   profile_picture: String
+
+  """
+  Unique identifier for the user (e.g., '123e4567-e89b-12d3-a456-426614174000')
+  """
+  userId: String!
 
   """
   Role assigned to the user within the system, ("Admin", "User", "Host", "Guest")
@@ -590,11 +600,6 @@ type UserType {
   """User's email address (e.g., 'user@example.com')"""
   email: String!
 
-  """
-  User's password stored in encrypted form (e.g., '$2b$10$EixZaYVK1fsbw1ZfbX3OXe')
-  """
-  encrypted_password: String!
-
   """User's family (last) name (e.g., 'Roronoa')"""
   family_name: String!
 
@@ -604,11 +609,6 @@ type UserType {
   """User's given (first) name (e.g., 'Zoro')"""
   given_name: String!
 
-  """
-  Unique identifier for the user (e.g., '123e4567-e89b-12d3-a456-426614174000')
-  """
-  id: String!
-
   """User's phone number (optional) (e.g., '+27 800 555 1234')"""
   phone_number: String
 
@@ -616,6 +616,11 @@ type UserType {
   URL to the user's profile picture (e.g., 'https://example.com/profile.jpg')
   """
   profile_picture: String
+
+  """
+  Unique identifier for the user (e.g., '123e4567-e89b-12d3-a456-426614174000')
+  """
+  userId: String!
 
   """
   Role assigned to the user within the system, ("Admin", "User", "Host", "Guest")
@@ -639,11 +644,6 @@ type UserWithTokenType {
   """User's email address (e.g., 'user@example.com')"""
   email: String!
 
-  """
-  User's password stored in encrypted form (e.g., '$2b$10$EixZaYVK1fsbw1ZfbX3OXe')
-  """
-  encrypted_password: String!
-
   """User's family (last) name (e.g., 'Roronoa')"""
   family_name: String!
 
@@ -652,11 +652,6 @@ type UserWithTokenType {
 
   """User's given (first) name (e.g., 'Zoro')"""
   given_name: String!
-
-  """
-  Unique identifier for the user (e.g., '123e4567-e89b-12d3-a456-426614174000')
-  """
-  id: String!
 
   """User's phone number (optional) (e.g., '+27 800 555 1234')"""
   phone_number: String
@@ -668,6 +663,11 @@ type UserWithTokenType {
 
   """Authentication and Authorization JWT token"""
   token: String!
+
+  """
+  Unique identifier for the user (e.g., '123e4567-e89b-12d3-a456-426614174000')
+  """
+  userId: String!
 
   """
   Role assigned to the user within the system, ("Admin", "User", "Host", "Guest")

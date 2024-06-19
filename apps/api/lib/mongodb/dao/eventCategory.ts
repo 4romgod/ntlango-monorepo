@@ -2,29 +2,28 @@ import {EventCategory} from '@/mongodb/models';
 import {EventCategoryType, UpdateEventCategoryInputType, CreateEventCategoryInputType, QueryOptionsInput} from '@/graphql/types';
 import {GraphQLError} from 'graphql';
 import {CustomError, ErrorTypes, KnownCommonError, transformOptionsToQuery} from '@/utils';
-import {kebabCase} from 'lodash';
 
 class EventCategoryDAO {
-    static async create(category: CreateEventCategoryInputType): Promise<EventCategoryType> {
+    static async create(input: CreateEventCategoryInputType): Promise<EventCategoryType> {
         try {
-            const slug = kebabCase(category.name);
-            return await EventCategory.create({...category, slug});
+            const eventCategory = await EventCategory.create(input);
+            return eventCategory.toObject();
         } catch (error) {
             console.log('Error creating event category', error);
             throw KnownCommonError(error);
         }
     }
 
-    static async readEventCategoryById(eventId: string): Promise<EventCategoryType> {
+    static async readEventCategoryById(evenCategoryId: string): Promise<EventCategoryType> {
         try {
-            const query = EventCategory.findById(eventId);
-            const event = await query.exec();
-            if (!event) {
-                throw CustomError(`Event Category with id ${eventId} does not exist`, ErrorTypes.NOT_FOUND);
+            const query = EventCategory.findById(evenCategoryId);
+            const eventCategory = await query.exec();
+            if (!eventCategory) {
+                throw CustomError(`Event Category with eventCategoryId ${evenCategoryId} does not exist`, ErrorTypes.NOT_FOUND);
             }
-            return event;
+            return eventCategory.toObject();
         } catch (error) {
-            console.log(`Error reading event category by id ${eventId}`, error);
+            console.log(`Error reading event category by evenCategoryId ${evenCategoryId}`, error);
             if (error instanceof GraphQLError) {
                 throw error;
             }
@@ -35,13 +34,13 @@ class EventCategoryDAO {
     static async readEventCategoryBySlug(slug: string): Promise<EventCategoryType> {
         try {
             const query = EventCategory.findOne({slug: slug});
-            const event = await query.exec();
-            if (!event) {
+            const eventCategory = await query.exec();
+            if (!eventCategory) {
                 throw CustomError(`Event Category with slug ${slug} not found`, ErrorTypes.NOT_FOUND);
             }
-            return event;
+            return eventCategory.toObject();
         } catch (error) {
-            console.error('Error reading event category by slug:', error);
+            console.log(`Error reading event category by slug ${slug}`, error);
             if (error instanceof GraphQLError) {
                 throw error;
             }
@@ -52,23 +51,23 @@ class EventCategoryDAO {
     static async readEventCategories(options?: QueryOptionsInput): Promise<EventCategoryType[]> {
         try {
             const query = options ? transformOptionsToQuery(EventCategory, options) : EventCategory.find({});
-            return await query.exec();
+            const eventCategories = await query.exec();
+            return eventCategories.map((eventCategory) => eventCategory.toObject());
         } catch (error) {
             console.error('Error reading event categories:', error);
             throw KnownCommonError(error);
         }
     }
 
-    static async updateEventCategory(category: UpdateEventCategoryInputType) {
+    static async updateEventCategory(input: UpdateEventCategoryInputType) {
         try {
-            const slug = kebabCase(category.name);
-            const updatedEventCategory = await EventCategory.findByIdAndUpdate(category.id, {...category, slug}, {new: true}).exec();
+            const updatedEventCategory = await EventCategory.findByIdAndUpdate(input.eventCategoryId, input, {new: true}).exec();
             if (!updatedEventCategory) {
                 throw CustomError('Event Category not found', ErrorTypes.NOT_FOUND);
             }
-            return updatedEventCategory;
+            return updatedEventCategory.toObject();
         } catch (error) {
-            console.error('Error updating event category', error);
+            console.log(`Error updating event category with eventCategoryId ${input.eventCategoryId}`, error);
             if (error instanceof GraphQLError) {
                 throw error;
             }
@@ -76,15 +75,15 @@ class EventCategoryDAO {
         }
     }
 
-    static async deleteEventCategoryById(eventId: string): Promise<EventCategoryType> {
+    static async deleteEventCategoryById(eventCategoryId: string): Promise<EventCategoryType> {
         try {
-            const deletedEventCategory = await EventCategory.findByIdAndDelete(eventId).exec();
+            const deletedEventCategory = await EventCategory.findByIdAndDelete(eventCategoryId).exec();
             if (!deletedEventCategory) {
-                throw CustomError(`Event Category with id ${eventId} not found`, ErrorTypes.NOT_FOUND);
+                throw CustomError(`Event Category with eventCategoryId ${eventCategoryId} not found`, ErrorTypes.NOT_FOUND);
             }
-            return deletedEventCategory;
+            return deletedEventCategory.toObject();
         } catch (error) {
-            console.error('Error deleting event category by id:', error);
+            console.error('Error deleting event category by eventCategoryId:', error);
             if (error instanceof GraphQLError) {
                 throw error;
             }

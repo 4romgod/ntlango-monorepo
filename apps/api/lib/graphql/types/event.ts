@@ -40,7 +40,7 @@ export class Media {
 @ObjectType({description: EVENT_DESCRIPTIONS.EVENT.TYPE})
 export class EventType {
     @Field({description: EVENT_DESCRIPTIONS.EVENT.ID})
-    id: string;
+    eventId: string;
 
     @Field({description: EVENT_DESCRIPTIONS.EVENT.SLUG})
     slug: string;
@@ -154,7 +154,7 @@ export class CreateEventInputType {
 @InputType({description: EVENT_DESCRIPTIONS.EVENT.UPDATE_INPUT})
 export class UpdateEventInputType {
     @Field({description: EVENT_DESCRIPTIONS.EVENT.ID})
-    id: string;
+    eventId: string;
 
     @Field({nullable: true, description: EVENT_DESCRIPTIONS.EVENT.TITLE})
     title?: string;

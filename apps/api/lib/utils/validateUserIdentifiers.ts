@@ -1,6 +1,5 @@
 import {CancelRSVPInputType, RSVPInputType} from '@/graphql/types';
 import {User} from '@/mongodb/models';
-import {ObjectId} from 'mongoose';
 import {CustomError, ErrorTypes} from './exceptions';
 import {ERROR_MESSAGES} from '@/validation';
 
@@ -11,18 +10,18 @@ export const validateUserIdentifiers = async (input: RSVPInputType | CancelRSVPI
         const validUserIds = new Set<string>();
 
         if (userIdList && userIdList.length > 0) {
-            const usersById = await User.find({_id: {$in: userIdList}}, {_id: 1});
-            usersById.forEach((user) => validUserIds.add((user._id as ObjectId).toString()));
+            const usersById = await User.find({userId: {$in: userIdList}}, {userId: 1});
+            usersById.forEach(({userId}) => validUserIds.add(userId));
         }
 
         if (usernameList && usernameList.length > 0) {
-            const usersByUsername = await User.find({username: {$in: usernameList}}, {_id: 1});
-            usersByUsername.forEach((user) => validUserIds.add((user._id as ObjectId).toString()));
+            const usersByUsername = await User.find({username: {$in: usernameList}}, {userId: 1});
+            usersByUsername.forEach(({userId}) => validUserIds.add(userId));
         }
 
         if (emailList && emailList.length > 0) {
-            const usersByEmail = await User.find({email: {$in: emailList}}, {_id: 1});
-            usersByEmail.forEach((user) => validUserIds.add((user._id as ObjectId).toString()));
+            const usersByEmail = await User.find({email: {$in: emailList}}, {userId: 1});
+            usersByEmail.forEach(({userId}) => validUserIds.add(userId));
         }
 
         if (validUserIds.size === 0) {

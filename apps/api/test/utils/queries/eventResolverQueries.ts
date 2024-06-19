@@ -2,17 +2,17 @@ export const getCreateEventMutation = (event: any) => {
     return {
         query: `mutation CreateEvent($input: CreateEventInputType!) {
             createEvent(input: $input) {
-              id
+              eventId
               slug
               title
               description
               organizerList {
-                id
+                userId
                 given_name
                 username
               }
               eventCategoryList {
-                id
+                eventCategoryId
                 slug
                 name
               }

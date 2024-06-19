@@ -5,7 +5,7 @@ import {Field, InputType, ObjectType} from 'type-graphql';
 @ObjectType({description: EVENT_CATEGORY_DESCRIPTIONS.TYPE})
 export class EventCategoryType {
     @Field({description: EVENT_CATEGORY_DESCRIPTIONS.ID})
-    id: string;
+    eventCategoryId: string;
 
     @Field({description: EVENT_CATEGORY_DESCRIPTIONS.SLUG})
     slug: string;
@@ -41,7 +41,7 @@ export class CreateEventCategoryInputType {
 @InputType({description: EVENT_CATEGORY_DESCRIPTIONS.UPDATE_INPUT})
 export class UpdateEventCategoryInputType {
     @Field({description: EVENT_CATEGORY_DESCRIPTIONS.ID})
-    id: string;
+    eventCategoryId: string;
 
     @Field({nullable: true, description: EVENT_CATEGORY_DESCRIPTIONS.NAME})
     name?: string;

@@ -36,7 +36,7 @@ const createMockFailedMongooseQuery = <T>(error: T) => ({
 
 describe('EventCategoryDAO', () => {
     const mockEventCategory: EventCategoryType = {
-        id: '1',
+        eventCategoryId: '1',
         name: 'Test Category',
         slug: 'test-category',
         description: 'A test category',
@@ -49,7 +49,9 @@ describe('EventCategoryDAO', () => {
         });
 
         it('should create an event category when correct input is provided', async () => {
-            (EventCategory.create as jest.Mock).mockResolvedValue(mockEventCategory);
+            (EventCategory.create as jest.Mock).mockResolvedValue({
+                toObject: () => mockEventCategory,
+            });
 
             const input: CreateEventCategoryInputType = {
                 name: 'Test Category',
@@ -58,7 +60,7 @@ describe('EventCategoryDAO', () => {
             };
             const result = await EventCategoryDAO.create(input);
 
-            expect(EventCategory.create).toHaveBeenCalledWith({...input, slug: 'test-category'});
+            expect(EventCategory.create).toHaveBeenCalledWith(input);
             expect(result).toEqual(mockEventCategory);
         });
 
@@ -76,7 +78,7 @@ describe('EventCategoryDAO', () => {
             await expect(EventCategoryDAO.create(input)).rejects.toThrow(
                 CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR),
             );
-            expect(EventCategory.create).toHaveBeenCalledWith({...input, slug: 'test-category'});
+            expect(EventCategory.create).toHaveBeenCalledWith(input);
         });
     });
 
@@ -86,7 +88,11 @@ describe('EventCategoryDAO', () => {
         });
 
         it('should read an event category by id', async () => {
-            (EventCategory.findById as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(mockEventCategory));
+            (EventCategory.findById as jest.Mock).mockReturnValue(
+                createMockSuccessMongooseQuery({
+                    toObject: () => mockEventCategory,
+                }),
+            );
 
             const result = await EventCategoryDAO.readEventCategoryById('1');
 
@@ -97,7 +103,7 @@ describe('EventCategoryDAO', () => {
         it('should throw NOT_FOUND GraphQLError if event category not found', async () => {
             (EventCategory.findById as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(null));
             await expect(EventCategoryDAO.readEventCategoryById('1')).rejects.toThrow(
-                CustomError(`Event Category with id 1 does not exist`, ErrorTypes.NOT_FOUND),
+                CustomError(`Event Category with eventCategoryId 1 does not exist`, ErrorTypes.NOT_FOUND),
             );
             expect(EventCategory.findById).toHaveBeenCalledWith('1');
         });
@@ -119,7 +125,11 @@ describe('EventCategoryDAO', () => {
         });
 
         it('should read an event category by slug', async () => {
-            (EventCategory.findOne as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(mockEventCategory));
+            (EventCategory.findOne as jest.Mock).mockReturnValue(
+                createMockSuccessMongooseQuery({
+                    toObject: () => mockEventCategory,
+                }),
+            );
             const result = await EventCategoryDAO.readEventCategoryBySlug('test-category');
 
             expect(EventCategory.findOne).toHaveBeenCalledWith({slug: 'test-category'});
@@ -152,7 +162,13 @@ describe('EventCategoryDAO', () => {
         });
 
         it('should read event categories with options', async () => {
-            (EventCategory.find as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery([mockEventCategory]));
+            (EventCategory.find as jest.Mock).mockReturnValue(
+                createMockSuccessMongooseQuery([
+                    {
+                        toObject: () => mockEventCategory,
+                    },
+                ]),
+            );
             (transformOptionsToQuery as jest.Mock).mockReturnValue(EventCategory.find());
             const options: QueryOptionsInput = {
                 pagination: {limit: 10, skip: 0},
@@ -165,7 +181,13 @@ describe('EventCategoryDAO', () => {
         });
 
         it('should read event categories without options', async () => {
-            (EventCategory.find as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery([mockEventCategory]));
+            (EventCategory.find as jest.Mock).mockReturnValue(
+                createMockSuccessMongooseQuery([
+                    {
+                        toObject: () => mockEventCategory,
+                    },
+                ]),
+            );
 
             const result = await EventCategoryDAO.readEventCategories();
 
@@ -185,12 +207,16 @@ describe('EventCategoryDAO', () => {
 
     describe('updateEventCategory', () => {
         it('should update an event category', async () => {
-            (EventCategory.findByIdAndUpdate as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(mockEventCategory));
+            (EventCategory.findByIdAndUpdate as jest.Mock).mockReturnValue(
+                createMockSuccessMongooseQuery({
+                    toObject: () => mockEventCategory,
+                }),
+            );
 
-            const input: UpdateEventCategoryInputType = {id: '1', name: 'Updated Category'};
+            const input: UpdateEventCategoryInputType = {eventCategoryId: '1', name: 'Updated Category'};
             const result = await EventCategoryDAO.updateEventCategory(input);
 
-            expect(EventCategory.findByIdAndUpdate).toHaveBeenCalledWith('1', {...input, slug: 'updated-category'}, {new: true});
+            expect(EventCategory.findByIdAndUpdate).toHaveBeenCalledWith('1', input, {new: true});
             expect(result).toEqual(mockEventCategory);
         });
 
@@ -198,27 +224,31 @@ describe('EventCategoryDAO', () => {
             (EventCategory.findByIdAndUpdate as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(null));
             (EventCategory.create as jest.Mock).mockRejectedValue(new Error('Creation Error'));
 
-            const input: UpdateEventCategoryInputType = {id: '1', name: 'Updated Category'};
+            const input: UpdateEventCategoryInputType = {eventCategoryId: '1', name: 'Updated Category'};
 
             await expect(EventCategoryDAO.updateEventCategory(input)).rejects.toThrow(CustomError('Event Category not found', ErrorTypes.NOT_FOUND));
-            expect(EventCategory.findByIdAndUpdate).toHaveBeenCalledWith('1', {...input, slug: 'updated-category'}, {new: true});
+            expect(EventCategory.findByIdAndUpdate).toHaveBeenCalledWith('1', input, {new: true});
         });
 
         it('should throw INTERNAL_SERVER_ERROR GraphQLError when EventCategory.findByIdAndUpdate throws an UNKNOWN error', async () => {
             (EventCategory.findByIdAndUpdate as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(new Error('Update Error')));
 
-            const input: UpdateEventCategoryInputType = {id: '1', name: 'Updated Category'};
+            const input: UpdateEventCategoryInputType = {eventCategoryId: '1', name: 'Updated Category'};
 
             await expect(EventCategoryDAO.updateEventCategory(input)).rejects.toThrow(
                 CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR),
             );
-            expect(EventCategory.findByIdAndUpdate).toHaveBeenCalledWith('1', {...input, slug: 'updated-category'}, {new: true});
+            expect(EventCategory.findByIdAndUpdate).toHaveBeenCalledWith('1', input, {new: true});
         });
     });
 
     describe('deleteEventCategoryById', () => {
-        it('should delete an event category by id', async () => {
-            (EventCategory.findByIdAndDelete as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(mockEventCategory));
+        it('should delete an event category by eventCategoryId', async () => {
+            (EventCategory.findByIdAndDelete as jest.Mock).mockReturnValue(
+                createMockSuccessMongooseQuery({
+                    toObject: () => mockEventCategory,
+                }),
+            );
             const result = await EventCategoryDAO.deleteEventCategoryById('1');
 
             expect(EventCategory.findByIdAndDelete).toHaveBeenCalledWith('1');
@@ -229,7 +259,7 @@ describe('EventCategoryDAO', () => {
             (EventCategory.findByIdAndDelete as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(null));
 
             await expect(EventCategoryDAO.deleteEventCategoryById('1')).rejects.toThrow(
-                CustomError(`Event Category with id 1 not found`, ErrorTypes.NOT_FOUND),
+                CustomError(`Event Category with eventCategoryId 1 not found`, ErrorTypes.NOT_FOUND),
             );
             expect(EventCategory.findByIdAndDelete).toHaveBeenCalledWith('1');
         });

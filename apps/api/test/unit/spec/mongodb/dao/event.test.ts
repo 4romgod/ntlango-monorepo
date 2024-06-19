@@ -1,7 +1,7 @@
 import {EventDAO} from '@/mongodb/dao';
-import {Event, User} from '@/mongodb/models';
-import {CancelRSVPInputType, EventType, RSVPInputType, SortOrderInput} from '@/graphql/types';
-import {CustomError, ErrorTypes, transformOptionsToPipeline, validateUserIdentifiers} from '@/utils';
+import {Event} from '@/mongodb/models';
+import {EventType, RSVPInputType, SortOrderInput} from '@/graphql/types';
+import {CustomError, ErrorTypes, transformOptionsToPipeline} from '@/utils';
 import {QueryOptionsInput, CreateEventInputType, EventStatus} from '@/graphql/types';
 import {GraphQLError} from 'graphql';
 import {ERROR_MESSAGES} from '@/validation';
@@ -55,9 +55,9 @@ describe('EventDAO', () => {
         eventCategoryList: [],
     };
 
-    const expectedEvent: EventType = {
+    const expectedEvent = {
         ...mockEventInput,
-        id: 'mockEventId',
+        eventId: 'mockEventId',
         slug: 'sample-event',
         organizerList: [],
         rSVPList: [],
@@ -67,7 +67,9 @@ describe('EventDAO', () => {
     describe('create', () => {
         it('should create an event and return the populated event object', async () => {
             const mockedPopulate = {
-                populate: jest.fn().mockResolvedValue(expectedEvent),
+                populate: jest.fn().mockResolvedValue({
+                    toObject: jest.fn().mockReturnValue(expectedEvent),
+                }),
             };
             (Event.create as jest.Mock).mockResolvedValue(mockedPopulate);
 
@@ -95,7 +97,11 @@ describe('EventDAO', () => {
 
     describe('readEventById', () => {
         it('should read an event by ID and return the populated event object', async () => {
-            (Event.findById as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(expectedEvent));
+            (Event.findById as jest.Mock).mockReturnValue(
+                createMockSuccessMongooseQuery({
+                    toObject: () => expectedEvent,
+                }),
+            );
 
             const eventId = 'mockEventId';
             const readEvent = await EventDAO.readEventById(eventId);
@@ -107,7 +113,9 @@ describe('EventDAO', () => {
             (Event.findById as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(null));
             const eventId = 'mockEventId';
 
-            await expect(EventDAO.readEventById(eventId)).rejects.toThrow(CustomError(`Event with id ${eventId} not found`, ErrorTypes.NOT_FOUND));
+            await expect(EventDAO.readEventById(eventId)).rejects.toThrow(
+                CustomError(`Event with eventId ${eventId} not found`, ErrorTypes.NOT_FOUND),
+            );
             expect(Event.findById).toHaveBeenCalledWith(eventId);
         });
 
@@ -124,7 +132,12 @@ describe('EventDAO', () => {
 
     describe('readEventBySlug', () => {
         it('should read an event by slug and return the populated event object', async () => {
-            (Event.findOne as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(expectedEvent));
+            (Event.findOne as jest.Mock).mockReturnValue(
+                createMockSuccessMongooseQuery({
+                    toObject: () => expectedEvent,
+                }),
+            );
+
             const slug = 'sample-event';
 
             const readEvent = await EventDAO.readEventBySlug(slug);
@@ -152,7 +165,11 @@ describe('EventDAO', () => {
 
     describe('deleteEventById', () => {
         it('should delete an event by ID and return the populated event object', async () => {
-            (Event.findByIdAndDelete as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(expectedEvent));
+            (Event.findByIdAndDelete as jest.Mock).mockReturnValue(
+                createMockSuccessMongooseQuery({
+                    toObject: () => expectedEvent,
+                }),
+            );
 
             const eventId = 'mockEventId';
             const deleteEvent = await EventDAO.deleteEventById(eventId);
@@ -164,7 +181,9 @@ describe('EventDAO', () => {
             (Event.findByIdAndDelete as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(null));
             const eventId = 'mockEventId';
 
-            await expect(EventDAO.deleteEventById(eventId)).rejects.toThrow(CustomError(`Event with id ${eventId} not found`, ErrorTypes.NOT_FOUND));
+            await expect(EventDAO.deleteEventById(eventId)).rejects.toThrow(
+                CustomError(`Event with eventId ${eventId} not found`, ErrorTypes.NOT_FOUND),
+            );
             expect(Event.findByIdAndDelete).toHaveBeenCalledWith(eventId);
         });
 
@@ -180,7 +199,12 @@ describe('EventDAO', () => {
 
     describe('deleteEventBySlug', () => {
         it('should delete an event by slug and return the populated event object', async () => {
-            (Event.findOneAndDelete as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(expectedEvent));
+            (Event.findOneAndDelete as jest.Mock).mockReturnValue(
+                createMockSuccessMongooseQuery({
+                    toObject: () => expectedEvent,
+                }),
+            );
+
             const slug = 'sample-event';
 
             const deleteEvent = await EventDAO.deleteEventBySlug(slug);
@@ -215,13 +239,8 @@ describe('EventDAO', () => {
         };
 
         const mockMongooseEvents = [
-            {...expectedEvent, _id: 'mockEventId1'},
-            {...expectedEvent, _id: 'mockEventId2'},
-        ];
-
-        const expectedEvents = [
-            {...expectedEvent, id: 'mockEventId1'},
-            {...expectedEvent, id: 'mockEventId2'},
+            {...expectedEvent, eventId: 'mockEventId1'},
+            {...expectedEvent, eventId: 'mockEventId2'},
         ];
 
         it('should read events and return the populated event objects', async () => {
@@ -229,7 +248,7 @@ describe('EventDAO', () => {
             const pipeline: PipelineStage[] = transformOptionsToPipeline(mockOptions);
 
             const events = await EventDAO.readEvents(mockOptions);
-            expect(events).toEqual(expectedEvents);
+            expect(events).toEqual(mockMongooseEvents);
             expect(Event.aggregate).toHaveBeenCalledWith(pipeline);
         });
 
@@ -255,7 +274,7 @@ describe('EventDAO', () => {
 
     describe('updateEvent', () => {
         const mockUpdatedEventInput = {
-            id: 'mockEventId',
+            eventId: 'mockEventId',
             title: 'Updated Event Title',
             description: 'Updated description',
             status: EventStatus.Ongoing,
@@ -273,26 +292,26 @@ describe('EventDAO', () => {
         };
 
         it('should update an event and return the populated event object', async () => {
-            (Event.findByIdAndUpdate as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(expectedUpdatedEvent));
-
-            const {id, ...mockUpdatedEventInputWithoutId} = mockUpdatedEventInput;
-            const updatedEvent = await EventDAO.updateEvent(mockUpdatedEventInput);
-            expect(updatedEvent).toEqual(expectedUpdatedEvent);
-            expect(Event.findByIdAndUpdate).toHaveBeenCalledWith(
-                id,
-                expect.objectContaining({...mockUpdatedEventInputWithoutId, slug: 'updated-event-title'}),
-                {new: true},
+            (Event.findByIdAndUpdate as jest.Mock).mockReturnValue(
+                createMockSuccessMongooseQuery({
+                    toObject: () => expectedUpdatedEvent,
+                }),
             );
+
+            const {eventId, ...mockUpdatedEventInputWithoutId} = mockUpdatedEventInput;
+            const updatedEvent = await EventDAO.updateEvent(mockUpdatedEventInput);
+            expect({...updatedEvent, slug: 'updated-event-title'}).toEqual(expectedUpdatedEvent);
+            expect(Event.findByIdAndUpdate).toHaveBeenCalledWith(eventId, expect.objectContaining(mockUpdatedEventInputWithoutId), {new: true});
         });
 
         it('should throw NOT_FOUND GraphQLError when the event to be updated is not found', async () => {
             (Event.findByIdAndUpdate as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(null));
 
-            const {id, ...calledWithInput} = mockUpdatedEventInput;
+            const {eventId, ...calledWithInput} = mockUpdatedEventInput;
             await expect(EventDAO.updateEvent(mockUpdatedEventInput)).rejects.toThrow(
-                CustomError(`Event with id ${mockUpdatedEventInput.id} not found`, ErrorTypes.NOT_FOUND),
+                CustomError(`Event with eventId ${mockUpdatedEventInput.eventId} not found`, ErrorTypes.NOT_FOUND),
             );
-            expect(Event.findByIdAndUpdate).toHaveBeenCalledWith(id, expect.objectContaining({...calledWithInput, slug: 'updated-event-title'}), {
+            expect(Event.findByIdAndUpdate).toHaveBeenCalledWith(eventId, expect.objectContaining(calledWithInput), {
                 new: true,
             });
         });
@@ -300,11 +319,11 @@ describe('EventDAO', () => {
         it('should throw INTERNAL_SERVER_ERROR GraphQLError when Event.findByIdAndUpdate throws an UNKNOWN error', async () => {
             (Event.findByIdAndUpdate as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(new MockMongoError(0)));
 
-            const {id, ...calledWithInput} = mockUpdatedEventInput;
+            const {eventId, ...calledWithInput} = mockUpdatedEventInput;
             await expect(EventDAO.updateEvent(mockUpdatedEventInput)).rejects.toThrow(
                 CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR),
             );
-            expect(Event.findByIdAndUpdate).toHaveBeenCalledWith(id, expect.objectContaining({...calledWithInput, slug: 'updated-event-title'}), {
+            expect(Event.findByIdAndUpdate).toHaveBeenCalledWith(eventId, expect.objectContaining(calledWithInput), {
                 new: true,
             });
         });
@@ -313,9 +332,9 @@ describe('EventDAO', () => {
             const mockGraphqlError = new GraphQLError('GraphQL Error');
             (Event.findByIdAndUpdate as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(mockGraphqlError));
 
-            const {id, ...calledWithInput} = mockUpdatedEventInput;
+            const {eventId, ...calledWithInput} = mockUpdatedEventInput;
             await expect(EventDAO.updateEvent(mockUpdatedEventInput)).rejects.toThrow(mockGraphqlError);
-            expect(Event.findByIdAndUpdate).toHaveBeenCalledWith(id, expect.objectContaining({...calledWithInput, slug: 'updated-event-title'}), {
+            expect(Event.findByIdAndUpdate).toHaveBeenCalledWith(eventId, expect.objectContaining(calledWithInput), {
                 new: true,
             });
         });
@@ -338,10 +357,14 @@ describe('EventDAO', () => {
             const validateUserIdentifiersSpy = jest.spyOn(validationUtil, 'validateUserIdentifiers').mockResolvedValue(validatedUserIds);
 
             const updatedEventMock = {
-                id: 'event123',
+                eventId: 'event123',
                 rSVPList: validatedUserIds,
             };
-            (Event.findByIdAndUpdate as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(updatedEventMock));
+            (Event.findByIdAndUpdate as jest.Mock).mockReturnValue(
+                createMockSuccessMongooseQuery({
+                    toObject: () => updatedEventMock,
+                }),
+            );
 
             const result = await EventDAO.RSVP(input);
 
@@ -415,10 +438,14 @@ describe('EventDAO', () => {
             const validateUserIdentifiersSpy = jest.spyOn(validationUtil, 'validateUserIdentifiers').mockResolvedValue(validatedUserIds);
 
             const updatedEventMock = {
-                id: 'event123',
+                eventId: 'event123',
                 rSVPList: [],
             };
-            (Event.findByIdAndUpdate as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(updatedEventMock));
+            (Event.findByIdAndUpdate as jest.Mock).mockReturnValue(
+                createMockSuccessMongooseQuery({
+                    toObject: () => updatedEventMock,
+                }),
+            );
 
             const result = await EventDAO.cancelRSVP(input);
 

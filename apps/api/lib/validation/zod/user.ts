@@ -5,7 +5,7 @@ import {ERROR_MESSAGES, validateDate} from '@/validation/common';
 import mongoose from 'mongoose';
 
 export const UserTypeSchema = z.object({
-    id: z.string().refine(mongoose.Types.ObjectId.isValid, {message: `User with ID ${ERROR_MESSAGES.DOES_NOT_EXIST}`}),
+    userId: z.string().refine(mongoose.Types.ObjectId.isValid, {message: `User with ID ${ERROR_MESSAGES.DOES_NOT_EXIST}`}),
 
     address: z
         .string()
@@ -25,8 +25,6 @@ export const UserTypeSchema = z.object({
 
     given_name: z.string().min(1, {message: `First name ${ERROR_MESSAGES.REQUIRED}`}),
 
-    encrypted_password: z.string().min(8, {message: ERROR_MESSAGES.INVALID_PASSWORD}),
-
     phone_number: z.string().regex(REGEX_PHONE_NUMBER, {message: ERROR_MESSAGES.INVALID_PHONE_NUMBER}),
 
     profile_picture: z.string().optional(),
@@ -36,14 +34,12 @@ export const UserTypeSchema = z.object({
 
 export const CreateUserInputTypeSchema = UserTypeSchema.extend({
     password: z.string().min(8, {message: ERROR_MESSAGES.INVALID_PASSWORD}),
-}).omit({id: true, encrypted_password: true});
+}).omit({userId: true});
 
-export const UpdateUserInputTypeSchema = UserTypeSchema.partial()
-    .extend({
-        id: z.string().refine(mongoose.Types.ObjectId.isValid, {message: `User with ID ${ERROR_MESSAGES.DOES_NOT_EXIST}`}),
-        password: z.string().min(8, {message: ERROR_MESSAGES.INVALID_PASSWORD}).optional(),
-    })
-    .omit({encrypted_password: true});
+export const UpdateUserInputTypeSchema = UserTypeSchema.partial().extend({
+    userId: z.string().refine(mongoose.Types.ObjectId.isValid, {message: `User with UserId ${ERROR_MESSAGES.DOES_NOT_EXIST}`}),
+    password: z.string().min(8, {message: ERROR_MESSAGES.INVALID_PASSWORD}).optional(),
+});
 
 export const LoginUserInputTypeSchema = z.object({
     email: z.string().email({message: ERROR_MESSAGES.INVALID_EMAIL}),

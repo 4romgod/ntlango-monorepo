@@ -1,12 +1,30 @@
 import mongoose from 'mongoose';
 import {CustomError, ErrorTypes} from '@/utils/exceptions';
-import {ZodSchema} from 'zod';
+import z, {ZodSchema} from 'zod';
 import {EventStatus, Gender} from '@/graphql/types';
 import {isValid, parseISO} from 'date-fns';
 
 export const validateMongodbId = (id: string, message?: string) => {
     if (!mongoose.Types.ObjectId.isValid(id)) {
         throw CustomError(message || `ID '${id}' does not exist`, ErrorTypes.NOT_FOUND);
+    }
+    return true;
+};
+
+export const validateEmail = (email: string, message?: string) => {
+    const {error, success} = z.string().email({message: ERROR_MESSAGES.INVALID_EMAIL}).safeParse(email);
+    if (!success && error) {
+        const {path} = error.issues[0];
+        throw CustomError(message || ERROR_MESSAGES.INVALID_EMAIL, ErrorTypes.BAD_USER_INPUT, {argumentName: path[0]});
+    }
+    return true;
+};
+
+export const validateUsername = (username: string, message?: string) => {
+    const {error, success} = z.string().min(3, {message: ERROR_MESSAGES.INVALID_USERNAME}).safeParse(username);
+    if (!success && error) {
+        const {path} = error.issues[0];
+        throw CustomError(message || ERROR_MESSAGES.INVALID_USERNAME, ErrorTypes.BAD_USER_INPUT, {argumentName: path[0]});
     }
     return true;
 };
@@ -42,6 +60,7 @@ export const ERROR_MESSAGES = {
     INVALID_PHONE_NUMBER: 'Invalid phone number format',
     INVALID_QUERY: "Your query doesn't match the schema. Try double-checking it!",
     INVALID_TIME: 'should be in HH:mm format',
+    INVALID_USERNAME: 'username length should be => 3 characters',
     NOT_FOUND: (searchedItemType: string, searchParamType: string, searchParamValue: string) =>
         `${searchedItemType} with ${searchParamType} ${searchParamValue} does not exist`,
     PASSWORD_MISSMATCH: 'Email and Password do not match',

@@ -8,7 +8,7 @@ describe('Event', () => {
     describe('EventTypeSchema', () => {
         it('should validate valid EventTypeSchema', () => {
             const validInput = {
-                id: mockID,
+                eventId: mockID,
                 slug: 'event-slug',
                 title: 'Event Title',
                 description: 'Event Description',
@@ -74,7 +74,7 @@ describe('Event', () => {
     describe('UpdateEventInputTypeSchema', () => {
         it('should validate valid UpdateEventInputTypeSchema', () => {
             const validInput = {
-                id: mockID,
+                eventId: mockID,
                 title: 'Updated Event Title',
             };
 
@@ -84,7 +84,7 @@ describe('Event', () => {
 
         it('should invalidate invalid id format', () => {
             const invalidInput = {
-                id: 'invalid-id-format',
+                eventId: 'invalid-id-format',
                 title: 'Updated Event Title',
             };
             const errors = UpdateEventInputTypeSchema.safeParse(invalidInput);

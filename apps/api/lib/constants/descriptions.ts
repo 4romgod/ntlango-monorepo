@@ -93,6 +93,8 @@ export const RESOLVER_DESCRIPTIONS = {
         loginUser: 'Log in a user. Requires input data for logging in and returns the user along with an authentication token.',
         updateUser: 'Update an existing user. Requires input data for updating the user and returns the updated user.',
         deleteUserById: 'Delete a user by their ID. Requires the user ID and returns the deleted user or 404 Error if not found.',
+        deleteUserByEmail: 'Delete a user by their Email. Requires the user email and returns the deleted user or 404 Error if not found.',
+        deleteUserByUsername: 'Delete a user by their username. Requires the user username and returns the deleted user or 404 Error if not found.',
         readUserById: 'Read a user by their ID. Requires the user ID and returns the user or 404 Error if not found.',
         readUserByUsername: 'Read a user by their username. Requires the username and returns the user or 404 Error if not found.',
         readUserByEmail: 'Read a user by their email. Requires the email and returns the user or 404 Error if not found.',

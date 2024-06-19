@@ -26,7 +26,7 @@ async function seedUsers(users: Array<CreateUserInputType>) {
     console.log('Starting to seed user data...');
     for (const user of users) {
         const userResponse = await UserDAO.create(user);
-        console.log(`   Created User item with id: ${userResponse.id}`);
+        console.log(`   Created User item with id: ${userResponse.userId}`);
     }
     console.log('Completed seeding user data.');
 }
@@ -35,7 +35,7 @@ async function seedEventCategories(categories: Array<CreateEventCategoryInputTyp
     console.log('Starting to seed event category data...');
     for (const category of categories) {
         const eventCategoryResponse = await EventCategoryDAO.create(category);
-        console.log(`   Created Event Category item with id: ${eventCategoryResponse.id}`);
+        console.log(`   Created Event Category item with id: ${eventCategoryResponse.eventCategoryId}`);
     }
     console.log('Completed seeding event category data.');
 }
@@ -49,7 +49,7 @@ async function seedEvents(events: Array<CreateEventInputType>, userIds: Array<st
             rSVPList: getRandomUniqueItems(userIds, 2),
             eventCategoryList: getRandomUniqueItems(eventCategoryIds, 5),
         });
-        console.log(`   Created Event item with id: ${eventResponse.id}`);
+        console.log(`   Created Event item with id: ${eventResponse.eventId}`);
     }
     console.log('Completed seeding event data.');
 }
@@ -60,8 +60,8 @@ async function main() {
     await seedUsers(usersMockData);
     await seedEventCategories(eventCategoryData);
 
-    const allUserIds = (await UserDAO.readUsers()).map((user) => user.id!);
-    const allEventCategoriesIds = (await EventCategoryDAO.readEventCategories()).map((category) => category.id!);
+    const allUserIds = (await UserDAO.readUsers()).map((user) => user.userId);
+    const allEventCategoriesIds = (await EventCategoryDAO.readEventCategories()).map((category) => category.eventCategoryId!);
 
     await seedEvents(eventsMockData, allUserIds, allEventCategoriesIds);
     console.log('Completed seeding data into the database.');

@@ -1,26 +1,24 @@
-import {EventType} from '@/graphql/types';
-import {Document, model, Schema} from 'mongoose';
+import {EventPrivacySetting, EventStatus, EventType} from '@/graphql/types';
+import {kebabCase} from 'lodash';
+import {CallbackError, CallbackWithoutResultAndOptionalError, Document, model, Schema} from 'mongoose';
 
 // TODO use mongoose middleware to validate all params, especially arrays for unique items
 export const EventSchema = new Schema<EventType & Document>(
     {
-        slug: {
-            type: String,
-            required: true,
-            unique: true,
-            index: true,
+        additionalDetails: {
+            type: Schema.Types.Mixed,
+            default: {},
         },
-        title: {
-            type: String,
-            required: true,
-            unique: true,
-        },
-        description: {
-            type: String,
-            required: true,
+        capacity: {
+            type: Number,
+            required: false,
             unique: false,
         },
-        startDateTime: {
+        comments: {
+            type: Schema.Types.Mixed,
+            default: {},
+        },
+        description: {
             type: String,
             required: true,
             unique: false,
@@ -30,27 +28,6 @@ export const EventSchema = new Schema<EventType & Document>(
             required: true,
             unique: false,
         },
-        recurrenceRule: {
-            type: String,
-            required: false,
-            unique: false,
-        },
-        location: {
-            type: String,
-            required: true,
-            unique: false,
-        },
-        capacity: {
-            type: Number,
-            required: false,
-            unique: false,
-        },
-        status: {
-            type: String,
-            required: true,
-            unique: false,
-            index: true,
-        },
         eventCategoryList: [
             {
                 type: Schema.Types.ObjectId,
@@ -59,25 +36,16 @@ export const EventSchema = new Schema<EventType & Document>(
                 index: true,
             },
         ],
-        organizerList: [
-            {
-                type: Schema.Types.ObjectId,
-                ref: 'User',
-                required: true,
-                index: true,
-            },
-        ],
-        rSVPList: [
-            {
-                type: Schema.Types.ObjectId,
-                ref: 'User', // Reference to the User model
-                required: true,
-                index: true,
-            },
-        ],
-        tags: {
-            type: Schema.Types.Mixed,
-            default: {},
+        eventId: {
+            type: String,
+            required: true,
+            unique: true,
+            index: true,
+        },
+        location: {
+            type: String,
+            required: true,
+            unique: false,
         },
         media: {
             featuredImageUrl: {
@@ -90,22 +58,76 @@ export const EventSchema = new Schema<EventType & Document>(
                 required: false,
             },
         },
-        additionalDetails: {
-            type: Schema.Types.Mixed,
-            default: {},
-        },
-        comments: {
-            type: Schema.Types.Mixed,
-            default: {},
-        },
+        organizerList: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: 'User',
+                required: true,
+                index: true,
+            },
+        ],
         privacySetting: {
+            type: String,
+            enum: Object.values(EventPrivacySetting),
+            required: false,
+            unique: false,
+        },
+        recurrenceRule: {
             type: String,
             required: false,
             unique: false,
         },
+        rSVPList: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: 'User', // Reference to the User model
+                required: true,
+                index: true,
+            },
+        ],
+        slug: {
+            type: String,
+            required: true,
+            unique: true,
+            index: true,
+        },
+        startDateTime: {
+            type: String,
+            required: true,
+            unique: false,
+        },
+        status: {
+            type: String,
+            enum: Object.values(EventStatus),
+            required: true,
+            unique: false,
+            index: true,
+        },
+        tags: {
+            type: Schema.Types.Mixed,
+            default: {},
+        },
+        title: {
+            type: String,
+            required: true,
+            unique: true,
+        },
     },
     {timestamps: true},
 );
+
+EventSchema.pre('validate', async function (next: CallbackWithoutResultAndOptionalError) {
+    try {
+        this.eventId = this._id!.toString();
+
+        if (this.isModified('title')) {
+            this.slug = kebabCase(this.title);
+        }
+        next();
+    } catch (error) {
+        next(error as CallbackError);
+    }
+});
 
 const Event = model<EventType & Document>('Event', EventSchema);
 

@@ -56,8 +56,8 @@ describe('Event Resolver', () => {
             apolloServer.stop();
             httpServer.close();
 
-            await UserDAO.deleteUserById(testUser.id);
-            await EventCategoryDAO.deleteEventCategoryById(testEventCategory.id);
+            await UserDAO.deleteUserById(testUser.userId);
+            await EventCategoryDAO.deleteEventCategoryById(testEventCategory.eventCategoryId);
         };
         return cleanup();
     });
@@ -71,8 +71,8 @@ describe('Event Resolver', () => {
             it('should create a new event when valid input is provided', async () => {
                 const createEventMutation = getCreateEventMutation({
                     ...createEventInput,
-                    organizerList: [testUser.id],
-                    eventCategoryList: [testEventCategory.id],
+                    organizerList: [testUser.userId],
+                    eventCategoryList: [testEventCategory.eventCategoryId],
                 });
 
                 const createEventResponse = await request(url).post('').set('token', testUser.token).send(createEventMutation);
@@ -81,7 +81,7 @@ describe('Event Resolver', () => {
 
                 const createdEvent: EventType = createEventResponse.body.data.createEvent;
 
-                expect(createdEvent).toHaveProperty('id');
+                expect(createdEvent).toHaveProperty('eventId');
                 expect(createdEvent.title).toBe(testEventTitle);
             });
         });
@@ -92,14 +92,14 @@ describe('Event Resolver', () => {
             it('should throw CONFLICT error when an event with the same title already exists', async () => {
                 await EventDAO.create({
                     ...createEventInput,
-                    organizerList: [testUser.id],
-                    eventCategoryList: [testEventCategory.id],
+                    organizerList: [testUser.userId],
+                    eventCategoryList: [testEventCategory.eventCategoryId],
                 });
 
                 const createEventMutation = getCreateEventMutation({
                     ...createEventInput,
-                    organizerList: [testUser.id],
-                    eventCategoryList: [testEventCategory.id],
+                    organizerList: [testUser.userId],
+                    eventCategoryList: [testEventCategory.eventCategoryId],
                 });
 
                 const createEventResponse = await request(url).post('').set('token', testUser.token).send(createEventMutation);
@@ -113,8 +113,8 @@ describe('Event Resolver', () => {
             it('should throw BAD_USER_INPUT error when invalid input is provided, but the input type schema is valid', async () => {
                 const createEventMutation = getCreateEventMutation({
                     ...createEventInput,
-                    organizerList: [testUser.id],
-                    eventCategoryList: [testEventCategory.id],
+                    organizerList: [testUser.userId],
+                    eventCategoryList: [testEventCategory.eventCategoryId],
                     startDateTime: 'invalid date',
                 });
 
@@ -128,7 +128,7 @@ describe('Event Resolver', () => {
                 const createEventMutation = getCreateEventMutation({
                     ...createEventInput,
                     organizerList: undefined,
-                    eventCategoryList: [testEventCategory.id],
+                    eventCategoryList: [testEventCategory.eventCategoryId],
                 });
 
                 const createEventResponse = await request(url).post('').set('token', testUser.token).send(createEventMutation);
@@ -140,8 +140,8 @@ describe('Event Resolver', () => {
             it('should throw UNAUTHENTICATED error when auth token is NOT provided', async () => {
                 const createEventMutation = getCreateEventMutation({
                     ...createEventInput,
-                    organizerList: [testUser.id],
-                    eventCategoryList: [testEventCategory.id],
+                    organizerList: [testUser.userId],
+                    eventCategoryList: [testEventCategory.eventCategoryId],
                 });
 
                 const createEventResponse = await request(url).post('').send(createEventMutation);

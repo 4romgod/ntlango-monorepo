@@ -1,11 +1,11 @@
 import {ServerContext} from '@/server';
-import {ArgsDictionary, ResolverData, AuthChecker} from 'type-graphql';
+import {ArgsDictionary, ResolverData} from 'type-graphql';
 import {CustomError, ErrorTypes} from '@/utils/exceptions';
 import {ERROR_MESSAGES} from '@/validation';
 import {JWT_SECRET, OPERATION_NAMES} from '@/constants';
 import {UserRole, UserType} from '@/graphql/types';
 import {verify, sign, JwtPayload} from 'jsonwebtoken';
-import {EventDAO} from '@/mongodb/dao';
+import {EventDAO, UserDAO} from '@/mongodb/dao';
 
 /**
  * Authorization checker function for GraphQL resolver operations
@@ -79,9 +79,13 @@ export const verifyToken = (token: string, secret?: string) => {
 export const isAuthorizedByOperation = async (operationName: string, args: ArgsDictionary, user: UserType): Promise<boolean> => {
     switch (operationName) {
         case OPERATION_NAMES.UPDATE_USER:
-            return args.input.id == user.id;
+            return args.input.userId == user.userId;
         case OPERATION_NAMES.DELETE_USER_BY_ID:
-            return args.id == user.id;
+            return args.userId == user.userId;
+        case OPERATION_NAMES.DELETE_USER_BY_EMAIL:
+            return args.email == user.email;
+        case OPERATION_NAMES.DELETE_USER_BY_USERNAME:
+            return args.username == user.username;
         case OPERATION_NAMES.UPDATE_EVENT:
         case OPERATION_NAMES.DELETE_EVENT:
             return await isAuthorizedToUpdateEvent(args.eventId, user);
@@ -94,5 +98,5 @@ export const isAuthorizedByOperation = async (operationName: string, args: ArgsD
 
 const isAuthorizedToUpdateEvent = async (eventId: string, user: UserType) => {
     const event = await EventDAO.readEventById(eventId);
-    return event.organizerList.map((organizer) => organizer.id.toString()).includes(user.id);
+    return event.organizerList.map((organizer) => organizer.userId).includes(user.userId);
 };

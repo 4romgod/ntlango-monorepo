@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import {USER_DESCRIPTIONS} from '@/constants';
 import {ObjectType, InputType, Field, registerEnumType, Authorized} from 'type-graphql';
+import {Document} from 'mongoose';
 
 export enum Gender {
     Male = 'Male',
@@ -28,7 +29,7 @@ registerEnumType(UserRole, {
 @ObjectType({description: USER_DESCRIPTIONS.TYPE})
 export class UserType {
     @Field({description: USER_DESCRIPTIONS.ID})
-    id: string;
+    userId: string;
 
     @Field({description: USER_DESCRIPTIONS.EMAIL})
     email: string;
@@ -51,9 +52,6 @@ export class UserType {
     @Field(() => Gender, {nullable: true, description: USER_DESCRIPTIONS.GENDER})
     gender?: Gender;
 
-    @Field({description: USER_DESCRIPTIONS.ENCRYPTED_PASSWORD})
-    encrypted_password: string;
-
     @Field({nullable: true, description: USER_DESCRIPTIONS.PHONE_NUMBER})
     phone_number?: string;
 
@@ -68,6 +66,11 @@ export class UserType {
 export class UserWithTokenType extends UserType {
     @Field({description: USER_DESCRIPTIONS.TOKEN})
     token: string;
+}
+
+export interface UserTypeDocument extends UserType, Document {
+    password: string;
+    comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
 @InputType({description: USER_DESCRIPTIONS.CREATE_INPUT})
@@ -106,7 +109,7 @@ export class CreateUserInputType {
 @InputType({description: USER_DESCRIPTIONS.UPDATE_INPUT})
 export class UpdateUserInputType {
     @Field({description: USER_DESCRIPTIONS.ID})
-    id: string;
+    userId: string;
 
     @Field({nullable: true, description: USER_DESCRIPTIONS.EMAIL})
     email?: string;

@@ -16,14 +16,13 @@ describe('User', () => {
     const validPhoneNumber = '+27764567890';
 
     const getValidUserInput = () => ({
-        id: mockID,
+        userId: mockID,
         address: '123 Main St',
         birthdate: validDate,
         email: 'user@example.com',
         family_name: 'Doe',
         gender: Gender.Male,
         given_name: 'John',
-        encrypted_password: 'securepassword123',
         phone_number: validPhoneNumber,
         profile_picture: 'https://example.com/pic.jpg',
         username: 'johndoe',
@@ -75,8 +74,7 @@ describe('User', () => {
             const validInput = {
                 ...getValidUserInput(),
                 password: 'securepassword123',
-                id: undefined,
-                encrypted_password: undefined,
+                userId: undefined,
             };
             const {success, error} = CreateUserInputTypeSchema.safeParse(validInput);
             expect(success).toBe(true);
@@ -95,7 +93,7 @@ describe('User', () => {
     describe('UpdateUserInputTypeSchema', () => {
         it('should validate valid UpdateUserInputTypeSchema', () => {
             const validInput = {
-                id: mockID,
+                userId: mockID,
                 given_name: 'Updated Name',
             };
             const {success, error} = UpdateUserInputTypeSchema.safeParse(validInput);
@@ -104,13 +102,13 @@ describe('User', () => {
 
         it('should invalidate invalid id format', () => {
             const invalidInput = {
-                id: 'invalid-id-format',
+                userId: 'invalid-id-format',
                 given_name: 'Updated Name',
             };
             const {success, error} = UpdateUserInputTypeSchema.safeParse(invalidInput);
             expect(success).toBe(false);
             if (error) {
-                expect(error.errors[0].message).toBe(`User with ID ${ERROR_MESSAGES.DOES_NOT_EXIST}`);
+                expect(error.errors[0].message).toBe(`User with UserId ${ERROR_MESSAGES.DOES_NOT_EXIST}`);
             }
         });
     });

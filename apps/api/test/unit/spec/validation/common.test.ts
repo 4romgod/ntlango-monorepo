@@ -1,5 +1,5 @@
 import {ZodSchema, z} from 'zod';
-import {validateMongodbId, validateInput, validateDate, ERROR_MESSAGES} from '@/validation';
+import {validateMongodbId, validateInput, validateDate, ERROR_MESSAGES, validateEmail, validateUsername} from '@/validation';
 import {EventStatus} from '@/graphql/types';
 import mongoose from 'mongoose';
 
@@ -32,6 +32,52 @@ describe('Validation functions', () => {
             expect(() => validateMongodbId(invalidId, customMessage)).toThrow({
                 message: customMessage,
                 name: 'NotFound',
+            });
+        });
+    });
+
+    describe('validateEmail', () => {
+        it('should validate a correct email format', () => {
+            expect(validateEmail('email@example.com')).toBe(true);
+        });
+
+        it('should throw an error for an invalid email format', () => {
+            const invalidEmail = 'invalid_email';
+            expect(() => validateEmail(invalidEmail)).toThrow({
+                message: ERROR_MESSAGES.INVALID_EMAIL,
+                name: 'BadInput',
+            });
+        });
+
+        it('should throw a custom error message for an invalid email format', () => {
+            const invalidEmail = 'invalid_id';
+            const customMessage = 'Custom error message';
+            expect(() => validateEmail(invalidEmail, customMessage)).toThrow({
+                message: customMessage,
+                name: 'BadInput',
+            });
+        });
+    });
+
+    describe('validateUsername', () => {
+        it('should validate a correct username format', () => {
+            expect(validateUsername('username')).toBe(true);
+        });
+
+        it('should throw an error for an invalid email format', () => {
+            const invalidUsername = 'in';
+            expect(() => validateUsername(invalidUsername)).toThrow({
+                message: ERROR_MESSAGES.INVALID_USERNAME,
+                name: 'BadInput',
+            });
+        });
+
+        it('should throw a custom error message for an invalid username format', () => {
+            const invalidUsername = 'in';
+            const customMessage = 'Custom error message';
+            expect(() => validateUsername(invalidUsername, customMessage)).toThrow({
+                message: customMessage,
+                name: 'BadInput',
             });
         });
     });

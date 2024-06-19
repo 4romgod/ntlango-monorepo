@@ -3,7 +3,7 @@ import {Arg, Mutation, Resolver, Query, Authorized} from 'type-graphql';
 import {UserDAO} from '@/mongodb/dao';
 import {UserType, CreateUserInputType, UpdateUserInputType, LoginUserInputType, UserRole, UserWithTokenType} from '@/graphql/types';
 import {CreateUserInputTypeSchema, LoginUserInputTypeSchema, UpdateUserInputTypeSchema} from '@/validation/zod';
-import {ERROR_MESSAGES, validateInput, validateMongodbId} from '@/validation';
+import {ERROR_MESSAGES, validateEmail, validateInput, validateMongodbId, validateUsername} from '@/validation';
 import {QueryOptionsInput} from '../types/query';
 import {RESOLVER_DESCRIPTIONS, USER_DESCRIPTIONS} from '@/constants';
 
@@ -36,6 +36,20 @@ export class UserResolver {
     async deleteUserById(@Arg('userId') userId: string): Promise<UserType> {
         validateMongodbId(userId, ERROR_MESSAGES.NOT_FOUND('User', 'ID', userId));
         return UserDAO.deleteUserById(userId);
+    }
+
+    @Authorized([UserRole.Admin, UserRole.User, UserRole.Host])
+    @Mutation(() => UserType, {description: RESOLVER_DESCRIPTIONS.USER.deleteUserByEmail})
+    async deleteUserByEmail(@Arg('email') email: string): Promise<UserType> {
+        validateEmail(email);
+        return UserDAO.deleteUserByEmail(email);
+    }
+
+    @Authorized([UserRole.Admin, UserRole.User, UserRole.Host])
+    @Mutation(() => UserType, {description: RESOLVER_DESCRIPTIONS.USER.deleteUserByUsername})
+    async deleteUserByUsername(@Arg('username') username: string): Promise<UserType> {
+        validateUsername(username);
+        return UserDAO.deleteUserByUsername(username);
     }
 
     @Query(() => UserType, {description: RESOLVER_DESCRIPTIONS.USER.readUserById})

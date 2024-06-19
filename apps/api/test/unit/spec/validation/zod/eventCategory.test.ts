@@ -5,7 +5,7 @@ describe('Event Category', () => {
     const mockID = new mongoose.Types.ObjectId().toString();
 
     const getValidEventCategoryInput = () => ({
-        id: mockID,
+        eventCategoryId: mockID,
         color: 'red',
         description: 'A valid description',
         iconName: 'icon-name',
@@ -29,15 +29,15 @@ describe('Event Category', () => {
             }
         });
 
-        it('should invalidate invalid id format', () => {
+        it('should invalidate invalid eventCategoryId format', () => {
             const invalidInput = {
                 ...getValidEventCategoryInput(),
-                id: 'invalid-id-format',
+                eventCategoryId: 'invalid-id-format',
             };
             const {success, error} = EventCategoryTypeSchema.safeParse(invalidInput);
             expect(success).toBe(false);
             if (error) {
-                expect(error.errors[0].message).toBe('Event Category ID is invalid');
+                expect(error.errors[0].message).toBe('Event Category eventCategoryId is invalid');
             }
         });
     });
@@ -46,7 +46,7 @@ describe('Event Category', () => {
         it('should validate valid CreateEventCategoryTypeSchema', () => {
             const validInput = {
                 ...getValidEventCategoryInput(),
-                id: undefined,
+                eventCategoryId: undefined,
             };
             const {success, error} = CreateEventCategoryTypeSchema.safeParse(validInput);
             expect(success).toBe(true);
@@ -65,7 +65,7 @@ describe('Event Category', () => {
     describe('UpdateEventCategoryTypeSchema', () => {
         it('should validate valid UpdateEventCategoryTypeSchema', () => {
             const validInput = {
-                id: mockID,
+                eventCategoryId: mockID,
                 name: 'Updated Category Name',
             };
             const {success, error} = UpdateEventCategoryTypeSchema.safeParse(validInput);
@@ -74,13 +74,13 @@ describe('Event Category', () => {
 
         it('should invalidate invalid id format', () => {
             const invalidInput = {
-                id: 'invalid-id-format',
+                eventCategoryId: 'invalid-id-format',
                 name: 'Updated Category Name',
             };
             const {success, error} = UpdateEventCategoryTypeSchema.safeParse(invalidInput);
             expect(success).toBe(false);
             if (error) {
-                expect(error.errors[0].message).toBe('Event Category ID is invalid');
+                expect(error.errors[0].message).toBe('Event Category eventCategoryId is invalid');
             }
         });
     });

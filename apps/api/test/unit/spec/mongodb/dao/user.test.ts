@@ -67,7 +67,6 @@ describe('UserDAO', () => {
     let mockUser: any = {
         ...mockCreateUserInput,
         id: 'mockUserId',
-        encrypted_password: 'encrypted_password',
         userRole: UserRole.User,
     };
 
@@ -77,41 +76,37 @@ describe('UserDAO', () => {
         });
 
         it('should create a user and return the user object with token', async () => {
-            const toObject = jest.fn().mockReturnValue(mockUser);
-            mockUser.toObject = toObject;
-            (bcrypt.hash as jest.Mock).mockResolvedValue('encrypted_password');
             (generateToken as jest.Mock).mockReturnValue('mockToken');
             (User.create as jest.Mock).mockResolvedValue({
-                mockUser,
-                toObject: jest.fn().mockReturnValue(mockUser),
+                toObject: () => mockUser,
             });
 
             const result = await UserDAO.create(mockCreateUserInput);
 
             expect(result).toEqual({...mockUser, token: 'mockToken'});
-            expect(bcrypt.hash).toHaveBeenCalledWith('password', 10);
             expect(generateToken).toHaveBeenCalledWith(mockUser);
         });
 
         it('should create a user (with default username) and return the user object with token', async () => {
-            (bcrypt.hash as jest.Mock).mockResolvedValue('encrypted_password');
             (generateToken as jest.Mock).mockReturnValue('mockToken');
             (User.create as jest.Mock).mockResolvedValue({
-                ...mockUser,
-                username: 'test',
-                toObject: jest.fn().mockReturnValue({...mockUser, username: 'test'}),
+                toObject: () => {
+                    return {
+                        ...mockUser,
+                        username: 'test',
+                    };
+                },
             });
 
             const result = await UserDAO.create({...mockCreateUserInput, username: undefined});
 
             expect(result).toEqual({...mockUser, username: 'test', token: 'mockToken'});
-            expect(bcrypt.hash).toHaveBeenCalledWith('password', 10);
             expect(generateToken).toHaveBeenCalledWith({...mockUser, username: 'test'});
         });
 
         it('should throw INTERNAL_SERVER_ERROR GraphQLError when an unknown error occurs', async () => {
             const mockError = new Error('Mongodb Error');
-            (bcrypt.hash as jest.Mock).mockRejectedValue(mockError);
+            (User.create as jest.Mock).mockRejectedValue(mockError);
 
             await expect(UserDAO.create(mockCreateUserInput)).rejects.toThrow(KnownCommonError(mockError));
         });
@@ -131,20 +126,21 @@ describe('UserDAO', () => {
             const mockUser = {
                 _id: 'mockUserId',
                 email: 'test@example.com',
-                encrypted_password: 'encrypted_password',
-                toObject: jest.fn().mockReturnValue({_id: 'mockUserId', email: 'test@example.com'}),
             };
 
-            (User.findOne as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(mockUser));
-            (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+            (User.findOne as jest.Mock).mockReturnValue(
+                createMockSuccessMongooseQuery({
+                    toObject: () => mockUser,
+                    comparePassword: () => true,
+                }),
+            );
             (generateToken as jest.Mock).mockReturnValue('mockToken');
 
             const result = await UserDAO.login(mockLoginUserInput);
 
-            expect(result).toEqual({...mockUser.toObject(), token: 'mockToken'});
+            expect(result).toEqual({...mockUser, token: 'mockToken'});
             expect(User.findOne).toHaveBeenCalledWith({email: 'test@example.com'});
-            expect(bcrypt.compare).toHaveBeenCalledWith('password', 'encrypted_password');
-            expect(generateToken).toHaveBeenCalledWith(mockUser.toObject());
+            expect(generateToken).toHaveBeenCalledWith(mockUser);
         });
 
         it('should throw UNAUTHENTICATED error when password mismatch', async () => {
@@ -156,11 +152,14 @@ describe('UserDAO', () => {
             const mockUser = {
                 _id: 'mockUserId',
                 email: 'test@example.com',
-                encrypted_password: 'encrypted_password',
             };
 
-            (User.findOne as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(mockUser));
-            (bcrypt.compare as jest.Mock).mockResolvedValue(false);
+            (User.findOne as jest.Mock).mockReturnValue(
+                createMockSuccessMongooseQuery({
+                    toObject: () => mockUser,
+                    comparePassword: () => false,
+                }),
+            );
 
             await expect(UserDAO.login(mockLoginUserInput)).rejects.toThrow(
                 CustomError(ERROR_MESSAGES.PASSWORD_MISSMATCH, ErrorTypes.UNAUTHENTICATED),
@@ -204,14 +203,16 @@ describe('UserDAO', () => {
                 _id: 'mockUserId',
                 email: 'test@example.com',
             };
-            const toObject = jest.fn().mockReturnValue(mockUser);
-            mockUser.toObject = toObject;
 
-            (User.findById as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(mockUser));
+            (User.findById as jest.Mock).mockReturnValue(
+                createMockSuccessMongooseQuery({
+                    toObject: () => mockUser,
+                }),
+            );
 
             const result = await UserDAO.readUserById(userId);
 
-            expect(result).toEqual(mockUser.toObject());
+            expect(result).toEqual(mockUser);
             expect(User.findById).toHaveBeenCalledWith(userId);
         });
 
@@ -244,14 +245,16 @@ describe('UserDAO', () => {
                 email: 'test@example.com',
                 username: 'testUser',
             };
-            const toObject = jest.fn().mockReturnValue(mockUser);
-            mockUser.toObject = toObject;
 
-            (User.findOne as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(mockUser));
+            (User.findOne as jest.Mock).mockReturnValue(
+                createMockSuccessMongooseQuery({
+                    toObject: () => mockUser,
+                }),
+            );
 
             const result = await UserDAO.readUserByUsername(username);
 
-            expect(result).toEqual(mockUser.toObject());
+            expect(result).toEqual(mockUser);
             expect(User.findOne).toHaveBeenCalledWith({username: 'testUser'});
         });
 
@@ -286,14 +289,15 @@ describe('UserDAO', () => {
                 email: 'test@example.com',
                 username: 'testUser',
             };
-            const toObject = jest.fn().mockReturnValue(mockUser);
-            mockUser.toObject = toObject;
-
-            (User.findOne as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(mockUser));
+            (User.findOne as jest.Mock).mockReturnValue(
+                createMockSuccessMongooseQuery({
+                    toObject: () => mockUser,
+                }),
+            );
 
             const result = await UserDAO.readUserByEmail(email);
 
-            expect(result).toEqual(mockUser.toObject());
+            expect(result).toEqual(mockUser);
             expect(User.findOne).toHaveBeenCalledWith({email: 'test@example.com'});
         });
 
@@ -335,7 +339,8 @@ describe('UserDAO', () => {
                 },
             ];
 
-            (User.find as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(mockUsers));
+            const mockResults = mockUsers.map((user) => ({toObject: () => user}));
+            (User.find as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(mockResults));
 
             const result = await UserDAO.readUsers();
 
@@ -366,7 +371,8 @@ describe('UserDAO', () => {
                 },
             ];
 
-            (transformOptionsToQuery as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(mockUsers));
+            const mockResults = mockUsers.map((user) => ({toObject: () => user}));
+            (transformOptionsToQuery as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(mockResults));
 
             const result = await UserDAO.readUsers(options);
 
@@ -384,33 +390,32 @@ describe('UserDAO', () => {
 
     describe('updateUser', () => {
         const mockUpdateUserInput: UpdateUserInputType = {
-            id: 'mockUserId',
+            userId: 'mockUserId',
             email: 'updated@example.com',
             username: 'updatedUser',
-            password: 'newpassword',
         };
 
         it('should update a user and return the updated user object', async () => {
             const mockUpdatedUser = {
-                id: 'mockUserId',
+                userId: 'mockUserId',
                 email: 'updated@example.com',
                 username: 'updatedUser',
-                encrypted_password: 'encrypted_newpassword',
             };
 
-            (bcrypt.hash as jest.Mock).mockResolvedValue('encrypted_newpassword');
-            (User.findByIdAndUpdate as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(mockUpdatedUser));
+            (User.findByIdAndUpdate as jest.Mock).mockReturnValue(
+                createMockSuccessMongooseQuery({
+                    toObject: () => mockUpdatedUser,
+                }),
+            );
 
             const result = await UserDAO.updateUser(mockUpdateUserInput);
 
             expect(result).toEqual(mockUpdatedUser);
-            expect(bcrypt.hash).toHaveBeenCalledWith('newpassword', 10);
             expect(User.findByIdAndUpdate).toHaveBeenCalledWith(
                 'mockUserId',
                 {
                     email: 'updated@example.com',
                     username: 'updatedUser',
-                    encrypted_password: 'encrypted_newpassword',
                 },
                 {new: true},
             );
@@ -418,13 +423,11 @@ describe('UserDAO', () => {
 
         it('should throw NOT_FOUND error when user not found', async () => {
             const mockUpdateUserInputNotFound: UpdateUserInputType = {
-                id: 'nonExistingUserId',
+                userId: 'nonExistingUserId',
                 email: 'updated@example.com',
                 username: 'updatedUser',
-                password: 'newpassword',
             };
 
-            (bcrypt.hash as jest.Mock).mockResolvedValue('encrypted_newpassword');
             (User.findByIdAndUpdate as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(null));
 
             await expect(UserDAO.updateUser(mockUpdateUserInputNotFound)).rejects.toThrow(
@@ -434,7 +437,6 @@ describe('UserDAO', () => {
 
         it('should throw INTERNAL_SERVER_ERROR GraphQLError when an unknown error occurs', async () => {
             const mockError = new Error('Mongodb Error');
-            (bcrypt.hash as jest.Mock).mockRejectedValue(mockError);
             (User.findByIdAndUpdate as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(mockError));
 
             await expect(UserDAO.updateUser(mockUpdateUserInput)).rejects.toThrow(KnownCommonError(mockError));
@@ -449,12 +451,16 @@ describe('UserDAO', () => {
         it('should delete a user by ID and return the deleted user object', async () => {
             const userId = 'mockUserId';
             const mockDeletedUser = {
-                _id: 'mockUserId',
+                userId: 'mockUserId',
                 email: 'deleted@example.com',
                 username: 'deletedUser',
             };
 
-            (User.findByIdAndDelete as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(mockDeletedUser));
+            (User.findByIdAndDelete as jest.Mock).mockReturnValue(
+                createMockSuccessMongooseQuery({
+                    toObject: () => mockDeletedUser,
+                }),
+            );
 
             const result = await UserDAO.deleteUserById(userId);
 
@@ -494,7 +500,11 @@ describe('UserDAO', () => {
                 username: 'deletedUser',
             };
 
-            (User.findOneAndDelete as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(mockDeletedUser));
+            (User.findOneAndDelete as jest.Mock).mockReturnValue(
+                createMockSuccessMongooseQuery({
+                    toObject: () => mockDeletedUser,
+                }),
+            );
 
             const result = await UserDAO.deleteUserByEmail(email);
 
@@ -516,6 +526,48 @@ describe('UserDAO', () => {
             (User.findOneAndDelete as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(mockError));
 
             await expect(UserDAO.deleteUserByEmail(email)).rejects.toThrow(KnownCommonError(mockError));
+        });
+    });
+
+    describe('deleteUserByUsername', () => {
+        afterEach(() => {
+            jest.clearAllMocks();
+        });
+
+        it('should delete a user by username and return the deleted user object', async () => {
+            const username = 'deletedUser';
+            const mockDeletedUser = {
+                _id: 'mockUserId',
+                email: 'deleted@example.com',
+                username: 'deletedUser',
+            };
+
+            (User.findOneAndDelete as jest.Mock).mockReturnValue(
+                createMockSuccessMongooseQuery({
+                    toObject: () => mockDeletedUser,
+                }),
+            );
+
+            const result = await UserDAO.deleteUserByUsername(username);
+
+            expect(result).toEqual(mockDeletedUser);
+            expect(User.findOneAndDelete).toHaveBeenCalledWith({username: 'deletedUser'});
+        });
+
+        it('should throw NOT_FOUND error when user not found', async () => {
+            const nonExistingUsername = 'nonexistingUsername';
+
+            (User.findOneAndDelete as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(null));
+
+            await expect(UserDAO.deleteUserByUsername(nonExistingUsername)).rejects.toThrow(CustomError('User not found', ErrorTypes.NOT_FOUND));
+        });
+
+        it('should throw INTERNAL_SERVER_ERROR GraphQLError when an unknown error occurs', async () => {
+            const username = 'deletedUser';
+            const mockError = new Error('Mongodb Error');
+            (User.findOneAndDelete as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(mockError));
+
+            await expect(UserDAO.deleteUserByUsername(username)).rejects.toThrow(KnownCommonError(mockError));
         });
     });
 });
