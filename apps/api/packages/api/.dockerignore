@@ -1,0 +1,10 @@
+*.log
+*.md
+.DS_Store
+.gitignore
+coverage/
+dist/
+node_modules/
+nodemon.json
+test/canary/
+test/integration/

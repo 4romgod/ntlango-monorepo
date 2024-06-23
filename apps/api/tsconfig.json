@@ -1,26 +1,10 @@
 {
   "compilerOptions": {
+    "esModuleInterop": true,
     "target": "es2022",
     "module": "commonjs",
-    "outDir": "./dist",
-    "declaration": true,
-    "declarationDir": "./dist/types",
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
     "strict": true,
     "noImplicitAny": false,
-    "skipLibCheck": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "strictPropertyInitialization": false,
-    "preserveSymlinks": true,
-    "baseUrl": "./",
-    "paths": {
-      "@/test/*": ["test/*"],
-      "@/*": ["lib/*"],
-    }
   },
-  "ts-node": {
-    "require": ["tsconfig-paths/register"]
-  }
+  "include": ["packages/**/*"]
 }
