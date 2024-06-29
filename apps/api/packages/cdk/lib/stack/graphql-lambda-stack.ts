@@ -1,10 +1,10 @@
-import {AccessLogFormat, LambdaRestApi, LogGroupLogDestination, ResourceBase, RestApi, StageOptions} from 'aws-cdk-lib/aws-apigateway';
+import {AccessLogFormat, LambdaRestApi, LogGroupLogDestination, ResourceBase, RestApi} from 'aws-cdk-lib/aws-apigateway';
 import {CfnOutput, Duration, Stack, StackProps} from 'aws-cdk-lib/core';
+import {configDotenv} from 'dotenv';
 import {NodejsFunction} from 'aws-cdk-lib/aws-lambda-nodejs';
 import {Construct} from 'constructs';
 import {LogGroup} from 'aws-cdk-lib/aws-logs';
 import {Runtime} from 'aws-cdk-lib/aws-lambda';
-import {config} from 'dotenv';
 import {join} from 'path';
 
 const pathRoot = join(__dirname, '../../../../');
@@ -12,7 +12,7 @@ const pathPackages = join(pathRoot, 'packages');
 const pathApi = join(pathPackages, 'api');
 const pathHandlerFile = join(pathApi, 'lib', 'index.ts');
 
-config({path: join(pathRoot, '.env')});
+configDotenv({path: join(pathRoot, '.env')});
 
 export class GraphQLStack extends Stack {
     readonly graphqlLambda: NodejsFunction;
@@ -53,6 +53,7 @@ export class GraphQLStack extends Stack {
         this.graphqlApi = new LambdaRestApi(this, 'GraphqlRestApiId', {
             handler: this.graphqlLambda,
             proxy: false,
+            cloudWatchRole: true,
             deployOptions: {
                 accessLogDestination: new LogGroupLogDestination(new LogGroup(this, 'GraphqlRestApiAccessLogs')),
                 accessLogFormat: AccessLogFormat.clf(),
