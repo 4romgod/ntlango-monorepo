@@ -6,6 +6,7 @@
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npm run build:ts",
     "build:ts": "echo '\nTranspilling ts Commons code...' && tsc --build --pretty --verbose && echo 'All done with the build!'"
   },
   "author": "",

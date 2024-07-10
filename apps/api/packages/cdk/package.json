@@ -3,13 +3,13 @@
   "version": "1.0.0",
   "scripts": {
     "build:cdk": "npm run cdk synthesize",
-    "build:ts": "echo '\nTranspilling ts CDK code...' && tsc --build --pretty --verbose && echo 'All done with the build!'",
     "cdk": "npx aws-cdk"
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "aws-cdk-lib": "^2.147.0"
+    "aws-cdk-lib": "^2.147.0",
+    "esbuild": "^0.23.0"
   }
 }

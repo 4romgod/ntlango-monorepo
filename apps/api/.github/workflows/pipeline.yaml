@@ -1,0 +1,48 @@
+name: Pipeline (build, test:unit, deploy:aws, test:integration)
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    steps:
+    - name: Checkout out code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Install AWS CDK
+      run: npm i -g aws-cdk
+
+    - name: Build/Transpile the code
+      run: npm run build:ts
+
+    - name: Run unit tests
+      run: npm run test:unit
+
+    - name: Synthesize CDK application
+      run: npm run build:cdk
+
+    # - name: Configure aws credentials
+    #   uses: aws-actions/configure-aws-credentials@master
+    #   with:
+    #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    #     aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+    #     aws-region: "YOUR_AWS_REGION"
+
+

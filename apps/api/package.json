@@ -5,7 +5,6 @@
   "scripts": {
     "format": "prettier './**/*.{js,ts}' --write",
     "install-hooks": "sh ./packages/commons/scripts/hooks/install-hooks.sh",
-    "build": "npm run build --workspaces --if-present",
     "build:ts": "npm run build:ts --workspaces --if-present",
     "build:cdk": "npm run build:cdk -w @ntlango/cdk",
     "build:image": "npm run build:image --workspaces --if-present",
