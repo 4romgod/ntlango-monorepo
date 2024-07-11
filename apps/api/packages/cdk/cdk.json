@@ -1,18 +1,22 @@
 {
   "app": "npx ts-node --prefer-ts-exts ./lib/app.ts",
+  "requireApproval": "never",
   "watch": {
     "include": [
       "**"
     ],
     "exclude": [
-      "README.md",
-      "cdk*.json",
+      "**/.gitignore",
+      "**/.npmrc",
+      "**/.prettierrc.json",
       "**/*.d.ts",
       "**/*.js",
-      "tsconfig.json",
-      "package*.json",
-      "yarn.lock",
-      "node_modules"
+      "**/cdk*.json",
+      "**/node_modules",
+      "**/package*.json",
+      "**/README.md",
+      "**/tsconfig.json",
+      "**/yarn.lock"
     ]
   },
   "context": {
