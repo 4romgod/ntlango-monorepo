@@ -1,7 +1,11 @@
 {
   "name": "@ntlango/backend",
   "version": "1.0.0",
-  "main": "index.js",
+  "workspaces": [
+    "packages/cdk",
+    "packages/api",
+    "packages/commons"
+  ],
   "scripts": {
     "format": "prettier './**/*.{js,ts}' --write",
     "install-hooks": "sh ./packages/commons/scripts/hooks/install-hooks.sh",
@@ -16,16 +20,5 @@
   },
   "devDependencies": {
     "prettier": "^3.2.5"
-  },
-  "author": "",
-  "license": "ISC",
-  "description": "",
-  "workspaces": [
-    "packages/cdk",
-    "packages/api",
-    "packages/commons"
-  ],
-  "dependencies": {
-    "dotenv": "^16.4.5"
   }
 }

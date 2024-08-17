@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import {EVENT_CATEGORY_DESCRIPTIONS} from '@/constants';
 import {ID, Field, InputType, ObjectType} from 'type-graphql';
 
-@ObjectType({description: EVENT_CATEGORY_DESCRIPTIONS.TYPE})
+@ObjectType('EventCategoryType', {description: EVENT_CATEGORY_DESCRIPTIONS.TYPE})
 export class EventCategoryType {
     @Field((type) => ID, {description: EVENT_CATEGORY_DESCRIPTIONS.ID})
     eventCategoryId: string;
@@ -23,7 +23,7 @@ export class EventCategoryType {
     color?: string;
 }
 
-@InputType({description: EVENT_CATEGORY_DESCRIPTIONS.CREATE_INPUT})
+@InputType('CreateEventCategoryInputType', {description: EVENT_CATEGORY_DESCRIPTIONS.CREATE_INPUT})
 export class CreateEventCategoryInputType {
     @Field((type) => String, {description: EVENT_CATEGORY_DESCRIPTIONS.NAME})
     name: string;
@@ -38,7 +38,7 @@ export class CreateEventCategoryInputType {
     color?: string;
 }
 
-@InputType({description: EVENT_CATEGORY_DESCRIPTIONS.UPDATE_INPUT})
+@InputType('UpdateEventCategoryInputType', {description: EVENT_CATEGORY_DESCRIPTIONS.UPDATE_INPUT})
 export class UpdateEventCategoryInputType {
     @Field((type) => ID, {description: EVENT_CATEGORY_DESCRIPTIONS.ID})
     eventCategoryId: string;

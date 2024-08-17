@@ -39,7 +39,7 @@ registerEnumType(SelectorOperatorInput, {
     description: QUERY_DESCRIPTIONS.FILTER.SELECTOR_OPERATOR,
 });
 
-@InputType({description: QUERY_DESCRIPTIONS.PAGINATION.INPUT})
+@InputType('PaginationInput', {description: QUERY_DESCRIPTIONS.PAGINATION.INPUT})
 export class PaginationInput {
     @Field((type) => Int, {nullable: true, description: QUERY_DESCRIPTIONS.PAGINATION.LIMIT})
     limit?: number;
@@ -48,7 +48,7 @@ export class PaginationInput {
     skip?: number;
 }
 
-@InputType({description: QUERY_DESCRIPTIONS.SORT.INPUT})
+@InputType('SortInput', {description: QUERY_DESCRIPTIONS.SORT.INPUT})
 export class SortInput {
     @Field((type) => String, {description: QUERY_DESCRIPTIONS.SORT.FIELD})
     field: string;
@@ -57,7 +57,7 @@ export class SortInput {
     order: SortOrderInput;
 }
 
-@InputType({description: QUERY_DESCRIPTIONS.FILTER.INPUT})
+@InputType('FilterInput', {description: QUERY_DESCRIPTIONS.FILTER.INPUT})
 export class FilterInput {
     @Field((type) => String, {description: QUERY_DESCRIPTIONS.FILTER.FIELD})
     field: string;
@@ -73,7 +73,7 @@ export class FilterInput {
     operator?: FilterOperatorInput;
 }
 
-@InputType({description: QUERY_DESCRIPTIONS.QUERY.INPUT})
+@InputType('QueryOptionsInput', {description: QUERY_DESCRIPTIONS.QUERY.INPUT})
 export class QueryOptionsInput {
     @Field(() => PaginationInput, {nullable: true, description: QUERY_DESCRIPTIONS.QUERY.PAGINATION})
     pagination?: PaginationInput;

@@ -14,6 +14,7 @@ export const setupServiceAccount = (app: App, account: ServiceAccount) => {
                 repo: 'ntlango-backend',
             },
         ],
+        description: 'This stack includes resources needed by GitHub Actions (CI/CD) to deploy AWS CDK Stacks',
     });
 
     const secretsManagementStack = new SecretsManagementStack(app, 'SecretsManagementStackId', {
@@ -21,6 +22,7 @@ export const setupServiceAccount = (app: App, account: ServiceAccount) => {
             account: account.accountNumber,
             region: account.awsRegion,
         },
+        description: 'This stack includes AWS Secrets Manager resources for the GraphQL API',
     });
 
     const graphqlStack = new GraphQLStack(app, 'GraphqlStackId', {
@@ -28,7 +30,7 @@ export const setupServiceAccount = (app: App, account: ServiceAccount) => {
             account: account.accountNumber,
             region: account.awsRegion,
         },
-        secretsStack: secretsManagementStack,
+        description: 'This stack includes infrastructure for the GraphQL API. This includes serverless resources.',
     });
 
     graphqlStack.addDependency(secretsManagementStack);

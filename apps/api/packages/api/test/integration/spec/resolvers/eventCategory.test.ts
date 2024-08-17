@@ -1,6 +1,5 @@
 import request from 'supertest';
 import {usersMockData} from '@/mongodb/mockData';
-import {API_DOMAIN, GRAPHQL_API_PATH, API_PORT} from '@/constants';
 import {
     getCreateEventCategoryMutation,
     getUpdateEventCategoryMutation,
@@ -15,9 +14,12 @@ import {CreateEventCategoryInputType, QueryOptionsInput, UserRole, UserType, Use
 import {generateToken} from '@/utils/auth';
 import {Types} from 'mongoose';
 import {kebabCase} from 'lodash';
+import {configDotenv} from 'dotenv';
+
+configDotenv();
 
 describe('EventCategory Resolver', () => {
-    const url = `${API_DOMAIN}:${API_PORT}${GRAPHQL_API_PATH}`;
+    const url = `${process.env.GRAPHQL_URL}`;
 
     const testEventCategorySlug = kebabCase('testEventCategory');
 
@@ -35,11 +37,16 @@ describe('EventCategory Resolver', () => {
         email: 'test@example.com',
         username: 'testUser',
     };
-    const adminToken = generateToken(user);
+    let adminToken
+
+    beforeAll(async () => {
+        adminToken = await generateToken(user);
+    });
 
     describe('Positive', () => {
         describe('createEventCategory', () => {
             afterEach(async () => {
+                adminToken = await generateToken(user);
                 const deleteEventCategoryMutation = getDeleteEventCategoryBySlugMutation(testEventCategorySlug);
                 await request(url).post('').set('token', adminToken).send(deleteEventCategoryMutation);
             });
@@ -260,7 +267,7 @@ describe('EventCategory Resolver', () => {
                     email: 'test@example.com',
                     username: 'testUser',
                 };
-                const token = generateToken(user);
+                const token = await generateToken(user);
 
                 const createEventCategoryMutation = getCreateEventCategoryMutation(createEventCategoryInput);
                 const createEventCategoryResponse = await request(url).post('').set('token', token).send(createEventCategoryMutation);
@@ -301,7 +308,7 @@ describe('EventCategory Resolver', () => {
                     email: 'test@example.com',
                     username: 'testUser',
                 };
-                const token = generateToken(user);
+                const token = await generateToken(user);
 
                 const updateEventCategoryMutation = getUpdateEventCategoryMutation({
                     iconName: 'updatedIcon',
@@ -339,7 +346,7 @@ describe('EventCategory Resolver', () => {
                     email: 'test@example.com',
                     username: 'testUser',
                 };
-                const token = generateToken(user);
+                const token = await generateToken(user);
 
                 const deleteEventCategoryMutation = getDeleteEventCategoryByIdMutation(new Types.ObjectId().toString());
 
@@ -374,7 +381,7 @@ describe('EventCategory Resolver', () => {
                     email: 'test@example.com',
                     username: 'testUser',
                 };
-                const token = generateToken(user);
+                const token = await generateToken(user);
 
                 const deleteEventCategoryMutation = getDeleteEventCategoryBySlugMutation(new Types.ObjectId().toString());
 

@@ -18,7 +18,7 @@ class UserDAO {
         try {
             const savedUser = await User.create(userData);
             const tokenPayload = savedUser.toObject();
-            const token = generateToken(tokenPayload);
+            const token = await generateToken(tokenPayload);
             return {...tokenPayload, token};
         } catch (error) {
             console.log('Error when creating a new user', error);

@@ -1,6 +1,6 @@
 import {Gender, UserRole, UserTypeDocument} from '@/graphql/types';
 import {model, Schema, CallbackWithoutResultAndOptionalError, CallbackError} from 'mongoose';
-import {hash, genSalt, compare} from 'bcrypt';
+import {hash, genSalt, compare} from 'bcryptjs';
 
 export const UserSchema = new Schema<UserTypeDocument>(
     {

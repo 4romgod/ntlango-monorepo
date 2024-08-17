@@ -43,6 +43,9 @@ jobs:
     - name: Synthesize CDK application
       run: npm run build:cdk
 
+    # - name: Remove dev dependencies
+    #   run: npm prune --omit=dev
+
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
@@ -51,6 +54,21 @@ jobs:
 
     - name: Deploy CDK
       env:
-        NODE_ENV: ${{ vars.NODE_ENV }}
-        NTLANGO_SECRET_ARN: ${{ vars.NODE_ENV }}/ntlango/graphql-api
-      run: npm run cdk deploy GitHubActionsAwsAuthStackId GraphqlStackId --verbose
+        STAGE: ${{ vars.STAGE }}
+        NTLANGO_SECRET_ARN: ${{ vars.STAGE }}/ntlango/graphql-api
+      run: npm run cdk deploy '*' --verbose
+
+    - name: Get API Gateway Endpoint
+      id: get-endpoint
+      run: |
+        export ENDPOINT=$(aws cloudformation describe-stacks --stack-name GraphqlStackId --query "Stacks[0].Outputs[?OutputKey=='apiPath'].OutputValue" --output text)
+        echo "GRAPHQL_URL=$ENDPOINT" >> $GITHUB_ENV
+
+    - name: Run Integration Tests
+      env:
+        STAGE: ${{ vars.STAGE }}
+        NTLANGO_SECRET_ARN: ${{ vars.STAGE }}/ntlango/graphql-api
+        GRAPHQL_URL: ${{ env.GRAPHQL_URL }}
+      run: |
+        echo "The graphql url is ${{ env.GRAPHQL_URL }}"
+        npm run test:integration

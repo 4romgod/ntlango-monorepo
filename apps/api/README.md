@@ -34,7 +34,7 @@ To get started with local development for this project, follow these steps:
    ```bash
    API_DOMAIN=<domain of the api>, e.g. http://localhost for development
    API_PORT=<port number>, you can choose any, e.g. 9000
-   NODE_ENV=<application environment>, i.e. Dev, Beta, Gamma, Prod ( since we are in dev, use "Dev" )
+   STAGE=<application environment>, i.e. Dev, Beta, Gamma, Prod ( since we are in dev, use "Dev" )
    MONGO_DB_URL=<url to your mongodb databse >
    JWT_SECRET=<secret string for JWT tokens >
    ```

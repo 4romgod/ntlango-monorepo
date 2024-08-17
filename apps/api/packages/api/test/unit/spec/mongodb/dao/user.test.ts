@@ -18,7 +18,7 @@ jest.mock('@/mongodb/models', () => ({
     },
 }));
 
-jest.mock('bcrypt', () => ({
+jest.mock('bcryptjs', () => ({
     hash: jest.fn(),
     compare: jest.fn(),
 }));

@@ -2,11 +2,10 @@ import cors from 'cors';
 import express, {Express} from 'express';
 import bodyParser from 'body-parser';
 import {ListenOptions} from 'net';
-import {getSecret, MongoDbClient} from '@/clients';
-import {API_DOMAIN, MONGO_DB_URL, GRAPHQL_API_PATH, HttpStatusCode, NODE_ENV, SECRET_KEYS} from '@/constants';
+import {getConfigValue, MongoDbClient} from '@/clients';
+import {API_DOMAIN, GRAPHQL_API_PATH, HttpStatusCode, SECRET_KEYS} from '@/constants';
 import {createApolloServer} from './server';
 import {expressMiddleware} from '@apollo/server/express4';
-import {APPLICATION_STAGES} from '@ntlango/commons';
 import {Server} from 'http';
 
 const serverStartTimeLabel = 'Server started after';
@@ -15,12 +14,8 @@ export const startExpressApolloServer = async (listenOptions: ListenOptions = {p
     console.time(serverStartTimeLabel);
     console.log('Creating Apollo with Express middleware server...');
 
-    if (NODE_ENV == APPLICATION_STAGES.DEV) {
-        await MongoDbClient.connectToDatabase(MONGO_DB_URL);
-    } else {
-        const secret = await getSecret(SECRET_KEYS.MONGO_DB_URL);
-        await MongoDbClient.connectToDatabase(secret);
-    }
+    const secret = await getConfigValue(SECRET_KEYS.MONGO_DB_URL);
+    await MongoDbClient.connectToDatabase(secret);
 
     const expressApp: Express = express();
     expressApp.use(bodyParser.json({limit: '50mb'}));

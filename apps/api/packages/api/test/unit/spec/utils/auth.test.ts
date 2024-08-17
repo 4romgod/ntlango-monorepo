@@ -34,27 +34,26 @@ describe('Auth Utilities', () => {
     };
 
     describe('generateToken', () => {
-        it('should generate a token', () => {
-            console.log('env', process.env);
+        it('should generate a token', async () => {
             (sign as jest.Mock).mockReturnValue('token');
-            const token = generateToken(mockUser);
+            const token = await generateToken(mockUser);
             expect(token).toBe('token');
             expect(sign).toHaveBeenCalledWith(mockUser, expect.any(String), {expiresIn: '1h'});
         });
     });
 
     describe('verifyToken', () => {
-        it('should verify a valid token', () => {
+        it('should verify a valid token', async () => {
             (verify as jest.Mock).mockReturnValue({...mockUser, iat: 123, exp: 456});
-            const user = verifyToken('valid-token');
+            const user = await verifyToken('valid-token');
             expect(user).toEqual(mockUser);
         });
 
-        it('should throw an error for an invalid token', () => {
+        it('should throw an error for an invalid token', async () => {
             (verify as jest.Mock).mockImplementation(() => {
                 throw new Error('Invalid token');
             });
-            expect(() => verifyToken('invalid-token')).toThrow(CustomError(ERROR_MESSAGES.UNAUTHENTICATED, ErrorTypes.UNAUTHENTICATED));
+            await expect(verifyToken('invalid-token')).rejects.toThrow(CustomError(ERROR_MESSAGES.UNAUTHENTICATED, ErrorTypes.UNAUTHENTICATED));
         });
     });
 

@@ -28,7 +28,7 @@ registerEnumType(EventStatus, {
     description: EVENT_DESCRIPTIONS.EVENT.STATUS,
 });
 
-@ObjectType({description: EVENT_DESCRIPTIONS.EVENT.MEDIA_TYPE})
+@ObjectType('Media', {description: EVENT_DESCRIPTIONS.EVENT.MEDIA_TYPE})
 export class Media {
     @Field((type) => String, {nullable: true, description: EVENT_DESCRIPTIONS.EVENT.FEATURED_IMAGE})
     featuredImageUrl?: string;
@@ -37,7 +37,7 @@ export class Media {
     otherMediaData?: Record<string, any>;
 }
 
-@ObjectType({description: EVENT_DESCRIPTIONS.EVENT.TYPE})
+@ObjectType('EventType', {description: EVENT_DESCRIPTIONS.EVENT.TYPE})
 export class EventType {
     @Field((type) => ID, {description: EVENT_DESCRIPTIONS.EVENT.ID})
     eventId: string;
@@ -97,7 +97,7 @@ export class EventType {
     eventLink?: string;
 }
 
-@InputType({description: EVENT_DESCRIPTIONS.EVENT.CREATE_INPUT})
+@InputType('CreateEventInputType', {description: EVENT_DESCRIPTIONS.EVENT.CREATE_INPUT})
 export class CreateEventInputType {
     @Field((type) => String, {description: EVENT_DESCRIPTIONS.EVENT.TITLE})
     title: string;
@@ -151,7 +151,7 @@ export class CreateEventInputType {
     eventLink?: string;
 }
 
-@InputType({description: EVENT_DESCRIPTIONS.EVENT.UPDATE_INPUT})
+@InputType('UpdateEventInputType', {description: EVENT_DESCRIPTIONS.EVENT.UPDATE_INPUT})
 export class UpdateEventInputType {
     @Field((type) => ID, {description: EVENT_DESCRIPTIONS.EVENT.ID})
     eventId: string;
@@ -208,7 +208,7 @@ export class UpdateEventInputType {
     eventLink?: string;
 }
 
-@InputType({description: EVENT_DESCRIPTIONS.EVENT.RSVP_INPUT_TYPE})
+@InputType('RSVPInputType', {description: EVENT_DESCRIPTIONS.EVENT.RSVP_INPUT_TYPE})
 export class RSVPInputType {
     @Field((type) => ID, {description: EVENT_DESCRIPTIONS.EVENT.ID})
     eventId: string;
@@ -225,7 +225,7 @@ export class RSVPInputType {
     emailList?: string[];
 }
 
-@InputType({description: EVENT_DESCRIPTIONS.EVENT.RSVP_INPUT_TYPE})
+@InputType('CancelRSVPInputType', {description: EVENT_DESCRIPTIONS.EVENT.RSVP_INPUT_TYPE})
 export class CancelRSVPInputType {
     @Field((type) => ID, {description: EVENT_DESCRIPTIONS.EVENT.ID})
     eventId: string;

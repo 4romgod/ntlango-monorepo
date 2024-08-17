@@ -5,7 +5,7 @@ config();
 export const API_DOMAIN = `${process.env.API_DOMAIN}`;
 export const API_PORT = `${process.env.API_PORT}`;
 export const AWS_REGION = `${process.env.AWS_REGION}`;
-export const NODE_ENV = `${process.env.NODE_ENV}`;
+export const STAGE = `${process.env.STAGE}`;
 
 // Local development environment variables
 export const MONGO_DB_URL = `${process.env.MONGO_DB_URL}`;

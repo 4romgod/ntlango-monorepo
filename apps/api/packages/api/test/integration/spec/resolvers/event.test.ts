@@ -1,15 +1,17 @@
 import request from 'supertest';
 import {eventsMockData, usersMockData} from '@/mongodb/mockData';
-import {API_DOMAIN, GRAPHQL_API_PATH, API_PORT} from '@/constants';
 import {CreateEventInputType, EventCategoryType, EventType, UserRole, UserType, UserWithTokenType} from '@/graphql/types';
 import {ERROR_MESSAGES} from '@/validation';
-import {kebabCase} from 'lodash';
 import {getCreateEventCategoryMutation, getCreateEventMutation, getDeleteEventCategoryByIdMutation, getDeleteEventBySlugMutation} from '@/test/utils';
-import {Types} from 'mongoose';
 import {generateToken} from '@/utils';
+import {kebabCase} from 'lodash';
+import {Types} from 'mongoose';
+import {configDotenv} from 'dotenv';
+
+configDotenv();
 
 describe('Event Resolver', () => {
-    const url = `${API_DOMAIN}:${API_PORT}${GRAPHQL_API_PATH}`;
+    const url = `${process.env.GRAPHQL_URL}`;
     const testEventTitle = 'Test Event Title';
     const testEventSlug = kebabCase(testEventTitle);
     const testEventDescription = 'Test Event Description';
@@ -29,10 +31,12 @@ describe('Event Resolver', () => {
         email: 'test@example.com',
         username: 'testUser',
     };
-    const adminToken = generateToken(testUser);
+    let adminToken: string;
 
     beforeAll(() => {
         const initialSetup = async () => {
+            adminToken = await generateToken(testUser);
+
             const createEventCategoryMutation = getCreateEventCategoryMutation({
                 name: 'TestEventCategory',
                 iconName: 'testIcon',

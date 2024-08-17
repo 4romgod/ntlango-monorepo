@@ -1,6 +1,5 @@
 import request from 'supertest';
 import {usersMockData} from '@/mongodb/mockData';
-import {API_DOMAIN, GRAPHQL_API_PATH, API_PORT} from '@/constants';
 import {
     getCreateUserMutation,
     getLoginUserMutation,
@@ -18,9 +17,12 @@ import {CreateUserInputType, Gender, QueryOptionsInput, UserRole, UserType, User
 import {ERROR_MESSAGES} from '@/validation';
 import {generateToken, verifyToken} from '@/utils/auth';
 import {Types} from 'mongoose';
+import {configDotenv} from 'dotenv';
+
+configDotenv();
 
 describe('User Resolver', () => {
-    const url = `${API_DOMAIN}:${API_PORT}${GRAPHQL_API_PATH}`;
+    const url = `${process.env.GRAPHQL_URL}`;
     const testUserEmail = 'test@example.com';
     const testUsername = 'testUsername';
     const testPassword = 'testPassword';
@@ -31,11 +33,16 @@ describe('User Resolver', () => {
         username: testUsername,
         password: testPassword,
     };
-    const adminToken = generateToken({
-        ...createUserInput,
-        userId: new Types.ObjectId().toString(),
-        userRole: UserRole.Admin,
-        username: testUsername,
+
+    let adminToken: string;
+
+    beforeAll(async () => {
+        adminToken = await generateToken({
+            ...createUserInput,
+            userId: new Types.ObjectId().toString(),
+            userRole: UserRole.Admin,
+            username: testUsername,
+        });
     });
 
     describe('Positive', () => {
@@ -62,7 +69,8 @@ describe('User Resolver', () => {
             let createdUser: UserWithTokenType;
             beforeEach(async () => {
                 const createUserMutation = getCreateUserMutation(createUserInput);
-                createdUser = (await request(url).post('').send(createUserMutation)).body.data.createUser;
+                const createUserResponse = await request(url).post('').send(createUserMutation);
+                createdUser = createUserResponse.body.data.createUser;
             });
 
             afterEach(async () => {
@@ -79,7 +87,7 @@ describe('User Resolver', () => {
                 expect(loginUserResponse.error).toBeFalsy();
 
                 const tokenData = loginUserResponse.body.data.loginUser.token;
-                const decodedUser = verifyToken(tokenData) as UserType;
+                const decodedUser = (await verifyToken(tokenData)) as UserType;
                 expect(decodedUser.userId).toBe(createdUser.userId);
             });
         });
@@ -119,7 +127,8 @@ describe('User Resolver', () => {
             let createdUser: UserWithTokenType;
             beforeEach(async () => {
                 const createUserMutation = getCreateUserMutation(createUserInput);
-                createdUser = (await request(url).post('').send(createUserMutation)).body.data.createUser;
+                const createUserResponse = await request(url).post('').send(createUserMutation);
+                createdUser = createUserResponse.body.data.createUser;
             });
 
             it('should delete a user by userId', async () => {

@@ -2,10 +2,11 @@ import {ServerContext} from '@/graphql';
 import {ArgsDictionary, ResolverData} from 'type-graphql';
 import {CustomError, ErrorTypes} from '@/utils/exceptions';
 import {ERROR_MESSAGES} from '@/validation';
-import {JWT_SECRET, OPERATION_NAMES} from '@/constants';
+import {OPERATION_NAMES, SECRET_KEYS} from '@/constants';
 import {UserRole, UserType} from '@/graphql/types';
 import {verify, sign, JwtPayload} from 'jsonwebtoken';
-import {EventDAO, UserDAO} from '@/mongodb/dao';
+import {EventDAO} from '@/mongodb/dao';
+import {getConfigValue} from '@/clients';
 
 /**
  * Authorization checker function for GraphQL resolver operations
@@ -24,7 +25,7 @@ export const authChecker = async (resolverData: ResolverData<ServerContext>, rol
     const token = context.token;
 
     if (token) {
-        const user = verifyToken(token);
+        const user = await verifyToken(token);
         const userRole = user.userRole;
         const operationName = info.fieldName;
 
@@ -56,8 +57,9 @@ export const authChecker = async (resolverData: ResolverData<ServerContext>, rol
  * @param expiresIn expressed in seconds or a string describing a time span [zeit/ms](https://github.com/zeit/ms.js).  Eg: 60, "2 days", "10h", "7d"
  * @returns A JWT token as a string
  */
-export const generateToken = (user: UserType, secret?: string, expiresIn?: string | number) => {
-    return sign(user, secret ?? JWT_SECRET, {expiresIn: expiresIn ?? '1h'});
+export const generateToken = async (user: UserType, secret?: string, expiresIn?: string | number) => {
+    const jwtSecret = secret || (await getConfigValue(SECRET_KEYS.JWT_SECRET));
+    return sign(user, jwtSecret, {expiresIn: expiresIn ?? '1h'});
 };
 
 /**
@@ -65,9 +67,10 @@ export const generateToken = (user: UserType, secret?: string, expiresIn?: strin
  * @param secret The secret string for JWT encoding
  * @returns The user decoded from the JWT token
  */
-export const verifyToken = (token: string, secret?: string) => {
+export const verifyToken = async (token: string, secret?: string) => {
     try {
-        const {iat, exp, ...user} = verify(token, secret ?? JWT_SECRET) as JwtPayload;
+        const jwtSecret = secret || (await getConfigValue(SECRET_KEYS.JWT_SECRET));
+        const {iat, exp, ...user} = verify(token, jwtSecret) as JwtPayload;
         return user as UserType;
     } catch (err) {
         console.log('Error when verifying token', err);

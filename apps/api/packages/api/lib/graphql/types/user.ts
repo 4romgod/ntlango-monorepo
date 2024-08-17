@@ -26,7 +26,7 @@ registerEnumType(UserRole, {
     description: USER_DESCRIPTIONS.USER_ROLE,
 });
 
-@ObjectType({description: USER_DESCRIPTIONS.TYPE})
+@ObjectType('UserType', {description: USER_DESCRIPTIONS.TYPE})
 export class UserType {
     @Field((type) => ID, {description: USER_DESCRIPTIONS.ID})
     userId: string;
@@ -62,7 +62,7 @@ export class UserType {
     userRole: UserRole;
 }
 
-@ObjectType({description: USER_DESCRIPTIONS.WITH_TOKEN})
+@ObjectType('UserWithTokenType', {description: USER_DESCRIPTIONS.WITH_TOKEN})
 export class UserWithTokenType extends UserType {
     @Field((type) => String, {description: USER_DESCRIPTIONS.TOKEN})
     token: string;
@@ -73,7 +73,7 @@ export interface UserTypeDocument extends UserType, Document {
     comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
-@InputType({description: USER_DESCRIPTIONS.CREATE_INPUT})
+@InputType('CreateUserInputType', {description: USER_DESCRIPTIONS.CREATE_INPUT})
 export class CreateUserInputType {
     @Field((type) => String, {description: USER_DESCRIPTIONS.EMAIL})
     email: string;
@@ -106,7 +106,7 @@ export class CreateUserInputType {
     profile_picture?: string;
 }
 
-@InputType({description: USER_DESCRIPTIONS.UPDATE_INPUT})
+@InputType('UpdateUserInputType', {description: USER_DESCRIPTIONS.UPDATE_INPUT})
 export class UpdateUserInputType {
     @Field((type) => ID, {description: USER_DESCRIPTIONS.ID})
     userId: string;
@@ -147,7 +147,7 @@ export class UpdateUserInputType {
 }
 
 // TODO make this also work with username
-@InputType({description: USER_DESCRIPTIONS.LOGIN_INPUT})
+@InputType('LoginUserInputType', {description: USER_DESCRIPTIONS.LOGIN_INPUT})
 export class LoginUserInputType {
     @Field((type) => String, {description: USER_DESCRIPTIONS.EMAIL})
     email: string;

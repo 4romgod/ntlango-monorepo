@@ -4,8 +4,8 @@ import {UserDAO} from '@/mongodb/dao';
 import {UserType, CreateUserInputType, UpdateUserInputType, LoginUserInputType, UserRole, UserWithTokenType} from '@/graphql/types';
 import {CreateUserInputTypeSchema, LoginUserInputTypeSchema, UpdateUserInputTypeSchema} from '@/validation/zod';
 import {ERROR_MESSAGES, validateEmail, validateInput, validateMongodbId, validateUsername} from '@/validation';
-import {QueryOptionsInput} from '../types/query';
 import {RESOLVER_DESCRIPTIONS, USER_DESCRIPTIONS} from '@/constants';
+import {QueryOptionsInput} from '../types/query';
 
 @Resolver()
 export class UserResolver {
