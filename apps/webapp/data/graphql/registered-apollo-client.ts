@@ -1,4 +1,4 @@
-import { registerApolloClient } from '@apollo/experimental-nextjs-app-support/rsc';
+import { registerApolloClient } from '@apollo/experimental-nextjs-app-support';
 import { getInstanceOfApolloClient } from '@/data/graphql/apollo-client';
 import { GRAPHQL_URL } from '@/lib/constants';
 

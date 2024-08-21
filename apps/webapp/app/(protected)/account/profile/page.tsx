@@ -12,8 +12,8 @@ export default async function ProfilePage() {
   const user = session.user;
 
   return (
-    <Container maxWidth="md">
-      <div>{JSON.stringify(session)}</div>
+    <Container>
+      {/* <div>{JSON.stringify({...session})}</div> */}
       <form
         action={async () => {
           'use server';
@@ -28,7 +28,11 @@ export default async function ProfilePage() {
         </Typography>
         <Divider />
         <Box display="flex" alignItems="center" marginTop={4}>
-          <Avatar src={user.profile_picture || '/user-icon.png'} alt={user.username} sx={{ width: 100, height: 100 }}>
+          <Avatar
+            src={user.profile_picture || ''}
+            alt={user.username}
+            sx={{ width: 100, height: 100 }}
+          >
             <Person sx={{ width: 60, height: 60 }} />
           </Avatar>
           <Box marginLeft={4}>

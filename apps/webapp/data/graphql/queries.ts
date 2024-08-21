@@ -3,7 +3,7 @@ import { graphql } from '@/data/graphql/types';
 const RegisterUserDocument = graphql(`
   mutation RegisterUser($input: CreateUserInputType!) {
     createUser(input: $input) {
-      id
+      userId
       email
       username
       address
@@ -11,7 +11,6 @@ const RegisterUserDocument = graphql(`
       given_name
       family_name
       gender
-      encrypted_password
       phone_number
       profile_picture
       userRole
@@ -23,7 +22,7 @@ const RegisterUserDocument = graphql(`
 const LoginUserDocument = graphql(`
   mutation LoginUser($input: LoginUserInputType!) {
     loginUser(input: $input) {
-      id
+      userId
       email
       username
       address
@@ -31,7 +30,6 @@ const LoginUserDocument = graphql(`
       given_name
       family_name
       gender
-      encrypted_password
       phone_number
       profile_picture
       userRole
@@ -41,16 +39,16 @@ const LoginUserDocument = graphql(`
 `);
 
 const GetAllEventsDocument = graphql(`
-  query GetAllEvents($queryParams: EventQueryParams) {
-    readEvents(queryParams: $queryParams) {
-      id
+  query GetAllEvents($options: QueryOptionsInput) {
+    readEvents(options: $options) {
+      eventId
       slug
       title
       description
       startDateTime
       endDateTime
-      eventCategory {
-        id
+      eventCategoryList {
+        eventCategoryId
         slug
         name
         iconName
@@ -67,8 +65,8 @@ const GetAllEventsDocument = graphql(`
       media {
         featuredImageUrl
       }
-      organizers {
-        id
+      organizerList {
+        userId
         email
         username
         address
@@ -76,13 +74,12 @@ const GetAllEventsDocument = graphql(`
         family_name
         gender
         given_name
-        encrypted_password
         phone_number
         profile_picture
         userRole
       }
-      rSVPs {
-        id
+      rSVPList {
+        userId
         email
         username
         address
@@ -90,7 +87,6 @@ const GetAllEventsDocument = graphql(`
         family_name
         gender
         given_name
-        encrypted_password
         phone_number
         profile_picture
         userRole
@@ -102,14 +98,14 @@ const GetAllEventsDocument = graphql(`
 const GetEventBySlugDocument = graphql(`
   query GetEventBySlug($slug: String!) {
     readEventBySlug(slug: $slug) {
-      id
+      eventId
       slug
       title
       description
       startDateTime
       endDateTime
-      eventCategory {
-        id
+      eventCategoryList {
+        eventCategoryId
         slug
         name
         iconName
@@ -126,8 +122,8 @@ const GetEventBySlugDocument = graphql(`
       media {
         featuredImageUrl
       }
-      organizers {
-        id
+      organizerList {
+        userId
         email
         username
         address
@@ -135,13 +131,12 @@ const GetEventBySlugDocument = graphql(`
         family_name
         gender
         given_name
-        encrypted_password
         phone_number
         profile_picture
         userRole
       }
-      rSVPs {
-        id
+      rSVPList {
+        userId
         email
         username
         address
@@ -149,7 +144,6 @@ const GetEventBySlugDocument = graphql(`
         family_name
         gender
         given_name
-        encrypted_password
         phone_number
         profile_picture
         userRole
@@ -161,15 +155,15 @@ const GetEventBySlugDocument = graphql(`
 const DeleteEventByIdDocument = graphql(`
   mutation DeleteEventById($eventId: String!) {
     deleteEventById(eventId: $eventId) {
-      id
+      eventId
       slug
       title
       description
       startDateTime
       endDateTime
       location
-      organizers {
-        id
+      organizerList {
+        userId
         email
         username
         address
@@ -184,7 +178,7 @@ const DeleteEventByIdDocument = graphql(`
 const GetAllUsersDocument = graphql(`
   query GetAllUsers {
     readUsers {
-      id
+      userId
       email
       username
       address
@@ -192,7 +186,6 @@ const GetAllUsersDocument = graphql(`
       family_name
       gender
       given_name
-      encrypted_password
       phone_number
       profile_picture
       userRole
@@ -203,7 +196,7 @@ const GetAllUsersDocument = graphql(`
 const GetUserByUsernameDocument = graphql(`
   query GetUserByUsername($username: String!) {
     readUserByUsername(username: $username) {
-      id
+      userId
       email
       username
       address
@@ -211,7 +204,6 @@ const GetUserByUsernameDocument = graphql(`
       family_name
       gender
       given_name
-      encrypted_password
       phone_number
       profile_picture
       userRole
@@ -223,7 +215,7 @@ const GetAllEventCategoriesDocument = () =>
   graphql(`
     query GetAllEventCategories {
       readEventCategories {
-        id
+        eventCategoryId
         slug
         name
         iconName

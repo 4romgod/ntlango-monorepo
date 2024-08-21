@@ -3,6 +3,8 @@ import { GetEventBySlugDocument } from '@/data/graphql/types/graphql';
 import { getClient } from '@/data/graphql';
 import { Box, Typography, Grid, Avatar, CardMedia, Container, Chip, Stack } from '@mui/material';
 import { getEventCategoryIcon } from '@/lib/constants';
+import { getFormattedDate } from '@/lib/utils';
+import PurchaseCard from '@/components/purchase-card';
 
 export default async function Page({ params }: { params: { slug: string } }) {
   const { data: eventRetrieved } = await getClient().query({
@@ -12,138 +14,165 @@ export default async function Page({ params }: { params: { slug: string } }) {
 
   const event = eventRetrieved.readEventBySlug;
 
+  // TODO Add a little price/purchase box on the right
   return (
-    <Container maxWidth="md">
+    <Container>
       <Box my={4}>
-        <Typography variant="h2" gutterBottom>
-          {event.title}
-        </Typography>
-        <Typography variant="h5" gutterBottom>
-          {event.description}
-        </Typography>
-        <Typography variant="body2" gutterBottom>
-          <b>Start Date:</b> {event.startDateTime}
-        </Typography>
-        <Typography variant="body2" gutterBottom>
-          <b>End Date:</b> {event.endDateTime}
-        </Typography>
-        <Typography variant="body2" gutterBottom>
-          <b>Location:</b> {event.location}
-        </Typography>
-
         <Box mt={2}>
-          <Typography variant="h5" gutterBottom>
-            Event Categories
-          </Typography>
-          <Stack direction="row" spacing={1} sx={{ maxWidth: '100%', overflowX: 'auto' }}>
-            {event.eventCategory.map((category) => {
-              const IconComponent = getEventCategoryIcon(category.iconName);
-              return (
-                <Link key={category.id} href={`/events#${category.name}`} passHref>
-                  <Chip
-                    avatar={
-                      <Avatar>
-                        <IconComponent color={category.color ?? 'black'} />
-                      </Avatar>
-                    }
-                    label={category.name}
-                    variant="outlined"
-                    color="secondary"
-                    size="medium"
-                    clickable
-                  />
-                </Link>
-              );
-            })}
-          </Stack>
+          <CardMedia
+            component="img"
+            image={event.media?.featuredImageUrl || ''} // TODO default this image
+            alt={event.title}
+            sx={{
+              width: '100%',
+              height: { xs: 230, sm: 300, md: 350, lg: 420, xl: 470 },
+              borderRadius: { xs: '9px', sm: '12px', md: '15px', xl: '20px' },
+            }}
+          />
         </Box>
 
-        {event.media?.featuredImageUrl && (
-          <Box mt={2}>
-            <CardMedia
-              component="img"
-              sx={{ width: '100%', height: 'auto' }}
-              image={event.media.featuredImageUrl}
-              alt={event.title}
-            />
-          </Box>
-        )}
+        <Grid container spacing={5}>
+          <Grid item md={9} width={'100%'} mt={2}>
+            <Box component="div">
+              <Typography variant="h3" gutterBottom>
+                {event.title}
+              </Typography>
+            </Box>
 
-        <Box mt={2}>
-          <Typography variant="h4" gutterBottom>
-            Organizers
-          </Typography>
-          <Grid container spacing={2}>
-            {event.organizers.map((organizer) => (
-              <Grid item key={organizer.id}>
-                <Link href={`/users/${organizer.username}`} passHref>
-                  <Chip
-                    avatar={
-                      organizer.profile_picture ? (
-                        <Avatar src={organizer.profile_picture} alt={organizer.username} />
-                      ) : (
-                        <Avatar>{organizer.username.charAt(0).toLocaleUpperCase()}</Avatar>
-                      )
-                    }
-                    label={organizer.username}
-                  />
-                </Link>
+            <Box component="div" mt={5}>
+              <Typography variant="h5" gutterBottom>
+                Date and Time
+              </Typography>
+              <Typography variant="body2" gutterBottom>
+                <b>Start Date:</b> {getFormattedDate(event.startDateTime)}
+              </Typography>
+              <Typography variant="body2" gutterBottom>
+                <b>End Date:</b> {getFormattedDate(event.endDateTime)}
+              </Typography>
+            </Box>
+
+            <Box component="div" mt={5}>
+              <Typography variant="h5" gutterBottom>
+                Location
+              </Typography>
+              <Typography variant="body2" gutterBottom>
+                {event.location}
+              </Typography>
+            </Box>
+
+            <Box component="div" mt={5}>
+              <Typography variant="h5" gutterBottom>
+                About this event
+              </Typography>
+              <Typography variant="body2" gutterBottom>
+                {event.description}
+              </Typography>
+            </Box>
+
+            <Box component="div" mt={5}>
+              <Typography variant="h5" gutterBottom>
+                Categories
+              </Typography>
+              <Stack direction="row" spacing={1} sx={{ maxWidth: '100%', overflowX: 'auto' }}>
+                {(event.eventCategoryList && event.eventCategoryList.length > 0) ? event.eventCategoryList.map((category) => {
+                  const IconComponent = getEventCategoryIcon(category.iconName);
+                  return (
+                    <Link key={category.eventCategoryId} href={`/events#${category.name}`} passHref>
+                      <Chip
+                        avatar={
+                          <Avatar>
+                            <IconComponent color={category.color ?? 'black'} />
+                          </Avatar>
+                        }
+                        label={category.name}
+                        variant="outlined"
+                        color="secondary"
+                        size="medium"
+                        clickable
+                      />
+                    </Link>
+                  );
+                }) : (
+                  <Typography variant='body2'>
+                    No available categories
+                  </Typography>
+                )}
+              </Stack>
+            </Box>
+
+            <Box component="div" mt={5}>
+              <Typography variant="h5" gutterBottom>
+                Organizers
+              </Typography>
+              <Grid container spacing={2}>
+                {event.organizerList.map((organizer) => (
+                  <Grid item key={organizer.userId}>
+                    <Link href={`/users/${organizer.username}`} passHref>
+                      <Chip
+                        avatar={
+                          organizer.profile_picture ? (
+                            <Avatar src={organizer.profile_picture} alt={organizer.username} />
+                          ) : (
+                            <Avatar>{organizer.username.charAt(0).toLocaleUpperCase()}</Avatar>
+                          )
+                        }
+                        label={organizer.username}
+                      />
+                    </Link>
+                  </Grid>
+                ))}
               </Grid>
-            ))}
-          </Grid>
-        </Box>
+            </Box>
 
-        <Box mt={2}>
-          <Typography variant="h4" gutterBottom>
-            RSVPs
-          </Typography>
-          <Grid container spacing={2}>
-            {event.rSVPs.map((rsvp) => (
-              <Grid item key={rsvp.id}>
-                <Link href={`/users/${rsvp.username}`} passHref>
-                  <Chip
-                    avatar={
-                      rsvp.profile_picture ? (
-                        <Avatar src={rsvp.profile_picture} alt={rsvp.username} />
-                      ) : (
-                        <Avatar>{rsvp.username.charAt(0).toLocaleUpperCase()}</Avatar>
-                      )
-                    }
-                    label={rsvp.username}
-                  />
-                </Link>
+            <Box component="div" mt={5}>
+              <Typography variant="h5" gutterBottom>
+                RSVPs
+              </Typography>
+              <Grid container spacing={2}>
+                {event.rSVPList.map((rsvp) => (
+                  <Grid item key={rsvp.userId}>
+                    <Link href={`/users/${rsvp.username}`} passHref>
+                      <Chip
+                        avatar={
+                          rsvp.profile_picture ? (
+                            <Avatar src={rsvp.profile_picture} alt={rsvp.username} />
+                          ) : (
+                            <Avatar>{rsvp.username.charAt(0).toLocaleUpperCase()}</Avatar>
+                          )
+                        }
+                        label={rsvp.username}
+                      />
+                    </Link>
+                  </Grid>
+                ))}
               </Grid>
-            ))}
-          </Grid>
-        </Box>
+            </Box>
 
-        <Box mt={2}>
-          <Typography variant="h4" gutterBottom>
-            Tags
-          </Typography>
-          <Grid container spacing={1}>
-            {Object.entries(event.tags).map(([key, value]) => (
-              <Grid item key={key}>
-                <Chip label={`${key}: ${value}`} size="small" />
-              </Grid>
-            ))}
-          </Grid>
-        </Box>
-
-        <Box mt={2}>
-          <Typography variant="h4" gutterBottom>
-            Comments
-          </Typography>
-          <Grid container spacing={2}>
-            {Object.entries(event.comments).map(([key, comment]) => (
-              <Grid item key={key}>
-                <Typography variant="body2" gutterBottom>
-                  {String(comment)}
+            <Box component="div" mt={5}>
+              <Typography variant="h5" gutterBottom>
+                Comments
+              </Typography>
+              {event.comments ? (
+                <Grid container spacing={2}>
+                  {Object.entries(event.comments).map(([key, comment]) => (
+                    <Grid item key={key}>
+                      <Typography variant="body2" gutterBottom>
+                        {String(comment)}
+                      </Typography>
+                    </Grid>
+                  ))}
+                </Grid>
+              ) : (
+                <Typography variant='body2'>
+                  No available comments
                 </Typography>
-              </Grid>
-            ))}
+              )}
+            </Box>
           </Grid>
-        </Box>
+          <Grid item md={3} width={'100%'} mt={2}>
+            <PurchaseCard />
+          </Grid>
+        </Grid>
       </Box>
     </Container>
   );

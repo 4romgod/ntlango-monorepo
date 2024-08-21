@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useMemo, ReactNode, useEffect } from 'react';
+import { createContext, useContext, useState, useMemo, ReactNode } from 'react';
 import { AlertProps, PaletteMode, SnackbarProps, Theme } from '@mui/material';
 import { createTheme } from '@mui/material/styles';
 import { getDesignTokens } from '@/components/theme/design-tokens';

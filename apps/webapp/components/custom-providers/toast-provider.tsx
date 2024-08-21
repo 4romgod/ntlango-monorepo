@@ -9,7 +9,7 @@ export default function ToastProvider() {
   const { toastProps, setToastProps } = useCustomAppContext();
   const { open, anchorOrigin, autoHideDuration, severity, message } = toastProps;
 
-  const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+  const handleClose = () => {
     setToastProps({ ...toastProps, open: false });
   };
 

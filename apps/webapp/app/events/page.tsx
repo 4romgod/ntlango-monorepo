@@ -38,7 +38,6 @@ export default async function Home() {
             <SearchInput
               itemList={events.readEvents.map((item) => item.title)}
               sx={{
-                // display: { xs: 'flex', md: 'none' },
                 marginBottom: 5,
                 mx: 'auto',
               }}

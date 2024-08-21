@@ -4,7 +4,7 @@ import { GRAPHQL_URL } from './lib/constants';
 const config: CodegenConfig = {
   schema: [
     {
-      [GRAPHQL_URL!]: {
+      [GRAPHQL_URL]: {
         headers: {
           key: 'value',
         },

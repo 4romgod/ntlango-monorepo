@@ -55,7 +55,7 @@ export default async function HomePage() {
             </Typography>
           </Box>
         </Box>
-        <Grid container spacing={3} justifyContent="space-between" className="pt-5">
+        <Grid container spacing={3} justifyContent="space-between" paddingTop={10}>
           <Grid item md={3} id="event-filters" width={'100%'}>
             <DisplayEventFilters categoryList={allCategories} />
           </Grid>

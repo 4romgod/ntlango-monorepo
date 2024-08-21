@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { GetEventBySlugDocument } from '@/data/graphql/types/graphql';
 import { getClient } from '@/data/graphql';
-import { Box, Typography, Grid, Avatar, CardMedia, Container, Chip, Stack, IconButton } from '@mui/material';
+import { Box, Typography, Grid, Avatar, CardMedia, Container, Chip, Stack } from '@mui/material';
 import { getEventCategoryIcon } from '@/lib/constants';
 import EventOperationsModal from '@/components/modal/event-operations';
 
@@ -39,10 +39,10 @@ export default async function Page({ params }: { params: { slug: string } }) {
             Event Categories
           </Typography>
           <Stack direction="row" spacing={1} sx={{ maxWidth: '100%', overflowX: 'auto' }}>
-            {event.eventCategory.map((category) => {
+            {event.eventCategoryList.map((category) => {
               const IconComponent = getEventCategoryIcon(category.iconName);
               return (
-                <Link key={category.id} href={`/events#${category.name}`} passHref>
+                <Link key={category.eventCategoryId} href={`/events#${category.name}`} passHref>
                   <Chip
                     avatar={
                       <Avatar>
@@ -77,8 +77,8 @@ export default async function Page({ params }: { params: { slug: string } }) {
             Organizers
           </Typography>
           <Grid container spacing={2}>
-            {event.organizers.map((organizer) => (
-              <Grid item key={organizer.id}>
+            {event.organizerList.map((organizer) => (
+              <Grid item key={organizer.userId}>
                 <Link href={`/users/${organizer.username}`} passHref>
                   <Chip
                     avatar={
@@ -101,8 +101,8 @@ export default async function Page({ params }: { params: { slug: string } }) {
             RSVPs
           </Typography>
           <Grid container spacing={2}>
-            {event.rSVPs.map((rsvp) => (
-              <Grid item key={rsvp.id}>
+            {event.rSVPList.map((rsvp) => (
+              <Grid item key={rsvp.userId}>
                 <Link href={`/users/${rsvp.username}`} passHref>
                   <Chip
                     avatar={

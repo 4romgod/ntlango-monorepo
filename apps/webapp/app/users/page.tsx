@@ -1,6 +1,6 @@
 import { getClient } from '@/data/graphql';
 import { GetAllUsersDocument } from '@/data/graphql/types/graphql';
-import { Container, Typography, Grid, Avatar, Box, Divider } from '@mui/material';
+import { Container, Typography, Grid, Box, Divider } from '@mui/material';
 import SearchInput from '@/components/search/search-box';
 import UserBox from '@/components/users/user-box';
 
@@ -10,7 +10,7 @@ export default async function Page() {
   const users = usersRetrieved.readUsers;
 
   return (
-    <Container maxWidth="md">
+    <Container>
       <Box my={4}>
         <Typography variant="h4" fontWeight="bold" align="center" paddingBottom={2}>
           All Users
@@ -25,7 +25,7 @@ export default async function Page() {
         <Divider />
         <Grid container spacing={4} style={{ marginTop: '2rem' }}>
           {users.map((user) => (
-            <UserBox key={user.id} user={user} />
+            <UserBox key={user.userId} user={user} />
           ))}
         </Grid>
       </Box>

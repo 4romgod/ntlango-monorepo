@@ -10,6 +10,7 @@ export type EventLinkBoxProps = {
   color?: 'amber' | 'brand' | 'blue';
 };
 
+// TODO remove tailwind
 const EventAdvertBox = ({ href, title, description, icon, color = 'amber' }: EventLinkBoxProps) => {
   const colors = {
     amber: 'bg-amber-400 dark:bg-scale-100 group-hover:bg-amber-500 dark:group-hover:bg-amber-300 text-amber-900',

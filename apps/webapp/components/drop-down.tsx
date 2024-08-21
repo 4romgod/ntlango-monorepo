@@ -26,7 +26,7 @@ const StyledSelect = styled(Select)<StyledSelectProps>(({ theme, isdefaultselect
   borderRadius: 30,
 }));
 
-const StyledInput = styled(InputBase)(({ theme }) => ({
+const StyledInput = styled(InputBase)(() => ({
   '& .MuiInputBase-input': {
     borderRadius: 4,
     position: 'relative',

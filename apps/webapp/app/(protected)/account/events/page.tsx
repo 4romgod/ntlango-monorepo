@@ -1,5 +1,5 @@
-import EventBoxDesktop from '@/components/events/event-box/desktop';
-import { GetAllEventsDocument } from '@/data/graphql/types/graphql';
+import EventBox from '@/components/events/event-box';
+import { FilterOperatorInput, GetAllEventsDocument } from '@/data/graphql/types/graphql';
 import { getClient } from '@/data/graphql';
 import { auth } from '@/auth';
 import { ROUTES } from '@/lib/constants';
@@ -14,8 +14,14 @@ export default async function EventsPage() {
   const { data: events } = await getClient().query({
     query: GetAllEventsDocument,
     variables: {
-      queryParams: {
-        organizers: [session.user.id],
+      options: {
+        filters: [
+          {
+            field: 'organizerList.userId',
+            operator: FilterOperatorInput.Eq,
+            value: session.user.id,
+          }
+        ],
       },
     },
   });
@@ -25,8 +31,8 @@ export default async function EventsPage() {
       <div>
         {events.readEvents.map((event) => {
           return (
-            <Link key={event.id} href={ROUTES.ACCOUNT.EVENTS.EVENT(event.slug)}>
-              <EventBoxDesktop key={event.id} event={event} />;
+            <Link key={event.eventId} href={ROUTES.ACCOUNT.EVENTS.EVENT(event.slug)}>
+              <EventBox key={event.eventId} event={event} />;
             </Link>
           );
         })}

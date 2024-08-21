@@ -5,7 +5,6 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { Divider, ListItemIcon } from '@mui/material';
 import { AccountCircle, Logout, Settings } from '@mui/icons-material';
-import { useCustomAppContext } from '@/components/app-context';
 import { ROUTES } from '@/lib/constants';
 import { logoutUserAction } from '@/data/actions/server/auth/logout';
 

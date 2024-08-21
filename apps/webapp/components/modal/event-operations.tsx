@@ -28,7 +28,7 @@ const EventOperationsModal = ({ event }: { event: EventType }) => {
   };
 
   const handleDeleteEvent = async () => {
-    const deleteResponse = await deleteEventAction(event.id);
+    const deleteResponse = await deleteEventAction(event.eventId);
     if (deleteResponse.apiError) {
       setToastProps({
         ...toastProps,

@@ -7,6 +7,7 @@ import { Box, Stack, Typography } from '@mui/material';
 import DropDown from '@/components/drop-down';
 import EventCategoryComponent from '@/components/events/event-category';
 
+// TODO remove tailwind
 export default function DisplayEventFilters({ categoryList }: { categoryList: EventCategoryType[] }) {
   const [selectedItem, setSelectedItem] = useState<string>('');
   const router = useRouter();
@@ -29,20 +30,20 @@ export default function DisplayEventFilters({ categoryList }: { categoryList: Ev
         direction="row"
         spacing={2}
         sx={{
-          display: { md: 'none' },
+          display: { md: 'none' },  // TODO move this to where its used
           mx: 'auto',
         }}
       >
         <DropDown
           defaultItem={'Any Category'}
-          itemList={categoryList}
+          itemList={categoryList.map((category) => ({...category, id: category.eventCategoryId}))}
           renderItem={(category) => {
             return <EventCategoryComponent eventCategory={category} />;
           }}
         />
         <DropDown
           defaultItem={'Any Category'}
-          itemList={categoryList}
+          itemList={categoryList.map((category) => ({...category, id: category.eventCategoryId}))}
           renderItem={(category) => {
             return <EventCategoryComponent eventCategory={category} />;
           }}
@@ -53,7 +54,7 @@ export default function DisplayEventFilters({ categoryList }: { categoryList: Ev
           Categories
         </Typography>
         {categoryList.map((category) => (
-          <EventCategoryComponent key={category.id} eventCategory={category} onClick={onSelectChangeHandler} />
+          <EventCategoryComponent key={category.eventCategoryId} eventCategory={category} onClick={onSelectChangeHandler} />
         ))}
       </Box>
     </Box>

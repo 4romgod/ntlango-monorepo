@@ -3,6 +3,7 @@ import { getEventCategoryIcon } from '@/lib/constants';
 import { Box, Typography } from '@mui/material';
 import { MouseEventHandler } from 'react';
 
+// TODO remove tailwind
 export default function EventCategoryComponent({
   eventCategory,
   onClick,
