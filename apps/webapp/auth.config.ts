@@ -4,7 +4,6 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import { LoginUserInputTypeSchema } from './data/validation';
 import { loginUserGlobalAction } from './data/actions/global/auth/login';
 import type { NextAuthConfig } from 'next-auth';
-import { LoginUserDocument, LoginUserInputType, UserWithTokenType } from '@/data/graphql/types/graphql';
 
 export default {
   providers: [

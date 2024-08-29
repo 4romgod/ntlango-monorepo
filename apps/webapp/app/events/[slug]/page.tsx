@@ -5,16 +5,16 @@ import { Box, Typography, Grid, Avatar, CardMedia, Container, Chip, Stack } from
 import { getEventCategoryIcon } from '@/lib/constants';
 import { getFormattedDate } from '@/lib/utils';
 import PurchaseCard from '@/components/purchase-card';
+import EventCategoryChip from '@/components/events/category/chip';
+import UserChip from '@/components/users/user-chip';
 
 export default async function Page({ params }: { params: { slug: string } }) {
   const { data: eventRetrieved } = await getClient().query({
     query: GetEventBySlugDocument,
     variables: { slug: params.slug },
   });
-
   const event = eventRetrieved.readEventBySlug;
 
-  // TODO Add a little price/purchase box on the right
   return (
     <Container>
       <Box my={4}>
@@ -74,25 +74,9 @@ export default async function Page({ params }: { params: { slug: string } }) {
                 Categories
               </Typography>
               <Stack direction="row" spacing={1} sx={{ maxWidth: '100%', overflowX: 'auto' }}>
-                {(event.eventCategoryList && event.eventCategoryList.length > 0) ? event.eventCategoryList.map((category) => {
-                  const IconComponent = getEventCategoryIcon(category.iconName);
-                  return (
-                    <Link key={category.eventCategoryId} href={`/events#${category.name}`} passHref>
-                      <Chip
-                        avatar={
-                          <Avatar>
-                            <IconComponent color={category.color ?? 'black'} />
-                          </Avatar>
-                        }
-                        label={category.name}
-                        variant="outlined"
-                        color="secondary"
-                        size="medium"
-                        clickable
-                      />
-                    </Link>
-                  );
-                }) : (
+                {(event.eventCategoryList.length > 0) ? event.eventCategoryList.map((category, index) => (
+                 <EventCategoryChip key={`${category.name}.${index}`} category={category} />
+                )) : (
                   <Typography variant='body2'>
                     No available categories
                   </Typography>
@@ -107,18 +91,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
               <Grid container spacing={2}>
                 {event.organizerList.map((organizer) => (
                   <Grid item key={organizer.userId}>
-                    <Link href={`/users/${organizer.username}`} passHref>
-                      <Chip
-                        avatar={
-                          organizer.profile_picture ? (
-                            <Avatar src={organizer.profile_picture} alt={organizer.username} />
-                          ) : (
-                            <Avatar>{organizer.username.charAt(0).toLocaleUpperCase()}</Avatar>
-                          )
-                        }
-                        label={organizer.username}
-                      />
-                    </Link>
+                    <UserChip user={organizer} />
                   </Grid>
                 ))}
               </Grid>
@@ -131,18 +104,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
               <Grid container spacing={2}>
                 {event.rSVPList.map((rsvp) => (
                   <Grid item key={rsvp.userId}>
-                    <Link href={`/users/${rsvp.username}`} passHref>
-                      <Chip
-                        avatar={
-                          rsvp.profile_picture ? (
-                            <Avatar src={rsvp.profile_picture} alt={rsvp.username} />
-                          ) : (
-                            <Avatar>{rsvp.username.charAt(0).toLocaleUpperCase()}</Avatar>
-                          )
-                        }
-                        label={rsvp.username}
-                      />
-                    </Link>
+                    <UserChip user={rsvp} />
                   </Grid>
                 ))}
               </Grid>
@@ -176,4 +138,4 @@ export default async function Page({ params }: { params: { slug: string } }) {
       </Box>
     </Container>
   );
-}
+};

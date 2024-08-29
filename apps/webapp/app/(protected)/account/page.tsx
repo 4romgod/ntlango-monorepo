@@ -1,6 +1,6 @@
 import CustomTabs, { CustomTabsProps } from '@/components/tabs/custom-tabs';
-import { lusitana } from '@/components/theme/fonts';
 import { Person, PersonOutlined, ManageAccounts, Payment, Interests, Event, PermMedia } from '@mui/icons-material';
+import { Typography } from '@mui/material';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -20,37 +20,37 @@ const tabsProps: CustomTabsProps = {
   tabs: [
     {
       name: 'Edit Profile',
-      content: <h1 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>Edit Profile</h1>,
+      content: <Typography variant='body1'>Edit Profile</Typography>,
       icon: <PersonOutlined fontSize="small" />,
     },
     {
       name: 'Personal',
-      content: <h1 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>Personal</h1>,
+      content: <Typography variant='body1'>Personal</Typography>,
       icon: <Person fontSize="small" />,
     },
     {
       name: 'Interests',
-      content: <h1 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>Interests</h1>,
+      content: <Typography variant='body1'>Interests</Typography>,
       icon: <Interests fontSize="small" />,
     },
     {
       name: 'Events',
-      content: <h1 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>Events</h1>,
+      content: <Typography variant='body1'>Events</Typography>,
       icon: <Event fontSize="small" />,
     },
     {
       name: 'Account',
-      content: <h1 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>Account</h1>,
+      content: <Typography variant='body1'>Account</Typography>,
       icon: <ManageAccounts fontSize="small" />,
     },
     {
       name: 'Payments',
-      content: <h1 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>Payments</h1>,
+      content: <Typography variant='body1'>Payments</Typography>,
       icon: <Payment fontSize="small" />,
     },
     {
       name: 'Social Media',
-      content: <h1 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>Social Media</h1>,
+      content: <Typography variant='body1'>Social Media</Typography>,
       icon: <PermMedia fontSize="small" />,
     },
   ],

@@ -14,7 +14,11 @@ export default function ToggleThemeMode({ setThemeMode, themeMode }: ToggleTheme
 
   return (
     <Button onClick={() => setThemeMode(isDarkTheme ? 'light' : 'dark')}>
-      {isDarkTheme ? <SunIcon color="primary" className="h-6 w-6" /> : <MoonIcon color="primary" className="h-6 w-6" />}
+      {isDarkTheme ? (
+        <SunIcon color="primary" height={24} width={24} />
+      ) : (
+        <MoonIcon color="primary" height={24} width={24} />
+      )}
     </Button>
   );
 }

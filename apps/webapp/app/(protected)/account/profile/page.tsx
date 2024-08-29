@@ -1,6 +1,6 @@
 import { Container, Typography, Avatar, Box, Divider } from '@mui/material';
 import { Person } from '@mui/icons-material';
-import { auth, signOut } from '@/auth';
+import { auth } from '@/auth';
 
 export default async function ProfilePage() {
   const session = await auth();
@@ -13,15 +13,6 @@ export default async function ProfilePage() {
 
   return (
     <Container>
-      {/* <div>{JSON.stringify({...session})}</div> */}
-      <form
-        action={async () => {
-          'use server';
-          await signOut();
-        }}
-      >
-        <button type="submit">Sign Out</button>
-      </form>
       <Box my={4}>
         <Typography variant="h4" fontWeight="bold" align="center" paddingBottom={2}>
           {`${user.given_name} ${user.family_name}`}

@@ -15,12 +15,11 @@ export default function EventTileGrid({ eventsByCategory }: EventTileGridProps) 
   return (
     <>
       {Object.keys(eventsByCategory).map((categoryName) => (
-        <Box component="div" key={categoryName} marginBottom={10}>
+        <Box component="div" key={categoryName} mb={10}>
           <Typography variant="h4" gutterBottom id={categoryName}>
             {categoryName}
           </Typography>
-          <Divider />
-          <Grid container spacing={5}>
+          <Grid container spacing={2}>
             {eventsByCategory[categoryName].map((event) => (
               <Grid item key={`EventTileGrid.${categoryName}.${event.eventId}`} xs={12}>
                 <Box component="div">

@@ -3,8 +3,7 @@ import { getEventCategoryIcon } from '@/lib/constants';
 import { Box, Typography } from '@mui/material';
 import { MouseEventHandler } from 'react';
 
-// TODO remove tailwind
-export default function EventCategoryComponent({
+export default function EventCategoryFilter({
   eventCategory,
   onClick,
 }: {
@@ -14,9 +13,20 @@ export default function EventCategoryComponent({
   const IconComponent = getEventCategoryIcon(eventCategory.iconName);
 
   return (
-    <Box component="div" className="flex items-center space-x-2" onClick={onClick}>
-      <IconComponent className="h-6 w-6" />
-      <Typography className="p">{eventCategory.name}</Typography>
+    <Box
+      component="div"
+      onClick={onClick}
+      sx={{
+        display: 'flex',
+        px: 2,
+      }}
+    >
+      <IconComponent
+        color={eventCategory.color || ''}
+        height={24}
+        width={24}
+      />
+      <Typography variant='body1' pl={1}>{eventCategory.name}</Typography>
     </Box>
   );
-}
+};

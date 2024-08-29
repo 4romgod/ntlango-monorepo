@@ -44,7 +44,7 @@ export default async function Home() {
             />
           </Box>
         </Box>
-        <Grid container spacing={3} justifyContent="space-between" className="pt-5">
+        <Grid container spacing={3} justifyContent="space-between">
           <Grid item md={3} id="event-filters" width={'100%'}>
             <DisplayEventFilters categoryList={allCategories} />
           </Grid>

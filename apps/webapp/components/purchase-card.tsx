@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { Card, CardContent, Typography, Button, Box, IconButton } from '@mui/material';
 import { styled } from '@mui/system';
 import { FaPlus, FaMinus, FaTicketAlt } from 'react-icons/fa';
-import { EventType } from '@/data/graphql/types/graphql';
 
 const StyledCard = styled(Card)(({ theme }) => ({
   maxWidth: 350,
@@ -54,7 +53,7 @@ const PurchaseButton = styled(Button)(({ theme }) => ({
   },
 }));
 
-// TODO what if we have different ticket types??? (e.g. General, VIP, etc.)
+// TODO what if we have different ticket types??? (e.g. General, VIP, etc.) https://www.eventbrite.com/e/mayweather-vs-gotti-fight-night-event-at-guesthouse-tickets-991480253127?aff=erellivmlt
 export default function PurchaseCard() {
   const [quantity, setQuantity] = useState(1);
   const basePrice = 90; // TODO default this to price of the ticket

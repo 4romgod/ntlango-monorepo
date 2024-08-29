@@ -1,8 +1,12 @@
+import CustomContainer from '@/components/custom-container';
 import EventBox from '@/components/events/event-box';
 import { getClient } from '@/data/graphql';
-import { FilterOperatorInput, GetAllEventsDocument, GetUserByUsernameDocument } from '@/data/graphql/types/graphql';
-import { Person } from '@mui/icons-material';
-import { Container, Typography, Avatar, Box, Divider, Grid } from '@mui/material';
+import { EventCategoryType, EventType, FilterOperatorInput, GetAllEventsDocument, GetUserByUsernameDocument } from '@/data/graphql/types/graphql';
+import { getEventCategoryIcon } from '@/lib/constants';
+import { Typography, Avatar, Box, Grid, Paper, Chip } from '@mui/material';
+import Link from 'next/link';
+import UserDetails from '@/components/users/user-details';
+import EventCategoryChip from '@/components/events/category/chip';
 
 export default async function UserPage({ params }: { params: { username: string } }) {
   const { data: userRetrieved } = await getClient().query({
@@ -25,68 +29,50 @@ export default async function UserPage({ params }: { params: { username: string 
       },
     },
   });
-
   const events = eventsRetrieved.readEvents;
 
+  // TODO get this from user registration
+  const categories = events.reduce((accum: EventCategoryType[], curr: EventType) => accum.concat(curr.eventCategoryList), []);
+
   return (
-    <Container>
-      <Box my={4}>
-        <Box marginTop={9}>
-          <Grid container spacing={5}>
-            <Grid item md={3} id="event-filters" width={'100%'}>
-              <Typography variant="h4" fontWeight="bold" paddingBottom={2}>
-                {`${user.given_name} ${user.family_name}`}
-              </Typography>
-              <Divider />
-              <Box marginTop={4}>
-                <Avatar src={user.profile_picture || '/user-icon.png'} alt={user.username} sx={{ width: 100, height: 100 }}>
-                  <Person sx={{ width: 60, height: 60 }} />
-                </Avatar>
-                <Box>
-                  <Typography variant="body1">
-                    <b>First Name:</b> {user.given_name}
-                  </Typography>
-                  <Typography variant="body1">
-                    <b>Second Name:</b> {user.family_name}
-                  </Typography>
-                  <Typography variant="body1">
-                    <b>Email:</b> {user.email}
-                  </Typography>
-                  <Typography variant="body1">
-                    <b>Gender:</b> {user.gender}
-                  </Typography>
-                  <Typography variant="body1">
-                    <b>Birthdate:</b> {user.birthdate}
-                  </Typography>
-                  <Typography variant="body1">
-                    <b>Address:</b> {user.address}
-                  </Typography>
-                  <Typography variant="body1">
-                    <b>User Type:</b> {user.userRole}
-                  </Typography>
-                </Box>
-              </Box>
+    <Box component="main">
+      <CustomContainer>
+        <Box component="div">
+          <Grid container>
+            <Grid item md={4} width={'100%'} p={2}>
+              <UserDetails user={user} />
             </Grid>
-            <Grid item md={9} id="event-filters" width={'100%'}>
-              <Typography variant="h4" fontWeight="bold" align="center" paddingBottom={2}>
-                Organized Events
-              </Typography>
-              <Divider />
-              <Box component="div">
-                {events.map((event) => {
-                  return (
-                    <Grid item key={`EventTileGrid.${event.eventId}`} xs={12}>
-                      <Box component="div">
-                        <EventBox event={event} />
-                      </Box>
-                    </Grid>
-                  );
-                })}
+            <Grid item md={8} width={'100%'} p={2}>
+              <Paper sx={{ backgroundColor: 'secondary.main', borderRadius: '12px', p: 5 }}>
+                <Typography variant="h5">Lorem</Typography>
+                <Typography variant="body1">
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Non, dolores obcaecati? Ea dolore, numquam laboriosam in eum beatae blanditiis veniam culpa aliquid consectetur repellat possimus impedit reprehenderit atque? Pariatur, maxime?
+                </Typography>
+              </Paper>
+              <Paper elevation={3} sx={{ p: 3, mt: 3, backgroundColor: 'background.default', borderRadius: '12px' }}>
+                <Typography variant="h5" gutterBottom>Interests</Typography>
+                {categories.map((category, index) => (
+                  <EventCategoryChip key={`${category.name}.${index}`} category={category} />
+                ))}
+              </Paper>
+
+              <Box component="div" pt={5}>
+                <Grid container spacing={2}>
+                  {events.map((event) => {
+                    return (
+                      <Grid item key={`EventTileGrid.${event.eventId}`} xs={12}>
+                        <Box component="div">
+                          <EventBox event={event} />
+                        </Box>
+                      </Grid>
+                    );
+                  })}
+                </Grid>
               </Box>
             </Grid>
           </Grid>
         </Box>
-      </Box>
-    </Container>
+      </CustomContainer>
+    </Box>
   );
 }

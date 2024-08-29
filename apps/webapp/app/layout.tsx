@@ -24,7 +24,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
                 <body>
                   <ToastProvider />
                   <MainNavigation isAuthN={Boolean(session)} />
-                  <Box component="div" marginTop={15} style={{ minHeight: '100vh' }}>
+                  <Box component="div" sx={{ minHeight: '100vh', pt: 15 }}>
                     {children}
                   </Box>
                   <Footer />

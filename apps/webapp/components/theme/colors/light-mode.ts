@@ -1,27 +1,32 @@
 import { PaletteOptions } from '@mui/material';
-import { indigo as primaryColor } from '@mui/material/colors';
+import { cyan, lime, deepOrange, grey } from '@mui/material/colors';
 
 const lightModeColors: PaletteOptions = {
   primary: {
-    light: primaryColor[300],
-    main: primaryColor[500],
-    dark: primaryColor[700],
+    light: cyan[500],
+    main: cyan[700],
+    dark: cyan[900],
+    contrastText: '#FFFFFF',
   },
   secondary: {
-    light: '#ebe252',
-    main: '#c9ba45',
-    dark: '#947e35',
+    light: lime[500],
+    main: lime[700],
+    dark: lime[900],
+    contrastText: '#FFFFFF',
   },
   error: {
-    main: '#f44336',
+    main: deepOrange[500],
   },
   background: {
-    default: '#FFFFFF',
-    paper: '#f6f7fe',
+    default: '#F5F5F5',
+    paper: '#FFFFFF',
   },
   text: {
-    primary: '#121318',
-    secondary: '#666666',
+    primary: '#212121',
+    secondary: '#757575',
+  },
+  success: {
+    main: '#4CAF50',
   },
 };
 

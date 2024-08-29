@@ -61,13 +61,13 @@ export default function EventBox({ event }: { event: EventType }) {
                 </Box>
 
                 <Box component="div" sx={{ position: 'absolute', bottom: 16, right: 16 }}>
-                    <IconButton size="small" sx={{ paddingRight: 2 }}>
+                    <IconButton size="small" sx={{ mr: 1 }}>
                         <ShareRounded />
                     </IconButton>
-                    <IconButton size="small" sx={{ paddingRight: 2 }}>
+                    <IconButton size="small" sx={{ mr: 1 }}>
                         <ThumbUpOffAltOutlined height={20} width={20} />
                     </IconButton>
-                    <IconButton size="small" sx={{ paddingRight: 2 }}>
+                    <IconButton size="small" sx={{ mr: 1 }}>
                         <EllipsisHorizontalIcon height={30} width={30} />
                     </IconButton>
                 </Box>
