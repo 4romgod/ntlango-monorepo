@@ -29,14 +29,30 @@ To get started with local development for this project, follow these steps:
 
 3. **Set up environment variables:**
 
-   Create a `.env` file at the root of your project and define the required environment variables. Here's an example `.env` file:
+   Create a `.env` file at the api workspace and define the required environment variables. Here's an example `.env` file:
 
+   When working on Dev
    ```bash
    API_DOMAIN=<domain of the api>, e.g. http://localhost for development
    API_PORT=<port number>, you can choose any, e.g. 9000
    STAGE=<application environment>, i.e. Dev, Beta, Gamma, Prod ( since we are in dev, use "Dev" )
    MONGO_DB_URL=<url to your mongodb databse >
    JWT_SECRET=<secret string for JWT tokens >
+   ```
+
+   When working on Non Dev
+   ```bash
+   GRAPHQL_URL=<url of the api>
+   NTLANGO_SECRET_ARN=<ARN of the secret>
+   AWS_REGION=eu-west-1
+   ```
+
+   Set AWS Credentials (and region) as the environment variables on the terminal where you want to run the project (only if we are not using Dev)
+   ```
+   export AWS_ACCESS_KEY_ID="ASIAW3NFCPDYB6EZDWVM"
+   export AWS_SECRET_ACCESS_KEY="Y9ere7DMfsdlyD3upqN7owXr9PmnHkwSp28YfG7a"
+   export AWS_SESSION_TOKEN="IQoJn3JkZ2laX2VjEA0aCWV1LXdlc3..."
+   export AWS_REGION="eu-west-1"
    ```
 
 4. **Build the project:**

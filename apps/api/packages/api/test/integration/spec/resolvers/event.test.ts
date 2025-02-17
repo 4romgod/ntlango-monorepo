@@ -6,12 +6,13 @@ import {getCreateEventCategoryMutation, getCreateEventMutation, getDeleteEventCa
 import {generateToken} from '@/utils';
 import {kebabCase} from 'lodash';
 import {Types} from 'mongoose';
+import {GRAPHQL_URL} from '@/constants';
 import {configDotenv} from 'dotenv';
 
 configDotenv();
 
 describe('Event Resolver', () => {
-  const url = `${process.env.GRAPHQL_URL}`;
+  const url = GRAPHQL_URL;
   const testEventTitle = 'Test Event Title';
   const testEventSlug = kebabCase(testEventTitle);
   const testEventDescription = 'Test Event Description';

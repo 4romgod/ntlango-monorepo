@@ -1,12 +1,12 @@
 import request from 'supertest';
-import {API_DOMAIN, API_PORT, GRAPHQL_API_PATH} from '@/constants';
+import {GRAPHQL_URL} from '@/constants';
 import {configDotenv} from 'dotenv';
 
 configDotenv();
 
 // https://www.apollographql.com/docs/apollo-server/testing/testing/
 describe('Server', () => {
-  const url = `${process.env.GRAPHQL_URL}`;
+  const url = GRAPHQL_URL;
 
   /**
    * user tries calling an invalid operation (expect GRAPHQL_VALIDATION_FAILED) (this doesn't fit here)

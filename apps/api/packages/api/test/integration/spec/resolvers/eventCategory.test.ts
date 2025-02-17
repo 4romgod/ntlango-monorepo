@@ -15,11 +15,12 @@ import {generateToken} from '@/utils/auth';
 import {Types} from 'mongoose';
 import {kebabCase} from 'lodash';
 import {configDotenv} from 'dotenv';
+import {GRAPHQL_URL} from '@/constants';
 
 configDotenv();
 
 describe('EventCategory Resolver', () => {
-  const url = `${process.env.GRAPHQL_URL}`;
+  const url = GRAPHQL_URL;
 
   const testEventCategorySlug = kebabCase('testEventCategory');
 

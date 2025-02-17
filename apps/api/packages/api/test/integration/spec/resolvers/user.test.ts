@@ -17,12 +17,13 @@ import {CreateUserInputType, Gender, QueryOptionsInput, UserRole, UserType, User
 import {ERROR_MESSAGES} from '@/validation';
 import {generateToken, verifyToken} from '@/utils/auth';
 import {Types} from 'mongoose';
+import {GRAPHQL_URL} from '@/constants';
 import {configDotenv} from 'dotenv';
 
 configDotenv();
 
 describe('User Resolver', () => {
-  const url = `${process.env.GRAPHQL_URL}`;
+  const url = GRAPHQL_URL;
   const testUserEmail = 'test@example.com';
   const testUsername = 'testUsername';
   const testPassword = 'testPassword';

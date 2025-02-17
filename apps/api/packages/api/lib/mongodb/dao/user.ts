@@ -39,7 +39,7 @@ class UserDAO {
         throw CustomError(ERROR_MESSAGES.PASSWORD_MISSMATCH, ErrorTypes.UNAUTHENTICATED);
       }
 
-      const jwtToken = generateToken(user.toObject());
+      const jwtToken = await generateToken(user.toObject());
       return {token: jwtToken, ...user.toObject()};
     } catch (error) {
       console.log('Error when user logging in', error);
