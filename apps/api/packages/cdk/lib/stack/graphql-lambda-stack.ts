@@ -5,16 +5,17 @@ import {NodejsFunction} from 'aws-cdk-lib/aws-lambda-nodejs';
 import {Construct} from 'constructs';
 import {LogGroup} from 'aws-cdk-lib/aws-logs';
 import {Runtime} from 'aws-cdk-lib/aws-lambda';
-import {join} from 'path';
 import {Secret} from 'aws-cdk-lib/aws-secretsmanager';
 import {APPLICATION_STAGES} from '@ntlango/commons';
+import {join} from 'path';
+
+configDotenv();
+
 
 const pathRoot = join(__dirname, '../../../../');
 const pathPackages = join(pathRoot, 'packages');
 const pathApi = join(pathPackages, 'api');
 const pathHandlerFile = join(pathApi, 'lib', 'index.ts');
-
-configDotenv();
 
 export class GraphQLStack extends Stack {
   readonly graphqlLambda: NodejsFunction;
@@ -29,8 +30,7 @@ export class GraphQLStack extends Stack {
 
     this.graphqlLambda = new NodejsFunction(this, 'GraphqlLambdaFunctionId', {
       functionName: 'GraphqlLambdaFunction',
-      description:
-        'This lambda function is a GraphQL Lambda that uses Apollo server: https://www.apollographql.com/docs/apollo-server/deployment/lambda',
+      description: 'This lambda function is a GraphQL Lambda that uses Apollo server: https://www.apollographql.com/docs/apollo-server/deployment/lambda',
       runtime: Runtime.NODEJS_20_X,
       timeout: Duration.seconds(10),
       memorySize: 256,
