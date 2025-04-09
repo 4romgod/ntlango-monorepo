@@ -83,13 +83,6 @@ To get started with local development for this project, follow these steps:
 
    Once the server is running, you can access the GraphQL Playground by navigating to `http://localhost:9000/api/v1/graphql` in your web browser.
 
-7. **Set up Git hooks (optional):**
-
-   To ensure unit tests run before pushing code to the remote repository, set up the Git hooks by running the following npm script:
-
-   ```bash
-   npm run install-hooks
-
 ## Running Tests
 
 To run tests for this project, you can use the following npm scripts:
