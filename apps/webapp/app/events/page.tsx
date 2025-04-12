@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function Home() {
+export default async function Events() {
   const { data: events } = await getClient().query({
     query: GetAllEventsDocument,
   });

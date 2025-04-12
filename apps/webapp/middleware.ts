@@ -15,7 +15,7 @@ export default auth((req) => {
   const isPublicRoute = publicRoutes.includes(nextUrl.pathname) || isPublicDynamicRoute(nextUrl.pathname);
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
 
-  // 1. Allow all API aut routes
+  // 1. Allow all API auth routes
   if (isApiAuthRoute) {
     return NextResponse.next();
   }

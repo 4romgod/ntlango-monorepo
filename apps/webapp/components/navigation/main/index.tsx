@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -18,10 +18,16 @@ import { useCustomAppContext } from '@/components/app-context';
 import { ROUTES } from '@/lib/constants';
 import Logo from '@/components/logo';
 
+type MainNavigationProps = {
+  isAuthN: boolean;
+  onHeightChange?: (height: number) => void;
+};
+
 /**
  * Inspired by: https://arshadalisoomro.hashnode.dev/creating-a-navigation-bar-with-mui-appbar-component-in-nextjs
  */
-export default function MainNavigation({ isAuthN }: { isAuthN: boolean }) {
+export default function MainNavigation({ isAuthN, onHeightChange }: MainNavigationProps) {
+  const appBarRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const { themeMode, setThemeMode } = useCustomAppContext();
 
@@ -48,11 +54,20 @@ export default function MainNavigation({ isAuthN }: { isAuthN: boolean }) {
     setNotificationsMenuAnchorEl(event.currentTarget);
   };
 
+  useEffect(() => {
+    if (appBarRef.current) {
+      const height = appBarRef.current.offsetHeight; // Get the height of the AppBar
+      if (onHeightChange) {
+        onHeightChange(height); // Pass the height to the parent component
+      }
+    }
+  }, [onHeightChange]);
+
   const profilesMenuId = 'profiles-menu-id';
   const notificationsMenuId = 'notifications-menu-id';
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
+    <Box sx={{ flexGrow: 1 }} ref={appBarRef}>
       <AppBar position="fixed" sx={{ boxShadow: 'none', zIndex: 1000 }}>
         <Toolbar disableGutters>
           <Box component="div" sx={{ display: { xs: isAuthN ? 'none' : 'flex', md: 'none' } }}>
