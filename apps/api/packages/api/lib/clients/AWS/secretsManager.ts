@@ -2,11 +2,16 @@ import {AWS_REGION, JWT_SECRET, MONGO_DB_URL, STAGE, NTLANGO_SECRET_ARN, SECRET_
 import {SecretsManagerClient, GetSecretValueCommand} from '@aws-sdk/client-secrets-manager';
 import {APPLICATION_STAGES} from '@ntlango/commons';
 
-const client = new SecretsManagerClient({region: AWS_REGION});
+let secretsManagerClient: SecretsManagerClient;
+function getSecretsManagerClient(): SecretsManagerClient {
+  if (!secretsManagerClient) {
+    secretsManagerClient = new SecretsManagerClient({region: AWS_REGION});
+  }
+  return secretsManagerClient;
+}
 
 let cachedSecrets: {[key: string]: string} = {};
-
-export async function getSecretValue(secretKey: string): Promise<string> {
+async function getSecretValue(secretKey: string): Promise<string> {
   console.log('Retrieving secret from AWS secret manager...');
 
   if (cachedSecrets && cachedSecrets[secretKey]) {
@@ -18,7 +23,7 @@ export async function getSecretValue(secretKey: string): Promise<string> {
   const command = new GetSecretValueCommand({SecretId: NTLANGO_SECRET_ARN});
 
   try {
-    const data = await client.send(command);
+    const data = await getSecretsManagerClient().send(command);
     cachedSecrets = (data.SecretString && JSON.parse(data.SecretString)) || {};
     return cachedSecrets[secretKey];
   } catch (err) {
