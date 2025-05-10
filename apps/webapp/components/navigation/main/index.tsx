@@ -2,12 +2,12 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
-import { MailOutline, MoreVert, NotificationsOutlined } from '@mui/icons-material';
+import { MailOutline, MoreVert, NotificationsOutlined, ControlPointOutlined } from '@mui/icons-material';
 import Avatar from '@mui/material/Avatar';
 import NotificationsMenu from '@/components/navigation/main/navigation-notifications-items';
 import ProfilesMenu from '@/components/navigation/main/navigation-profiles-items';
@@ -18,14 +18,12 @@ import Logo from '@/components/logo';
 
 type MainNavigationProps = {
   isAuthN: boolean;
-  onHeightChange?: (height: number) => void;
 };
 
 /**
  * Inspired by: https://arshadalisoomro.hashnode.dev/creating-a-navigation-bar-with-mui-appbar-component-in-nextjs
  */
-export default function MainNavigation({ isAuthN, onHeightChange }: MainNavigationProps) {
-  const appBarRef = useRef<HTMLDivElement>(null);
+export default function MainNavigation({ isAuthN }: MainNavigationProps) {
   const router = useRouter();
 
   const [profilesMenuAnchorEl, setProfilesMenuAnchorEl] = useState<null | HTMLElement>(null);
@@ -51,20 +49,11 @@ export default function MainNavigation({ isAuthN, onHeightChange }: MainNavigati
     setNotificationsMenuAnchorEl(event.currentTarget);
   };
 
-  useEffect(() => {
-    if (appBarRef.current) {
-      const height = appBarRef.current.offsetHeight; // Get the height of the AppBar
-      if (onHeightChange) {
-        onHeightChange(height); // Pass the height to the parent component
-      }
-    }
-  }, [onHeightChange]);
-
   const profilesMenuId = 'profiles-menu-id';
   const notificationsMenuId = 'notifications-menu-id';
 
   return (
-    <Box sx={{ flexGrow: 1 }} ref={appBarRef}>
+    <Box sx={{ flexGrow: 1 }}>
       <AppBar
         position="fixed"
         sx={{ boxShadow: 'none', zIndex: 1000 }}
@@ -106,7 +95,6 @@ export default function MainNavigation({ isAuthN, onHeightChange }: MainNavigati
               Sign Up
             </Button>
           </Box>
-
           {/* Logged in user Buttons */}
           <Box
             component="div"
@@ -117,6 +105,31 @@ export default function MainNavigation({ isAuthN, onHeightChange }: MainNavigati
           >
             {/* Show only on large screens */}
             <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+              <Link href={ROUTES.ACCOUNT.EVENTS.CREATE}>
+                <IconButton
+                  size="large"
+                  aria-label="create event"
+                  disableRipple
+                >
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: 'text.primary',
+                      '&:hover': {
+                        color: 'secondary.dark'
+                      }
+                    }}
+                  >
+                    <ControlPointOutlined />
+                    Create Event
+                  </Typography>
+                </IconButton>
+              </Link>
+
               <Link href={ROUTES.ACCOUNT.MESSAGES}>
                 <IconButton
                   size="large"
@@ -132,7 +145,7 @@ export default function MainNavigation({ isAuthN, onHeightChange }: MainNavigati
                       justifyContent: 'center',
                       color: 'text.primary',
                       '&:hover': {
-                        color: 'secondary.main'
+                        color: 'secondary.dark'
                       }
                     }}
                   >
@@ -157,7 +170,7 @@ export default function MainNavigation({ isAuthN, onHeightChange }: MainNavigati
                       justifyContent: 'center',
                       color: 'text.primary',
                       '&:hover': {
-                        color: 'secondary.main'
+                        color: 'secondary.dark'
                       }
                     }}
                   >

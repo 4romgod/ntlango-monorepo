@@ -1,147 +1,100 @@
-'use client'
+'use client';
 
-import React, { useEffect, useState } from 'react';
-import { TextField, Button, Grid, Typography, Box, ButtonGroup } from '@mui/material';
-import { PinDrop, CalendarMonthOutlined, VideoCallOutlined } from '@mui/icons-material';
+import React, { useEffect, useState, useCallback } from 'react';
+import {
+  TextField,
+  Grid,
+  Typography,
+  Box,
+  FormControl,
+} from '@mui/material';
 import { LocationInputProps } from '@/lib/constants';
 import { Location } from '@/data/graphql/types/graphql';
+import LocationTypeRadioButtons from '@/components/buttons/location-type-radio-button';
 
-// TODO persist thw location in local storage
-export default function LocationInput({ onChange }: LocationInputProps) {
+const defaultAddress = {
+  street: '',
+  city: '',
+  state: '',
+  zipCode: '',
+  country: '',
+};
+
+const LocationInput: React.FC<LocationInputProps> = ({ onChange }) => {
   const [locationType, setLocationType] = useState<string>('venue');
 
-  const initializeLocationDetails = (): Location => ({
+  const [locationDetails, setLocationDetails] = useState<Location>({
     locationType,
-    address: locationType === 'venue' ? {
-      street: '',
-      city: '',
-      state: '',
-      zipCode: '',
-      country: '',
-    } : undefined,
-    details: locationType !== 'venue' ? '' : undefined,
+    address: (locationType === 'venue') ? { ...defaultAddress } : undefined,
+    details: (locationType !== 'venue') ? '' : undefined,
   });
-
-  const [locationDetails, setLocationDetails] = useState<Location>(initializeLocationDetails);
 
   useEffect(() => {
     onChange(locationDetails);
-  }, [locationDetails, onChange]);
+  }, [locationDetails]);
 
-  const handleLocationTypeChange = (type: string) => {
+  const handleLocationTypeChange = useCallback((type: string) => {
     setLocationType(type);
-
     setLocationDetails({
       locationType: type,
-      address: type === 'venue' ? {
-        street: '',
-        city: '',
-        state: '',
-        zipCode: '',
-        country: '',
-      } : undefined,
-      details: type !== 'venue' ? '' : undefined,
+      address: (type === 'venue') ? { ...defaultAddress } : undefined,
+      details: (type !== 'venue') ? '' : undefined,
     });
-  };
+  }, []);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setLocationDetails((prevDetails) => ({
-      ...prevDetails,
-      address: prevDetails.address ? {
-        ...prevDetails.address,
-        [name]: value,
-      } : prevDetails.address,
+    setLocationDetails((prev) => ({
+      ...prev,
+      address: prev.address ? { ...prev.address, [name]: value } : undefined,
     }));
-  };
+  }, []);
+
+  const addressFields = [
+    { label: 'Street', name: 'street' },
+    { label: 'City', name: 'city' },
+    { label: 'State', name: 'state' },
+    { label: 'Zip Code', name: 'zipCode' },
+    { label: 'Country', name: 'country' },
+  ];
 
   return (
-    <Box>
-      <Typography variant="h6">Where is it located?</Typography>
-      <ButtonGroup fullWidth sx={{ mt: 1 }}>
-        <Button
-          variant={locationType === 'venue' ? 'contained' : 'outlined'}
-          onClick={() => handleLocationTypeChange('venue')}
-          startIcon={<PinDrop />}
-        >
-          Venue
-        </Button>
-        <Button
-          variant={locationType === 'online' ? 'contained' : 'outlined'}
-          onClick={() => handleLocationTypeChange('online')}
-          startIcon={<VideoCallOutlined />}
-        >
-          Online
-        </Button>
-        <Button
-          variant={locationType === 'tba' ? 'contained' : 'outlined'}
-          onClick={() => handleLocationTypeChange('tba')}
-          startIcon={<CalendarMonthOutlined />}
-        >
-          To Be Announced
-        </Button>
-      </ButtonGroup>
+    <Box
+      sx={{
+        backgroundColor: 'background.paper',
+        border: '1px solid #ccc',
+        borderRadius: 5,
+        p: 6,
+      }}
+    >
+      <Typography variant="h6">Location</Typography>
+
+      <FormControl component="fieldset" sx={{ width: '100%', mb: 4 }}>
+        <LocationTypeRadioButtons selectedType={locationType} onChange={handleLocationTypeChange} />
+      </FormControl>
+
       {locationType === 'venue' && (
-        <Box sx={{ mt: 2 }}>
-          {/* <TextField
-            fullWidth
-            label="Location"
-            name="location"
-            size='small'
-            onChange={handleInputChange}
-            required
-            sx={{ mt: 1 }}
-          /> */}
+        <Box>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Address"
-                name="address"
-                size='small'
-                onChange={handleInputChange}
-                required
-                sx={{ mt: 1 }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="City"
-                name="city"
-                size='small'
-                onChange={handleInputChange}
-                required
-                sx={{ mt: 1 }}
-              />
-            </Grid>
-          </Grid>
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="State"
-                name="state"
-                size='small'
-                onChange={handleInputChange}
-                required
-                sx={{ mt: 1 }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Zip Code"
-                name="zipCode"
-                size='small'
-                onChange={handleInputChange}
-                required
-                sx={{ mt: 1 }}
-              />
-            </Grid>
+            {addressFields.map(({ label, name }) => (
+              <Grid item xs={12} sm={6} key={name}>
+                <TextField
+                  fullWidth
+                  label={label}
+                  name={name}
+                  size="small"
+                  onChange={handleInputChange}
+                  required
+                  sx={{ mt: 1 }}
+                  color='secondary'
+                />
+              </Grid>
+            ))}
           </Grid>
         </Box>
       )}
     </Box>
   );
-}
+};
+
+export default LocationInput;

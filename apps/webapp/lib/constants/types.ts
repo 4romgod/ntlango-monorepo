@@ -26,3 +26,17 @@ export type CategoryFilterProps = {
   sxProps?: SxProps<Theme>;
   categoryList: EventCategoryType[];
 };
+
+export type EventDateInputProps = {
+  onChange: (value: string) => void;
+};
+
+export type EventTypeRadioButtonsProps = {
+  selectedType: string;
+  onChange: (value: string) => void;
+};
+
+export type LocationTypeRadioButtonsProps = {
+  selectedType: string;
+  onChange: (value: string) => void;
+};

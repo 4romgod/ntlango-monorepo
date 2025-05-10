@@ -20,7 +20,7 @@ type RootLayoutProps = { children: ReactNode; session: Session | null };
 
 
 export default async function RootLayout({ children, session }: RootLayoutProps) {
-  const [navHeight, setNavHeight] = useState(0);
+  const navHeight = 64; // TODO Adjust this value based on your AppBar height
 
   return (
     <html lang="en">
@@ -32,10 +32,7 @@ export default async function RootLayout({ children, session }: RootLayoutProps)
                 <body>
                     <ToastProvider />
                     <TopProgressBar />
-                    <MainNavigation
-                        isAuthN={Boolean(session)}
-                        onHeightChange={(height: number) => setNavHeight(height)}
-                    />
+                    <MainNavigation isAuthN={Boolean(session)} />
                     <Box
                         component="div"
                         sx={{

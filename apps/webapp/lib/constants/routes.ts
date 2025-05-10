@@ -4,6 +4,7 @@ export const ROUTES = {
       EVENT: (slug: string) => `/account/events/${slug}`,
       EDIT_EVENT: (slug: string) => `/account/events/${slug}/edit`,
       ROOT: '/account/events',
+      CREATE: '/account/events/create',
     },
     MESSAGES: '/account/messages',
     NOTIFICATIONS: '/account/notifications',

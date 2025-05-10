@@ -24,7 +24,10 @@ export default async function CreateEvent() {
   });
 
   return (
-    <Box component="main">
+    <Box
+      component="main"
+      sx={{}}
+    >
       <CustomContainer maxWidthOverrides={{ xs: '90%', sm: '75%', md: '65%', lg: '50%' }}>
         <EventMutationForm
           categoryList={eventCategories.readEventCategories}

@@ -12,6 +12,7 @@ import { getClient } from '@/data/graphql';
 import { Metadata } from 'next';
 import { getEventCategoryIcon } from '@/lib/constants';
 import EventsCarousel from '@/components/events/carousel';
+import { ROUTES } from '@/lib/constants';
 
 export const metadata: Metadata = {
   title: {
@@ -205,7 +206,7 @@ export default async function HomePage() {
             color="primary"
             size="large"
             component={Link}
-            href="/create-event"
+            href={ROUTES.ACCOUNT.EVENTS.CREATE}
             sx={{
               borderRadius: 2,
               px: 4,

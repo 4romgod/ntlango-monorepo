@@ -14,9 +14,15 @@ export default function CategoryFilter({ categoryList, sxProps }: CategoryFilter
 
   return (
     <FormControl fullWidth sx={{ ...sxProps }} size='small'>
-      <InputLabel id="category-label">Categories</InputLabel>
+      <InputLabel
+        id="category-label"
+        color='secondary'
+      >
+        Categories
+      </InputLabel>
       <Select
         labelId="category-label"
+        color='secondary'
         multiple
         value={categories}
         onChange={handleCategoryChange}
