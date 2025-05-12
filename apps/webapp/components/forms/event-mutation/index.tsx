@@ -60,7 +60,7 @@ export default function EventMutationForm({ categoryList }: EventMutationFormPro
 
 
   return (
-    <Box component="div" sx={{ my: 10 }}>
+    <Box component="div" sx={{ py: 10 }}>
       <Box component="form" onSubmit={handleSubmit}>
         <Grid container spacing={5}>
 
@@ -232,7 +232,7 @@ export default function EventMutationForm({ categoryList }: EventMutationFormPro
             <Button
               type="submit"
               variant="contained"
-              color="secondary"
+              color="primary"secondary
               size="large"
             >
               Create Event

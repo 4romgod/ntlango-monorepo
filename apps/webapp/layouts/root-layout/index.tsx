@@ -42,12 +42,7 @@ export default async function RootLayout({ children, session }: RootLayoutProps)
                     >
                         {children}
                     </Box>
-                    <Box
-                        component="div"
-                        sx={{
-                        marginTop: 10,
-                        }}
-                    >
+                    <Box>
                         <Footer />
                     </Box>
                 </body>

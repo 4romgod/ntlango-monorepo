@@ -58,6 +58,8 @@ const RegisterPage = () => {
         severity: 'success',
         message: 'You have successfully registered!',
       });
+
+      // TODO: Redirect to the next page
     }
   }, [formState]);
 
@@ -80,29 +82,53 @@ const RegisterPage = () => {
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
             <FormControl fullWidth margin="normal">
-              <TextField required label="First Name" name="given_name" variant="outlined" />
+              <TextField
+                required
+                label="First Name"
+                name="given_name"
+                variant="outlined"
+                color='secondary'
+              />
               <FormErrors error={formState?.zodErrors?.given_name} />
             </FormControl>
           </Grid>
           <Grid item xs={12} sm={6}>
             <FormControl fullWidth margin="normal">
-              <TextField required label="Last Name" name="family_name" variant="outlined" />
+              <TextField
+                required
+                label="Last Name"
+                name="family_name"
+                variant="outlined"
+                color='secondary'
+              />
               <FormErrors error={formState?.zodErrors?.family_name} />
             </FormControl>
           </Grid>
         </Grid>
         <FormControl fullWidth margin="normal">
-          <TextField required label="Email Address" name="email" variant="outlined" />
+          <TextField
+            required
+            label="Email Address"
+            name="email"
+            variant="outlined"
+            color='secondary'
+          />
           <FormErrors error={formState?.zodErrors?.email} />
         </FormControl>
         <FormControl fullWidth margin="normal">
-          <InputLabel htmlFor="password">Password</InputLabel>
+          <InputLabel
+            htmlFor="password"
+            color='secondary'
+          >
+            Password
+          </InputLabel>
           <OutlinedInput
             id="password"
             label="Password"
             name="password"
             type={showPassword ? 'text' : 'password'}
             autoComplete="current-password"
+            color='secondary'
             endAdornment={
               <InputAdornment position="end">
                 <IconButton
@@ -119,8 +145,15 @@ const RegisterPage = () => {
           <FormErrors error={formState?.zodErrors?.password} />
         </FormControl>
         <FormControl fullWidth margin="normal">
-          <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en">
-            <DatePicker label="Date of Birth" format="YYYY-MM-DD" name="birthdate" />
+          <LocalizationProvider
+            dateAdapter={AdapterDayjs}
+            adapterLocale="en"
+          >
+            <DatePicker
+              label="Date of Birth"
+              format="YYYY-MM-DD"
+              name="birthdate"
+            />
           </LocalizationProvider>
           <FormErrors error={formState?.zodErrors?.birthdate} />
         </FormControl>
@@ -132,11 +165,25 @@ const RegisterPage = () => {
 
       <Divider sx={{ marginY: 2 }}>or</Divider>
 
-      <Button variant="outlined" size="large" fullWidth={true} startIcon={<FaFacebookF />} sx={{ mt: 1, mb: 1 }}>
+      <Button
+        variant="outlined"
+        size="large"
+        fullWidth={true}
+        startIcon={<FaFacebookF />}
+        color='secondary'
+        sx={{ mt: 1, mb: 1 }}
+      >
         Continue with Facebook
       </Button>
 
-      <Button variant="outlined" size="large" fullWidth={true} startIcon={<FcGoogle />} sx={{ mt: 1, mb: 1 }}>
+      <Button
+        variant="outlined"
+        size="large"
+        fullWidth={true}
+        startIcon={<FcGoogle />}
+        color='secondary'
+        sx={{ mt: 1, mb: 1 }}
+      >
         Continue with Google
       </Button>
     </Container>

@@ -57,6 +57,8 @@ const LoginPage = () => {
         severity: 'success',
         message: 'You have successfully logged in!',
       });
+
+      // TODO: Redirect to the next page
     }
   }, [formState]);
 
@@ -70,7 +72,12 @@ const LoginPage = () => {
 
       <Box component="form" action={formAction} noValidate sx={{ mt: 1 }}>
         <FormControl required fullWidth margin="normal">
-          <InputLabel htmlFor="email">Email Address</InputLabel>
+          <InputLabel
+            htmlFor="email"
+            color='secondary'
+          >
+            Email Address
+          </InputLabel>
           <OutlinedInput
             id="email"
             label="Email Address"
@@ -78,17 +85,24 @@ const LoginPage = () => {
             type="email"
             autoComplete="email"
             autoFocus={true}
+            color='secondary'
           />
           <FormErrors error={formState?.zodErrors?.email} />
         </FormControl>
         <FormControl required fullWidth margin="normal">
-          <InputLabel htmlFor="password">Password</InputLabel>
+          <InputLabel
+            htmlFor="password"
+            color='secondary'
+          >
+            Password
+          </InputLabel>
           <OutlinedInput
             id="password"
             label="Password"
             name="password"
             type={showPassword ? 'text' : 'password'}
             autoComplete="current-password"
+            color='secondary'
             endAdornment={
               <InputAdornment position="end">
                 <IconButton
@@ -133,7 +147,7 @@ const LoginPage = () => {
       <Button
         variant="outlined"
         size="large"
-        color="primary"
+        color="secondary"
         fullWidth={true}
         startIcon={<FaFacebookF />}
         sx={{ mt: 1, mb: 1 }}
@@ -144,7 +158,7 @@ const LoginPage = () => {
       <Button
         variant="outlined"
         size="large"
-        color="primary"
+        color="secondary"
         fullWidth={true}
         startIcon={<FcGoogle />}
         sx={{ mt: 1, mb: 1 }}
@@ -155,7 +169,7 @@ const LoginPage = () => {
       <Button
         variant="outlined"
         size="large"
-        color="primary"
+        color="secondary"
         fullWidth={true}
         startIcon={<MdEmail />}
         sx={{ mt: 1, mb: 1 }}

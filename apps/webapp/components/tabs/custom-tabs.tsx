@@ -1,86 +1,157 @@
 'use client';
 
-import { useState, SyntheticEvent } from 'react';
-import { Tabs, Tab, Box } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
+import { useState, SyntheticEvent, useMemo } from 'react';
+import { Tabs, Tab, Box, Typography, Tooltip, useTheme, useMediaQuery } from '@mui/material';
+import { CustomTabPanel } from './custom-tabs-panel';
 
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
-
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index } = props;
-
-  return (
-    <Box
-      component="div"
-      role="tabpanel"
-      hidden={value !== index}
-      id={`custom-tabpanel-${index}`}
-      aria-labelledby={`custom-tab-${index}`}
-    >
-      {value === index && (
-        <Box component="div" sx={{ p: 3 }}>
-          {children}
-        </Box>
-      )}
-    </Box>
-  );
-}
+export type CustomTabItem = {
+  name: string;
+  content: React.ReactNode;
+  icon?: React.ReactElement;
+  description: string;
+  disabled?: boolean;
+};
 
 export type CustomTabsProps = {
   tabsTitle: string;
-  tabs: {
-    name: string;
-    content: any;
-    icon?: any;
-  }[];
+  tabs: CustomTabItem[];
+  defaultTab?: number;
+  id?: string;
+  variant?: 'scrollable' | 'standard' | 'fullWidth';
+  orientation?: 'vertical' | 'horizontal';
+  onTabChange?: (index: number) => void;
 };
 
 export default function CustomTabs({ tabsProps }: { tabsProps: CustomTabsProps }) {
-  const [value, setValue] = useState(0);
+  const {
+    tabs,
+    tabsTitle,
+    defaultTab = 0,
+    id = 'custom-tabs',
+    variant = 'scrollable',
+    orientation = 'vertical',
+    onTabChange,
+  } = tabsProps;
+
+  const [value, setValue] = useState(defaultTab);
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
-  const { tabs } = tabsProps;
 
-  const handleChange = (event: SyntheticEvent, newValue: number) => {
+  // Memoize tab panels to avoid unnecessary re-renders
+  const tabPanels = useMemo(() => tabs.map(({ content }, index) => (
+    <CustomTabPanel
+      key={`${id}-panel-content-${index}`}
+      value={value}
+      index={index}
+      id={id}
+    >
+      {content}
+    </CustomTabPanel>
+  )), [tabs, value, id]);
+
+  const handleChange = (_event: SyntheticEvent, newValue: number) => {
     setValue(newValue);
+    if (onTabChange) {
+      onTabChange(newValue);
+    }
   };
 
   return (
-    <Box sx={{ flexGrow: 1, display: 'flex' }}>
-      <Tabs
-        orientation="vertical"
-        variant="scrollable"
-        value={value}
-        onChange={handleChange}
-        textColor="secondary"
-        indicatorColor="secondary"
-        sx={{ borderRight: 1, borderColor: 'divider' }}
-        TabIndicatorProps={{
-          style: { left: 0, width: 4 },
+    <Box
+      role="region"
+      aria-label={tabsTitle}
+      sx={{
+        display: 'flex',
+        flexDirection: orientation === 'vertical' ? 'row' : 'column',
+        height: orientation === 'vertical' ? '100%' : 'auto',
+      }}
+    >
+      <Box
+        sx={{
+          borderBottom: orientation === 'horizontal' ? 1 : 0,
+          borderColor: 'divider',
+          display: 'flex',
+          flexDirection: 'column',
+          backgroundColor: 'background.default',
+          minHeight: '100vh',
+          ...(orientation === 'vertical' ? { minWidth: isSmallScreen ? 'auto' : '200px' } : {}),
         }}
       >
-        {tabs.map(({ name, icon }, index) => (
-          <Tab
-            id={`custom-tab-${index}`}
-            key={`tab-${name}`}
-            label={isSmallScreen ? null : <p style={{ textTransform: 'none' }}>{name}</p>}
-            icon={icon}
-            iconPosition="start"
-            aria-controls={`custom-tabpanel-${index}`}
-            sx={{ justifyContent: 'flex-start' }}
-          />
-        ))}
-      </Tabs>
-      {tabs.map(({ name, content }, index) => (
-        <TabPanel key={`tab-content-${name}`} value={value} index={index}>
-          {content}
-        </TabPanel>
-      ))}
+        {tabsTitle && (
+          <Typography
+            variant="h6"
+            component="h2"
+            sx={{
+              py: 4,
+              px: 2,
+              display: isSmallScreen ? 'none' : 'block'
+            }}
+          >
+            {tabsTitle}
+          </Typography>
+        )}
+
+        <Tabs
+          orientation={orientation}
+          variant={variant}
+          value={value}
+          onChange={handleChange}
+          aria-label={`${tabsTitle} tabs`}
+          textColor="secondary"
+          indicatorColor="secondary"
+          TabIndicatorProps={{
+            style: orientation === 'vertical' ? { left: 0, width: 4 } : undefined,
+          }}
+          sx={{
+            height: orientation === 'vertical' ? '100%' : 'auto',
+            '& .MuiTab-root': {
+              minHeight: orientation === 'vertical' ? 48 : undefined,
+              textAlign: 'left',
+              justifyContent: 'flex-start',
+              alignItems: 'center',
+              '&:hover': {
+                backgroundColor: 'action.hover',
+              },
+              '&.Mui-selected': {
+                fontWeight: 'bold',
+              },
+            },
+          }}
+        >
+          {tabs.map(({ name, icon, description, disabled }, index) => (
+            <Tooltip
+              key={`${id}-tab-${index}`}
+              title={description}
+              placement={orientation === 'vertical' ? 'right' : 'bottom'}
+              arrow
+            >
+              <Tab
+                id={`${id}-tab-${index}`}
+                aria-controls={`${id}-panel-${index}`}
+                label={isSmallScreen ? null : <span style={{ textTransform: 'none' }}>{name}</span>}
+                icon={icon}
+                iconPosition="start"
+                disabled={disabled}
+                aria-description={description}
+                sx={{
+                  minWidth: isSmallScreen ? 'auto' : undefined,
+                  opacity: disabled ? 0.5 : 1,
+                }}
+              />
+            </Tooltip>
+          ))}
+        </Tabs>
+      </Box>
+
+      <Box
+        sx={{
+          py: 5,
+          width: '100%',
+          backgroundColor: 'background.paper',
+        }}
+      >
+        {tabPanels}
+      </Box>
     </Box>
   );
 }

@@ -20,7 +20,12 @@ const ForgotPasswordPage = () => {
 
       <Box component="form" action={formAction} noValidate sx={{ mt: 1 }}>
         <FormControl required fullWidth margin="normal">
-          <InputLabel htmlFor="email">Email Address</InputLabel>
+          <InputLabel
+            htmlFor="email"
+            color='secondary'
+          >
+            Email Address
+          </InputLabel>
           <OutlinedInput
             id="email"
             label="Email Address"
@@ -28,6 +33,7 @@ const ForgotPasswordPage = () => {
             type="email"
             autoComplete="email"
             autoFocus={true}
+            color='secondary'
           />
           <FormErrors error={formState?.zodErrors?.email} />
         </FormControl>

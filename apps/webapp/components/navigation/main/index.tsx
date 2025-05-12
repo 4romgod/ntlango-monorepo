@@ -56,7 +56,7 @@ export default function MainNavigation({ isAuthN }: MainNavigationProps) {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar
         position="fixed"
-        sx={{ boxShadow: 'none', zIndex: 1000 }}
+        sx={{ zIndex: 1000 }}
         color="primary"
         enableColorOnDark
       >
