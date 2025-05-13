@@ -13,6 +13,7 @@ import {
   InputAdornment,
   InputLabel,
   OutlinedInput,
+  Paper,
   TextField,
   Typography,
 } from '@mui/material';
@@ -64,129 +65,133 @@ const RegisterPage = () => {
   }, [formState]);
 
   return (
-    <Container maxWidth="xs">
-      <Logo />
+    <Box sx={{ py: 6, minHeight: '100vh', backgroundColor: 'background.paper' }}>
+      <Container maxWidth="sm">
+        <Paper elevation={3} sx={{ padding: 3, borderRadius: 2 }}>
+          <Logo />
 
-      <Typography textAlign="center" component="h1" variant="h5" marginTop={2}>
-        Sign Up
-      </Typography>
+          <Typography textAlign="center" component="h1" variant="h5" marginTop={2}>
+            Sign Up
+          </Typography>
 
-      <Typography variant="body1" textAlign="center" paddingBottom={3}>
-        <span>Already a member?&nbsp;</span>
-        <a style={{ color: '#1e88e5', cursor: 'pointer' }} onClick={() => router.push('/auth/login')}>
-          {'Log in here'}
-        </a>
-      </Typography>
+          <Typography variant="body1" textAlign="center" paddingBottom={3}>
+            <span>Already a member?&nbsp;</span>
+            <a style={{ color: '#1e88e5', cursor: 'pointer' }} onClick={() => router.push('/auth/login')}>
+              {'Log in here'}
+            </a>
+          </Typography>
 
-      <Box component="form" action={formAction} noValidate>
-        <Grid container spacing={2}>
-          <Grid item xs={12} sm={6}>
+          <Box component="form" action={formAction} noValidate>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth margin="normal">
+                  <TextField
+                    required
+                    label="First Name"
+                    name="given_name"
+                    variant="outlined"
+                    color='secondary'
+                  />
+                  <FormErrors error={formState?.zodErrors?.given_name} />
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth margin="normal">
+                  <TextField
+                    required
+                    label="Last Name"
+                    name="family_name"
+                    variant="outlined"
+                    color='secondary'
+                  />
+                  <FormErrors error={formState?.zodErrors?.family_name} />
+                </FormControl>
+              </Grid>
+            </Grid>
             <FormControl fullWidth margin="normal">
               <TextField
                 required
-                label="First Name"
-                name="given_name"
+                label="Email Address"
+                name="email"
                 variant="outlined"
                 color='secondary'
               />
-              <FormErrors error={formState?.zodErrors?.given_name} />
+              <FormErrors error={formState?.zodErrors?.email} />
             </FormControl>
-          </Grid>
-          <Grid item xs={12} sm={6}>
             <FormControl fullWidth margin="normal">
-              <TextField
-                required
-                label="Last Name"
-                name="family_name"
-                variant="outlined"
+              <InputLabel
+                htmlFor="password"
                 color='secondary'
+              >
+                Password
+              </InputLabel>
+              <OutlinedInput
+                id="password"
+                label="Password"
+                name="password"
+                type={showPassword ? 'text' : 'password'}
+                autoComplete="current-password"
+                color='secondary'
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={handleClickShowPassword}
+                      onMouseDown={handleMouseDownPassword}
+                      edge="end"
+                    >
+                      {showPassword ? <Visibility /> : <VisibilityOff />}
+                    </IconButton>
+                  </InputAdornment>
+                }
               />
-              <FormErrors error={formState?.zodErrors?.family_name} />
+              <FormErrors error={formState?.zodErrors?.password} />
             </FormControl>
-          </Grid>
-        </Grid>
-        <FormControl fullWidth margin="normal">
-          <TextField
-            required
-            label="Email Address"
-            name="email"
+            <FormControl fullWidth margin="normal">
+              <LocalizationProvider
+                dateAdapter={AdapterDayjs}
+                adapterLocale="en"
+              >
+                <DatePicker
+                  label="Date of Birth"
+                  format="YYYY-MM-DD"
+                  name="birthdate"
+                />
+              </LocalizationProvider>
+              <FormErrors error={formState?.zodErrors?.birthdate} />
+            </FormControl>
+
+            <Button variant="contained" color="secondary" fullWidth={true} sx={{ mt: 2 }} type="submit">
+              Sign up
+            </Button>
+          </Box>
+
+          <Divider sx={{ marginY: 2 }}>or</Divider>
+
+          <Button
             variant="outlined"
+            size="large"
+            fullWidth={true}
+            startIcon={<FaFacebookF />}
             color='secondary'
-          />
-          <FormErrors error={formState?.zodErrors?.email} />
-        </FormControl>
-        <FormControl fullWidth margin="normal">
-          <InputLabel
-            htmlFor="password"
-            color='secondary'
+            sx={{ mt: 1, mb: 1 }}
           >
-            Password
-          </InputLabel>
-          <OutlinedInput
-            id="password"
-            label="Password"
-            name="password"
-            type={showPassword ? 'text' : 'password'}
-            autoComplete="current-password"
+            Continue with Facebook
+          </Button>
+
+          <Button
+            variant="outlined"
+            size="large"
+            fullWidth={true}
+            startIcon={<FcGoogle />}
             color='secondary'
-            endAdornment={
-              <InputAdornment position="end">
-                <IconButton
-                  aria-label="toggle password visibility"
-                  onClick={handleClickShowPassword}
-                  onMouseDown={handleMouseDownPassword}
-                  edge="end"
-                >
-                  {showPassword ? <Visibility /> : <VisibilityOff />}
-                </IconButton>
-              </InputAdornment>
-            }
-          />
-          <FormErrors error={formState?.zodErrors?.password} />
-        </FormControl>
-        <FormControl fullWidth margin="normal">
-          <LocalizationProvider
-            dateAdapter={AdapterDayjs}
-            adapterLocale="en"
+            sx={{ mt: 1, mb: 1 }}
           >
-            <DatePicker
-              label="Date of Birth"
-              format="YYYY-MM-DD"
-              name="birthdate"
-            />
-          </LocalizationProvider>
-          <FormErrors error={formState?.zodErrors?.birthdate} />
-        </FormControl>
-
-        <Button variant="contained" color="secondary" fullWidth={true} sx={{ mt: 2 }} type="submit">
-          Sign up
-        </Button>
-      </Box>
-
-      <Divider sx={{ marginY: 2 }}>or</Divider>
-
-      <Button
-        variant="outlined"
-        size="large"
-        fullWidth={true}
-        startIcon={<FaFacebookF />}
-        color='secondary'
-        sx={{ mt: 1, mb: 1 }}
-      >
-        Continue with Facebook
-      </Button>
-
-      <Button
-        variant="outlined"
-        size="large"
-        fullWidth={true}
-        startIcon={<FcGoogle />}
-        color='secondary'
-        sx={{ mt: 1, mb: 1 }}
-      >
-        Continue with Google
-      </Button>
-    </Container>
+            Continue with Google
+          </Button>
+        </Paper>
+      </Container>
+    </Box>
   );
 };
 

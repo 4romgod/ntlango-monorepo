@@ -1,7 +1,7 @@
 'use client'
 
 import React, { FormEvent, useState } from 'react';
-import { TextField, Button, Grid, Typography, MenuItem, Select, InputLabel, FormControl, Box, SelectChangeEvent } from '@mui/material';
+import { TextField, Button, Grid, Typography, MenuItem, Select, InputLabel, FormControl, Box, SelectChangeEvent, Paper } from '@mui/material';
 import { CreateEventInputType, EventPrivacySetting, EventStatus, Location } from '@/data/graphql/types/graphql';
 import { EventMutationFormProps } from '@/lib/constants';
 import CategoryFilter from '@/components/events/filters/category';
@@ -66,173 +66,170 @@ export default function EventMutationForm({ categoryList }: EventMutationFormPro
 
           {/* Event Title and Description */}
           <Grid item xs={12}>
-            <Box
-              sx={{
-                backgroundColor: 'background.paper',
-                border: '1px solid #ccc',
-                borderRadius: 5,
-                p: 10,
-              }}
-            >
-              <Typography variant="h4">Event Details</Typography>
+            <Paper elevation={3} sx={{ padding: 3, borderRadius: 2 }}>
               <Box
                 sx={{
+                  px: 10,
                   py: 5,
                 }}
               >
-                <Typography variant="h6">Event Title</Typography>
-                <Typography variant='body2'>
-                  Choose a clear, informative title that tells people exactly what your event is about.
-                </Typography>
-                <TextField
-                  required
-                  fullWidth
-                  label="Title"
-                  name="title"
-                  size='small'
-                  color='secondary'
-                  value={eventData.title}
-                  onChange={handleChange}
-                  sx={{ mt: 1 }}
-                />
+                <Typography variant="h4">Event Details</Typography>
+                <Box
+                  sx={{
+                    py: 5,
+                  }}
+                >
+                  <Typography variant="h6">Event Title</Typography>
+                  <Typography variant='body2'>
+                    Choose a clear, informative title that tells people exactly what your event is about.
+                  </Typography>
+                  <TextField
+                    required
+                    fullWidth
+                    label="Title"
+                    name="title"
+                    size='small'
+                    color='secondary'
+                    value={eventData.title}
+                    onChange={handleChange}
+                    sx={{ mt: 1 }}
+                  />
+                </Box>
+                <Box>
+                  <Typography variant="h6">Summary</Typography>
+                  <Typography variant='body2'>
+                    Write a short, attention-grabbing description for your event. This will appear at the top of your event page (max 140 characters).
+                  </Typography>
+                  <TextField
+                    required
+                    fullWidth
+                    label="Description"
+                    name="description"
+                    size='small'
+                    color='secondary'
+                    multiline
+                    rows={4}
+                    value={eventData.description}
+                    onChange={handleChange}
+                    sx={{ mt: 1 }}
+                  />
+                </Box>
               </Box>
-              <Box>
-                <Typography variant="h6">Summary</Typography>
-                <Typography variant='body2'>
-                  Write a short, attention-grabbing description for your event. This will appear at the top of your event page (max 140 characters).
-                </Typography>
-                <TextField
-                  required
-                  fullWidth
-                  label="Description"
-                  name="description"
-                  size='small'
-                  color='secondary'
-                  multiline
-                  rows={4}
-                  value={eventData.description}
-                  onChange={handleChange}
-                  sx={{ mt: 1 }}
-                />
-              </Box>
-            </Box>
+            </Paper>
           </Grid>
 
           {/* Date and Location */}
           <Grid item xs={12}>
-            <Box
-              sx={{
-                backgroundColor: 'background.paper',
-                border: '1px solid #ccc',
-                borderRadius: 5,
-                p: 10,
-              }}
-            >
-              <Typography variant="h4">Date and Location</Typography>
+            <Paper elevation={3} sx={{ padding: 3, borderRadius: 2 }}>
               <Box
                 sx={{
+                  px: 10,
                   py: 5,
                 }}
               >
-                <EventDateInput onChange={handleEventDateChange} />
-              </Box>
+                <Typography variant="h4">Date and Location</Typography>
+                <Box
+                  sx={{
+                    py: 5,
+                  }}
+                >
+                  <EventDateInput onChange={handleEventDateChange} />
+                </Box>
 
-              <Box>
-                <LocationInput
-                  onChange={handleLocationChange}
-                />
+                <Box>
+                  <LocationInput onChange={handleLocationChange} />
+                </Box>
               </Box>
-            </Box>
+            </Paper>
           </Grid>
 
           <Grid item xs={12}>
-            <Box
-              sx={{
-                backgroundColor: 'background.paper',
-                border: '1px solid #ccc',
-                borderRadius: 5,
-                width: '100%',
-                p: 10,
-              }}
-            >
-              <Typography variant="h4">Other stuff</Typography>
+            <Paper elevation={3} sx={{ padding: 3, borderRadius: 2 }}>
               <Box
                 sx={{
-                  py: 2,
+                  px: 10,
+                  py: 5,
                 }}
               >
-                <Typography variant="h6">What categories does your event fall under?</Typography>
-                <CategoryFilter
-                  categoryList={categoryList}
-                  onChange={handleEventCategoryListChange}
-                />
-              </Box>
-              <Box
-                sx={{
-                  py: 2,
-                }}
-              >
-                <Typography variant="h6">Event Link</Typography>
-                <Typography variant='body2'>Add a link to your event page or website.</Typography>
-                <TextField
-                  fullWidth
-                  label="Event Link"
-                  name="eventLink"
-                  size='small'
-                  color='secondary'
-                  value={eventData.eventLink}
-                  onChange={handleChange}
-                  sx={{ mt: 1 }}
-                />
-              </Box>
-
-              <Box
-                sx={{
-                  py: 2,
-                }}
-              >
-                <Typography variant="h6">Event Status</Typography>
-                <FormControl required size='small'>
-                  <InputLabel color='secondary'>Status</InputLabel>
-                  <Select
-                    name="status"
-                    value={eventData.status}
-                    onChange={handleStatusChange}
+                <Typography variant="h4">Other stuff</Typography>
+                <Box
+                  sx={{
+                    py: 2,
+                  }}
+                >
+                  <Typography variant="h6">What categories does your event fall under?</Typography>
+                  <CategoryFilter
+                    categoryList={categoryList}
+                    onChange={handleEventCategoryListChange}
+                  />
+                </Box>
+                <Box
+                  sx={{
+                    py: 2,
+                  }}
+                >
+                  <Typography variant="h6">Event Link</Typography>
+                  <Typography variant='body2'>Add a link to your event page or website.</Typography>
+                  <TextField
+                    fullWidth
+                    label="Event Link"
+                    name="eventLink"
+                    size='small'
                     color='secondary'
-                  >
-                    {Object.values(EventStatus).map((status) => (
-                      <MenuItem key={`Event-status.${status}`} value={status}>{status}</MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Box>
+                    value={eventData.eventLink}
+                    onChange={handleChange}
+                    sx={{ mt: 1 }}
+                  />
+                </Box>
 
-              <Box
-                sx={{
-                  py: 2,
-                }}
-              >
-                <Typography variant="h6">What&apos;s the capacity for your event?</Typography>
-                <Typography variant='body2'>Event capacity is the total number of tickets you&apos;re willing to sell.</Typography>
-                <TextField
-                  label="Capacity"
-                  name="capacity"
-                  type="number"
-                  size='small'
-                  color='secondary'
-                  value={eventData.capacity}
-                  onChange={handleChange}
-                  sx={{ mt: 2 }}
-                />
+                <Box
+                  sx={{
+                    py: 2,
+                  }}
+                >
+                  <Typography variant="h6">Event Status</Typography>
+                  <FormControl required size='small'>
+                    <InputLabel color='secondary'>Status</InputLabel>
+                    <Select
+                      name="status"
+                      value={eventData.status}
+                      onChange={handleStatusChange}
+                      color='secondary'
+                    >
+                      {Object.values(EventStatus).map((status) => (
+                        <MenuItem key={`Event-status.${status}`} value={status}>{status}</MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Box>
+
+                <Box
+                  sx={{
+                    py: 2,
+                  }}
+                >
+                  <Typography variant="h6">What&apos;s the capacity for your event?</Typography>
+                  <Typography variant='body2'>Event capacity is the total number of tickets you&apos;re willing to sell.</Typography>
+                  <TextField
+                    label="Capacity"
+                    name="capacity"
+                    type="number"
+                    size='small'
+                    color='secondary'
+                    value={eventData.capacity}
+                    onChange={handleChange}
+                    sx={{ mt: 2 }}
+                  />
+                </Box>
               </Box>
-            </Box>
+            </Paper>
           </Grid>
 
           <Grid item xs={12}>
             <Button
               type="submit"
               variant="contained"
-              color="primary"secondary
+              color="primary"
               size="large"
             >
               Create Event

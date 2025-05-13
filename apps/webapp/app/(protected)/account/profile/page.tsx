@@ -61,289 +61,291 @@ export default async function UserPublicProfile() {
   const rsvpedEvents = events.readEvents;
 
   return (
-    <Container maxWidth="lg" sx={{ py: 6 }}>
-      <Paper
-        elevation={1}
-        sx={{
-          borderRadius: 2,
-          overflow: 'hidden',
-        }}
-      >
-        {/* Profile Header */}
-        <Box
+    <Box sx={{ py: 6, backgroundColor: 'background.paper' }}>
+      <Container maxWidth="lg">
+        <Paper
+          elevation={3}
           sx={{
-            height: 200,
-            position: 'relative',
-            backgroundColor: 'secondary.dark',
+            borderRadius: 2,
+            overflow: 'hidden',
           }}
         >
-          <Link href={ROUTES.ACCOUNT.ROOT}>
-            <Button
-              startIcon={<EditIcon />}
-              variant="contained"
-              color="inherit"
-              size="small"
-              sx={{
-                position: 'absolute',
-                top: 16,
-                right: 16,
-                borderRadius: 8,
-                bgcolor: 'background.paper',
-                color: 'text.primary',
-                '&:hover': {
-                  bgcolor: 'background.default',
-                }
-              }}
-            >
-              Edit
-            </Button>
-          </Link>
-        </Box>
-
-        {/* Profile Picture */}
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            mt: -10,
-          }}
-        >
-          <Box sx={{ position: 'relative' }}>
-            <Avatar
-              src={user.profile_picture || "/api/placeholder/120/120"}
-              alt={`${user.given_name} ${user.family_name}`}
-              sx={{
-                width: 160,
-                height: 160,
-                border: '4px solid white',
-                boxShadow: 3,
-              }}
-            />
-            <Box
-              sx={{
-                position: 'absolute',
-                bottom: 12,
-                right: 12,
-                width: 20,
-                height: 20,
-                bgcolor: 'success.main',
-                borderRadius: '50%',
-                border: '2px solid white',
-              }}
-            />
-          </Box>
-        </Box>
-
-        {/* User Info */}
-        <Box sx={{ textAlign: 'center', px: 3, py: 2 }}>
-          <Typography variant="h4" component="h1" fontWeight="bold">
-            {user.given_name} {user.family_name}
-          </Typography>
-
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mt: 1 }}>
-            <Typography variant="body2" color="text.secondary">
-              @{user.username}
-            </Typography>
-            <Divider orientation="vertical" flexItem sx={{ mx: 2, height: 16 }} />
-            <Chip
-              label={user.userRole}
-              size="small"
-              color="primary"
-              variant="outlined"
-            />
-          </Box>
-        </Box>
-
-        {/* Bio */}
-        <Box sx={{ px: 3, py: 2 }}>
-          <Typography
-            variant="body1"
-            align="center"
-            color="text.secondary"
-            sx={{ maxWidth: 800, mx: 'auto' }}
+          {/* Profile Header */}
+          <Box
+            sx={{
+              height: 200,
+              position: 'relative',
+              backgroundColor: 'secondary.dark',
+            }}
           >
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ipsa vel perferendis sint itaque, soluta quos in suscipit quisquam provident animi pariatur asperiores ad quidem voluptatibus accusamus consequatur! Placeat, veritatis aut.
-          </Typography>
-        </Box>
-
-        {/* Details Section */}
-        <CardContent sx={{ px: 3, py: 4 }}>
-          <Grid container spacing={4}>
-            {/* User Information */}
-            <Grid item xs={12} md={6}>
-              <Card variant="outlined" sx={{ height: '100%' }}>
-                <CardHeader
-                  title="Personal Information"
-                  titleTypographyProps={{ variant: 'h6', fontWeight: 'medium' }}
-                />
-                <Divider />
-                <CardContent>
-                  <List disablePadding>
-                    <ListItem>
-                      <ListItemAvatar>
-                        <Avatar sx={{ bgcolor: 'secondary.main' }}>
-                          <EmailIcon />
-                        </Avatar>
-                      </ListItemAvatar>
-                      <ListItemText
-                        primary="Email"
-                        secondary={user.email}
-                        primaryTypographyProps={{ variant: 'body2', color: 'text.secondary' }}
-                        secondaryTypographyProps={{ variant: 'body1' }}
-                      />
-                    </ListItem>
-
-                    <ListItem>
-                      <ListItemAvatar>
-                        <Avatar sx={{ bgcolor: 'secondary.main' }}>
-                          <PhoneIcon />
-                        </Avatar>
-                      </ListItemAvatar>
-                      <ListItemText
-                        primary="Phone"
-                        secondary={user.phone_number || "Not provided"}
-                        primaryTypographyProps={{ variant: 'body2', color: 'text.secondary' }}
-                        secondaryTypographyProps={{ variant: 'body1' }}
-                      />
-                    </ListItem>
-
-                    <ListItem>
-                      <ListItemAvatar>
-                        <Avatar sx={{ bgcolor: 'secondary.main' }}>
-                          <LocationIcon />
-                        </Avatar>
-                      </ListItemAvatar>
-                      <ListItemText
-                        primary="Address"
-                        secondary={user.address}
-                        primaryTypographyProps={{ variant: 'body2', color: 'text.secondary' }}
-                        secondaryTypographyProps={{ variant: 'body1' }}
-                      />
-                    </ListItem>
-
-                    <ListItem>
-                      <ListItemAvatar>
-                        <Avatar sx={{ bgcolor: 'secondary.main' }}>
-                          <CakeIcon />
-                        </Avatar>
-                      </ListItemAvatar>
-                      <ListItemText
-                        primary="Birthday"
-                        secondary={`${formattedDOB} (${age} years old)`}
-                        primaryTypographyProps={{ variant: 'body2', color: 'text.secondary' }}
-                        secondaryTypographyProps={{ variant: 'body1' }}
-                      />
-                    </ListItem>
-
-                    <ListItem>
-                      <ListItemAvatar>
-                        <Avatar sx={{ bgcolor: 'secondary.main' }}>
-                          <GenderIcon />
-                        </Avatar>
-                      </ListItemAvatar>
-                      <ListItemText
-                        primary="Gender"
-                        secondary={user.gender || "Not specified"}
-                        primaryTypographyProps={{ variant: 'body2', color: 'text.secondary' }}
-                        secondaryTypographyProps={{ variant: 'body1' }}
-                      />
-                    </ListItem>
-                  </List>
-                </CardContent>
-              </Card>
-            </Grid>
-
-            {/* Interests */}
-            <Grid item xs={12} md={6}>
-              <Card variant="outlined" sx={{ height: '100%' }}>
-                <CardHeader
-                  title="Interests"
-                  titleTypographyProps={{ variant: 'h6', fontWeight: 'medium' }}
-                />
-                <Divider />
-                <CardContent>
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                    {eventCategories.readEventCategories.map((category, index) => (
-                      <EventCategoryChip
-                        key={index}
-                        category={category}
-                      />
-                    ))}
-                  </Box>
-                </CardContent>
-              </Card>
-            </Grid>
-          </Grid>
-        </CardContent>
-
-        {/* Events Section */}
-        <Box sx={{ px: 3, pb: 4 }}>
-          {/* Created Events Section */}
-          <Box>
-            {createdEvents.length > 0 ? (
-              <EventsCarousel
-                events={createdEvents}
-                title={`Events Created by ${user.given_name}`}
-                autoplay={true}
-                autoplayInterval={6000}
-                itemWidth={350}
-                showIndicators={true}
-                viewAllEventsButton={false}
-              />
-            ) : (
-              <Paper variant="outlined" sx={{ p: 3, textAlign: 'center' }}>
-                <EventIcon sx={{ fontSize: 40, color: 'text.disabled', mb: 2 }} />
-                <Typography variant="body1" color="text.secondary">
-                  No events created yet
-                </Typography>
-              </Paper>
-            )}
+            <Link href={ROUTES.ACCOUNT.ROOT}>
+              <Button
+                startIcon={<EditIcon />}
+                variant="contained"
+                color="inherit"
+                size="small"
+                sx={{
+                  position: 'absolute',
+                  top: 16,
+                  right: 16,
+                  borderRadius: 8,
+                  bgcolor: 'background.paper',
+                  color: 'text.primary',
+                  '&:hover': {
+                    bgcolor: 'background.default',
+                  }
+                }}
+              >
+                Edit
+              </Button>
+            </Link>
           </Box>
 
-          {/* RSVP'd Events Section */}
-          <Box>
-            {rsvpedEvents.length > 0 ? (
-              <EventsCarousel
-                events={createdEvents}
-                title={`Events ${user.given_name} is Attending`}
-                autoplay={true}
-                autoplayInterval={6000}
-                itemWidth={350}
-                showIndicators={true}
-                viewAllEventsButton={false}
+          {/* Profile Picture */}
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              mt: -10,
+            }}
+          >
+            <Box sx={{ position: 'relative' }}>
+              <Avatar
+                src={user.profile_picture || "/api/placeholder/120/120"}
+                alt={`${user.given_name} ${user.family_name}`}
+                sx={{
+                  width: 160,
+                  height: 160,
+                  border: '4px solid white',
+                  boxShadow: 3,
+                }}
               />
-            ) : (
-              <Paper variant="outlined" sx={{ p: 3, textAlign: 'center' }}>
-                <RSVPIcon sx={{ fontSize: 40, color: 'text.disabled', mb: 2 }} />
-                <Typography variant="body1" color="text.secondary">
-                  No RSVPs yet
-                </Typography>
-              </Paper>
-            )}
+              <Box
+                sx={{
+                  position: 'absolute',
+                  bottom: 12,
+                  right: 12,
+                  width: 20,
+                  height: 20,
+                  bgcolor: 'success.main',
+                  borderRadius: '50%',
+                  border: '2px solid white',
+                }}
+              />
+            </Box>
           </Box>
-        </Box>
 
-        {/* Footer */}
-        <Box
-          sx={{
-            px: 3,
-            py: 2,
-            bgcolor: 'background.default',
-            borderTop: 1,
-            borderColor: 'divider',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <Typography variant="caption" color="text.secondary">
-            User ID: {user.userId}
-          </Typography>
-          <Typography variant="caption" color="text.secondary">
-            Member since 2021
-          </Typography>
-        </Box>
-      </Paper>
-    </Container>
+          {/* User Info */}
+          <Box sx={{ textAlign: 'center', px: 3, py: 2 }}>
+            <Typography variant="h4" component="h1" fontWeight="bold">
+              {user.given_name} {user.family_name}
+            </Typography>
+
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mt: 1 }}>
+              <Typography variant="body2" color="text.secondary">
+                @{user.username}
+              </Typography>
+              <Divider orientation="vertical" flexItem sx={{ mx: 2, height: 16 }} />
+              <Chip
+                label={user.userRole}
+                size="small"
+                color="primary"
+                variant="outlined"
+              />
+            </Box>
+          </Box>
+
+          {/* Bio */}
+          <Box sx={{ px: 3, py: 2 }}>
+            <Typography
+              variant="body1"
+              align="center"
+              color="text.secondary"
+              sx={{ maxWidth: 800, mx: 'auto' }}
+            >
+              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ipsa vel perferendis sint itaque, soluta quos in suscipit quisquam provident animi pariatur asperiores ad quidem voluptatibus accusamus consequatur! Placeat, veritatis aut.
+            </Typography>
+          </Box>
+
+          {/* Details Section */}
+          <CardContent sx={{ px: 3, py: 4 }}>
+            <Grid container spacing={4}>
+              {/* User Information */}
+              <Grid item xs={12} md={6}>
+                <Card variant="outlined" sx={{ height: '100%' }}>
+                  <CardHeader
+                    title="Personal Information"
+                    titleTypographyProps={{ variant: 'h6', fontWeight: 'medium' }}
+                  />
+                  <Divider />
+                  <CardContent>
+                    <List disablePadding>
+                      <ListItem>
+                        <ListItemAvatar>
+                          <Avatar sx={{ bgcolor: 'secondary.main' }}>
+                            <EmailIcon />
+                          </Avatar>
+                        </ListItemAvatar>
+                        <ListItemText
+                          primary="Email"
+                          secondary={user.email}
+                          primaryTypographyProps={{ variant: 'body2', color: 'text.secondary' }}
+                          secondaryTypographyProps={{ variant: 'body1' }}
+                        />
+                      </ListItem>
+
+                      <ListItem>
+                        <ListItemAvatar>
+                          <Avatar sx={{ bgcolor: 'secondary.main' }}>
+                            <PhoneIcon />
+                          </Avatar>
+                        </ListItemAvatar>
+                        <ListItemText
+                          primary="Phone"
+                          secondary={user.phone_number || "Not provided"}
+                          primaryTypographyProps={{ variant: 'body2', color: 'text.secondary' }}
+                          secondaryTypographyProps={{ variant: 'body1' }}
+                        />
+                      </ListItem>
+
+                      <ListItem>
+                        <ListItemAvatar>
+                          <Avatar sx={{ bgcolor: 'secondary.main' }}>
+                            <LocationIcon />
+                          </Avatar>
+                        </ListItemAvatar>
+                        <ListItemText
+                          primary="Address"
+                          secondary={user.address}
+                          primaryTypographyProps={{ variant: 'body2', color: 'text.secondary' }}
+                          secondaryTypographyProps={{ variant: 'body1' }}
+                        />
+                      </ListItem>
+
+                      <ListItem>
+                        <ListItemAvatar>
+                          <Avatar sx={{ bgcolor: 'secondary.main' }}>
+                            <CakeIcon />
+                          </Avatar>
+                        </ListItemAvatar>
+                        <ListItemText
+                          primary="Birthday"
+                          secondary={`${formattedDOB} (${age} years old)`}
+                          primaryTypographyProps={{ variant: 'body2', color: 'text.secondary' }}
+                          secondaryTypographyProps={{ variant: 'body1' }}
+                        />
+                      </ListItem>
+
+                      <ListItem>
+                        <ListItemAvatar>
+                          <Avatar sx={{ bgcolor: 'secondary.main' }}>
+                            <GenderIcon />
+                          </Avatar>
+                        </ListItemAvatar>
+                        <ListItemText
+                          primary="Gender"
+                          secondary={user.gender || "Not specified"}
+                          primaryTypographyProps={{ variant: 'body2', color: 'text.secondary' }}
+                          secondaryTypographyProps={{ variant: 'body1' }}
+                        />
+                      </ListItem>
+                    </List>
+                  </CardContent>
+                </Card>
+              </Grid>
+
+              {/* Interests */}
+              <Grid item xs={12} md={6}>
+                <Card variant="outlined" sx={{ height: '100%' }}>
+                  <CardHeader
+                    title="Interests"
+                    titleTypographyProps={{ variant: 'h6', fontWeight: 'medium' }}
+                  />
+                  <Divider />
+                  <CardContent>
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                      {eventCategories.readEventCategories.map((category, index) => (
+                        <EventCategoryChip
+                          key={index}
+                          category={category}
+                        />
+                      ))}
+                    </Box>
+                  </CardContent>
+                </Card>
+              </Grid>
+            </Grid>
+          </CardContent>
+
+          {/* Events Section */}
+          <Box sx={{ px: 3, pb: 4 }}>
+            {/* Created Events Section */}
+            <Box>
+              {createdEvents.length > 0 ? (
+                <EventsCarousel
+                  events={createdEvents}
+                  title={`Events Created by ${user.given_name}`}
+                  autoplay={true}
+                  autoplayInterval={6000}
+                  itemWidth={350}
+                  showIndicators={true}
+                  viewAllEventsButton={false}
+                />
+              ) : (
+                <Paper variant="outlined" sx={{ p: 3, textAlign: 'center' }}>
+                  <EventIcon sx={{ fontSize: 40, color: 'text.disabled', mb: 2 }} />
+                  <Typography variant="body1" color="text.secondary">
+                    No events created yet
+                  </Typography>
+                </Paper>
+              )}
+            </Box>
+
+            {/* RSVP'd Events Section */}
+            <Box>
+              {rsvpedEvents.length > 0 ? (
+                <EventsCarousel
+                  events={createdEvents}
+                  title={`Events ${user.given_name} is Attending`}
+                  autoplay={true}
+                  autoplayInterval={6000}
+                  itemWidth={350}
+                  showIndicators={true}
+                  viewAllEventsButton={false}
+                />
+              ) : (
+                <Paper variant="outlined" sx={{ p: 3, textAlign: 'center' }}>
+                  <RSVPIcon sx={{ fontSize: 40, color: 'text.disabled', mb: 2 }} />
+                  <Typography variant="body1" color="text.secondary">
+                    No RSVPs yet
+                  </Typography>
+                </Paper>
+              )}
+            </Box>
+          </Box>
+
+          {/* Footer */}
+          <Box
+            sx={{
+              px: 3,
+              py: 2,
+              bgcolor: 'background.default',
+              borderTop: 1,
+              borderColor: 'divider',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
+            <Typography variant="caption" color="text.secondary">
+              User ID: {user.userId}
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              Member since 2021
+            </Typography>
+          </Box>
+        </Paper>
+      </Container>
+    </Box>
   );
 }

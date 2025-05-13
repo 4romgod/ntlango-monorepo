@@ -59,15 +59,8 @@ const LocationInput: React.FC<LocationInputProps> = ({ onChange }) => {
   ];
 
   return (
-    <Box
-      sx={{
-        backgroundColor: 'background.paper',
-        border: '1px solid #ccc',
-        borderRadius: 5,
-        p: 6,
-      }}
-    >
-      <Typography variant="h6">Location</Typography>
+    <Box>
+      <Typography variant="h5" gutterBottom>Location</Typography>
 
       <FormControl component="fieldset" sx={{ width: '100%', mb: 4 }}>
         <LocationTypeRadioButtons selectedType={locationType} onChange={handleLocationTypeChange} />

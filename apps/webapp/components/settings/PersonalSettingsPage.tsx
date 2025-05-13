@@ -64,6 +64,7 @@ export default function PersonalSettingsPage() {
 
   return (
     <Box sx={{ p: 3, maxWidth: 600, margin: 'auto' }}>
+            <Paper elevation={3} sx={{ padding: 3, borderRadius: 2 }}>
       <Typography variant="h4" fontWeight='bold' sx={{ mb: 5 }}>
         Personal Settings
       </Typography>
@@ -152,6 +153,7 @@ export default function PersonalSettingsPage() {
           Save Changes
         </Button>
       </Box>
+      </Paper>
     </Box>
   );
 };
