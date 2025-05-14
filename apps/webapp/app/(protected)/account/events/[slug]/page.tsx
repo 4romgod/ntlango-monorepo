@@ -6,7 +6,13 @@ import { getEventCategoryIcon } from '@/lib/constants';
 import EventOperationsModal from '@/components/modal/event-operations';
 import {RRule} from 'rrule';
 
-export default async function Page({ params }: { params: { slug: string } }) {
+interface Props {
+  params: Promise<{ slug: string }>;
+}
+
+export default async function Page(props: Props) {
+  const params = await props.params;
+
   // TODO this page should be accessible only to the event organizer
   const { data: eventRetrieved } = await getClient().query({
     query: GetEventBySlugDocument,

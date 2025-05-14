@@ -6,7 +6,13 @@ import { Typography, Box, Grid, Paper } from '@mui/material';
 import UserDetails from '@/components/users/user-details';
 import EventCategoryChip from '@/components/events/category/chip';
 
-export default async function UserPage({ params }: { params: { username: string } }) {
+interface Props {
+  params: Promise<{ username: string }>;
+}
+
+export default async function UserPage(props: Props) {
+  const params = await props.params;
+
   const { data: userRetrieved } = await getClient().query({
     query: GetUserByUsernameDocument,
     variables: { username: params.username },

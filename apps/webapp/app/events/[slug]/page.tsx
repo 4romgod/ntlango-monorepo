@@ -20,7 +20,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function Page({ params }: { params: { slug: string } }) {
+interface Props {
+  params: Promise<{ slug: string }>;
+}
+
+export default async function Page(props: Props) {
+  const params = await props.params;
+
   const { data: eventRetrieved } = await getClient().query({
     query: GetEventBySlugDocument,
     variables: { slug: params.slug },
