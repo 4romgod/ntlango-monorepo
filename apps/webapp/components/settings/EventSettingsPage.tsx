@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import {
   Box,
   Typography,
-  Paper,
   Grid,
   Switch,
   FormControlLabel,
@@ -72,128 +71,126 @@ export default function EventSettingsPage() {
 
   return (
     <Box sx={{ p: 3, maxWidth: 800, margin: 'auto' }}>
-      <Paper elevation={3} sx={{ padding: 3, borderRadius: 2 }}>
-        <Typography variant="h4" fontWeight='bold' sx={{ mb: 5 }}>
-          Event Preferences
-        </Typography>
+      <Typography variant="h4" fontWeight='bold' sx={{ mb: 5 }}>
+        Event Preferences
+      </Typography>
 
-        <Grid container spacing={3}>
-          <Grid size={{ xs: 12 }}>
-            <Typography variant="subtitle1" sx={{ mb: 2 }}>
-              Notification Preferences
-            </Typography>
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={settings.emailNotifications}
-                  onChange={() => handleToggleChange('emailNotifications')}
-                  color="secondary"
-                />
-              }
-              label="Email Notifications"
-            />
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={settings.pushNotifications}
-                  onChange={() => handleToggleChange('pushNotifications')}
-                  color="secondary"
-                />
-              }
-              label="Push Notifications"
-            />
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={settings.eventRecommendations}
-                  onChange={() => handleToggleChange('eventRecommendations')}
-                  color="secondary"
-                />
-              }
-              label="Event Recommendations"
-            />
-          </Grid>
-
-          <Grid size={{ xs: 12 }}>
-            <Typography variant="subtitle1" sx={{ mb: 2 }}>
-              Event Discovery
-            </Typography>
-            <Box sx={{ px: 2 }}>
-              <Typography gutterBottom>
-                Maximum Distance for Events: {settings.maxDistanceForEvents} miles
-              </Typography>
-              <Slider
-                value={settings.maxDistanceForEvents}
-                onChange={handleSliderChange}
-                valueLabelDisplay="auto"
-                step={5}
-                marks
-                min={5}
-                max={100}
-                color='secondary'
+      <Grid container spacing={3}>
+        <Grid size={{ xs: 12 }}>
+          <Typography variant="subtitle1" sx={{ mb: 2 }}>
+            Notification Preferences
+          </Typography>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={settings.emailNotifications}
+                onChange={() => handleToggleChange('emailNotifications')}
+                color="secondary"
               />
-            </Box>
-          </Grid>
+            }
+            label="Email Notifications"
+          />
+          <FormControlLabel
+            control={
+              <Switch
+                checked={settings.pushNotifications}
+                onChange={() => handleToggleChange('pushNotifications')}
+                color="secondary"
+              />
+            }
+            label="Push Notifications"
+          />
+          <FormControlLabel
+            control={
+              <Switch
+                checked={settings.eventRecommendations}
+                onChange={() => handleToggleChange('eventRecommendations')}
+                color="secondary"
+              />
+            }
+            label="Event Recommendations"
+          />
+        </Grid>
 
-          <Grid size={{ xs: 12 }}>
-            <FormControl fullWidth variant="outlined">
-              <InputLabel color='secondary'>Event Notification Frequency</InputLabel>
-              <Select
-                value={settings.eventFrequency}
-                onChange={(e) => setSettings(prev => ({
-                  ...prev,
-                  eventFrequency: e.target.value as 'daily' | 'weekly' | 'monthly'
-                }))}
-                label="Event Notification Frequency"
-                color='secondary'
-              >
-                <MenuItem value="daily">Daily</MenuItem>
-                <MenuItem value="weekly">Weekly</MenuItem>
-                <MenuItem value="monthly">Monthly</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-
-          <Grid size={{ xs: 12 }}>
-            <Typography variant="subtitle1" sx={{ mb: 2 }}>
-              Preferred Event Types
+        <Grid size={{ xs: 12 }}>
+          <Typography variant="subtitle1" sx={{ mb: 2 }}>
+            Event Discovery
+          </Typography>
+          <Box sx={{ px: 2 }}>
+            <Typography gutterBottom>
+              Maximum Distance for Events: {settings.maxDistanceForEvents} miles
             </Typography>
-            <Grid container spacing={1}>
-              {eventTypes.map((type) => (
-                <Grid size={{ xs: 6, sm: 4 }} key={type}>
-                  <FormControlLabel
-                    control={
-                      <Switch
-                        checked={settings.preferredEventTypes.includes(type)}
-                        onChange={() => handleEventTypeToggle(type)}
-                        color="secondary"
-                      />
-                    }
-                    label={type}
-                  />
-                </Grid>
-              ))}
-            </Grid>
-          </Grid>
+            <Slider
+              value={settings.maxDistanceForEvents}
+              onChange={handleSliderChange}
+              valueLabelDisplay="auto"
+              step={5}
+              marks
+              min={5}
+              max={100}
+              color='secondary'
+            />
+          </Box>
+        </Grid>
 
-          <Grid size={{ xs: 12 }}>
-            <Alert severity="info" sx={{ mt: 2 }}>
-              These settings help us personalize your event recommendations and
-              notification preferences.
-            </Alert>
+        <Grid size={{ xs: 12 }}>
+          <FormControl fullWidth variant="outlined">
+            <InputLabel color='secondary'>Event Notification Frequency</InputLabel>
+            <Select
+              value={settings.eventFrequency}
+              onChange={(e) => setSettings(prev => ({
+                ...prev,
+                eventFrequency: e.target.value as 'daily' | 'weekly' | 'monthly'
+              }))}
+              label="Event Notification Frequency"
+              color='secondary'
+            >
+              <MenuItem value="daily">Daily</MenuItem>
+              <MenuItem value="weekly">Weekly</MenuItem>
+              <MenuItem value="monthly">Monthly</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
+
+        <Grid size={{ xs: 12 }}>
+          <Typography variant="subtitle1" sx={{ mb: 2 }}>
+            Preferred Event Types
+          </Typography>
+          <Grid container spacing={1}>
+            {eventTypes.map((type) => (
+              <Grid size={{ xs: 6, sm: 4 }} key={type}>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={settings.preferredEventTypes.includes(type)}
+                      onChange={() => handleEventTypeToggle(type)}
+                      color="secondary"
+                    />
+                  }
+                  label={type}
+                />
+              </Grid>
+            ))}
           </Grid>
         </Grid>
 
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleSave}
-          >
-            Save Changes
-          </Button>
-        </Box>
-      </Paper>
+        <Grid size={{ xs: 12 }}>
+          <Alert severity="info" sx={{ mt: 2 }}>
+            These settings help us personalize your event recommendations and
+            notification preferences.
+          </Alert>
+        </Grid>
+      </Grid>
+
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleSave}
+        >
+          Save Changes
+        </Button>
+      </Box>
     </Box>
   );
 };

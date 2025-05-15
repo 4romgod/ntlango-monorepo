@@ -5,7 +5,6 @@ import {
   Box,
   Typography,
   Grid,
-  Paper,
   Switch,
   FormControlLabel,
   Button,
@@ -63,13 +62,12 @@ export default function PersonalSettingsPage() {
 
   return (
     <Box sx={{ p: 3, maxWidth: 600, margin: 'auto' }}>
-            <Paper elevation={3} sx={{ padding: 3, borderRadius: 2 }}>
       <Typography variant="h4" fontWeight='bold' sx={{ mb: 5 }}>
         Personal Settings
       </Typography>
 
       <Grid container spacing={3}>
-        <Grid size={{xs: 12}}>
+        <Grid size={{ xs: 12 }}>
           <FormControl fullWidth margin="normal">
             <LocalizationProvider
               dateAdapter={AdapterDayjs}
@@ -83,7 +81,7 @@ export default function PersonalSettingsPage() {
             </LocalizationProvider>
           </FormControl>
         </Grid>
-        <Grid size={{xs: 12}}>
+        <Grid size={{ xs: 12 }}>
           <FormControl fullWidth variant="outlined">
             <InputLabel
               color='secondary'
@@ -106,7 +104,7 @@ export default function PersonalSettingsPage() {
           </FormControl>
         </Grid>
 
-        <Grid size={{xs: 12}}>
+        <Grid size={{ xs: 12 }}>
           <Typography variant="subtitle1" sx={{ mb: 1 }}>
             Privacy Settings
           </Typography>
@@ -152,7 +150,6 @@ export default function PersonalSettingsPage() {
           Save Changes
         </Button>
       </Box>
-      </Paper>
     </Box>
   );
 };

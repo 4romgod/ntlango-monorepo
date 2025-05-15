@@ -60,23 +60,18 @@ export default function EventMutationForm({ categoryList }: EventMutationFormPro
 
 
   return (
-    <Box component="div" sx={{ py: 10 }}>
+    <Box component="div" sx={{ py: 2 }}>
       <Box component="form" onSubmit={handleSubmit}>
         <Grid container spacing={5}>
 
           {/* Event Title and Description */}
-          <Grid size={{xs: 12}}>
+          <Grid size={{ xs: 12 }}>
             <Paper elevation={3} sx={{ padding: 3, borderRadius: 2 }}>
-              <Box
-                sx={{
-                  px: 10,
-                  py: 5,
-                }}
-              >
+              <Box>
                 <Typography variant="h4">Event Details</Typography>
                 <Box
                   sx={{
-                    py: 5,
+                    py: 2,
                   }}
                 >
                   <Typography variant="h6">Event Title</Typography>
@@ -119,14 +114,9 @@ export default function EventMutationForm({ categoryList }: EventMutationFormPro
           </Grid>
 
           {/* Date and Location */}
-          <Grid size={{xs: 12}}>
+          <Grid size={{ xs: 12 }}>
             <Paper elevation={3} sx={{ padding: 3, borderRadius: 2 }}>
-              <Box
-                sx={{
-                  px: 10,
-                  py: 5,
-                }}
-              >
+              <Box>
                 <Typography variant="h4">Date and Location</Typography>
                 <Box
                   sx={{
@@ -143,14 +133,9 @@ export default function EventMutationForm({ categoryList }: EventMutationFormPro
             </Paper>
           </Grid>
 
-          <Grid size={{xs: 12}}>
+          <Grid size={{ xs: 12 }}>
             <Paper elevation={3} sx={{ padding: 3, borderRadius: 2 }}>
-              <Box
-                sx={{
-                  px: 10,
-                  py: 5,
-                }}
-              >
+              <Box>
                 <Typography variant="h4">Other stuff</Typography>
                 <Box
                   sx={{
@@ -225,7 +210,7 @@ export default function EventMutationForm({ categoryList }: EventMutationFormPro
             </Paper>
           </Grid>
 
-          <Grid size={{xs: 12}}>
+          <Grid size={{ xs: 12 }}>
             <Button
               type="submit"
               variant="contained"

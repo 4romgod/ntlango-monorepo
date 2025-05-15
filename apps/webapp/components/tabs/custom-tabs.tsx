@@ -99,8 +99,10 @@ export default function CustomTabs({ tabsProps }: { tabsProps: CustomTabsProps }
           aria-label={`${tabsTitle} tabs`}
           textColor="secondary"
           indicatorColor="secondary"
-          TabIndicatorProps={{
-            style: orientation === 'vertical' ? { left: 0, width: 4 } : undefined,
+          slotProps={{
+            indicator: {
+              style: orientation === 'vertical' ? { left: 0, width: 4 } : undefined,
+            }
           }}
           sx={{
             height: orientation === 'vertical' ? '100%' : 'auto',
@@ -132,7 +134,6 @@ export default function CustomTabs({ tabsProps }: { tabsProps: CustomTabsProps }
                 icon={icon}
                 iconPosition="start"
                 disabled={disabled}
-                aria-description={description}
                 sx={{
                   minWidth: isSmallScreen ? 'auto' : undefined,
                   opacity: disabled ? 0.5 : 1,
@@ -145,7 +146,7 @@ export default function CustomTabs({ tabsProps }: { tabsProps: CustomTabsProps }
 
       <Box
         sx={{
-          py: 5,
+          py: 0,
           width: '100%',
           backgroundColor: 'background.paper',
         }}

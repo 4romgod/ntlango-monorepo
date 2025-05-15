@@ -20,7 +20,7 @@ const Footer = () => {
       sx={{
         backgroundColor: darkModeColors.background?.default,
         mt: 'auto',
-        padding: 4,
+        py: 4,
       }}
     >
       <Container maxWidth="lg">

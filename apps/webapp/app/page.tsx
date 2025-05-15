@@ -28,62 +28,43 @@ export const metadata: Metadata = {
 
 export default async function HomePage() {
   const { data: events } = await getClient().query({ query: GetAllEventsDocument });
-  const { data: eventCategories } = await getClient().query({ query: GetAllEventCategoriesDocument });
+  const { data } = await getClient().query({ query: GetAllEventCategoriesDocument });
+  const eventCategories = data.readEventCategories?.slice(0, 6) ?? [];
+
 
   return (
     <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Box
         id="hero-section"
         sx={{
-          py: 15,
-          position: 'relative',
-          width: '100%',
-          overflow: 'hidden',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
+          py: 8,
           boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
           backgroundColor: 'background.default',
+          textAlign: 'center',
         }}
       >
-        <Box sx={{
-          position: 'absolute',
-          width: '100%',
-          height: '100%',
-          opacity: 0.1,
-          zIndex: 0,
-          backgroundImage: 'url("/api/placeholder/1200/800")',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }} />
-
-        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
-          <Grid container spacing={4}>
-            <Grid size={{ xs: 12, md: 7 }}>
-              <Typography
-                variant="h1"
-                sx={{
-                  fontWeight: 800,
-                  fontSize: { xs: '2.5rem', md: '3.5rem' },
-                  mb: 2,
-                  lineHeight: 1.2
-                }}
-              >
-                Where Connections Happen
-              </Typography>
-              <Typography
-                variant="h4"
-                sx={{
-                  fontWeight: 400,
-                  fontSize: { xs: '1.25rem', md: '1.5rem' },
-                  mb: 4,
-                  maxWidth: '80%'
-                }}
-              >
-                Discover events that match your passions, meet fascinating people, and create memorable experiences.
-              </Typography>
-            </Grid>
-          </Grid>
+        <Container maxWidth="md" sx={{ zIndex: 1 }}>
+          <Typography
+            variant="h1"
+            sx={{
+              fontWeight: 800,
+              fontSize: { xs: '2.5rem', md: '3.5rem' },
+              mb: 2,
+              lineHeight: 1.2
+            }}
+          >
+            Where Connections Happen
+          </Typography>
+          <Typography
+            variant="h4"
+            sx={{
+              fontWeight: 400,
+              fontSize: { xs: '1.25rem', md: '1.5rem' },
+              mb: 4,
+            }}
+          >
+            Discover events that match your passions, meet fascinating people, and create memorable experiences.
+          </Typography>
         </Container>
       </Box>
 
@@ -100,7 +81,7 @@ export default async function HomePage() {
           </Typography>
 
           <Grid container spacing={3} justifyContent="center">
-            {eventCategories.readEventCategories.map((category, index) => {
+            {eventCategories.map((category, index) => {
               return (
                 <Grid size={{ xs: 6, sm: 4, md: 2 }} key={index}>
                   <EventCategoryBox eventCategory={category} />

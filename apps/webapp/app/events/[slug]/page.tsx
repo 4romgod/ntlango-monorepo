@@ -31,7 +31,7 @@ export default async function Page(props: Props) {
     query: GetEventBySlugDocument,
     variables: { slug: params.slug },
   });
-  const { title, organizerList, description, media, recurrenceRule, location, eventCategoryList, rSVPList, comments } = eventRetrieved.readEventBySlug;
+  const { title, organizerList, description, media, recurrenceRule, location, eventCategoryList, comments } = eventRetrieved.readEventBySlug;
 
   const getLocationText = (location: Location): string => {
     switch (location.locationType) {

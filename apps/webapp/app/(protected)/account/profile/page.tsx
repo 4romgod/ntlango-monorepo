@@ -56,13 +56,16 @@ export default async function UserPublicProfile() {
   const formattedDOB = format(new Date(user.birthdate), 'dd MMMM yyyy');
 
   return (
-    <Box sx={{ py: 6, backgroundColor: 'background.paper' }}>
-      <Container maxWidth="lg">
+    <Box sx={{ py: 2, backgroundColor: 'background.paper' }}>
+      <Container maxWidth="md">
         <Paper
           elevation={3}
           sx={{
             borderRadius: 2,
             overflow: 'hidden',
+            boxShadow: { xs: 'none', sm: 3 },
+            border: { xs: '1px solid', sm: 'none' },
+            borderColor: { xs: 'divider', sm: 'transparent' },
           }}
         >
           {/* Profile Header */}

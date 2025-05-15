@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import IconButton from '@mui/material/IconButton';
-import { Mail, Notifications } from '@mui/icons-material';
+import { MailOutline, NotificationsOutlined, ControlPointOutlined } from '@mui/icons-material';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { ROUTES } from '@/lib/constants';
@@ -37,9 +37,17 @@ export default function NotificationsMenu({
       onClose={handleNotificationsMenuClose}
     >
       <MenuItem>
+        <Link href={ROUTES.ACCOUNT.EVENTS.CREATE}>
+          <IconButton size="large" aria-label="new mails" color="inherit">
+            <ControlPointOutlined />
+          </IconButton>
+          Create Event
+        </Link>
+      </MenuItem>
+      <MenuItem>
         <Link href={ROUTES.ACCOUNT.MESSAGES}>
           <IconButton size="large" aria-label="new mails" color="inherit">
-            <Mail />
+            <MailOutline />
           </IconButton>
           Messages
         </Link>
@@ -47,7 +55,7 @@ export default function NotificationsMenu({
       <MenuItem>
         <Link href={ROUTES.ACCOUNT.NOTIFICATIONS}>
           <IconButton size="large" aria-label="new notifications" color="inherit">
-            <Notifications />
+            <NotificationsOutlined />
           </IconButton>
           Notifications
         </Link>

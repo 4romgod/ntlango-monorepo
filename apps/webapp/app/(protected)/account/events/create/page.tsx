@@ -2,7 +2,7 @@ import React from 'react';
 import { Metadata } from 'next';
 import EventMutationForm from '@/components/forms/event-mutation';
 import CustomContainer from '@/components/custom-container';
-import { Box } from '@mui/material';
+import { Box, Container } from '@mui/material';
 import { getClient } from '@/data/graphql';
 import { GetAllEventCategoriesDocument } from '@/data/graphql/types/graphql';
 
@@ -30,11 +30,11 @@ export default async function CreateEvent() {
         backgroundColor: 'background.paper'
       }}
     >
-      <CustomContainer maxWidthOverrides={{ xs: '90%', sm: '75%', md: '65%', lg: '50%' }}>
+      <Container maxWidth='md'>
         <EventMutationForm
           categoryList={eventCategories.readEventCategories}
         />
-      </CustomContainer>
+      </Container>
     </Box>
   )
 };
