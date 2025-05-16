@@ -43,6 +43,7 @@ export default function Carousel({
 }: CarouselProps) {
   const theme = useTheme();
   const isLargeScreen = useMediaQuery(theme.breakpoints.up('md'));
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const containerRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
@@ -51,23 +52,53 @@ export default function Carousel({
   const [isHovering, setIsHovering] = useState(false);
   const [showArrows, setShowArrows] = useState(false);
 
-  // For smooth scrolling
-  const itemsPerView = Math.floor((containerRef.current?.offsetWidth || 0) / (itemWidth + 16)) || 1;
-  const totalScrollableItems = Math.max(0, events.length - itemsPerView);
+  // For smooth scrolling - calculate visible items
+  const getItemsPerView = useCallback(() => {
+    if (!containerRef.current) return isMobile ? 1 : Math.floor((window.innerWidth * 0.8) / (itemWidth + 8));
+    return isMobile ? 1 : Math.floor(containerRef.current.offsetWidth / (itemWidth + 8));
+  }, [isMobile, itemWidth]);
 
-  // Calculate the width of each slide item plus gap
+  const [itemsPerView, setItemsPerView] = useState(getItemsPerView());
+
+  // Update items per view on resize
+  useEffect(() => {
+    const handleResize = () => {
+      setItemsPerView(getItemsPerView());
+    };
+
+    window.addEventListener('resize', handleResize);
+    handleResize(); // Initial calculation
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, [getItemsPerView, isMobile]);
+
+  // Calculate the width of each slide item
   const calculateItemOffset = useCallback(() => {
-    if (!containerRef.current) return itemWidth + 16; // Default item width + gap
+    if (!containerRef.current) return itemWidth + 16;
+
+    // For mobile, each item is exactly the container width
+    if (isMobile) {
+      return containerRef.current.offsetWidth;
+    }
+
     const containerWidth = containerRef.current.offsetWidth;
     const visibleItems = Math.floor(containerWidth / itemWidth);
-    return containerRef.current.scrollWidth / Math.max(1, events.length - visibleItems);
-  }, [events.length, itemWidth]);
+    return containerRef.current.scrollWidth / Math.max(1, events.length - (visibleItems > 0 ? visibleItems : 1));
+  }, [events.length, itemWidth, isMobile]);
 
-  // Scroll to a specific index
+  // Scroll to a specific index with exact positioning for mobile
   const scrollToIndex = useCallback((index: number) => {
     if (containerRef.current) {
-      const newIndex = Math.max(0, Math.min(index, totalScrollableItems));
-      const scrollAmount = newIndex * calculateItemOffset();
+      const newIndex = Math.max(0, Math.min(index, events.length - 1));
+
+      let scrollAmount;
+      if (isMobile) {
+        // For mobile: exact positioning with proper centering
+        scrollAmount = newIndex * containerRef.current.offsetWidth;
+      } else {
+        // For desktop: adjust for the smaller gap
+        scrollAmount = newIndex * (itemWidth + 8); // Match the gap value used in layout
+      }
 
       containerRef.current.scrollTo({
         left: scrollAmount,
@@ -76,7 +107,7 @@ export default function Carousel({
 
       setActiveItemIndex(newIndex);
     }
-  }, [calculateItemOffset, totalScrollableItems]);
+  }, [events.length, isMobile, itemWidth]);
 
   // Handle next and back navigation
   const handleNext = useCallback(() => {
@@ -114,7 +145,7 @@ export default function Carousel({
     }
   };
 
-  // Touch handling for mobile
+  // Touch handling for mobile with enhanced snap behavior
   const handleTouchStart = (e: React.TouchEvent) => {
     setIsDragging(true);
     setStartX(e.touches[0].pageX - (containerRef.current?.offsetLeft || 0));
@@ -130,13 +161,21 @@ export default function Carousel({
     }
   };
 
+  // Touch handling for mobile with enhanced snap behavior
   const handleTouchEnd = () => {
     setIsDragging(false);
-    // Snap to closest item after touch
     if (containerRef.current) {
-      const itemOffset = calculateItemOffset();
-      const newIndex = Math.round(containerRef.current.scrollLeft / itemOffset);
-      scrollToIndex(newIndex);
+      // For mobile, find the closest item
+      if (isMobile) {
+        const scrollPosition = containerRef.current.scrollLeft;
+        const containerWidth = containerRef.current.offsetWidth;
+        const newIndex = Math.round(scrollPosition / containerWidth);
+        scrollToIndex(newIndex);
+      } else {
+        // For desktop: use the smaller gap
+        const newIndex = Math.round(containerRef.current.scrollLeft / (itemWidth + 8));
+        scrollToIndex(newIndex);
+      }
     }
   };
 
@@ -144,9 +183,9 @@ export default function Carousel({
   useEffect(() => {
     let interval: NodeJS.Timeout;
 
-    if (autoplay && !isHovering && events.length > itemsPerView) {
+    if (autoplay && !isHovering && events.length > 1) {
       interval = setInterval(() => {
-        if (activeItemIndex >= totalScrollableItems) {
+        if (activeItemIndex >= events.length - 1) {
           scrollToIndex(0);
         } else {
           scrollToIndex(activeItemIndex + 1);
@@ -155,15 +194,26 @@ export default function Carousel({
     }
 
     return () => clearInterval(interval);
-  }, [autoplay, autoplayInterval, activeItemIndex, isHovering, events.length, itemsPerView, scrollToIndex, totalScrollableItems]);
+  }, [autoplay, autoplayInterval, activeItemIndex, isHovering, events.length, scrollToIndex]);
 
   // Scroll event listener to update active index
   useEffect(() => {
     const handleScroll = () => {
       if (containerRef.current && !isDragging) {
-        const itemOffset = calculateItemOffset();
-        const newIndex = Math.round(containerRef.current.scrollLeft / itemOffset);
-        setActiveItemIndex(newIndex);
+        if (isMobile) {
+          // For mobile: each item is exactly one screen width
+          const scrollPosition = containerRef.current.scrollLeft;
+          const containerWidth = containerRef.current.offsetWidth;
+          const newIndex = Math.min(Math.max(0, Math.round(scrollPosition / containerWidth)), events.length - 1);
+          setActiveItemIndex(newIndex);
+        } else {
+          // For desktop: use the smaller gap value
+          const newIndex = Math.min(
+            Math.max(0, Math.round(containerRef.current.scrollLeft / (itemWidth + 8))),
+            events.length - 1
+          );
+          setActiveItemIndex(newIndex);
+        }
       }
     };
 
@@ -172,7 +222,7 @@ export default function Carousel({
       container.addEventListener('scroll', handleScroll);
       return () => container.removeEventListener('scroll', handleScroll);
     }
-  }, [calculateItemOffset, isDragging]);
+  }, [isDragging, events.length, isMobile, itemWidth]);
 
   // Show arrows when container is hovered
   useEffect(() => {
@@ -182,6 +232,30 @@ export default function Carousel({
 
     return () => clearTimeout(timer);
   }, [isHovering]);
+
+  // Initial setup for mobile
+  useEffect(() => {
+    if (containerRef.current) {
+      // On mobile, ensure we start at the first item
+      if (isMobile) {
+        setTimeout(() => {
+          scrollToIndex(0);
+        }, 100);
+      }
+
+      // Resize handler to maintain layout when window size changes
+      const handleResize = () => {
+        setItemsPerView(getItemsPerView());
+
+        if (isMobile) {
+          scrollToIndex(activeItemIndex);
+        }
+      };
+
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }
+  }, [isMobile, scrollToIndex, activeItemIndex, getItemsPerView]);
 
   return (
     <Box
@@ -233,7 +307,7 @@ export default function Carousel({
             </IconButton>
             <IconButton
               onClick={handleNext}
-              disabled={activeItemIndex >= totalScrollableItems}
+              disabled={activeItemIndex >= events.length - 1}
               color="secondary"
               sx={{
                 borderRadius: '50%',
@@ -289,7 +363,7 @@ export default function Carousel({
           <IconButton
             size="large"
             onClick={handleNext}
-            disabled={activeItemIndex >= totalScrollableItems}
+            disabled={activeItemIndex >= events.length - 1}
             sx={{
               position: 'absolute',
               right: 5,
@@ -302,7 +376,7 @@ export default function Carousel({
               '&:hover': {
                 backgroundColor: 'background.paper',
               },
-              opacity: activeItemIndex >= totalScrollableItems ? 0.5 : 1,
+              opacity: activeItemIndex >= events.length - 1 ? 0.5 : 1,
             }}
           >
             <KeyboardArrowRight />
@@ -316,13 +390,14 @@ export default function Carousel({
             display: 'flex',
             overflowX: 'auto',
             scrollSnapType: 'x mandatory',
-            gap: 2,
-            padding: 2,
-            paddingBottom: showIndicators ? 4 : 2, // Add space for indicators
+            gap: isMobile ? 0 : 1, // Reduced gap on desktop, none on mobile
+            padding: isMobile ? 0 : 2, // No padding on mobile
+            paddingBottom: showIndicators ? 3 : 2,
             '&::-webkit-scrollbar': { display: 'none' },
             msOverflowStyle: 'none',
             scrollbarWidth: 'none',
             cursor: isDragging ? 'grabbing' : 'grab',
+            width: '100%',
           }}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
@@ -333,33 +408,41 @@ export default function Carousel({
           onTouchEnd={handleTouchEnd}
         >
           {events.map((event, index) => (
-            <Paper
+            <Box
               key={index}
-              elevation={1}
+              data-carousel-item
               sx={{
                 flex: '0 0 auto',
-                scrollSnapAlign: 'start',
-                width: {
-                  xs: '85%',
-                  sm: `${itemWidth}px`
-                },
-                maxWidth: `${itemWidth}px`,
-                transition: 'transform 0.3s, box-shadow 0.3s',
-                transform: activeItemIndex === index ? 'scale(1.01)' : 'scale(1)',
-                boxShadow: activeItemIndex === index ? 3 : 1,
-                borderRadius: 2,
-                overflow: 'hidden',
+                width: isMobile ? '100%' : `${itemWidth}px`, // Match desktop width to the itemWidth prop
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                scrollSnapAlign: isMobile ? 'center' : 'start',
+                padding: isMobile ? 2 : 0, // Add padding inside the container on mobile
               }}
             >
-              <Link href={`/events/${event.slug}`}>
-                <EventBoxSm event={event} />
-              </Link>
-            </Paper>
+              <Paper
+                elevation={1}
+                sx={{
+                  width: '100%', // Full width of the parent container
+                  maxWidth: '100%',
+                  transition: 'transform 0.3s, box-shadow 0.3s',
+                  transform: activeItemIndex === index ? 'scale(1.01)' : 'scale(1)',
+                  boxShadow: activeItemIndex === index ? 3 : 1,
+                  borderRadius: 2,
+                  overflow: 'hidden',
+                }}
+              >
+                <Link href={`/events/${event.slug}`}>
+                  <EventBoxSm event={event} />
+                </Link>
+              </Paper>
+            </Box>
           ))}
         </Box>
 
-        {/* Page Indicators */}
-        {showIndicators && events.length > itemsPerView && (
+        {/* Improved Page Indicators */}
+        {showIndicators && events.length > 1 && (
           <Box
             sx={{
               display: 'flex',
@@ -371,7 +454,8 @@ export default function Carousel({
               zIndex: 2,
             }}
           >
-            {Array.from({ length: totalScrollableItems + 1 }).map((_, index) => (
+            {/* Show indicators for all items, not just scrollable items */}
+            {events.map((_, index) => (
               <Box
                 key={index}
                 onClick={() => scrollToIndex(index)}

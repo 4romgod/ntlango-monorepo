@@ -158,7 +158,7 @@ export default async function HomePage() {
           <EventsCarousel
             events={events.readEvents}
             title="Upcoming Events"
-            autoplay={true}
+            autoplay={false}
             autoplayInterval={6000}
             itemWidth={350}
             showIndicators={true}

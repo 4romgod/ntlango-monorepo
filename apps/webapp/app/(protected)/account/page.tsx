@@ -4,6 +4,7 @@ import {
   Person,
   PersonOutlined,
   ManageAccounts,
+  Password,
   Interests,
   Event,
   PermMedia,
@@ -16,6 +17,7 @@ import InterestsSettingsPage from '@/components/settings/InterestsSettingsPage';
 import EventSettingsPage from '@/components/settings/EventSettingsPage';
 import AccountSettingsPage from '@/components/settings/AccountSettingsPage';
 import SocialMediaSettingsPage from '@/components/settings/SocialMediaSettingsPage';
+import PasswordSettingsPage from '@/components/settings/PasswordSettingsPage';
 import { auth } from '@/auth';
 
 export const metadata: Metadata = {
@@ -44,13 +46,13 @@ export default async function SettingsPage() {
     tabsTitle: 'Settings',
     tabs: [
       {
-        name: 'Profile',
+        name: 'Edit Profile',
         content: <EditProfilePage user={user} />,
         icon: <PersonOutlined fontSize="small" />,
         description: 'Customize how you appear to others'
       },
       {
-        name: 'Personal',
+        name: 'Personal Info',
         content: <PersonalSettingsPage />,
         icon: <Person fontSize="small" />,
         description: 'Manage your personal information'
@@ -74,7 +76,13 @@ export default async function SettingsPage() {
         description: 'Control your account settings'
       },
       {
-        name: 'Social',
+        name: 'Password',
+        content: <PasswordSettingsPage />,
+        icon: <Password fontSize="small" />,
+        description: 'Control your account settings'
+      },
+      {
+        name: 'Social media',
         content: <SocialMediaSettingsPage />,
         icon: <PermMedia fontSize="small" />,
         description: 'Connect social media accounts'
