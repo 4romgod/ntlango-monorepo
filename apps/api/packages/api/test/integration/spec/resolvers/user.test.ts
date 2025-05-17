@@ -43,6 +43,7 @@ describe('User Resolver', () => {
       userId: new Types.ObjectId().toString(),
       userRole: UserRole.Admin,
       username: testUsername,
+      interests: [],
     });
   });
 
@@ -289,7 +290,7 @@ describe('User Resolver', () => {
         await request(url).post('').set('token', adminToken).send(getDeleteUserByEmailMutation(testUserEmail));
       });
 
-      it('should throw BAD_USER_INPUT error when input type schema is valid invalid but the input values are invalid', async () => {
+      it('should throw BAD_USER_INPUT error when input type schema is valid but the input values are invalid', async () => {
         const invalidPhoneNumber = 'mockPhoneNumber';
         const createUserMutation = getCreateUserMutation({
           ...createUserInput,

@@ -37,6 +37,7 @@ describe('EventCategory Resolver', () => {
     userRole: UserRole.Admin,
     email: 'test@example.com',
     username: 'testUser',
+    interests: [],
   };
   let adminToken;
 
@@ -267,6 +268,7 @@ describe('EventCategory Resolver', () => {
           userRole: UserRole.User,
           email: 'test@example.com',
           username: 'testUser',
+          interests: [],
         };
         const token = await generateToken(user);
 
@@ -308,6 +310,7 @@ describe('EventCategory Resolver', () => {
           userRole: UserRole.User,
           email: 'test@example.com',
           username: 'testUser',
+          interests: [],
         };
         const token = await generateToken(user);
 
@@ -346,6 +349,7 @@ describe('EventCategory Resolver', () => {
           userRole: UserRole.User,
           email: 'test@example.com',
           username: 'testUser',
+          interests: [],
         };
         const token = await generateToken(user);
 
@@ -381,6 +385,7 @@ describe('EventCategory Resolver', () => {
           userRole: UserRole.User,
           email: 'test@example.com',
           username: 'testUser',
+          interests: [],
         };
         const token = await generateToken(user);
 

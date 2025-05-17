@@ -31,6 +31,7 @@ describe('Event Resolver', () => {
     userRole: UserRole.Admin,
     email: 'test@example.com',
     username: 'testUser',
+    interests: [],
   };
   let adminToken: string;
 

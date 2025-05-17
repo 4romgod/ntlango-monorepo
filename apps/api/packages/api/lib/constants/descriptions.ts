@@ -50,6 +50,12 @@ export const LOCATION_DESCRIPTIONS = {
 };
 
 export const EVENT_CATEGORY_DESCRIPTIONS = {
+  GROUP: {
+    TYPE: 'Groupings of event categories',
+    NAME: 'Name of the Event Category Group',
+    CREATE_INPUT: 'Input type for creating a new category group',
+    UPDATE_INPUT: 'Input type for creating a new category group',
+  },
   TYPE: 'Represents a category of events with attributes such as name, icon, and description.',
   CREATE_INPUT: 'Input type for creating a new category of events with attributes like name, icon, and description.',
   UPDATE_INPUT: 'Input type for updating an existing category of events with attributes like name, icon, and description.',
@@ -78,6 +84,7 @@ export const USER_DESCRIPTIONS = {
   PASSWORD: "User's password in plain text (e.g., 12345678)",
   PHONE_NUMBER: "User's phone number (optional) (e.g., '+27 800 555 1234')",
   PROFILE_PICTURE: "URL to the user's profile picture (e.g., 'https://example.com/profile.jpg')",
+  BIO: "Short biography about the user",
   TOKEN: 'Authentication and Authorization JWT token',
   USER_ROLE: 'Role assigned to the user within the system, ("Admin", "User", "Host", "Guest")',
   USERNAME: "User's unique chosen or auto generated username (e.g., 'deku123')",
@@ -104,6 +111,13 @@ export const RESOLVER_DESCRIPTIONS = {
     readEventCategoryBySlug: 'Read an event category by its slug. Requires the slug and returns the category or 404 Error if not found.',
     readEventCategories:
       'Read a list of event categories. Accepts optional query options for pagination and filtering and returns a list of categories.',
+  },
+  EVENT_CATEGORY_GROUP: {
+    createEventCategoryGroup: 'Create a new event category group.',
+    updateEventCategoryGroup: 'Update an existing event category.',
+    deleteEventCategoryGroupBySlug: 'Delete an event category group by its Slug',
+    readEventCategoryGroupBySlug: 'Read an event category by its Slug',
+    readEventCategoryGroups: 'Read a list of event category Groups',
   },
   USER: {
     createUser: 'Create a new user. Requires input data for creating a new user and returns the created user along with an authentication token.',

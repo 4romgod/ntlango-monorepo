@@ -21,11 +21,20 @@ describe('Auth Utilities', () => {
     userId: 'user-id',
     email: 'user@example.com',
     username: 'username',
-    address: '123 Street',
+    address: {
+      locationType: 'venue',
+      address: {
+        country: 'South Africa',
+        city: 'Durban',
+        state: 'KZN',
+        zipCode: '0900',
+      }
+    },
     birthdate: '2000-01-01',
     given_name: 'First',
     family_name: 'Last',
     userRole: UserRole.User,
+    interests: [],
   };
 
   const mockAdminUser: UserType = {

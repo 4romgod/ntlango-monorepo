@@ -13,8 +13,8 @@ class Coordinates {
 
 @ObjectType('Address', {description: LOCATION_DESCRIPTIONS.ADDRESS})
 class Address {
-  @Field((type) => String, {description: LOCATION_DESCRIPTIONS.STREET})
-  street: string;
+  @Field((type) => String, {nullable: true, description: LOCATION_DESCRIPTIONS.STREET})
+  street?: string;
 
   @Field((type) => String, {description: LOCATION_DESCRIPTIONS.CITY})
   city: string;

@@ -7,10 +7,7 @@ import mongoose from 'mongoose';
 export const UserTypeSchema = z.object({
   userId: z.string().refine(mongoose.Types.ObjectId.isValid, {message: `User with ID ${ERROR_MESSAGES.DOES_NOT_EXIST}`}),
 
-  address: z
-    .string()
-    .min(3, {message: `Address ${ERROR_MESSAGES.TOO_SHORT}`})
-    .optional(),
+  address: z.record(z.any()),
 
   birthdate: z
     .string()

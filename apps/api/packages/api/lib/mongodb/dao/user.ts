@@ -16,7 +16,7 @@ import {generateToken} from '@/utils/auth';
 class UserDAO {
   static async create(userData: CreateUserInputType): Promise<UserWithTokenType> {
     try {
-      const savedUser = await User.create(userData);
+      const savedUser = await (await (User.create(userData))).populate('interests'); // TODO does this work?
       const tokenPayload = savedUser.toObject();
       const token = await generateToken(tokenPayload);
       return {...tokenPayload, token};
@@ -28,7 +28,7 @@ class UserDAO {
 
   static async login({email, password}: LoginUserInputType): Promise<UserWithTokenType> {
     try {
-      const query = User.findOne({email}).select('+password');
+      const query = User.findOne({email}).select('+password').populate('interests');
       const user = await query.exec();
       if (!user) {
         throw CustomError(ERROR_MESSAGES.PASSWORD_MISSMATCH, ErrorTypes.UNAUTHENTICATED);
@@ -52,7 +52,7 @@ class UserDAO {
 
   static async readUserById(userId: string): Promise<UserType> {
     try {
-      const query = User.findById(userId);
+      const query = User.findById(userId).populate('interests');
       const user = await query.exec();
       if (!user) {
         throw CustomError(`User with id ${userId} does not exist`, ErrorTypes.NOT_FOUND);
@@ -69,7 +69,7 @@ class UserDAO {
 
   static async readUserByUsername(username: string): Promise<UserType> {
     try {
-      const query = User.findOne({username});
+      const query = User.findOne({username}).populate('interests');
       const user = await query.exec();
       if (!user) {
         throw CustomError(`User with username ${username} does not exist`, ErrorTypes.NOT_FOUND);
@@ -86,7 +86,7 @@ class UserDAO {
 
   static async readUserByEmail(email: string): Promise<UserType> {
     try {
-      const query = User.findOne({email});
+      const query = User.findOne({email}).populate('interests');
       const user = await query.exec();
       if (!user) {
         throw CustomError(`User with email ${email} does not exist`, ErrorTypes.NOT_FOUND);
@@ -103,7 +103,7 @@ class UserDAO {
 
   static async readUsers(options?: QueryOptionsInput): Promise<UserType[]> {
     try {
-      const query = options ? transformOptionsToQuery(User, options) : User.find({});
+      const query = options ? transformOptionsToQuery(User, options) : User.find({}).populate('interests');
       const retrieved = await query.exec();
       return retrieved.map((user) => user.toObject());
     } catch (error) {
@@ -115,7 +115,7 @@ class UserDAO {
   static async updateUser(user: UpdateUserInputType) {
     try {
       const {userId, ...updatableFields} = user;
-      const query = User.findByIdAndUpdate(userId, updatableFields, {new: true});
+      const query = User.findByIdAndUpdate(userId, updatableFields, {new: true}).populate('interests');
       const updatedUser = await query.exec();
       if (!updatedUser) {
         throw CustomError(ERROR_MESSAGES.NOT_FOUND('User', 'ID', userId), ErrorTypes.NOT_FOUND);
@@ -132,7 +132,7 @@ class UserDAO {
 
   static async deleteUserById(userId: string): Promise<UserType> {
     try {
-      const query = User.findByIdAndDelete(userId);
+      const query = User.findByIdAndDelete(userId).populate('interests');
       const deletedUser = await query.exec();
       if (!deletedUser) {
         throw CustomError(ERROR_MESSAGES.NOT_FOUND('User', 'ID', userId), ErrorTypes.NOT_FOUND);
@@ -149,7 +149,7 @@ class UserDAO {
 
   static async deleteUserByEmail(email: string): Promise<UserType> {
     try {
-      const query = User.findOneAndDelete({email});
+      const query = User.findOneAndDelete({email}).populate('interests');
       const deletedUser = await query.exec();
       if (!deletedUser) {
         throw CustomError('User not found', ErrorTypes.NOT_FOUND);
@@ -166,7 +166,7 @@ class UserDAO {
 
   static async deleteUserByUsername(username: string): Promise<UserType> {
     try {
-      const query = User.findOneAndDelete({username});
+      const query = User.findOneAndDelete({username}).populate('interests');
       const deletedUser = await query.exec();
       if (!deletedUser) {
         throw CustomError('User not found', ErrorTypes.NOT_FOUND);
@@ -183,7 +183,7 @@ class UserDAO {
 
   static async promoteUserToAdmin(userId: string): Promise<UserType> {
     try {
-      const query = User.findByIdAndUpdate(userId, {userRole: UserRole.Admin}, {new: true});
+      const query = User.findByIdAndUpdate(userId, {userRole: UserRole.Admin}, {new: true}).populate('interests');
       const updatedUser = await query.exec();
       if (!updatedUser) {
         throw CustomError(ERROR_MESSAGES.NOT_FOUND('User', 'ID', userId), ErrorTypes.NOT_FOUND);

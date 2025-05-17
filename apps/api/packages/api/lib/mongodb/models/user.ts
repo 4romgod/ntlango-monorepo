@@ -1,12 +1,13 @@
-import {Gender, UserRole, UserTypeDocument} from '@/graphql/types';
-import {model, Schema, CallbackWithoutResultAndOptionalError, CallbackError} from 'mongoose';
-import {hash, genSalt, compare} from 'bcryptjs';
+import { Gender, UserRole, UserTypeDocument } from '@/graphql/types';
+import { model, Schema, CallbackWithoutResultAndOptionalError, CallbackError } from 'mongoose';
+import { hash, genSalt, compare } from 'bcryptjs';
 
+// TODO Add bio attribute
 export const UserSchema = new Schema<UserTypeDocument>(
   {
     address: {
-      type: String,
-      required: true,
+      type: Schema.Types.Mixed,
+      default: {},
     },
     birthdate: {
       type: String,
@@ -56,12 +57,25 @@ export const UserSchema = new Schema<UserTypeDocument>(
       unique: true,
       index: true,
     },
+    bio: {
+      type: String,
+      required: false,
+      unique: false,
+    },
     userRole: {
       type: String,
       enum: Object.values(UserRole),
       default: UserRole.User,
       required: true,
     },
+    interests: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'EventCategory',
+        required: true,
+        index: true,
+      },
+    ],
   },
   {
     timestamps: true,
@@ -78,7 +92,7 @@ UserSchema.pre('validate', async function (next: CallbackWithoutResultAndOptiona
       let newUsername = baseUsername;
 
       while (true) {
-        const existingUser = await User.findOne({username: newUsername});
+        const existingUser = await User.findOne({ username: newUsername });
         if (!existingUser) break;
         newUsername = baseUsername + usernameSuffix;
         usernameSuffix++;
