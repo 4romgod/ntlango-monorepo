@@ -19,6 +19,8 @@ import AccountSettingsPage from '@/components/settings/AccountSettingsPage';
 import SocialMediaSettingsPage from '@/components/settings/SocialMediaSettingsPage';
 import PasswordSettingsPage from '@/components/settings/PasswordSettingsPage';
 import { auth } from '@/auth';
+import { getClient } from '@/data/graphql';
+import { GetAllEventCategoryGroupsDocument } from '@/data/graphql/types/graphql';
 
 export const metadata: Metadata = {
   title: {
@@ -35,10 +37,11 @@ export const metadata: Metadata = {
 
 export default async function SettingsPage() {
   const session = await auth();
+  if (!session) return;
 
-  if (!session) {
-    return;
-  }
+  const { data: groups } = await getClient().query({
+    query: GetAllEventCategoryGroupsDocument,
+  });
 
   const { token, __typename, ...user } = session.user;
 
@@ -53,19 +56,19 @@ export default async function SettingsPage() {
       },
       {
         name: 'Personal Info',
-        content: <PersonalSettingsPage />,
+        content: <PersonalSettingsPage user={user} />,
         icon: <Person fontSize="small" />,
         description: 'Manage your personal information'
       },
       {
         name: 'Interests',
-        content: <InterestsSettingsPage user={user} eventCategories={[]} />,
+        content: <InterestsSettingsPage user={user} eventCategoryGroups={groups.readEventCategoryGroups} />,
         icon: <Interests fontSize="small" />,
         description: 'Select and manage your interests'
       },
       {
         name: 'Events',
-        content: <EventSettingsPage />,
+        content: <EventSettingsPage user={user} />,
         icon: <Event fontSize="small" />,
         description: 'Configure your event preferences'
       },

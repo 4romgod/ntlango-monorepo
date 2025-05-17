@@ -15,24 +15,24 @@ import {
 } from '@mui/material';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { Gender, UserType } from '@/data/graphql/types/graphql';
+import dayjs from "dayjs";
 
 interface PersonalSettings {
-  language: string;
-  timeZone: string;
   privateProfile: boolean;
   showEmail: boolean;
   showPhoneNumber: boolean;
-  phoneNumber: string;
+  birthdate: string;
+  gender: Gender | null;
 }
 
-export default function PersonalSettingsPage() {
+export default function PersonalSettingsPage({ user }: { user: UserType }) {
   const [settings, setSettings] = useState<PersonalSettings>({
-    language: 'en',
-    timeZone: 'America/New_York',
     privateProfile: false,
     showEmail: true,
     showPhoneNumber: false,
-    phoneNumber: ''
+    birthdate: user.birthdate,
+    gender: user.gender || null,
   });
 
   const handleToggleChange = (name: keyof PersonalSettings) => {
@@ -55,11 +55,6 @@ export default function PersonalSettingsPage() {
     console.log('Personal settings saved:', settings);
   };
 
-  const genders = [
-    { value: 'male', label: 'Male' },
-    { value: 'female', label: 'Female' },
-  ];
-
   return (
     <Box sx={{ p: 3, maxWidth: 600, margin: 'auto' }}>
       <Typography variant="h4" fontWeight='bold' sx={{ mb: 5 }}>
@@ -77,6 +72,7 @@ export default function PersonalSettingsPage() {
                 label="Date of Birth"
                 format="YYYY-MM-DD"
                 name="birthdate"
+                value={dayjs(settings.birthdate)}
               />
             </LocalizationProvider>
           </FormControl>
@@ -90,14 +86,14 @@ export default function PersonalSettingsPage() {
             </InputLabel>
             <Select
               name="gender"
-              // TODO value={settings.gender}
+              value={settings.gender || ''}
               onChange={(e) => handleInputChange(e as React.ChangeEvent<HTMLInputElement>)}
               label="Gender"
               color="secondary"
             >
-              {genders.map((gender) => (
-                <MenuItem key={gender.value} value={gender.value}>
-                  {gender.label}
+              {Object.values(Gender).map((gender) => (
+                <MenuItem key={gender} value={gender}>
+                  {gender}
                 </MenuItem>
               ))}
             </Select>

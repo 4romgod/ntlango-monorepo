@@ -25,6 +25,7 @@ export default function EditProfilePage({ user }: { user: UserType }) {
     address: user.address,
     profile_picture: user.profile_picture,
     birthdate: user.birthdate,
+    bio: user.bio || '',
     password: '',
   });
 
@@ -155,9 +156,9 @@ export default function EditProfilePage({ user }: { user: UserType }) {
           <TextField
             fullWidth
             label="Bio"
-            // name="bio"
-            // value={profile.bio}
-            // onChange={handleInputChange}
+            name="bio"
+            value={profile.bio}
+            onChange={handleInputChange}
             disabled={!isEditing}
             multiline
             rows={3}
@@ -168,9 +169,9 @@ export default function EditProfilePage({ user }: { user: UserType }) {
         <Grid size={{ xs: 12 }}>
           <TextField
             fullWidth
-            label="Location"
+            label="Address"
             name="address"
-            value={profile.address}
+            value={JSON.stringify(profile.address)}
             onChange={handleInputChange}
             disabled={!isEditing}
             variant="outlined"

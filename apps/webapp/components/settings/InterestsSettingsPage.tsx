@@ -16,52 +16,24 @@ import {
   TextField,
   InputAdornment,
 } from '@mui/material';
-import { Search as SearchIcon, Add as AddIcon } from '@mui/icons-material';
-import { UserType } from '@/data/graphql/types/graphql';
+import { Search as SearchIcon } from '@mui/icons-material';
+import { EventCategoryGroupType, EventCategoryType, UserType } from '@/data/graphql/types/graphql';
 
-// Predefined interest categories
-const INTEREST_CATEGORIES = {
-  Technology: [
-    'Web Development', 'AI/Machine Learning', 'Cybersecurity',
-    'Blockchain', 'Cloud Computing', 'Data Science'
-  ],
-  Sports: [
-    'Football', 'Basketball', 'Tennis', 'Yoga', 'Running',
-    'Cycling', 'Swimming', 'Rock Climbing'
-  ],
-  Arts: [
-    'Photography', 'Painting', 'Music', 'Theater', 'Dance',
-    'Creative Writing', 'Film'
-  ],
-  Outdoors: [
-    'Hiking', 'Camping', 'Gardening', 'Fishing', 'Bird Watching',
-    'Nature Photography'
-  ],
-  Food: [
-    'Cooking', 'Baking', 'Wine Tasting', 'Vegan Cuisine',
-    'International Cuisine', 'Craft Beer'
-  ],
-  Professional: [
-    'Entrepreneurship', 'Marketing', 'Design', 'Finance',
-    'Leadership', 'Networking'
-  ]
-};
-
-export default function InterestsSettingsPage({ user, eventCategories }: { user: UserType; eventCategories: any }) {
-  const [selectedInterests, setSelectedInterests] = useState<string[]>([
-    'Web Development', 'AI/Machine Learning', 'Cloud Computing'
-  ]);
+export default function InterestsSettingsPage({ user, eventCategoryGroups }: { user: UserType; eventCategoryGroups: EventCategoryGroupType[] }) {
+  const [selectedInterests, setSelectedInterests] = useState<EventCategoryType[]>( user.interests ? user.interests : []);
+  const [tempInterests, setTempInterests] = useState<EventCategoryType[]>([]);
   const [openModal, setOpenModal] = useState(false);
-  const [tempInterests, setTempInterests] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [customInterest, setCustomInterest] = useState('');
 
-  const handleInterestToggle = (interest: string) => {
-    setTempInterests(prev =>
-      prev.includes(interest)
-        ? prev.filter(item => item !== interest)
-        : [...prev, interest]
-    );
+  const handleInterestToggle = (eventCategory: EventCategoryType) => {
+    setTempInterests((prev) => {
+      const exists = prev.some(item => item.eventCategoryId === eventCategory.eventCategoryId);
+      if (exists) {
+        return prev.filter(item => item.eventCategoryId !== eventCategory.eventCategoryId);
+      } else {
+        return [...prev, eventCategory];
+      }
+    });
   };
 
   const handleSaveInterests = () => {
@@ -71,29 +43,23 @@ export default function InterestsSettingsPage({ user, eventCategories }: { user:
     console.log('Selected Interests:', tempInterests);
   };
 
-  const handleRemoveInterest = (interest: string) => {
-    setSelectedInterests(prev => prev.filter(item => item !== interest));
+  const handleRemoveInterest = (interestId: string) => {
+    setSelectedInterests(prev => prev.filter(item => item.eventCategoryId !== interestId));
   };
 
-  const handleAddCustomInterest = () => {
-    if (customInterest.trim() && !tempInterests.includes(customInterest.trim())) {
-      setTempInterests(prev => [...prev, customInterest.trim()]);
-      setCustomInterest('');
-    }
-  };
-
-  const filteredInterests = Object.entries(INTEREST_CATEGORIES).reduce<Record<string, string[]>>(
-    (filtered, [category, interests]) => {
-      const matchingInterests = interests.filter(interest =>
-        interest.toLowerCase().includes(searchTerm.toLowerCase())
+  // Filter event categories based on search term
+  const filteredCategoryGroups = eventCategoryGroups
+    .map(group => {
+      const filteredCategories = group.eventCategoryList.filter(category =>
+        category.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
-      if (matchingInterests.length > 0) {
-        filtered[category] = matchingInterests;
-      }
-      return filtered;
-    },
-    {}
-  );
+
+      return {
+        ...group,
+        eventCategoryList: filteredCategories
+      };
+    })
+    .filter(group => group.eventCategoryList.length > 0);
 
   return (
     <Box sx={{ p: 3, maxWidth: 800, margin: 'auto' }}>
@@ -116,7 +82,7 @@ export default function InterestsSettingsPage({ user, eventCategories }: { user:
           variant="outlined"
           color="primary"
           onClick={() => {
-            setTempInterests(selectedInterests);
+            setTempInterests([...selectedInterests]);
             setSearchTerm('');
             setOpenModal(true);
           }}
@@ -133,9 +99,9 @@ export default function InterestsSettingsPage({ user, eventCategories }: { user:
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
           {selectedInterests.map((interest) => (
             <Chip
-              key={interest}
-              label={interest}
-              onDelete={() => handleRemoveInterest(interest)}
+              key={interest.eventCategoryId}
+              label={interest.name}
+              onDelete={() => handleRemoveInterest(interest.eventCategoryId)}
               color="secondary"
               variant="outlined"
             />
@@ -161,43 +127,15 @@ export default function InterestsSettingsPage({ user, eventCategories }: { user:
               placeholder="Search interests..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              slotProps={{
-                input: {
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon />
-                    </InputAdornment>
-                  )
-                }
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                )
               }}
               variant="outlined"
             />
-          </Box>
-
-          <Box sx={{
-            display: 'flex',
-            alignItems: 'center',
-            mb: 2,
-            gap: 1
-          }}>
-            <TextField
-              placeholder="Add custom interest..."
-              value={customInterest}
-              onChange={(e) => setCustomInterest(e.target.value)}
-              variant="outlined"
-              size="small"
-              fullWidth
-            />
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<AddIcon />}
-              onClick={handleAddCustomInterest}
-              disabled={!customInterest.trim()}
-              sx={{ whiteSpace: 'nowrap' }}
-            >
-              Add
-            </Button>
           </Box>
 
           <Typography variant="subtitle2" color="primary" sx={{ mt: 2, mb: 1 }}>
@@ -206,8 +144,8 @@ export default function InterestsSettingsPage({ user, eventCategories }: { user:
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 3 }}>
             {tempInterests.map((interest) => (
               <Chip
-                key={interest}
-                label={interest}
+                key={interest.eventCategoryId}
+                label={interest.name}
                 onDelete={() => handleInterestToggle(interest)}
                 color="secondary"
               />
@@ -215,23 +153,23 @@ export default function InterestsSettingsPage({ user, eventCategories }: { user:
           </Box>
 
           <Grid container spacing={2}>
-            {Object.entries(filteredInterests).map(([category, interests]) => (
-              <Grid size={{ xs: 12 }} key={category}>
+            {filteredCategoryGroups.map((categoryGroup) => (
+              <Grid size={{xs: 12}} key={categoryGroup.eventCategoryGroupId}>
                 <Typography variant="subtitle1" sx={{ mt: 1, mb: 1, fontWeight: 'bold' }}>
-                  {category}
+                  {categoryGroup.name}
                 </Typography>
                 <Grid container spacing={1}>
-                  {interests.map((interest) => (
-                    <Grid size={{ xs: 12, sm: 6, md: 4 }} key={interest}>
+                  {categoryGroup.eventCategoryList.map((category) => (
+                    <Grid size={{xs: 12, sm: 6, md: 4}} key={category.eventCategoryId}>
                       <FormControlLabel
                         control={
                           <Checkbox
-                            checked={tempInterests.includes(interest)}
-                            onChange={() => handleInterestToggle(interest)}
+                            checked={tempInterests.some(item => item.eventCategoryId === category.eventCategoryId)}
+                            onChange={() => handleInterestToggle(category)}
                             color="secondary"
                           />
                         }
-                        label={interest}
+                        label={category.name}
                       />
                     </Grid>
                   ))}

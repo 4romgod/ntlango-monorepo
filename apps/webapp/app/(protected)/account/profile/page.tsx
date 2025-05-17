@@ -29,7 +29,7 @@ import {
 } from '@mui/icons-material';
 import { auth } from '@/auth';
 import { differenceInYears, format } from 'date-fns';
-import { GetAllEventCategoriesDocument, GetAllEventsDocument } from '@/data/graphql/types/graphql';
+import { GetAllEventsDocument } from '@/data/graphql/types/graphql';
 import { getClient } from '@/data/graphql';
 import EventsCarousel from '@/components/events/carousel';
 import EventCategoryChip from '@/components/events/category/chip';
@@ -44,14 +44,9 @@ export default async function UserPublicProfile() {
   const { data: events } = await getClient().query({
     query: GetAllEventsDocument,
   });
-
-  const { data: eventCategories } = await getClient().query({
-    query: GetAllEventCategoriesDocument,
-  });
-
-  const createdEvents = events.readEvents;
-  const rsvpedEvents = events.readEvents;
-
+  const rsvpdEvents = events.readEvents.filter((event) => event.rSVPList.some(rsvp => rsvp.userId === user.userId));
+  const organizedEvents = events.readEvents.filter((event) => event.organizerList.some(organizer => organizer.userId === user.userId));
+  const interests = user.interests ? user.interests : [];
   const age = differenceInYears(new Date(), new Date(user.birthdate));
   const formattedDOB = format(new Date(user.birthdate), 'dd MMMM yyyy');
 
@@ -161,7 +156,7 @@ export default async function UserPublicProfile() {
               color="text.secondary"
               sx={{ maxWidth: 800, mx: 'auto' }}
             >
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ipsa vel perferendis sint itaque, soluta quos in suscipit quisquam provident animi pariatur asperiores ad quidem voluptatibus accusamus consequatur! Placeat, veritatis aut.
+              {user.bio || ''}
             </Typography>
           </Box>
 
@@ -169,7 +164,7 @@ export default async function UserPublicProfile() {
           <CardContent sx={{ px: 3, py: 4 }}>
             <Grid container spacing={4}>
               {/* User Information */}
-              <Grid size={{xs: 12, md: 6}}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <Card variant="outlined" sx={{ height: '100%' }}>
                   <CardHeader
                     title="Personal Information"
@@ -218,7 +213,7 @@ export default async function UserPublicProfile() {
                         </ListItemAvatar>
                         <ListItemText
                           primary="Address"
-                          secondary={user.address}
+                          secondary={JSON.stringify(user.address)}  // TODO make it nice
                           slotProps={{
                             primary: { variant: 'body2', color: 'text.secondary' },
                             secondary: { variant: 'body1' },
@@ -263,7 +258,7 @@ export default async function UserPublicProfile() {
               </Grid>
 
               {/* Interests */}
-              <Grid size={{xs: 12, md: 6}}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <Card variant="outlined" sx={{ height: '100%' }}>
                   <CardHeader
                     title="Interests"
@@ -272,7 +267,7 @@ export default async function UserPublicProfile() {
                   <Divider />
                   <CardContent>
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                      {eventCategories.readEventCategories.map((category, index) => (
+                      {interests.map((category, index) => (
                         <EventCategoryChip
                           key={index}
                           category={category}
@@ -289,9 +284,9 @@ export default async function UserPublicProfile() {
           <Box sx={{ px: 3, pb: 4 }}>
             {/* Created Events Section */}
             <Box>
-              {createdEvents.length > 0 ? (
+              {organizedEvents.length > 0 ? (
                 <EventsCarousel
-                  events={createdEvents}
+                  events={organizedEvents}
                   title={`Events Created by ${user.given_name}`}
                   autoplay={true}
                   autoplayInterval={6000}
@@ -311,9 +306,9 @@ export default async function UserPublicProfile() {
 
             {/* RSVP'd Events Section */}
             <Box>
-              {rsvpedEvents.length > 0 ? (
+              {rsvpdEvents.length > 0 ? (
                 <EventsCarousel
-                  events={createdEvents}
+                  events={rsvpdEvents}
                   title={`Events ${user.given_name} is Attending`}
                   autoplay={true}
                   autoplayInterval={6000}

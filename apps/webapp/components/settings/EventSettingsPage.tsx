@@ -15,23 +15,26 @@ import {
   Slider,
   Alert
 } from '@mui/material';
+import { UserType } from '@/data/graphql/types/graphql';
 
 interface EventSettings {
   emailNotifications: boolean;
   pushNotifications: boolean;
   eventRecommendations: boolean;
   maxDistanceForEvents: number;
-  preferredEventTypes: string[];
+  preferredEventTypes: string[]; // Store category IDs
   eventFrequency: 'daily' | 'weekly' | 'monthly';
 }
 
-export default function EventSettingsPage() {
+export default function EventSettingsPage({ user }: { user: UserType }) {
+  const initialPreferredEventTypes = user.interests ? user.interests.map(interest => interest.eventCategoryId) : [];
+
   const [settings, setSettings] = useState<EventSettings>({
     emailNotifications: true,
     pushNotifications: false,
     eventRecommendations: true,
-    maxDistanceForEvents: 50, // miles
-    preferredEventTypes: ['Technology', 'Professional Development'],
+    maxDistanceForEvents: 50, // KM
+    preferredEventTypes: initialPreferredEventTypes,
     eventFrequency: 'weekly'
   });
 
@@ -49,12 +52,12 @@ export default function EventSettingsPage() {
     }));
   };
 
-  const handleEventTypeToggle = (type: string) => {
+  const handleEventTypeToggle = (categoryId: string) => {
     setSettings(prev => ({
       ...prev,
-      preferredEventTypes: prev.preferredEventTypes.includes(type)
-        ? prev.preferredEventTypes.filter(t => t !== type)
-        : [...prev.preferredEventTypes, type]
+      preferredEventTypes: prev.preferredEventTypes.includes(categoryId)
+        ? prev.preferredEventTypes.filter(id => id !== categoryId)
+        : [...prev.preferredEventTypes, categoryId]
     }));
   };
 
@@ -63,11 +66,8 @@ export default function EventSettingsPage() {
     console.log('Event settings saved:', settings);
   };
 
-  // TODO These events should be the ones chosen by user (on interests page)
-  const eventTypes = [
-    'Technology', 'Professional Development', 'Sports',
-    'Arts', 'Networking', 'Social', 'Fitness', 'Learning'
-  ];
+  // Check if user has interests
+  const hasInterests = user.interests && user.interests.length > 0;
 
   return (
     <Box sx={{ p: 3, maxWidth: 800, margin: 'auto' }}>
@@ -156,22 +156,29 @@ export default function EventSettingsPage() {
           <Typography variant="subtitle1" sx={{ mb: 2 }}>
             Preferred Event Types
           </Typography>
-          <Grid container spacing={1}>
-            {eventTypes.map((type) => (
-              <Grid size={{ xs: 6, sm: 4 }} key={type}>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={settings.preferredEventTypes.includes(type)}
-                      onChange={() => handleEventTypeToggle(type)}
-                      color="secondary"
-                    />
-                  }
-                  label={type}
-                />
-              </Grid>
-            ))}
-          </Grid>
+
+          {!hasInterests ? (
+            <Typography variant="body2" color="textSecondary">
+              You haven&apos;t selected any interests yet. Visit the Interests page to customize your event preferences.
+            </Typography>
+          ) : (
+            <Grid container spacing={1}>
+              {user.interests?.map((category) => (
+                <Grid size={{ xs: 6, sm: 4 }} key={category.eventCategoryId}>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={settings.preferredEventTypes.includes(category.eventCategoryId)}
+                        onChange={() => handleEventTypeToggle(category.eventCategoryId)}
+                        color="secondary"
+                      />
+                    }
+                    label={category.name}
+                  />
+                </Grid>
+              ))}
+            </Grid>
+          )}
         </Grid>
 
         <Grid size={{ xs: 12 }}>
