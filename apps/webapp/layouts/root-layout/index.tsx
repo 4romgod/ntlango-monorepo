@@ -18,39 +18,37 @@ const TopProgressBar = dynamic(() => import('@/components/progress-bar'), { ssr:
 
 type RootLayoutProps = { children: ReactNode; session: Session | null };
 
-
 export default function RootLayout({ children, session }: RootLayoutProps) {
-  const navHeight = 64; // TODO Adjust this value based on your AppBar height
+  const navHeight = 64;
 
   return (
     <html lang="en">
-      <ApolloWrapper>
-        <AppRouterCacheProvider>
-          <SessionProvider session={session}>
-            <CustomAppContextProvider>
-              <CustomThemeProvider>
-                <Box component={'body'}>
-                    <ToastProvider />
-                    <TopProgressBar />
-                    <MainNavigation isAuthN={Boolean(session)} />
-                    <Box
-                        component="div"
-                        sx={{
-                            minHeight: '100vh',
-                            marginTop: `${navHeight}px`,
-                        }}
-                    >
-                        {children}
-                    </Box>
-                    <Box>
-                        <Footer />
-                    </Box>
-                </Box>
-              </CustomThemeProvider>
-            </CustomAppContextProvider>
-          </SessionProvider>
-        </AppRouterCacheProvider>
-      </ApolloWrapper>
+      <body>
+        <ApolloWrapper>
+          <AppRouterCacheProvider>
+            <SessionProvider session={session}>
+              <CustomAppContextProvider>
+                <CustomThemeProvider>
+                  <ToastProvider />
+                  <TopProgressBar />
+                  <MainNavigation isAuthN={Boolean(session)} />
+                  <Box
+                    sx={{
+                      minHeight: '100vh',
+                      marginTop: `${navHeight}px`,
+                    }}
+                  >
+                    {children}
+                  </Box>
+                  <Box>
+                    <Footer />
+                  </Box>
+                </CustomThemeProvider>
+              </CustomAppContextProvider>
+            </SessionProvider>
+          </AppRouterCacheProvider>
+        </ApolloWrapper>
+      </body>
     </html>
   );
 }

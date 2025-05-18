@@ -22,7 +22,7 @@ import {
 } from "@mui/icons-material";
 import Link from 'next/link';
 
-interface CarouselProps {
+interface EventCarouselProps {
   events: EventType[];
   title?: string;
   autoplay?: boolean;
@@ -32,7 +32,7 @@ interface CarouselProps {
   viewAllEventsButton: boolean;
 }
 
-export default function Carousel({
+export default function EventCarousel({
   events,
   title,
   autoplay = true,
@@ -40,7 +40,7 @@ export default function Carousel({
   itemWidth = 320,
   showIndicators = true,
   viewAllEventsButton = true
-}: CarouselProps) {
+}: EventCarouselProps) {
   const theme = useTheme();
   const isLargeScreen = useMediaQuery(theme.breakpoints.up('md'));
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -54,7 +54,12 @@ export default function Carousel({
 
   // For smooth scrolling - calculate visible items
   const getItemsPerView = useCallback(() => {
-    if (!containerRef.current) return isMobile ? 1 : Math.floor((window.innerWidth * 0.8) / (itemWidth + 8));
+    if (!containerRef.current) {
+      if (typeof window !== 'undefined') {
+        return isMobile ? 1 : Math.floor((window.innerWidth * 0.8) / (itemWidth + 8));
+      }
+      return 1;
+    }
     return isMobile ? 1 : Math.floor(containerRef.current.offsetWidth / (itemWidth + 8));
   }, [isMobile, itemWidth]);
 
@@ -236,13 +241,6 @@ export default function Carousel({
   // Initial setup for mobile
   useEffect(() => {
     if (containerRef.current) {
-      // On mobile, ensure we start at the first item
-      if (isMobile) {
-        setTimeout(() => {
-          scrollToIndex(0);
-        }, 100);
-      }
-
       // Resize handler to maintain layout when window size changes
       const handleResize = () => {
         setItemsPerView(getItemsPerView());
@@ -433,9 +431,7 @@ export default function Carousel({
                   overflow: 'hidden',
                 }}
               >
-                <Link href={`/events/${event.slug}`}>
-                  <EventBoxSm event={event} />
-                </Link>
+                <EventBoxSm event={event} />
               </Paper>
             </Box>
           ))}

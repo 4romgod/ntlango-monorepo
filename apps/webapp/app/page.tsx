@@ -31,7 +31,6 @@ export default async function HomePage() {
   const { data } = await getClient().query({ query: GetAllEventCategoriesDocument });
   const eventCategories = data.readEventCategories?.slice(0, 6) ?? [];
 
-
   return (
     <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Box
