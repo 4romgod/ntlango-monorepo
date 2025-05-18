@@ -4,7 +4,7 @@
     "build": "npm-run-all codegen lint:fix build:next",
     "build:ts": "echo '\nTranspilling ts source code...' && tsc --build --pretty --verbose && echo 'All done with the build!'",
     "build:next": "next build -d",
-    "codegen": "graphql-codegen --verbose",
+    "codegen": "graphql-codegen",
     "codegen:watch": "graphql-codegen --watch",
     "dev": "npm-run-all codegen start:dev",
     "lint:check": "next lint",

@@ -1,10 +1,9 @@
 import React from 'react';
 import { Metadata } from 'next';
-import EventMutationForm from '@/components/forms/event-mutation';
-import CustomContainer from '@/components/custom-container';
 import { Box, Container } from '@mui/material';
 import { getClient } from '@/data/graphql';
 import { GetAllEventCategoriesDocument } from '@/data/graphql/types/graphql';
+import EventMutationForm from '@/components/forms/event-mutation';
 
 export const metadata: Metadata = {
   title: {

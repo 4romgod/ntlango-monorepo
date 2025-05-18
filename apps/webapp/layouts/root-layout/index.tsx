@@ -1,7 +1,7 @@
 'use client';
 
 import '@/components/global.css';
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode } from 'react';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter';
 import { CustomAppContextProvider } from '@/components/app-context';
 import { ApolloWrapper } from '@/data/graphql/apollo-provider';

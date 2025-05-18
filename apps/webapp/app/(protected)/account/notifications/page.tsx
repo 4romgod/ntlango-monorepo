@@ -1,7 +1,7 @@
 import { Box } from '@mui/material';
-import dynamic from 'next/dynamic';
+import dynamicComponent from 'next/dynamic';
 
-const NotificationsPanel = dynamic(() => import('@/components/notifications/NotificationsPanel'));
+const NotificationsPanel = dynamicComponent(() => import('@/components/notifications/NotificationsPanel'));
 
 export default function NotificationsPage() {
   return (

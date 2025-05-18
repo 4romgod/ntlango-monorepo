@@ -10,8 +10,8 @@ import { Explore } from '@mui/icons-material';
 import { GetAllEventCategoriesDocument, GetAllEventsDocument } from '@/data/graphql/types/graphql';
 import { getClient } from '@/data/graphql';
 import { Metadata } from 'next';
-import EventsCarousel from '@/components/events/carousel';
 import { ROUTES } from '@/lib/constants';
+import EventsCarousel from '@/components/events/carousel';
 import EventCategoryBox from '@/components/events/category/box';
 
 export const metadata: Metadata = {

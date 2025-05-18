@@ -1,7 +1,7 @@
 import { Box } from '@mui/material';
-import dynamic from 'next/dynamic';
+import dynamicComponent from 'next/dynamic';
 
-const MessagesPanel = dynamic(() => import('@/components/messages/MessagesPanel'));
+const MessagesPanel = dynamicComponent(() => import('@/components/messages/MessagesPanel'));
 
 export default function MessagesPage() {
   return (
