@@ -7,10 +7,10 @@ import { CategoryFilterProps, getEventCategoryIcon } from '@/lib/constants';
 export default function CategoryFilter({ categoryList, sxProps, onChange }: CategoryFilterProps) {
   const [categories, setCategories] = useState<string[]>([]);
 
-    useEffect(() => {
-      onChange && onChange(categories); // TODO make this function mandatory
-    }, [categories, onChange]);
-  
+  useEffect(() => {
+    onChange && onChange(categories);
+  }, [categories]);
+
   const handleCategoryChange = (event: SelectChangeEvent<string[]>) => {
     const selectedCategories = event.target.value as string[];
     setCategories(selectedCategories);

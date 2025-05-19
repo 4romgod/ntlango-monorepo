@@ -31,7 +31,7 @@ const LocationInput: React.FC<LocationInputProps> = ({ onChange }) => {
 
   useEffect(() => {
     onChange(locationDetails);
-  }, [onChange, locationDetails]);
+  }, [locationDetails]);
 
   const handleLocationTypeChange = useCallback((type: string) => {
     setLocationType(type);
@@ -66,6 +66,7 @@ const LocationInput: React.FC<LocationInputProps> = ({ onChange }) => {
         <LocationTypeRadioButtons selectedType={locationType} onChange={handleLocationTypeChange} />
       </FormControl>
 
+      {/* TODO use the address input component */}
       {locationType === 'venue' && (
         <Box>
           <Grid container spacing={2}>

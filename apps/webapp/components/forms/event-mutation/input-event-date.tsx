@@ -22,6 +22,7 @@ import EventTypeRadioButtons from '@/components/buttons/event-type-radio-button'
 import { EventDateInputProps } from '@/lib/constants';
 
 // TODO persist the recurrence rule in local storage
+// TODO add date like in input-address
 export default function EventDateInput({ onChange }: EventDateInputProps) {
   const [eventType, setEventType] = useState<string>('single');
   const [startDateTime, setStartDateTime] = useState<Dayjs | null>(dayjs());
@@ -58,7 +59,7 @@ export default function EventDateInput({ onChange }: EventDateInputProps) {
     }
 
     onChange(result);
-  }, [onChange, eventType, startDateTime, endDateTime, frequency, interval, daysOfWeek]);
+  }, [eventType, startDateTime, endDateTime, frequency, interval, daysOfWeek]);
 
   const handleDayChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value, checked } = event.target;
