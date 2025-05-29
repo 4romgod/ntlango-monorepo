@@ -20,7 +20,7 @@ import { Search as SearchIcon } from '@mui/icons-material';
 import { EventCategoryGroupType, EventCategoryType, UserType } from '@/data/graphql/types/graphql';
 
 export default function InterestsSettingsPage({ user, eventCategoryGroups }: { user: UserType; eventCategoryGroups: EventCategoryGroupType[] }) {
-  const [selectedInterests, setSelectedInterests] = useState<EventCategoryType[]>( user.interests ? user.interests : []);
+  const [selectedInterests, setSelectedInterests] = useState<EventCategoryType[]>(user.interests ? user.interests : []);
   const [tempInterests, setTempInterests] = useState<EventCategoryType[]>([]);
   const [openModal, setOpenModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -48,18 +48,13 @@ export default function InterestsSettingsPage({ user, eventCategoryGroups }: { u
   };
 
   // Filter event categories based on search term
-  const filteredCategoryGroups = eventCategoryGroups
-    .map(group => {
-      const filteredCategories = group.eventCategoryList.filter(category =>
-        category.name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+  const filteredCategoryGroups = eventCategoryGroups.map(group => {
+    const filteredCategories = group.eventCategoryList.filter(category =>
+      category.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
-      return {
-        ...group,
-        eventCategoryList: filteredCategories
-      };
-    })
-    .filter(group => group.eventCategoryList.length > 0);
+    return { ...group, eventCategoryList: filteredCategories };
+  }).filter(group => group.eventCategoryList.length > 0);
 
   return (
     <Box sx={{ p: 3, maxWidth: 800, margin: 'auto' }}>
@@ -113,84 +108,86 @@ export default function InterestsSettingsPage({ user, eventCategoryGroups }: { u
         Selecting interests helps us recommend events and groups that match your preferences.
       </Typography>
 
-      <Dialog
-        open={openModal}
-        onClose={() => setOpenModal(false)}
-        maxWidth="md"
-        fullWidth
-      >
-        <DialogTitle>Select Your Interests</DialogTitle>
-        <DialogContent>
-          <Box sx={{ mb: 2, mt: 1 }}>
-            <TextField
-              fullWidth
-              placeholder="Search interests..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                )
-              }}
-              variant="outlined"
-            />
-          </Box>
-
-          <Typography variant="subtitle2" color="primary" sx={{ mt: 2, mb: 1 }}>
-            Selected Interests: {tempInterests.length}
-          </Typography>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 3 }}>
-            {tempInterests.map((interest) => (
-              <Chip
-                key={interest.eventCategoryId}
-                label={interest.name}
-                onDelete={() => handleInterestToggle(interest)}
-                color="secondary"
+      <Box component="form" noValidate>
+        <Dialog
+          open={openModal}
+          onClose={() => setOpenModal(false)}
+          maxWidth="md"
+          fullWidth
+        >
+          <DialogTitle>Select Your Interests</DialogTitle>
+          <DialogContent>
+            <Box sx={{ mb: 2, mt: 1 }}>
+              <TextField
+                fullWidth
+                placeholder="Search interests..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon />
+                    </InputAdornment>
+                  )
+                }}
+                variant="outlined"
               />
-            ))}
-          </Box>
+            </Box>
 
-          <Grid container spacing={2}>
-            {filteredCategoryGroups.map((categoryGroup) => (
-              <Grid size={{xs: 12}} key={categoryGroup.eventCategoryGroupId}>
-                <Typography variant="subtitle1" sx={{ mt: 1, mb: 1, fontWeight: 'bold' }}>
-                  {categoryGroup.name}
-                </Typography>
-                <Grid container spacing={1}>
-                  {categoryGroup.eventCategoryList.map((category) => (
-                    <Grid size={{xs: 12, sm: 6, md: 4}} key={category.eventCategoryId}>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={tempInterests.some(item => item.eventCategoryId === category.eventCategoryId)}
-                            onChange={() => handleInterestToggle(category)}
-                            color="secondary"
-                          />
-                        }
-                        label={category.name}
-                      />
-                    </Grid>
-                  ))}
+            <Typography variant="subtitle2" color="primary" sx={{ mt: 2, mb: 1 }}>
+              Selected Interests: {tempInterests.length}
+            </Typography>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 3 }}>
+              {tempInterests.map((interest) => (
+                <Chip
+                  key={interest.eventCategoryId}
+                  label={interest.name}
+                  onDelete={() => handleInterestToggle(interest)}
+                  color="secondary"
+                />
+              ))}
+            </Box>
+
+            <Grid container spacing={2}>
+              {filteredCategoryGroups.map((categoryGroup) => (
+                <Grid size={{ xs: 12 }} key={categoryGroup.eventCategoryGroupId}>
+                  <Typography variant="subtitle1" sx={{ mt: 1, mb: 1, fontWeight: 'bold' }}>
+                    {categoryGroup.name}
+                  </Typography>
+                  <Grid container spacing={1}>
+                    {categoryGroup.eventCategoryList.map((category) => (
+                      <Grid size={{ xs: 12, sm: 6, md: 4 }} key={category.eventCategoryId}>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={tempInterests.some(item => item.eventCategoryId === category.eventCategoryId)}
+                              onChange={() => handleInterestToggle(category)}
+                              color="secondary"
+                            />
+                          }
+                          label={category.name}
+                        />
+                      </Grid>
+                    ))}
+                  </Grid>
                 </Grid>
-              </Grid>
-            ))}
-          </Grid>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenModal(false)} color="secondary">
-            Cancel
-          </Button>
-          <Button
-            onClick={handleSaveInterests}
-            color="primary"
-            variant="contained"
-          >
-            Save Interests
-          </Button>
-        </DialogActions>
-      </Dialog>
+              ))}
+            </Grid>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpenModal(false)} color="secondary">
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSaveInterests}
+              color="primary"
+              variant="contained"
+            >
+              Save Interests
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Box>
     </Box>
   );
 };

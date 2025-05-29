@@ -75,7 +75,7 @@ export default async function SettingsPage() {
       },
       {
         name: 'Account',
-        content: <AccountSettingsPage />,
+        content: <AccountSettingsPage user={user} />,
         icon: <ManageAccounts fontSize="small" />,
         description: 'Control your account settings'
       },

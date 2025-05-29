@@ -1,11 +1,11 @@
 'use server';
 
-import { UpdateUserInputType, UpdateUserDocument, Gender } from '@/data/graphql/types/graphql';
+import { UpdateUserInputType, UpdateUserDocument } from '@/data/graphql/types/graphql';
 import { UpdateUserInputTypeSchema } from '@/data/validation';
 import { getClient } from '@/data/graphql';
 import { auth } from '@/auth';
 
-export async function updateUserProfileAction(prevState: any, formData: FormData) {
+export async function updateUserPasswordAction(prevState: any, formData: FormData) {
   const session = await auth();
   const userId = session?.user.userId;
   const token = session?.user.token;
@@ -18,27 +18,28 @@ export async function updateUserProfileAction(prevState: any, formData: FormData
     };
   }
 
-  const address = formData.get('address')?.toString();
-  const genderStr = formData.get('gender')?.toString();
-  const gender = Object.values(Gender).includes(genderStr as Gender) ? (genderStr as Gender) : undefined;
+  const currentPassword = formData.get('currentPassword')?.toString();
+  const newPassword = formData.get('newPassword')?.toString();
+
+  // Validate required fields
+  if (!currentPassword || !newPassword) {
+    return {
+      ...prevState,
+      apiError: 'Both current and new passwords are required',
+      zodErrors: null,
+    };
+  }
+
+  // TODO: Verify current password before updating
+  // You might need a separate GraphQL query/mutation to verify the current password
 
   let inputData: UpdateUserInputType = {
     userId: userId,
-    given_name: formData.get('given_name')?.toString() || undefined,
-    family_name: formData.get('family_name')?.toString() || undefined,
-    email: formData.get('email')?.toString() || undefined,
-    username: formData.get('username')?.toString() || undefined,
-    bio: formData.get('bio')?.toString() || undefined,
-    phone_number: formData.get('phone_number')?.toString() || undefined,
-    profile_picture: formData.get('profile_picture')?.toString() || undefined,
-    birthdate: formData.get('birthdate')?.toString() || undefined,
-    gender: gender,
-    address: address ? JSON.parse(address) : undefined, // TODO validate before you parse
+    password: newPassword, // Fixed: was using undefined 'password' variable
   };
 
-  inputData = Object.fromEntries(Object.entries(inputData).filter(([_, v]) => v !== undefined)) as UpdateUserInputType;
-
   console.log('input data', inputData);
+
   const validatedFields = UpdateUserInputTypeSchema.safeParse(inputData);
   if (!validatedFields.success) {
     return {
@@ -61,17 +62,20 @@ export async function updateUserProfileAction(prevState: any, formData: FormData
       },
     });
 
-    // TODO after updating, also make sure the user session gets updated!
+    // TODO: Update user session after password change
     const responseData = updateResponse.data?.updateUser;
+
     return {
       ...prevState,
       data: responseData,
       apiError: null,
       zodErrors: null,
+      success: true, // Add success flag
     };
   } catch (error) {
     console.error('Failed when calling Update User Mutation', error);
     const networkError = (error as any).networkError;
+
     if (networkError) {
       console.error('Error Message', networkError.result.errors[0].message);
       return {
@@ -83,7 +87,7 @@ export async function updateUserProfileAction(prevState: any, formData: FormData
 
     return {
       ...prevState,
-      apiError: 'An error occurred while updating your profile',
+      apiError: 'An error occurred while updating your password',
       zodErrors: null,
     };
   }

@@ -82,3 +82,30 @@ export const UpdateUserDocument = graphql(`
     }
   }
 `);
+
+export const DeleteUserByIdDocument = graphql(`
+  mutation DeleteUserById($userId: String!) {
+    deleteUserById(userId: $userId) {
+      userId
+      email
+      username
+      bio
+      address
+      birthdate
+      given_name
+      family_name
+      gender
+      phone_number
+      profile_picture
+      userRole
+      interests {
+        eventCategoryId
+        slug
+        name
+        iconName
+        description
+        color
+      }
+    }
+  }
+`);

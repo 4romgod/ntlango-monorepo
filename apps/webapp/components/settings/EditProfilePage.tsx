@@ -33,7 +33,6 @@ export default function EditProfilePage({ user }: { user: UserType }) {
     userId: user.userId,
     given_name: user.given_name,
     family_name: user.family_name,
-    email: user.email,
     profile_picture: user.profile_picture,
     bio: user.bio,
     phone_number: user.phone_number,
@@ -217,22 +216,6 @@ export default function EditProfilePage({ user }: { user: UserType }) {
                   color='secondary'
                 />
                 <FormErrors error={formState?.zodErrors?.bio} />
-              </Grid>
-
-              <Grid size={{ xs: 12 }}>
-                <Box>
-                  <TextField
-                    fullWidth
-                    label="Email"
-                    name="email"
-                    value={profile.email || ''}
-                    onChange={handleInputChange}
-                    disabled={!isEditing}
-                    variant="outlined"
-                    color='secondary'
-                  />
-                  <FormErrors error={formState?.zodErrors?.email} />
-                </Box>
               </Grid>
               <Grid size={{ xs: 12 }}>
                 <Box>
