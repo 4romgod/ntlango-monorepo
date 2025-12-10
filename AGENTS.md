@@ -10,12 +10,12 @@
 
 ## Build, Test, and Development Commands
 - Install deps: `npm install` (root). Workspace-only: `npm install -w <workspace>`.
-- API dev server: `npm run dev:api` (nodemon on `lib/scripts/startServer.ts`).
+- API dev server: `npm run dev:api` (scoped; avoids workspace fan-out).
 - API build + unit tests: `npm run build -w @ntlango/api`; TS-only: `npm run build:ts -w @ntlango/api`.
 - API test suites: `npm run test:unit -w @ntlango/api`, `npm run test:integration -w @ntlango/api`, `npm run test:canary -w @ntlango/api`.
 - Web dev: export `NEXT_PUBLIC_GRAPHQL_URL`, then `npm run dev:web`. Prod build: `npm run build -w @ntlango/webapp`.
 - Commons build: `npm run build -w @ntlango/commons`. CDK synth: `npm run build:cdk -w @ntlango/cdk`.
-- Full monorepo build: `npm run build`.
+- Repo-wide helpers: `npm run lint`, `npm run typecheck`, `npm run test`, `npm run build` (scoped via workspaces).
 
 ## Coding Style & Naming Conventions
 - TypeScript everywhere; `tsconfig.base.json` enforces strict mode and path aliases (`@ntlango/commons/*`).

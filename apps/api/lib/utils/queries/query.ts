@@ -51,7 +51,7 @@ export const addFiltersToQuery = <ResultType, DocType>(query: Query<ResultType, 
 };
 
 export const transformOptionsToQuery = <T>(model: Model<T>, options: QueryOptionsInput) => {
-  let query = model.find();
+  const query = model.find();
 
   const {filters, sort, pagination} = options;
 

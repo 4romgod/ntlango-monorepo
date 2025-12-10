@@ -1,32 +1,33 @@
-# Description
+## Description
 
-Please include a summary of the changes and the related issue. Please also include relevant motivation and context. List any dependencies that are required for this change.
-
-Fixes # (issue)
+- Summary:
+- Motivation/Context:
+- Related issue/ticket: Fixes #
+- Impacted workspaces: [api | webapp | commons | cdk | tools | multiple]
 
 ## Type of change
 
-Please delete options that are not relevant.
+- [ ] Bug fix (non-breaking)
+- [ ] New feature (non-breaking)
+- [ ] Breaking change
+- [ ] Chore/maintenance
+- [ ] Docs only
 
-- [ ] Bug fix (non-breaking change which fixes an issue)
-- [ ] New feature (non-breaking change which adds functionality)
-- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
-- [ ] This change requires a documentation update
+## Testing
 
-# How Has This Been Tested?
+Commands run (paste output snippets where useful):
+- [ ] `npm run lint`
+- [ ] `npm run typecheck`
+- [ ] `npm run test`
+- [ ] `npm run build`
+- [ ] Workspace-specific: 
 
-Please describe the tests that you ran to verify your changes. Provide instructions so we can reproduce. Please also list any relevant details for your test configuration
+Other notes (fixtures, env vars, data sources):
 
-- [ ] Test A
-- [ ] Test B
+## Checklist
 
-# Checklist:
-
-- [ ] My code follows the style guidelines of this project (I also ran `npm run format` to format the code)
-- [ ] I have performed a self-review of my code
-- [ ] I have commented my code, particularly in hard-to-understand areas
-- [ ] I have made corresponding changes to the documentation
-- [ ] My changes generate no new warnings
-- [ ] I have added tests that prove my fix is effective or that my feature works
-- [ ] New and existing unit tests pass locally with my changes
-- [ ] Any dependent changes have been merged and published in downstream modules
+- [ ] Code follows repo style (lint/format) and avoids new warnings
+- [ ] Type-safety maintained (no `any` introduced without justification)
+- [ ] Tests added/updated where logic changed
+- [ ] Docs updated (README/AGENTS or relevant)
+- [ ] Secrets/env handled correctly (no `.env` committed)

@@ -8,10 +8,12 @@
     "infra"
   ],
   "scripts": {
-    "build": "npm run build --workspaces --if-present",
-    "dev:api": "npm run dev -w @ntlango/api",
-    "dev:web": "npm run dev -w @ntlango/webapp",
-    "lint": "npm run lint --workspaces --if-present"
+    "build": "npm --workspaces --if-present run build",
+    "dev:api": "npm --workspace @ntlango/api run dev",
+    "dev:web": "npm --workspace @ntlango/webapp run dev",
+    "lint": "npm --workspaces --if-present run lint",
+    "typecheck": "npm --workspaces --if-present run typecheck",
+    "test": "npm --workspaces --if-present run test"
   },
   "devDependencies": {
     "prettier": "^3.2.5"

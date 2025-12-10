@@ -13,6 +13,8 @@
     "start:ts": "ts-node lib/scripts/startServer.ts",
     "start:js": "node -r ts-node/register dist/lib/scripts/startServer.js",
     "seed": "ts-node lib/scripts/seed.ts",
+    "lint": "eslint \"lib/**/*.{ts,tsx}\" \"test/**/*.ts\"",
+    "typecheck": "tsc --noEmit --pretty",
     "test": "npm-run-all test:*",
     "test:canary": "jest --config=test/canary/jest.config.ts",
     "test:integration": "jest --config=test/integration/jest.config.ts",
