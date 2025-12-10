@@ -1,0 +1,24 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "noImplicitAny": false,
+    "outDir": "./dist",
+    "declaration": true,
+    "declarationDir": "./dist/types",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "strictPropertyInitialization": false,
+    "preserveSymlinks": true,
+    "baseUrl": "./",
+    "paths": {
+      "@ntlango/commons": ["../../packages/commons/lib/index.ts"],
+      "@ntlango/commons/*": ["../../packages/commons/lib/*"],
+      "@/test/*": ["test/*"],
+      "@/*": ["lib/*"]
+    }
+  },
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
+  },
+  "exclude": ["node_modules", "dist"]
+}

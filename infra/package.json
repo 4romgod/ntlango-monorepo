@@ -1,0 +1,18 @@
+{
+  "name": "@ntlango/cdk",
+  "version": "1.0.0",
+  "dependencies": {
+    "@ntlango/commons": "1.0.0"
+  },
+  "scripts": {
+    "build": "npm run build:cdk",
+    "build:cdk": "npm run cdk synth",
+    "cdk": "npx aws-cdk"
+  },
+  "devDependencies": {
+    "aws-cdk-lib": "^2.147.0",
+    "esbuild": "^0.23.0",
+    "dotenv": "^16.4.5",
+    "aws-cdk": "^2.147.0"
+  }
+}

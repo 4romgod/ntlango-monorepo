@@ -1,0 +1,170 @@
+import {
+  Box,
+  Container,
+  Typography,
+  Button,
+  Grid,
+} from '@mui/material';
+import Link from 'next/link';
+import { Explore } from '@mui/icons-material';
+import { GetAllEventCategoriesDocument, GetAllEventsDocument } from '@/data/graphql/types/graphql';
+import { getClient } from '@/data/graphql';
+import { Metadata } from 'next';
+import { ROUTES } from '@/lib/constants';
+import EventsCarousel from '@/components/events/carousel';
+import EventCategoryBox from '@/components/events/category/box';
+
+export const metadata: Metadata = {
+  title: {
+    default: 'Ntlango',
+    template: 'Ntlango',
+  },
+  icons: {
+    icon: '/logo-img.png',
+    shortcut: '/logo-img.png',
+    apple: '/logo-img.png',
+  },
+};
+
+export default async function HomePage() {
+  const { data: events } = await getClient().query({ query: GetAllEventsDocument });
+  const { data } = await getClient().query({ query: GetAllEventCategoriesDocument });
+  const eventCategories = data.readEventCategories?.slice(0, 6) ?? [];
+
+  return (
+    <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <Box
+        id="hero-section"
+        sx={{
+          py: 8,
+          boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+          backgroundColor: 'background.default',
+          textAlign: 'center',
+        }}
+      >
+        <Container maxWidth="md" sx={{ zIndex: 1 }}>
+          <Typography
+            variant="h1"
+            sx={{
+              fontWeight: 800,
+              fontSize: { xs: '2.5rem', md: '3.5rem' },
+              mb: 2,
+              lineHeight: 1.2
+            }}
+          >
+            Where Connections Happen
+          </Typography>
+          <Typography
+            variant="h4"
+            sx={{
+              fontWeight: 400,
+              fontSize: { xs: '1.25rem', md: '1.5rem' },
+              mb: 4,
+            }}
+          >
+            Discover events that match your passions, meet fascinating people, and create memorable experiences.
+          </Typography>
+        </Container>
+      </Box>
+
+      <Box
+        id="explore-categories"
+        sx={{
+          backgroundColor: 'background.paper',
+          py: 8
+        }}
+      >
+        <Container>
+          <Typography variant="h4" fontWeight="bold" sx={{ mb: 4, textAlign: 'center' }}>
+            Explore by Category
+          </Typography>
+
+          <Grid container spacing={3} justifyContent="center">
+            {eventCategories.map((category, index) => {
+              return (
+                <Grid size={{ xs: 6, sm: 4, md: 2 }} key={index}>
+                  <EventCategoryBox eventCategory={category} />
+                </Grid>
+              )
+            })}
+          </Grid>
+
+          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+            <Button
+              variant="outlined"
+              color="secondary"
+              startIcon={<Explore />}
+              component={Link}
+              href="#"  // TODO create a page for all categories
+              sx={{ borderRadius: 4, px: 3 }}
+            >
+              Explore All Categories
+            </Button>
+          </Box>
+        </Container>
+      </Box>
+
+      <Box
+        id="create-event-cta"
+        sx={{
+          backgroundColor: 'background.default',
+          textAlign: 'center',
+          py: 8,
+        }}
+      >
+        <Container maxWidth="md">
+          <Typography
+            variant="h3"
+            fontWeight="bold"
+            sx={{ mb: 2, fontSize: { xs: '2rem', md: '2.5rem' } }}
+          >
+            Ready to Host Your Own Event?
+          </Typography>
+          <Typography
+            variant="h6"
+            color="text.secondary"
+            sx={{ mb: 4, maxWidth: 700, mx: 'auto', fontWeight: 'normal' }}
+          >
+            Share your passion, grow your community, and bring people together with events that matter.
+          </Typography>
+          <Button
+            variant="contained"
+            color="primary"
+            size="large"
+            component={Link}
+            href={ROUTES.ACCOUNT.EVENTS.CREATE}
+            sx={{
+              borderRadius: 2,
+              px: 4,
+              py: 1.5,
+              fontWeight: 600,
+              fontSize: '1.1rem'
+            }}
+          >
+            Create an Event
+          </Button>
+        </Container>
+      </Box>
+
+      <Box
+        id="featured-events"
+        sx={{
+          backgroundColor: 'background.paper',
+          py: 8
+        }}
+      >
+        <Container>
+          <EventsCarousel
+            events={events.readEvents}
+            title="Upcoming Events"
+            autoplay={false}
+            autoplayInterval={6000}
+            itemWidth={350}
+            showIndicators={true}
+            viewAllEventsButton={true}
+          />
+        </Container>
+      </Box>
+    </Box>
+  );
+}

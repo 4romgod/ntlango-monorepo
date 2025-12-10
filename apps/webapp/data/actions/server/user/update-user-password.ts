@@ -1,0 +1,94 @@
+'use server';
+
+import { UpdateUserInputType, UpdateUserDocument } from '@/data/graphql/types/graphql';
+import { UpdateUserInputTypeSchema } from '@/data/validation';
+import { getClient } from '@/data/graphql';
+import { auth } from '@/auth';
+
+export async function updateUserPasswordAction(prevState: any, formData: FormData) {
+  const session = await auth();
+  const userId = session?.user.userId;
+  const token = session?.user.token;
+
+  if (!userId || !token) {
+    return {
+      ...prevState,
+      apiError: 'User is not authenticated',
+      zodErrors: null,
+    };
+  }
+
+  const currentPassword = formData.get('currentPassword')?.toString();
+  const newPassword = formData.get('newPassword')?.toString();
+
+  // Validate required fields
+  if (!currentPassword || !newPassword) {
+    return {
+      ...prevState,
+      apiError: 'Both current and new passwords are required',
+      zodErrors: null,
+    };
+  }
+
+  // TODO: Verify current password before updating
+  // You might need a separate GraphQL query/mutation to verify the current password
+
+  let inputData: UpdateUserInputType = {
+    userId: userId,
+    password: newPassword, // Fixed: was using undefined 'password' variable
+  };
+
+  console.log('input data', inputData);
+
+  const validatedFields = UpdateUserInputTypeSchema.safeParse(inputData);
+  if (!validatedFields.success) {
+    return {
+      ...prevState,
+      apiError: null,
+      zodErrors: validatedFields.error.flatten().fieldErrors,
+    };
+  }
+
+  try {
+    const updateResponse = await getClient().mutate({
+      mutation: UpdateUserDocument,
+      variables: {
+        input: inputData,
+      },
+      context: {
+        headers: {
+          token: token,
+        },
+      },
+    });
+
+    // TODO: Update user session after password change
+    const responseData = updateResponse.data?.updateUser;
+
+    return {
+      ...prevState,
+      data: responseData,
+      apiError: null,
+      zodErrors: null,
+      success: true, // Add success flag
+    };
+  } catch (error) {
+    console.error('Failed when calling Update User Mutation', error);
+    const networkError = (error as any).networkError;
+
+    if (networkError) {
+      console.error('Error Message', networkError.result.errors[0].message);
+      return {
+        ...prevState,
+        apiError: networkError.result.errors[0].message,
+        zodErrors: null,
+      };
+    }
+
+    return {
+      ...prevState,
+      apiError: 'An error occurred while updating your password',
+      zodErrors: null,
+    };
+  }
+}

@@ -1,0 +1,8 @@
+.DS_Store
+.env
+.next/
+.vercel
+build/
+coverage/
+node_modules/
+data/graphql/types/

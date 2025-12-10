@@ -1,0 +1,22 @@
+{
+  "name": "@ntlango/commons",
+  "version": "1.0.0",
+  "description": "This repository contains common source code for ntlango",
+  "main": "dist/index.js",
+  "types": "dist/types/index.d.ts",
+  "scripts": {
+    "build": "npm-run-all format build:ts",
+    "build:ts": "echo '\nTranspilling ts source code...' && tsc --build --pretty --verbose && echo 'All done with the build!'",
+    "format": "prettier --no-error-on-unmatched-pattern --config .prettierrc.json 'lib/**/*.{js,ts}' --write"
+  },
+  "devDependencies": {
+    "prettier": "^3.2.5",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "date-fns": "^3.6.0",
+    "mongoose": "^8.4.1",
+    "npm-run-all": "^4.1.5",
+    "zod": "^3.23.8"
+  }
+}

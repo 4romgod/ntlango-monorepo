@@ -1,0 +1,19 @@
+{
+  "name": "ntlango",
+  "private": true,
+  "workspaces": [
+    "apps/api",
+    "apps/webapp",
+    "packages/*",
+    "infra"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "dev:api": "npm run dev -w @ntlango/api",
+    "dev:web": "npm run dev -w @ntlango/webapp",
+    "lint": "npm run lint --workspaces --if-present"
+  },
+  "devDependencies": {
+    "prettier": "^3.2.5"
+  }
+}

@@ -1,0 +1,277 @@
+'use client';
+
+import React, { useActionState, useEffect, useState, useTransition } from 'react';
+import {
+  Box,
+  Typography,
+  Grid,
+  TextField,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+} from '@mui/material';
+import { Delete as DeleteIcon } from '@mui/icons-material';
+import { UserType } from '@/data/graphql/types/graphql';
+import { updateUserProfileAction, deleteUserProfileAction } from '@/data/actions/server/user';
+import { SERVER_ACTION_INITIAL_STATE } from '@/lib/constants';
+import { useCustomAppContext } from '@/components/app-context';
+import { logoutUserAction } from '@/data/actions/server/auth/logout';
+
+interface AccountSettings {
+  username: string;
+  email: string;
+}
+
+export default function AccountSettingsPage({ user }: { user: UserType }) {
+  const { setToastProps, toastProps } = useCustomAppContext();
+  const [updateUserFormState, updateUserFormAction] = useActionState(updateUserProfileAction, SERVER_ACTION_INITIAL_STATE);
+  const [deleteUserFormState, deleteUserAction] = useActionState(deleteUserProfileAction, SERVER_ACTION_INITIAL_STATE);
+  const [isPending, startTransition] = useTransition();
+  const [settings, setSettings] = useState<AccountSettings>({
+    username: user.username,
+    email: user.email,
+  });
+
+  const [openDeleteAccountDialog, setOpenDeleteAccountDialog] = useState(false);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setSettings(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  // Create a function to handle the delete confirmation
+  const handleDeleteConfirm = async () => {
+    setOpenDeleteAccountDialog(false);
+    // Use startTransition to properly handle the async action
+    startTransition(() => {
+      deleteUserAction(new FormData());
+    });
+    await logoutUserAction();
+  };
+
+  const languages = [
+    { value: 'en', label: 'English' },
+    { value: 'es', label: 'Spanish' },
+    { value: 'fr', label: 'French' },
+    { value: 'de', label: 'German' },
+    { value: 'pt', label: 'Portuguese' }
+  ];
+
+  const timeZones = [
+    { value: 'America/New_York', label: 'Eastern Time (New York)' },
+    { value: 'America/Chicago', label: 'Central Time (Chicago)' },
+    { value: 'America/Denver', label: 'Mountain Time (Denver)' },
+    { value: 'America/Los_Angeles', label: 'Pacific Time (Los Angeles)' },
+    { value: 'America/Anchorage', label: 'Alaska Time (Anchorage)' },
+    { value: 'Pacific/Honolulu', label: 'Hawaii Time (Honolulu)' }
+  ];
+
+  useEffect(() => {
+    if (updateUserFormState.apiError) {
+      setToastProps({
+        ...toastProps,
+        open: true,
+        severity: 'error',
+        message: updateUserFormState.apiError,
+      });
+    }
+
+    if (updateUserFormState.data) {
+      setToastProps({
+        ...toastProps,
+        open: true,
+        severity: 'success',
+        message: 'Account Settings updated successfully!',
+      });
+    }
+  }, [updateUserFormState]);
+
+  useEffect(() => {
+    if (deleteUserFormState.apiError) {
+      setToastProps({
+        ...toastProps,
+        open: true,
+        severity: 'error',
+        message: deleteUserFormState.apiError,
+      });
+    }
+
+    if (deleteUserFormState.data) {
+      setToastProps({
+        ...toastProps,
+        open: true,
+        severity: 'success',
+        message: 'Account deleted successfully!',
+      });
+      // TODO: Redirect to login or home page after successful deletion
+    }
+  }, [deleteUserFormState]);
+
+  return (
+    <Box sx={{ p: 3, maxWidth: 600, margin: 'auto' }}>
+      <Typography variant="h4" fontWeight='bold' sx={{ mb: 5 }}>
+        Account Management
+      </Typography>
+
+      <Box component="form" action={updateUserFormAction} noValidate>
+        <Grid container spacing={3}>
+          <Grid size={{ xs: 12 }}>
+            <TextField
+              fullWidth
+              label="Username"
+              name="username"
+              value={settings.username}
+              onChange={handleInputChange}
+              variant="outlined"
+              slotProps={{
+                input: {
+                  readOnly: true,
+                }
+              }}
+              color='secondary'
+              sx={{
+                pb: 4,
+              }}
+              disabled
+            />
+
+            <TextField
+              fullWidth
+              label="Email"
+              name="email"
+              value={settings.email}
+              onChange={handleInputChange}
+              variant="outlined"
+              color='secondary'
+              sx={{
+                pb: 4,
+              }}
+            />
+
+            <FormControl
+              fullWidth
+              variant="outlined"
+              sx={{
+                pb: 4,
+              }}
+            >
+              <InputLabel
+                color='secondary'
+              >
+                Language
+              </InputLabel>
+              <Select
+                name="language"
+                // TODO value={settings.language}
+                onChange={(e) => handleInputChange(e as React.ChangeEvent<HTMLInputElement>)}
+                label="Language"
+                color="secondary"
+              >
+                {languages.map((lang) => (
+                  <MenuItem key={lang.value} value={lang.value}>
+                    {lang.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <FormControl fullWidth variant="outlined">
+              <InputLabel
+                color='secondary'
+              >
+                Time Zone
+              </InputLabel>
+              <Select
+                name="timeZone"
+                // TODO value={settings.timeZone}
+                onChange={(e) => handleInputChange(e as React.ChangeEvent<HTMLInputElement>)}
+                label="Time Zone"
+                color="secondary"
+              >
+                {timeZones.map((zone) => (
+                  <MenuItem
+                    key={zone.value}
+                    value={zone.value}
+                  >
+                    {zone.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+              <Button
+                variant="contained"
+                color="primary"
+                type="submit"
+                disabled={isPending}
+              >
+                Save Changes
+              </Button>
+            </Box>
+          </Grid>
+        </Grid>
+      </Box>
+
+      {/* Delete Account Section - No form wrapper needed here */}
+      <Box sx={{ mt: 4 }}>
+        <Typography variant="subtitle1" color="primary" sx={{ display: 'flex', alignItems: 'center' }}>
+          <DeleteIcon sx={{ mr: 1 }} />
+          Delete Account
+        </Typography>
+        <Typography variant="body2" sx={{ color: 'text.secondary', mb: 2 }}>
+          Permanently remove your account and all associated data
+        </Typography>
+        <Button
+          variant="outlined"
+          color="error"
+          startIcon={<DeleteIcon />}
+          onClick={() => setOpenDeleteAccountDialog(true)}
+          disabled={isPending}
+        >
+          Delete Account
+        </Button>
+
+        {/* Delete Account Confirmation Dialog */}
+        <Dialog
+          open={openDeleteAccountDialog}
+          onClose={() => setOpenDeleteAccountDialog(false)}
+        >
+          <DialogTitle>Delete Account</DialogTitle>
+          <DialogContent>
+            <Typography variant="body1">
+              Are you sure you want to permanently delete your account?
+              This action cannot be undone and will remove all your data.
+            </Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button 
+              onClick={() => setOpenDeleteAccountDialog(false)} 
+              color="secondary"
+              disabled={isPending}
+            >
+              Cancel
+            </Button>
+            <Button
+              color="error"
+              variant="contained"
+              onClick={handleDeleteConfirm}
+              disabled={isPending}
+            >
+              {isPending ? 'Deleting...' : 'Confirm Delete'}
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Box>
+    </Box>
+  );
+};
