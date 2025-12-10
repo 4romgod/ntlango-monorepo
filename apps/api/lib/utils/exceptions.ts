@@ -63,15 +63,21 @@ export const KnownCommonError = (error: any): GraphQLError => {
   if (code) {
     switch (code) {
       case 11000:
-        const key = Object.keys(keyValue)[0];
-        message = `${capitalize(key)} ${keyValue[key]} already exists`;
-        return CustomError(message, ErrorTypes.CONFLICT);
+        {
+          const key = Object.keys(keyValue)[0];
+          message = `${capitalize(key)} ${keyValue[key]} already exists`;
+          return CustomError(message, ErrorTypes.CONFLICT);
+        }
       case 11001:
-        message = duplicateFieldMessage(error);
-        return CustomError(message, ErrorTypes.CONFLICT);
+        {
+          message = duplicateFieldMessage(error);
+          return CustomError(message, ErrorTypes.CONFLICT);
+        }
       case 10334:
-        message = ERROR_MESSAGES.CONTENT_TOO_LARGE;
-        return CustomError(message, ErrorTypes.BAD_USER_INPUT);
+        {
+          message = ERROR_MESSAGES.CONTENT_TOO_LARGE;
+          return CustomError(message, ErrorTypes.BAD_USER_INPUT);
+        }
     }
   }
 

@@ -3,6 +3,7 @@ import {SecretsManagerClient, GetSecretValueCommand} from '@aws-sdk/client-secre
 import {APPLICATION_STAGES} from '@ntlango/commons';
 
 let secretsManagerClient: SecretsManagerClient;
+
 function getSecretsManagerClient(): SecretsManagerClient {
   if (!secretsManagerClient) {
     secretsManagerClient = new SecretsManagerClient({region: AWS_REGION});
@@ -10,22 +11,30 @@ function getSecretsManagerClient(): SecretsManagerClient {
   return secretsManagerClient;
 }
 
-let cachedSecrets: {[key: string]: string} = {};
+let cachedSecrets: Record<string, string> = {};
+
 async function getSecretValue(secretKey: string): Promise<string> {
-  console.log('Retrieving secret from AWS secret manager...');
+  if (!NTLANGO_SECRET_ARN) {
+    throw new Error('NTLANGO_SECRET_ARN is required when STAGE is not Dev');
+  }
 
   if (cachedSecrets && cachedSecrets[secretKey]) {
     console.log('Secrets cache hit!');
     return cachedSecrets[secretKey];
   }
 
-  console.log('Secrets cache miss!');
   const command = new GetSecretValueCommand({SecretId: NTLANGO_SECRET_ARN});
 
   try {
     const data = await getSecretsManagerClient().send(command);
     cachedSecrets = (data.SecretString && JSON.parse(data.SecretString)) || {};
-    return cachedSecrets[secretKey];
+    const secretValue = cachedSecrets[secretKey];
+
+    if (!secretValue) {
+      throw new Error(`Secret "${secretKey}" not found in Secrets Manager`);
+    }
+
+    return secretValue;
   } catch (err) {
     console.error('Error retrieving secret:', err);
     throw err;
@@ -33,13 +42,19 @@ async function getSecretValue(secretKey: string): Promise<string> {
 }
 
 export async function getConfigValue(key: string): Promise<string> {
-  if (STAGE == APPLICATION_STAGES.DEV) {
+  if (STAGE === APPLICATION_STAGES.DEV) {
     const secretConfig = {
       [SECRET_KEYS.JWT_SECRET]: JWT_SECRET,
       [SECRET_KEYS.MONGO_DB_URL]: MONGO_DB_URL,
     };
-    return secretConfig[key];
-  } else {
-    return await getSecretValue(key);
+
+    const value = secretConfig[key];
+    if (!value) {
+      throw new Error(`Missing configuration for key "${key}" in local environment`);
+    }
+
+    return value;
   }
+
+  return getSecretValue(key);
 }

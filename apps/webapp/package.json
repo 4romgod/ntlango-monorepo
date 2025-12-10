@@ -8,10 +8,12 @@
     "codegen": "if [ -z \"$NEXT_PUBLIC_GRAPHQL_URL\" ]; then echo \"Skipping codegen: NEXT_PUBLIC_GRAPHQL_URL not set\"; else graphql-codegen; fi",
     "codegen:watch": "graphql-codegen --watch",
     "dev": "npm-run-all codegen start:dev",
+    "lint": "npm run lint:check",
     "lint:check": "next lint",
     "lint:fix": "prettier './**/*.{js,ts}' --write",
     "start:dev": "next dev",
-    "start:prod": "next start"
+    "start:prod": "next start",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@apollo/client": "^3.13.8",

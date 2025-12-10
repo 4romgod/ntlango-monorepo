@@ -73,7 +73,7 @@ describe('UserDAO', () => {
     profile_picture: '',
   };
 
-  let mockUser: any = {
+  const mockUser: any = {
     ...mockCreateUserInput,
     id: 'mockUserId',
     userRole: UserRole.User,

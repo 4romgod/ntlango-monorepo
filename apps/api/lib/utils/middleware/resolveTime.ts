@@ -9,7 +9,7 @@ export const ResolveTime = async ({context, info}: ResolverData<ServerContext>, 
   await next();
   const resolveTime = Date.now() - start;
 
-  const resolveTimeColor = RESOLVE_TIME_COLOR_MAP.find((color) => resolveTime <= color.threshold)?.color!;
+  const resolveTimeColor = RESOLVE_TIME_COLOR_MAP.find((color) => resolveTime <= color.threshold)?.color ?? ANSI_COLOR_CODES.GREEN;
 
   const httpMethod = context.req?.method ?? 'UNKNOWN HTTP METHOD';
   const httpMethodColor = HTTP_METHOD_COLOR_MAP[httpMethod] ?? ANSI_COLOR_CODES.GREEN;

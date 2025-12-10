@@ -94,18 +94,16 @@ UserSchema.pre('validate', async function (next: CallbackWithoutResultAndOptiona
     this.userId = this._id!.toString();
 
     if (this.email && !this.username) {
-      let baseUsername = this.email.split('@')[0];
-      let usernameSuffix = 1;
-      let newUsername = baseUsername;
+      const baseUsername = this.email.split('@')[0];
 
-      while (true) {
-        const existingUser = await User.findOne({ username: newUsername });
-        if (!existingUser) break;
-        newUsername = baseUsername + usernameSuffix;
-        usernameSuffix++;
+      for (let usernameSuffix = 1; ; usernameSuffix++) {
+        const candidateUsername = usernameSuffix === 1 ? baseUsername : `${baseUsername}${usernameSuffix}`;
+        const existingUser = await User.findOne({username: candidateUsername});
+        if (!existingUser) {
+          this.username = candidateUsername;
+          break;
+        }
       }
-
-      this.username = newUsername;
     }
 
     if (this.isModified('password')) {

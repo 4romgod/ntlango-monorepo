@@ -7,7 +7,9 @@
   "scripts": {
     "build": "npm-run-all format build:ts",
     "build:ts": "echo '\nTranspilling ts source code...' && tsc --build --pretty --verbose && echo 'All done with the build!'",
-    "format": "prettier --no-error-on-unmatched-pattern --config .prettierrc.json 'lib/**/*.{js,ts}' --write"
+    "format": "prettier --no-error-on-unmatched-pattern --config .prettierrc.json 'lib/**/*.{js,ts}' --write",
+    "lint": "eslint \"lib/**/*.{ts,tsx}\"",
+    "typecheck": "tsc --noEmit --pretty"
   },
   "devDependencies": {
     "prettier": "^3.2.5",
