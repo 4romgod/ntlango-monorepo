@@ -170,5 +170,5 @@ Phase plan:
   - Intent: `{ userId }`, `{ eventId, status }`
   - Activity: `{ actorId }`, `{ targetType, targetId }`, `{ visibility, eventAt }`
   - Follow: `{ followerUserId }`, `{ targetId, targetType }`
-- **Aggregation guidance**: prefer denorm + targeted projections over deep `$lookup`. For attendee lists, query `EventParticipant` by `eventId` with limits; use counts on Event for quick stats.***
+- **Aggregation guidance**: prefer denorm + targeted projections over deep `$lookup`. For attendee lists, query `EventParticipant` by `eventId` with limits; use counts on Event for quick stats.
 
