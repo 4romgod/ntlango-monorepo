@@ -13,9 +13,9 @@ class EventParticipantDAO {
         quantity,
         invitedBy,
         sharedVisibility,
-        rsvpAt: new Date(),
         $setOnInsert: {
           participantId: new Types.ObjectId().toString(),
+          rsvpAt: new Date(),
         },
       };
 
