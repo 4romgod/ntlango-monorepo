@@ -70,6 +70,13 @@ export const GetAllEventsDocument = graphql(`
         status
         sharedVisibility
         quantity
+        user {
+          userId
+          username
+          given_name
+          family_name
+          profile_picture
+        }
       }
     }
   }
@@ -145,6 +152,13 @@ export const GetEventBySlugDocument = graphql(`
         status
         sharedVisibility
         quantity
+        user {
+          userId
+          username
+          given_name
+          family_name
+          profile_picture
+        }
       }
     }
   }

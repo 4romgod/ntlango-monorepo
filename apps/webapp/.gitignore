@@ -5,4 +5,4 @@
 build/
 coverage/
 node_modules/
-data/graphql/types/
+data/graphql/types/*

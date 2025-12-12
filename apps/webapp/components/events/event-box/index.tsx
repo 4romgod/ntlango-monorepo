@@ -2,18 +2,34 @@
 
 import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
-import { IconButton, Typography } from '@mui/material';
-import { Event } from '@/data/graphql/types/graphql';
+import { Avatar, AvatarGroup, IconButton, Tooltip, Typography } from '@mui/material';
+import { EventParticipantPreview, EventPreview } from '@/data/graphql/query/Event/types';
 import { Box } from '@mui/material';
 import { CalendarIcon, CheckCircleIcon, TicketIcon, EllipsisHorizontalIcon } from '@heroicons/react/24/outline';
 import { ShareRounded, ThumbUpOffAltOutlined } from '@mui/icons-material';
 import { RRule } from 'rrule';
 
-export default function EventBox({ event }: { event: Event }) {
+export default function EventBox({ event }: { event: EventPreview }) {
   const { title, recurrenceRule, participants, media, heroImage } = event;
   const recurrenceText = RRule.fromString(recurrenceRule).toText();
   const imageUrl = heroImage || media?.featuredImageUrl || 'https://images.unsplash.com/photo-1525286116112-b59af11adad1?auto=format&fit=crop&w=1200&q=80';
   const participantCount = participants?.length ?? 0;
+  const participantList = (participants ?? []) as EventParticipantPreview[];
+  const visibleParticipants = participantList.slice(0, 4);
+  const getParticipantLabel = (participant: EventParticipantPreview) => {
+    const nameParts = [
+      participant.user?.given_name,
+      participant.user?.family_name,
+    ].filter(Boolean);
+
+    const fallbackName = participant.user?.username || `Guest • ${participant.userId?.slice(-4) ?? 'anon'}`;
+    return nameParts.length ? nameParts.join(' ') : fallbackName;
+  };
+  const getParticipantAvatarLetter = (participant: EventParticipantPreview) =>
+    participant.user?.given_name?.charAt(0) ??
+    participant.user?.username?.charAt(0) ??
+    participant.userId?.charAt(0) ??
+    '?';
 
   return (
     <Card
@@ -58,7 +74,7 @@ export default function EventBox({ event }: { event: Event }) {
           }}
         />
       </Box>
-        <Box component="div" sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+      <Box component="div" sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
         <Box sx={{ alignSelf: 'stretch', width: '100%' }}>
           <Typography variant="overline" color="secondary.main" sx={{ fontWeight: 700, letterSpacing: 0.8, fontSize: '0.65rem' }}>
             Experience
@@ -72,9 +88,28 @@ export default function EventBox({ event }: { event: Event }) {
             <Typography variant='subtitle2' paddingLeft={1}>{recurrenceText}</Typography>
           </Box>
 
-          <Box component="div" sx={{ display: 'flex', flexDirection: 'row', marginTop: 1 }}>
+          <Box component="div" sx={{ display: 'flex', flexDirection: 'row', marginTop: 1, alignItems: 'center' }}>
             <CheckCircleIcon height={20} width={20} />
             <Typography variant='subtitle2' paddingLeft={1}>{participantCount} RSVP&lsquo;s</Typography>
+            <AvatarGroup
+              max={4}
+              sx={{
+                ml: 1,
+                '& .MuiAvatar-root': { width: 28, height: 28, fontSize: '0.75rem' },
+              }}
+            >
+              { /* TODO should link to user profiles */}
+              {visibleParticipants.map((participant) => (
+                <Tooltip
+                  key={participant.participantId}
+                  title={`${getParticipantLabel(participant)} · ${participant.status}`}
+                >
+                  <Avatar src={participant.user?.profile_picture || undefined}>
+                    {getParticipantAvatarLetter(participant).toUpperCase()}
+                  </Avatar>
+                </Tooltip>
+              ))}
+            </AvatarGroup>
           </Box>
 
           <Box component="div" sx={{ display: 'flex', flexDirection: 'row', marginTop: 1 }}>
@@ -117,5 +152,5 @@ export default function EventBox({ event }: { event: Event }) {
         </Box>
       </Box>
     </Card>
-  )
-};
+  );
+}

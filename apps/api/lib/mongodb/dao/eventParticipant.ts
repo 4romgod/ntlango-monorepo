@@ -7,19 +7,6 @@ import {CustomError, ErrorTypes, KnownCommonError} from '@/utils';
 class EventParticipantDAO {
   static async upsert(input: UpsertEventParticipantInput): Promise<EventParticipantEntity> {
     try {
-      if (!EventParticipant || !(EventParticipant as any).findOneAndUpdate) {
-        // In test contexts where the model is mocked away, no-op to avoid failures
-        return {
-          participantId: `${input.eventId}-${input.userId}`,
-          eventId: input.eventId,
-          userId: input.userId,
-          status: input.status ?? ParticipantStatus.Going,
-          quantity: input.quantity,
-          invitedBy: input.invitedBy,
-          sharedVisibility: input.sharedVisibility,
-        } as EventParticipantEntity;
-      }
-
       const {eventId, userId, status, quantity, invitedBy, sharedVisibility} = input;
       const update: UpdateQuery<EventParticipantEntity> = {
         status,

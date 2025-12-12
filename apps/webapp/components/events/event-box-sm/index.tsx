@@ -2,14 +2,14 @@
 
 import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
-import { CardContent, Typography } from '@mui/material';
-import { Event } from '@/data/graphql/types/graphql';
+import { Avatar, AvatarGroup, CardContent, Typography, Tooltip } from '@mui/material';
+import { EventParticipantPreview, EventPreview } from '@/data/graphql/query/Event/types';
 import { Box } from '@mui/material';
 import { CalendarToday, LocationOn, CheckBoxRounded } from '@mui/icons-material';
 import { RRule } from 'rrule';
 import Link from 'next/link';
 
-export default function EventBoxSm({ event }: { event: Event }) {
+export default function EventBoxSm({ event }: { event: EventPreview }) {
   const { recurrenceRule, participants, location, media, heroImage } = event;
   const recurrenceText = RRule.fromString(recurrenceRule).toText();
   const imageUrl = heroImage || media?.featuredImageUrl || 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=80';
@@ -18,6 +18,22 @@ export default function EventBoxSm({ event }: { event: Event }) {
     ? `${location.address.country}, ${location.address.city}`
     : 'Location TBA';
   const participantCount = participants?.length ?? 0;
+  const participantList = (participants ?? []) as EventParticipantPreview[];
+  const visibleParticipants = participantList.slice(0, 3);
+  const getParticipantLabel = (participant: EventParticipantPreview) => {
+    const nameParts = [
+      participant.user?.given_name,
+      participant.user?.family_name,
+    ].filter(Boolean);
+
+    const fallbackName = participant.user?.username || `Guest • ${participant.userId?.slice(-4) ?? 'anon'}`;
+    return nameParts.length ? nameParts.join(' ') : fallbackName;
+  };
+  const getParticipantAvatarLetter = (participant: EventParticipantPreview) =>
+    participant.user?.given_name?.charAt(0) ??
+    participant.user?.username?.charAt(0) ??
+    participant.userId?.charAt(0) ??
+    '?';
 
   return (
     <Link href={`/events/${event.slug}`}>
@@ -103,9 +119,24 @@ export default function EventBoxSm({ event }: { event: Event }) {
             <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.78rem' }}>
               {participantCount} RSVP&lsquo;s
             </Typography>
+            <AvatarGroup
+              max={3}
+              sx={{
+                ml: 1,
+                '& .MuiAvatar-root': { width: 26, height: 26, fontSize: '0.7rem' },
+              }}
+            >
+              {visibleParticipants.map((participant) => (
+                <Tooltip key={participant.participantId} title={`${getParticipantLabel(participant)} · ${participant.status}`}>
+                  <Avatar src={participant.user?.profile_picture || undefined}>
+                    {getParticipantAvatarLetter(participant).toUpperCase()}
+                  </Avatar>
+                </Tooltip>
+              ))}
+            </AvatarGroup>
           </Box>
         </CardContent>
       </Card>
     </Link>
-  )
+  );
 }

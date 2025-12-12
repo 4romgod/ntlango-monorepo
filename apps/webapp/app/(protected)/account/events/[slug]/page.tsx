@@ -4,8 +4,10 @@ import { getClient } from '@/data/graphql';
 import { Box, Typography, Grid, Avatar, CardMedia, Container, Chip, Stack } from '@mui/material';
 import { getEventCategoryIcon } from '@/lib/constants';
 import EventOperationsModal from '@/components/modal/event-operations';
-import {RRule} from 'rrule';
+import { RRule } from 'rrule';
 import { ParticipantStatus } from '@/data/graphql/types/graphql';
+
+import { EventDetail } from '@/data/graphql/query/Event/types';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -20,7 +22,7 @@ export default async function Page(props: Props) {
     variables: { slug: params.slug },
   });
 
-  const event = eventRetrieved.readEventBySlug;
+  const event = eventRetrieved.readEventBySlug as EventDetail;
   const tags = event.tags ?? {};
   const comments = event.comments ?? {};
   const participants = event.participants ?? [];
