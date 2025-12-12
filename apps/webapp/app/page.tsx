@@ -41,7 +41,7 @@ export default async function HomePage() {
   const eventCategories = data.readEventCategories?.slice(0, 6) ?? [];
   const featuredEvents = events.readEvents?.slice(0, 8) ?? [];
   const heroEvent = events.readEvents?.[0];
-  const heroEventRsvps = heroEvent?.rSVPList?.length ?? 0;
+  const heroEventRsvps = heroEvent?.participants?.length ?? 0;
 
   const heroStats = [
     { label: 'Communities hosted', value: '2.4k+' },

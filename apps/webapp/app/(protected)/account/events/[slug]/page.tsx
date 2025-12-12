@@ -5,6 +5,7 @@ import { Box, Typography, Grid, Avatar, CardMedia, Container, Chip, Stack } from
 import { getEventCategoryIcon } from '@/lib/constants';
 import EventOperationsModal from '@/components/modal/event-operations';
 import {RRule} from 'rrule';
+import { ParticipantStatus } from '@/data/graphql/types/graphql';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -20,6 +21,9 @@ export default async function Page(props: Props) {
   });
 
   const event = eventRetrieved.readEventBySlug;
+  const tags = event.tags ?? {};
+  const comments = event.comments ?? {};
+  const participants = event.participants ?? [];
 
   return (
     <Container maxWidth="md">
@@ -105,20 +109,12 @@ export default async function Page(props: Props) {
             RSVPs
           </Typography>
           <Grid container spacing={2}>
-            {event.rSVPList.map((rsvp) => (
-              <Grid key={rsvp.userId}>
-                <Link href={`/users/${rsvp.username}`} passHref>
-                  <Chip
-                    avatar={
-                      rsvp.profile_picture ? (
-                        <Avatar src={rsvp.profile_picture} alt={rsvp.username} />
-                      ) : (
-                        <Avatar>{rsvp.username.charAt(0).toLocaleUpperCase()}</Avatar>
-                      )
-                    }
-                    label={rsvp.username}
-                  />
-                </Link>
+            {participants.map((participant) => (
+              <Grid key={participant.participantId}>
+                <Chip
+                  avatar={<Avatar>{participant.userId.charAt(0).toLocaleUpperCase()}</Avatar>}
+                  label={`${participant.userId} (${participant.status ?? ParticipantStatus.Going})`}
+                />
               </Grid>
             ))}
           </Grid>
@@ -129,7 +125,7 @@ export default async function Page(props: Props) {
             Tags
           </Typography>
           <Grid container spacing={1}>
-            {Object.entries(event.tags).map(([key, value]) => (
+            {Object.entries(tags).map(([key, value]) => (
               <Grid key={key}>
                 <Chip label={`${key}: ${value}`} size="small" />
               </Grid>
@@ -142,7 +138,7 @@ export default async function Page(props: Props) {
             Comments
           </Typography>
           <Grid container spacing={2}>
-            {Object.entries(event.comments).map(([key, comment]) => (
+            {Object.entries(comments).map(([key, comment]) => (
               <Grid key={key}>
                 <Typography variant="body2" gutterBottom>
                   {String(comment)}

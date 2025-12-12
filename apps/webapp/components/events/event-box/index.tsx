@@ -10,22 +10,25 @@ import { ShareRounded, ThumbUpOffAltOutlined } from '@mui/icons-material';
 import { RRule } from 'rrule';
 
 export default function EventBox({ event }: { event: Event }) {
-  const { title, recurrenceRule, rSVPList, media } = event;
+  const { title, recurrenceRule, participants, media, heroImage } = event;
   const recurrenceText = RRule.fromString(recurrenceRule).toText();
-  const imageUrl = media?.featuredImageUrl || 'https://images.unsplash.com/photo-1525286116112-b59af11adad1?auto=format&fit=crop&w=1200&q=80';
+  const imageUrl = heroImage || media?.featuredImageUrl || 'https://images.unsplash.com/photo-1525286116112-b59af11adad1?auto=format&fit=crop&w=1200&q=80';
+  const participantCount = participants?.length ?? 0;
 
   return (
     <Card
       sx={{
-        p: 1,
+        p: { xs: 0.75, sm: 1 },
         display: 'grid',
-        gridTemplateColumns: { xs: '1fr', sm: '185px 1fr' },
-        gap: 1.25,
+        gridTemplateColumns: { xs: '1fr', sm: '140px 1fr' },
+        gap: 1,
         backgroundColor: 'background.paper',
         border: '1px solid',
         borderColor: 'divider',
-        boxShadow: '0 18px 48px rgba(0,0,0,0.08)',
+        borderRadius: 2,
+        boxShadow: 'none',
         position: 'relative',
+        minHeight: 170,
       }}
     >
       <Box
@@ -55,12 +58,12 @@ export default function EventBox({ event }: { event: Event }) {
           }}
         />
       </Box>
-      <Box component="div" sx={{ display: 'flex', flexDirection: 'column', gap: 0.75 }}>
-        <Box sx={{ alignSelf: 'center', width: '100%' }}>
-          <Typography variant="overline" color="secondary.main" sx={{ fontWeight: 700, letterSpacing: 1 }}>
+        <Box component="div" sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+        <Box sx={{ alignSelf: 'stretch', width: '100%' }}>
+          <Typography variant="overline" color="secondary.main" sx={{ fontWeight: 700, letterSpacing: 0.8, fontSize: '0.65rem' }}>
             Experience
           </Typography>
-          <Typography variant="h6" color="text.primary" sx={{ mb: 0.75 }}>
+          <Typography variant="subtitle1" color="text.primary" sx={{ mb: 0.5, fontWeight: 700 }}>
             {title}
           </Typography>
 
@@ -71,7 +74,7 @@ export default function EventBox({ event }: { event: Event }) {
 
           <Box component="div" sx={{ display: 'flex', flexDirection: 'row', marginTop: 1 }}>
             <CheckCircleIcon height={20} width={20} />
-            <Typography variant='subtitle2' paddingLeft={1}>{rSVPList.length ?? 0} RSVP&lsquo;s</Typography>
+            <Typography variant='subtitle2' paddingLeft={1}>{participantCount} RSVP&lsquo;s</Typography>
           </Box>
 
           <Box component="div" sx={{ display: 'flex', flexDirection: 'row', marginTop: 1 }}>

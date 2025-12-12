@@ -11,6 +11,7 @@ import EventDateInput from './input-event-date';
 export default function EventMutationForm({ categoryList }: EventMutationFormProps) {
   const [eventData, setEventData] = useState<CreateEventInput>({
     title: '',
+    summary: '',
     description: '',
     location: {},
     recurrenceRule: '',
@@ -18,7 +19,6 @@ export default function EventMutationForm({ categoryList }: EventMutationFormPro
     capacity: 100,
     eventCategoryList: [],
     organizerList: [],
-    rSVPList: [],
     tags: {},
     media: {
       featuredImageUrl: '',
@@ -98,12 +98,31 @@ export default function EventMutationForm({ categoryList }: EventMutationFormPro
                   <TextField
                     required
                     fullWidth
+                    label="Summary"
+                    name="summary"
+                    size='small'
+                    color='secondary'
+                    multiline
+                    rows={4}
+                    value={eventData.summary}
+                    onChange={handleChange}
+                    sx={{ mt: 1 }}
+                  />
+                </Box>
+                <Box sx={{ mt: 2 }}>
+                  <Typography variant="h6">Description</Typography>
+                  <Typography variant='body2'>
+                    Add the full description for your event. This is what guests will read on the event page.
+                  </Typography>
+                  <TextField
+                    required
+                    fullWidth
                     label="Description"
                     name="description"
                     size='small'
                     color='secondary'
                     multiline
-                    rows={4}
+                    rows={5}
                     value={eventData.description}
                     onChange={handleChange}
                     sx={{ mt: 1 }}

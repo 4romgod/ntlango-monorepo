@@ -6,7 +6,10 @@ export const GetAllEventsDocument = graphql(`
       eventId
       slug
       title
+      summary
       description
+      visibility
+      lifecycleStatus
       eventCategoryList {
         eventCategoryId
         slug
@@ -37,8 +40,15 @@ export const GetAllEventsDocument = graphql(`
         details
       }
       recurrenceRule
+      heroImage
       media {
         featuredImageUrl
+      }
+      mediaAssets {
+        url
+        alt
+        type
+        order
       }
       organizerList {
         userId
@@ -53,18 +63,13 @@ export const GetAllEventsDocument = graphql(`
         profile_picture
         userRole
       }
-      rSVPList {
+      participants {
+        participantId
+        eventId
         userId
-        email
-        username
-        address
-        birthdate
-        family_name
-        gender
-        given_name
-        phone_number
-        profile_picture
-        userRole
+        status
+        sharedVisibility
+        quantity
       }
     }
   }
@@ -76,7 +81,10 @@ export const GetEventBySlugDocument = graphql(`
       eventId
       slug
       title
+      summary
       description
+      visibility
+      lifecycleStatus
       eventCategoryList {
         eventCategoryId
         slug
@@ -107,8 +115,15 @@ export const GetEventBySlugDocument = graphql(`
         details
       }
       recurrenceRule
+      heroImage
       media {
         featuredImageUrl
+      }
+      mediaAssets {
+        url
+        alt
+        type
+        order
       }
       organizerList {
         userId
@@ -123,18 +138,13 @@ export const GetEventBySlugDocument = graphql(`
         profile_picture
         userRole
       }
-      rSVPList {
+      participants {
+        participantId
+        eventId
         userId
-        email
-        username
-        address
-        birthdate
-        family_name
-        gender
-        given_name
-        phone_number
-        profile_picture
-        userRole
+        status
+        sharedVisibility
+        quantity
       }
     }
   }
