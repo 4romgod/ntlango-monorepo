@@ -409,7 +409,7 @@ describe('EventDAO', () => {
       const validateUserIdentifiersSpy = jest.spyOn(validationUtil, 'validateUserIdentifiers').mockResolvedValue(validatedUserIds);
       const updatedEventMock = {eventId: 'event123'};
       (EventModel.findById as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery({toObject: () => updatedEventMock}));
-      
+
       const participantError = new Error('Participant creation failed');
       const upsertSpy = jest.spyOn(EventParticipantDAO, 'upsert').mockRejectedValue(participantError);
 
@@ -485,7 +485,7 @@ describe('EventDAO', () => {
       const validateUserIdentifiersSpy = jest.spyOn(validationUtil, 'validateUserIdentifiers').mockResolvedValue(validatedUserIds);
       const updatedEventMock = {eventId: 'event123'};
       (EventModel.findById as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery({toObject: () => updatedEventMock}));
-      
+
       const participantError = new Error('Participant cancellation failed');
       const cancelSpy = jest.spyOn(EventParticipantDAO, 'cancel').mockRejectedValue(participantError);
 
