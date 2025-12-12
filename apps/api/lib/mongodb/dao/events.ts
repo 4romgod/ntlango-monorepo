@@ -170,7 +170,7 @@ class EventDAO {
         try {
           await EventParticipantDAO.cancel({eventId, userId});
         } catch (participantError) {
-          console.warn('Participant cancel failed (non-blocking)', participantError);
+          console.warn(`Participant cancel failed (non-blocking) for userId ${userId} and eventId ${eventId}`, participantError);
         }
       }
 
