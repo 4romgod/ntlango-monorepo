@@ -230,6 +230,10 @@ describe('EventParticipantResolver', () => {
       expect(result).toBeNull();
     });
 
+    // Note: The resolver code has a try-catch but doesn't await the Promise,
+    // so errors actually propagate rather than being caught. This test verifies
+    // the actual behavior. If the resolver is fixed to await the promise,
+    // this test should be updated to expect null instead.
     it('should propagate error when UserDAO throws an error', async () => {
       const userError = new Error('User not found');
       (UserDAO.readUserById as jest.Mock).mockRejectedValue(userError);
