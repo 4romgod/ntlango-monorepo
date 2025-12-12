@@ -12,4 +12,8 @@ describe('Models Index Exports', () => {
   it('should export EventCategory model', () => {
     expect(Models.EventCategory).toBeDefined();
   });
+
+  it('should export EventParticipant model', () => {
+    expect(Models.EventParticipant).toBeDefined();
+  });
 });
