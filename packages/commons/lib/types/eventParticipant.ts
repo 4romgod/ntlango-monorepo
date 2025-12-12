@@ -23,7 +23,7 @@ registerEnumType(ParticipantVisibility, {name: 'ParticipantVisibility'});
 @modelOptions({schemaOptions: {timestamps: true}, options: {allowMixed: Severity.ALLOW}})
 @index({eventId: 1, userId: 1}, {unique: true})
 export class EventParticipant {
-    @prop({required: true, unique: true, index: true})
+    @prop({required: true, unique: true})
     @Field(() => ID)
     participantId: string;
 
