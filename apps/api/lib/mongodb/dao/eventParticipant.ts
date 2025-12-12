@@ -8,11 +8,15 @@ class EventParticipantDAO {
   static async upsert(input: UpsertEventParticipantInput): Promise<EventParticipantEntity> {
     try {
       const {eventId, userId, status, quantity, invitedBy, sharedVisibility} = input;
+      
+      // Only include defined values in $set to avoid setting fields to undefined
+      const setFields: Partial<EventParticipantEntity> = {status};
+      if (quantity !== undefined) setFields.quantity = quantity;
+      if (invitedBy !== undefined) setFields.invitedBy = invitedBy;
+      if (sharedVisibility !== undefined) setFields.sharedVisibility = sharedVisibility;
+      
       const update: UpdateQuery<EventParticipantEntity> = {
-        status,
-        quantity,
-        invitedBy,
-        sharedVisibility,
+        $set: setFields,
         $setOnInsert: {
           participantId: new Types.ObjectId().toString(),
           rsvpAt: new Date(),
