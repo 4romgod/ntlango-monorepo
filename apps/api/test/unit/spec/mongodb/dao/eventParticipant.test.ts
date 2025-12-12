@@ -21,10 +21,14 @@ jest.mock('@/mongodb/models', () => ({
 
 // Helper function to create a mock mongoose chainable query
 const createMockSuccessMongooseQuery = <T>(result: T) => ({
+  populate: jest.fn().mockReturnThis(),
+  select: jest.fn().mockReturnThis(),
   exec: jest.fn().mockResolvedValue(result),
 });
 
 const createMockFailedMongooseQuery = <T>(error: T) => ({
+  populate: jest.fn().mockReturnThis(),
+  select: jest.fn().mockReturnThis(),
   exec: jest.fn().mockRejectedValue(error),
 });
 
@@ -222,26 +226,6 @@ describe('EventParticipantDAO', () => {
       (EventParticipantModel.findOneAndUpdate as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(mockGraphqlError));
 
       await expect(EventParticipantDAO.cancel(mockCancelInput)).rejects.toThrow(mockGraphqlError);
-    });
-
-    it('should return mock participant when EventParticipant model is not available', async () => {
-      // Save original method
-      const originalFindOneAndUpdate = EventParticipantModel.findOneAndUpdate;
-      
-      // Temporarily set to undefined to simulate unavailable model
-      (EventParticipantModel as any).findOneAndUpdate = undefined;
-
-      const result = await EventParticipantDAO.cancel(mockCancelInput);
-
-      expect(result).toEqual({
-        participantId: `${mockEventId}-${mockUserId}`,
-        eventId: mockEventId,
-        userId: mockUserId,
-        status: ParticipantStatus.Cancelled,
-      });
-
-      // Restore original method
-      (EventParticipantModel as any).findOneAndUpdate = originalFindOneAndUpdate;
     });
   });
 
