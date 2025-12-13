@@ -39,6 +39,8 @@ export const OPERATION_NAMES = {
   READ_EVENT_CATEGORY_BY_ID: 'readEventCategoryById',
   READ_EVENT_CATEGORY_BY_SLUG: 'readEventCategoryBySlug',
   READ_EVENT_CATEGORIES: 'readEventCategories',
+  UPSERT_EVENT_PARTICIPANT: 'upsertEventParticipant',
+  CANCEL_EVENT_PARTICIPANT: 'cancelEventParticipant',
 };
 
 export const ANSI_COLOR_CODES = {

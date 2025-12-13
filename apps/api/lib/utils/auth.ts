@@ -102,6 +102,9 @@ export const isAuthorizedByOperation = async (operationName: string, args: ArgsD
       return await isAuthorizedToUpdateEvent(args.eventId, user);
     case OPERATION_NAMES.CREATE_EVENT:
       return true;
+    case OPERATION_NAMES.UPSERT_EVENT_PARTICIPANT:
+    case OPERATION_NAMES.CANCEL_EVENT_PARTICIPANT:
+      return args.input?.userId === user.userId;
     default:
       return false;
   }
