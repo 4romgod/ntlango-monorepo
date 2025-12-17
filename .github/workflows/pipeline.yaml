@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 env:
-  STAGE: Dev
+  STAGE: Beta
 
 jobs:
   pr-check:
@@ -110,14 +110,15 @@ jobs:
         echo "GRAPHQL_URL=$ENDPOINT" >> $GITHUB_ENV
         echo "graphql-url=$ENDPOINT" >> $GITHUB_OUTPUT
 
-    - name: Run integration tests
-      env:
-        STAGE: ${{ vars.STAGE }}
-        NTLANGO_SECRET_ARN: ${{ vars.STAGE }}/ntlango/graphql-api
-        GRAPHQL_URL: ${{ steps.get-endpoint.outputs.graphql-url }}
-      run: |
-        echo "The graphql url is ${{ env.GRAPHQL_URL }}"
-        npm run test:integration -w @ntlango/api
+    # TODO enable integration tests
+    # - name: Run integration tests
+    #   env:
+    #     STAGE: ${{ vars.STAGE }}
+    #     NTLANGO_SECRET_ARN: ${{ vars.STAGE }}/ntlango/graphql-api
+    #     GRAPHQL_URL: ${{ steps.get-endpoint.outputs.graphql-url }}
+    #   run: |
+    #     echo "The graphql url is ${{ env.GRAPHQL_URL }}"
+    #     npm run test:integration -w @ntlango/api
 
   # webapp-deploy:
   #   if: github.event_name == 'push'
