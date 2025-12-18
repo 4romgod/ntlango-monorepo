@@ -99,12 +99,13 @@ jobs:
         aws-region: ${{ secrets.AWS_REGION }}
 
     - name: Deploy CDK
-      run: npm run cdk -w @ntlango/cdk -- deploy '*'
+      run: npm run cdk -w @ntlango/cdk -- deploy GraphQLStack --require-approval never
 
     - name: Get API Gateway endpoint
       id: get-endpoint
       run: |
         ENDPOINT=$(aws cloudformation describe-stacks --stack-name GraphQLStack --query "Stacks[0].Outputs[?OutputKey=='apiPath'].OutputValue" --output text)
+        echo "Retrieved endpoint: $ENDPOINT"
         echo "GRAPHQL_URL=$ENDPOINT" >> $GITHUB_ENV
         echo "graphql-url=$ENDPOINT" >> $GITHUB_OUTPUT
 
@@ -118,34 +119,47 @@ jobs:
     #     echo "The graphql url is ${{ env.GRAPHQL_URL }}"
     #     npm run test:integration -w @ntlango/api
 
-  # webapp-deploy:
-  #   if: github.event_name == 'push'
-  #   needs: api-deploy
-  #   runs-on: ubuntu-latest
-  #   strategy:
-  #     matrix:
-  #       node-version: [24.x]
-  #   env:
-  #     NEXT_PUBLIC_GRAPHQL_URL: ${{ needs.api-deploy.outputs.graphql-url }}
-  #     NEXT_PUBLIC_JWT_SECRET: secret # TODO Placeholder, replace with secure method in production
-  #   steps:
-  #   - name: Checkout code
-  #     uses: actions/checkout@v4
+  webapp-preview-deploy:
+    if: github.event_name == 'pull_request' # TODO change to 'push' for production deploys
+    needs: api-deploy
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [24.x]
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-  #   - name: Setup Node.js ${{ matrix.node-version }}
-  #     uses: actions/setup-node@v3
-  #     with:
-  #       node-version: ${{ matrix.node-version }}
-  #       cache: 'npm'
+    - name: Setup Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
 
-  #   - name: Install dependencies
-  #     run: npm ci
+    - name: Install dependencies
+      run: npm ci
 
-  #   - name: Generate GraphQL types
-  #     run: npm run codegen -w @ntlango/webapp
+    - name: Install Vercel CLI
+      run: npm install --global vercel@latest
 
-  #   - name: Transpile Webapp
-  #     run: npm run build:ts -w @ntlango/webapp
+    - name: Pull Vercel Environment Information
+      working-directory: ./apps/webapp
+      env:
+        VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+        VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
 
-  #   - name: Run Next.js build
-  #     run: npm run build:next -w @ntlango/webapp
+    - name: Transpile Commons
+      run: npm run build:ts -w @ntlango/commons
+
+    - name: Build webapp
+      env:
+        NEXT_PUBLIC_GRAPHQL_URL: ${{ needs.api-deploy.outputs.graphql-url }}
+        NEXT_PUBLIC_JWT_SECRET: secret # TODO replace with real secret management
+      run: |
+        echo "Building with NEXT_PUBLIC_GRAPHQL_URL=$NEXT_PUBLIC_GRAPHQL_URL"
+        npm run build -w @ntlango/webapp
+
+    - name: Deploy Preview to Vercel
+      working-directory: ./apps/webapp
+      run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
