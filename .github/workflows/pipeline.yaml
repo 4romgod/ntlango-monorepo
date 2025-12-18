@@ -83,11 +83,11 @@ jobs:
     - name: Install AWS CDK
       run: npm i -g aws-cdk
 
-    - name: Transpile API
-      run: npm run build:ts -w @ntlango/api
-
     - name: Transpile Commons
       run: npm run build:ts -w @ntlango/commons
+
+    - name: Transpile API
+      run: npm run build:ts -w @ntlango/api
 
     - name: Synthesize CDK application
       run: npm run build:cdk -w @ntlango/cdk
@@ -99,14 +99,12 @@ jobs:
         aws-region: ${{ secrets.AWS_REGION }}
 
     - name: Deploy CDK
-      env:
-        STAGE: ${{ vars.STAGE }}
-      run: npm run cdk -w @ntlango/cdk -- deploy '*' --verbose
+      run: npm run cdk -w @ntlango/cdk -- deploy '*'
 
     - name: Get API Gateway endpoint
       id: get-endpoint
       run: |
-        ENDPOINT=$(aws cloudformation describe-stacks --stack-name GraphqlStackId --query "Stacks[0].Outputs[?OutputKey=='apiPath'].OutputValue" --output text)
+        ENDPOINT=$(aws cloudformation describe-stacks --stack-name GraphQLStack --query "Stacks[0].Outputs[?OutputKey=='apiPath'].OutputValue" --output text)
         echo "GRAPHQL_URL=$ENDPOINT" >> $GITHUB_ENV
         echo "graphql-url=$ENDPOINT" >> $GITHUB_OUTPUT
 

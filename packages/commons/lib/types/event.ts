@@ -143,7 +143,7 @@ export class EventOrganizer {
 @modelOptions({schemaOptions: {timestamps: true}, options: {allowMixed: Severity.ALLOW}})
 @ObjectType('Event', {description: EVENT_DESCRIPTIONS.EVENT.TYPE})
 export class Event {
-    @prop({required: true, unique: true, index: true})
+    @prop({required: true, unique: true, index: true, type: () => String})
     @Field((type) => ID, {description: EVENT_DESCRIPTIONS.EVENT.ID})
     eventId: string;
 
@@ -187,15 +187,15 @@ export class Event {
     @Field(() => ID, {nullable: true, description: 'Reference to a venue when available'})
     venueId?: string;
 
-    @prop({required: true, enum: EventStatus})
+    @prop({required: true, enum: EventStatus, type: () => String})
     @Field(() => EventStatus, {description: EVENT_DESCRIPTIONS.EVENT.STATUS})
     status: EventStatus;
 
-    @prop({enum: EventLifecycleStatus})
+    @prop({enum: EventLifecycleStatus, type: () => String})
     @Field(() => EventLifecycleStatus, {nullable: true, description: 'Lifecycle status (draft/published/etc)'})
     lifecycleStatus?: EventLifecycleStatus;
 
-    @prop({enum: EventVisibility})
+    @prop({enum: EventVisibility, type: () => String})
     @Field(() => EventVisibility, {nullable: true, description: 'Visibility controls for discovery'})
     visibility?: EventVisibility;
 
@@ -263,7 +263,7 @@ export class Event {
     @Field(() => GraphQLJSON, {nullable: true, description: EVENT_DESCRIPTIONS.EVENT.COMMENTS})
     comments?: Record<string, any>;
 
-    @prop({enum: EventPrivacySetting})
+    @prop({enum: EventPrivacySetting, type: () => String})
     @Field(() => EventPrivacySetting, {nullable: true, description: EVENT_DESCRIPTIONS.EVENT.PRIVACY_SETTING})
     privacySetting?: EventPrivacySetting;
 

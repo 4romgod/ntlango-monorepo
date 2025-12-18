@@ -1,7 +1,7 @@
 import {AccessLogFormat, LambdaRestApi, LogGroupLogDestination, ResourceBase, RestApi} from 'aws-cdk-lib/aws-apigateway';
 import {CfnOutput, Duration, RemovalPolicy, Stack, StackProps} from 'aws-cdk-lib/core';
 import {configDotenv} from 'dotenv';
-import {NodejsFunction} from 'aws-cdk-lib/aws-lambda-nodejs';
+import {NodejsFunction, OutputFormat} from 'aws-cdk-lib/aws-lambda-nodejs';
 import {Construct} from 'constructs';
 import {LogGroup} from 'aws-cdk-lib/aws-logs';
 import {Runtime} from 'aws-cdk-lib/aws-lambda';
@@ -13,7 +13,7 @@ configDotenv();
 
 const pathRoot = join(__dirname, '../../../');
 const pathApi = join(pathRoot, 'apps', 'api');
-const pathHandlerFile = join(pathApi, 'lib', 'graphql', 'apollo', 'lambdaHandler.ts');
+const pathHandlerFile = join(pathApi, 'dist', 'apps', 'api', 'lib', 'graphql', 'apollo', 'lambdaHandler.js');
 
 export class GraphQLStack extends Stack {
   readonly graphqlLambda: NodejsFunction;
@@ -26,7 +26,7 @@ export class GraphQLStack extends Stack {
 
     const ntlangoSecret = Secret.fromSecretNameV2(this, 'ImportedSecret', `${process.env.STAGE}/ntlango/graphql-api`);
 
-    this.graphqlLambda = new NodejsFunction(this, 'GraphqlLambdaFunctionId', {
+    this.graphqlLambda = new NodejsFunction(this, 'GraphqlLambdaFunction', {
       functionName: 'GraphqlLambdaFunction',
       description: 'This lambda function is a GraphQL Lambda that uses Apollo server: https://www.apollographql.com/docs/apollo-server/deployment/lambda',
       runtime: Runtime.NODEJS_20_X,
@@ -37,10 +37,9 @@ export class GraphQLStack extends Stack {
       projectRoot: pathRoot,
       depsLockFilePath: join(pathRoot, 'package-lock.json'),
       bundling: {
-        tsconfig: join(pathApi, 'tsconfig.json'),
         sourceMap: true,
-        minify: true,
-        externalModules: ['mock-aws-s3', 'aws-sdk', 'nock'],
+        minify: false,
+        nodeModules: ['@typegoose/typegoose', 'reflect-metadata', 'mongoose', 'mongodb'],
         loader: {'.html': 'file'},
       },
       environment: {
