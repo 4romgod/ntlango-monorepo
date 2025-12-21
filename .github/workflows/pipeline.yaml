@@ -48,17 +48,6 @@ jobs:
     - name: Run Webapp lint
       run: npm run lint -w @ntlango/webapp
 
-    # TODO make the webapp build work in PRs
-    # - name: Build webapp against running API
-    #   run: |
-    #     export NEXT_PUBLIC_GRAPHQL_URL=$GRAPHQL_URL
-
-    #     npm run dev -w @ntlango/api
-
-    #     npm run codegen -w @ntlango/webapp
-    #     npm run build:ts -w @ntlango/webapp
-    #     npm run build:next -w @ntlango/webapp
-
   api-deploy:
     if: github.event_name == 'pull_request' # TODO change to 'push' for production deploys
     runs-on: ubuntu-latest
@@ -150,6 +139,6 @@ jobs:
       env:
         VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
         VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-        NEXT_PUBLIC_GRAPHQL_URL: ${{ needs.api-deploy.outputs.graphql_url }}
+        NEXT_PUBLIC_GRAPHQL_URL: https://c11y1xrbo8.execute-api.eu-west-1.amazonaws.com/beta/graphql # TODO use output from api-deploy
         NEXT_PUBLIC_JWT_SECRET: secret # TODO replace with real secret management
       run: vercel deploy --token=${{ secrets.VERCEL_TOKEN }}
