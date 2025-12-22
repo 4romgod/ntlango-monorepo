@@ -1,5 +1,5 @@
 import type {FilterInput} from '@ntlango/commons/types';
-import { FilterOperatorInput} from '@ntlango/commons/types';
+import {FilterOperatorInput} from '@ntlango/commons/types';
 import type {PipelineStage} from 'mongoose';
 
 // TODO 1. Functionality for RootQuerySelector like ($and, $or, $text)

@@ -59,7 +59,7 @@ export const startExpressApolloServer = async (listenOptions: ListenOptions = {p
         })
         .once('close', () => {
           console.log(`Server runnin on ${DEV_URL} is CLOSED!`);
-          resolve;
+          resolve(httpServer);
         })
         .once('error', (error) => {
           console.log(`Server failed to listen on port: ${listenOptions.port}`);

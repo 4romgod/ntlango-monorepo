@@ -55,7 +55,7 @@ export const createApolloServer = async (expressApp?: Express) => {
   console.log('Creating Apollo Server...');
   const apolloServer = new ApolloServer<ServerContext>({
     schema: createSchema(),
-    includeStacktraceInErrorResponses: STAGE === APPLICATION_STAGES.PROD,
+    includeStacktraceInErrorResponses: STAGE !== APPLICATION_STAGES.PROD,
     status400ForVariableCoercionErrors: true,
     formatError: (formattedError: GraphQLFormattedError, error: unknown) => {
       console.warn('GraphQL Error:', {formattedError, error});

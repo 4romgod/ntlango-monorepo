@@ -1,7 +1,7 @@
 import {AccessLogFormat, LambdaRestApi, LogGroupLogDestination, ResourceBase, RestApi} from 'aws-cdk-lib/aws-apigateway';
 import {CfnOutput, Duration, RemovalPolicy, Stack, StackProps} from 'aws-cdk-lib/core';
 import {configDotenv} from 'dotenv';
-import {NodejsFunction, OutputFormat} from 'aws-cdk-lib/aws-lambda-nodejs';
+import {NodejsFunction} from 'aws-cdk-lib/aws-lambda-nodejs';
 import {Construct} from 'constructs';
 import {LogGroup} from 'aws-cdk-lib/aws-logs';
 import {Runtime} from 'aws-cdk-lib/aws-lambda';

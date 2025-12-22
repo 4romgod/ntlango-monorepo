@@ -96,6 +96,33 @@ describe('EventCategoryGroup Resolver', () => {
       await EventCategoryGroupDAO.deleteEventCategoryGroupBySlug(createdGroup.slug).catch(() => {});
     });
 
+    it('populates eventCategoryList with full category objects on creation', async () => {
+      const createdGroup = await createGroup(uniqueGroupName('Populated Group'));
+
+      // Verify eventCategoryList is populated with full objects, not just IDs
+      expect(createdGroup.eventCategoryList).toBeDefined();
+      expect(Array.isArray(createdGroup.eventCategoryList)).toBe(true);
+      expect(createdGroup.eventCategoryList).toHaveLength(categories.length);
+
+      // Each item should be a full EventCategory object with all fields
+      createdGroup.eventCategoryList.forEach((category: any, index: number) => {
+        expect(category).toHaveProperty('eventCategoryId');
+        expect(category).toHaveProperty('name');
+        expect(category).toHaveProperty('slug');
+        expect(category).toHaveProperty('iconName');
+        expect(category).toHaveProperty('description');
+        
+        // Verify it matches one of our test categories
+        const matchingCategory = categories.find((c) => c.eventCategoryId === category.eventCategoryId);
+        expect(matchingCategory).toBeDefined();
+        expect(category.name).toBe(matchingCategory!.name);
+        expect(category.iconName).toBe(matchingCategory!.iconName);
+        expect(category.description).toBe(matchingCategory!.description);
+      });
+
+      await EventCategoryGroupDAO.deleteEventCategoryGroupBySlug(createdGroup.slug).catch(() => {});
+    });
+
     it('updates a group', async () => {
       const createdGroup = await createGroup(uniqueGroupName('Editable Group'));
       const updatedName = 'Updated Group';

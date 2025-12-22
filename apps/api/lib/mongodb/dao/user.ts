@@ -32,12 +32,12 @@ class UserDAO {
       const query = UserModel.findOne({email}).select('+password').populate('interests');
       const user = await query.exec();
       if (!user) {
-        throw CustomError(ERROR_MESSAGES.PASSWORD_MISSMATCH, ErrorTypes.UNAUTHENTICATED);
+        throw CustomError(ERROR_MESSAGES.PASSWORD_MISMATCH, ErrorTypes.UNAUTHENTICATED);
       }
 
       const isMatch = await user.comparePassword(password);
       if (!isMatch) {
-        throw CustomError(ERROR_MESSAGES.PASSWORD_MISSMATCH, ErrorTypes.UNAUTHENTICATED);
+        throw CustomError(ERROR_MESSAGES.PASSWORD_MISMATCH, ErrorTypes.UNAUTHENTICATED);
       }
 
       const jwtToken = await generateToken(user.toObject());

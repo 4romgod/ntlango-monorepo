@@ -199,9 +199,9 @@ describe('User Resolver', () => {
         createdUser = await UserDAO.create(createUserInput);
       });
 
-    afterEach(async () => {
-      await cleanUserByEmail(testUserEmail);
-    });
+      afterEach(async () => {
+        await cleanUserByEmail(testUserEmail);
+      });
 
       it('retrieves user by id', async () => {
         const response = await request(url).post('').send(getReadUserByIdQuery(createdUser.userId));
@@ -258,7 +258,7 @@ describe('User Resolver', () => {
           .post('')
           .send(getLoginUserMutation({email: 'missing@example.com', password: testPassword}));
         expect(response.status).toBe(401);
-        expect(response.body.errors[0].message).toBe(ERROR_MESSAGES.PASSWORD_MISSMATCH);
+        expect(response.body.errors[0].message).toBe(ERROR_MESSAGES.PASSWORD_MISMATCH);
       });
 
       it('throws unauthorized for invalid password', async () => {
@@ -266,7 +266,7 @@ describe('User Resolver', () => {
           .post('')
           .send(getLoginUserMutation({email: testUserEmail, password: 'invalidPassword123'}));
         expect(response.status).toBe(401);
-        expect(response.body.errors[0].message).toBe(ERROR_MESSAGES.PASSWORD_MISSMATCH);
+        expect(response.body.errors[0].message).toBe(ERROR_MESSAGES.PASSWORD_MISMATCH);
       });
     });
 

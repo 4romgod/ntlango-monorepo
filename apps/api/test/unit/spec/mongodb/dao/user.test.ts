@@ -176,7 +176,7 @@ describe('UserDAO', () => {
         }),
       );
 
-      await expect(UserDAO.login(mockLoginUserInput)).rejects.toThrow(CustomError(ERROR_MESSAGES.PASSWORD_MISSMATCH, ErrorTypes.UNAUTHENTICATED));
+      await expect(UserDAO.login(mockLoginUserInput)).rejects.toThrow(CustomError(ERROR_MESSAGES.PASSWORD_MISMATCH, ErrorTypes.UNAUTHENTICATED));
     });
 
     it('should throw UNAUTHENTICATED error when user not found', async () => {
@@ -187,7 +187,7 @@ describe('UserDAO', () => {
 
       (User.findOne as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(null));
 
-      await expect(UserDAO.login(mockLoginUserInput)).rejects.toThrow(CustomError(ERROR_MESSAGES.PASSWORD_MISSMATCH, ErrorTypes.UNAUTHENTICATED));
+      await expect(UserDAO.login(mockLoginUserInput)).rejects.toThrow(CustomError(ERROR_MESSAGES.PASSWORD_MISMATCH, ErrorTypes.UNAUTHENTICATED));
     });
 
     it('should throw INTERNAL_SERVER_ERROR GraphQLError when an unknown error occurs', async () => {

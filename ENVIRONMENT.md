@@ -8,8 +8,8 @@
   - `STAGE` (default `Dev`).  
   - `AWS_REGION` (defaults to `eu-west-1`).  
   - `MONGO_DB_URL` & `JWT_SECRET` (used directly from the file).  
-- `GRAPHQL_URL` defaults to `http://localhost:3000/v1/graphql`, so you no longer need to supply `API_DOMAIN`/`API_PORT` locally.  
-- Change the dev server port via `PORT` if you need something other than 3000; the default URL will follow that port automatically.
+- `GRAPHQL_URL` defaults to `http://localhost:9000/v1/graphql`, so you no longer need to supply `API_DOMAIN`/`API_PORT` locally.  
+- Change the dev server port via `PORT` if you need something other than 9000; the default URL will follow that port automatically.
 - `NTLANGO_SECRET_ARN` is **not required** locally—dev never reads Secrets Manager.
 
 ### Deployed stages (Staging/Prod)

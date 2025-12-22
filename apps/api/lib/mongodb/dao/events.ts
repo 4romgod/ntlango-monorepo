@@ -8,7 +8,7 @@ import type {
   RsvpInput,
   CancelRsvpInput,
 } from '@ntlango/commons/types';
-import {CustomError, ErrorTypes, KnownCommonError, transformOptionsToPipeline, validateUserIdentifiers} from '@/utils';
+import {CustomError, ErrorTypes, KnownCommonError, extractValidationErrorMessage, transformOptionsToPipeline, validateUserIdentifiers} from '@/utils';
 import {ERROR_MESSAGES} from '@/validation';
 import {EventParticipantDAO} from '@/mongodb/dao';
 import {ParticipantStatus} from '@ntlango/commons/types';
@@ -20,21 +20,9 @@ class EventDAO {
       return event.toObject();
     } catch (error) {
       console.error('Error creating event', error);
-      type FieldError = {message?: string};
-      const typedError = error as {name?: string; message?: string; errors?: Record<string, FieldError>};
-      const errorName = typedError?.name;
-      const errorMessage = typedError?.message;
-      const isValidationError =
-        errorName === 'ValidationError' ||
-        errorName === 'ValidatorError' ||
-        (typeof errorMessage === 'string' && errorMessage.toLowerCase().includes('validation failed'));
-
-      if (isValidationError) {
-      const fieldErrors = typedError.errors ? (Object.values(typedError.errors) as FieldError[]) : [];
-      const validationMessage =
-        fieldErrors
-          .map((fieldError) => fieldError.message)
-          .filter((message): message is string => typeof message === 'string')[0] ?? 'Event validation failed';
+      const validationMessage = extractValidationErrorMessage(error, 'Event validation failed');
+      
+      if (validationMessage !== 'Event validation failed') {
         throw CustomError(validationMessage, ErrorTypes.BAD_USER_INPUT);
       }
       throw KnownCommonError(error);

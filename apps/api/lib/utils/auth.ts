@@ -46,12 +46,12 @@ export const authChecker = async (resolverData: ResolverData<ServerContext>, rol
     const operationName = info.fieldName;
 
     if (!roles.includes(userRole)) {
-      console.log(`${userRole} type user: '${user.username}' was denied for operation ${operationName} and resource:`);
+      console.log(`${userRole} type user: '${user.username}' was denied for operation ${operationName}`);
       throw CustomError(ERROR_MESSAGES.UNAUTHORIZED, ErrorTypes.UNAUTHORIZED);
     }
 
     if (user.userRole === UserRole.Admin) {
-      console.log(`${user.userRole} type user: '${user.username}' has permission for operation ${operationName} and resource`);
+      console.log(`${user.userRole} type user: '${user.username}' has permission for operation ${operationName}`);
       return true;
     }
 
@@ -61,7 +61,7 @@ export const authChecker = async (resolverData: ResolverData<ServerContext>, rol
         console.log(`${userRole} type user: '${user.username}' has 'isAuthorizedByOperation' permission for operation ${operationName}`);
         return true;
       }
-      console.log(`${userRole} type user: '${user.username}' was denied for operation ${operationName} and resource:`);
+      console.log(`${userRole} type user: '${user.username}' was denied for operation ${operationName}`);
       throw CustomError(ERROR_MESSAGES.UNAUTHORIZED, ErrorTypes.UNAUTHORIZED);
     }
 
@@ -130,30 +130,55 @@ export const isAuthorizedByOperation = async (operationName: string, args: ArgsD
   }
 };
 
+/**
+ * Type guard to check if value has a toString method
+ */
+const hasToString = (value: unknown): value is { toString: () => string } => {
+  return typeof value === 'object' && value !== null && typeof (value as any).toString === 'function';
+};
+
+/**
+ * Type guard to check if value is a record with specific properties
+ */
+const isOrganizerRecord = (value: unknown): value is Record<string, unknown> => {
+  return typeof value === 'object' && value !== null;
+};
+
+/**
+ * Converts various organizer formats to a user ID string.
+ * Handles string IDs, ObjectIds, and organizer objects with userId or _id fields.
+ * 
+ * @param organizer The organizer value in various possible formats
+ * @returns The user ID as a string, or undefined if extraction fails
+ */
 const toOrganizerUserId = (organizer: unknown): string | undefined => {
   if (!organizer) {
     return undefined;
   }
+
   if (typeof organizer === 'string') {
     return organizer;
   }
+
   if (organizer instanceof Types.ObjectId) {
     return organizer.toString();
   }
-  if (typeof organizer === 'object') {
-    const organizerRecord = organizer as Record<string, unknown>;
-    if (typeof organizerRecord.userId === 'string') {
-      return organizerRecord.userId;
+
+  if (isOrganizerRecord(organizer)) {
+    if (typeof organizer.userId === 'string') {
+      return organizer.userId;
     }
-    const organizerId = organizerRecord._id;
-    if (organizerId && typeof (organizerId as {toString?: () => string}).toString === 'function') {
-      return (organizerId as {toString: () => string}).toString();
+
+    const organizerId = organizer._id;
+    if (organizerId && hasToString(organizerId)) {
+      return organizerId.toString();
     }
-    const organizerToString = organizerRecord.toString;
-    if (typeof organizerToString === 'function') {
-      return organizerToString.call(organizerRecord);
+
+    if (hasToString(organizer)) {
+      return organizer.toString();
     }
   }
+
   return undefined;
 };
 

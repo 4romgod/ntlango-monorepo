@@ -100,8 +100,8 @@ jobs:
     # TODO enable integration tests
     # - name: Run integration tests
     #   env:
-    #     STAGE: ${{ vars.STAGE }}
-    #     NTLANGO_SECRET_ARN: ${{ vars.STAGE }}/ntlango/graphql-api
+    #     STAGE: ${{ env.STAGE }}
+    #     NTLANGO_SECRET_ARN: ${{ env.STAGE }}/ntlango/graphql-api
     #     GRAPHQL_URL: ${{ steps.get_endpoint.outputs.graphql_url }}
     #   run: |
     #     echo "The graphql url is ${{ env.GRAPHQL_URL }}"
@@ -140,5 +140,5 @@ jobs:
         VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
         VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         NEXT_PUBLIC_GRAPHQL_URL: https://c11y1xrbo8.execute-api.eu-west-1.amazonaws.com/beta/graphql # TODO use output from api-deploy
-        NEXT_PUBLIC_JWT_SECRET: secret # TODO replace with real secret management
+        NEXT_PUBLIC_JWT_SECRET: ${{ secrets.JWT_SECRET }}
       run: vercel deploy --token=${{ secrets.VERCEL_TOKEN }}

@@ -66,9 +66,12 @@ export const KnownCommonError = (error: unknown): GraphQLError => {
       switch (code) {
         case 11000:
           {
-            const key = keyValue ? Object.keys(keyValue)[0] : 'field';
-            const value = key && keyValue ? keyValue[key] : '';
-            message = `${capitalize(key)} ${value} already exists`;
+            const key = keyValue ? Object.keys(keyValue)[0] : undefined;
+            if (key && keyValue?.[key]) {
+              message = `${capitalize(key)} ${keyValue[key]} already exists`;
+            } else {
+              message = 'A duplicate value was detected';
+            }
             return CustomError(message, ErrorTypes.CONFLICT);
           }
         case 11001:
@@ -86,6 +89,36 @@ export const KnownCommonError = (error: unknown): GraphQLError => {
   }
 
   return CustomError(message, ErrorTypes.INTERNAL_SERVER_ERROR);
+};
+
+/**
+ * Extracts a user-friendly validation error message from Mongoose validation errors.
+ * @param error The error object from Mongoose validation
+ * @param defaultMessage The default message to return if no validation message is found
+ * @returns A validation error message string
+ */
+export const extractValidationErrorMessage = (error: unknown, defaultMessage: string = 'Validation failed'): string => {
+  type FieldError = {message?: string};
+  const typedError = error as {name?: string; message?: string; errors?: Record<string, FieldError>};
+  const errorName = typedError?.name;
+  const errorMessage = typedError?.message;
+  
+  const isValidationError =
+    errorName === 'ValidationError' ||
+    errorName === 'ValidatorError' ||
+    (typeof errorMessage === 'string' && errorMessage.toLowerCase().includes('validation failed'));
+
+  if (!isValidationError) {
+    return defaultMessage;
+  }
+
+  const fieldErrors = typedError.errors ? (Object.values(typedError.errors) as FieldError[]) : [];
+  const validationMessage =
+    fieldErrors
+      .map((fieldError) => fieldError.message)
+      .filter((message): message is string => typeof message === 'string')[0] ?? defaultMessage;
+
+  return validationMessage;
 };
 
 /**
