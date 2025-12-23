@@ -21,7 +21,7 @@ export async function resetPasswordAction(prevState: ActionState, formData: Form
   // TODO Call the API
   return {
     ...(prevState ?? {}),
-    apiError: 'Reset password not yet implemented',
+    apiError: 'Feature coming soon',
     zodErrors: null,
   };
 }
