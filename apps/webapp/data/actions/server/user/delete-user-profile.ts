@@ -14,7 +14,7 @@ export async function deleteUserProfileAction(prevState: ActionState, formData: 
   console.log('input data', userId);
   if (!userId || !token) {
     return {
-      ...(prevState ?? {}),
+      ...prevState,
       apiError: 'User is not authenticated',
       zodErrors: null,
     };
@@ -36,7 +36,7 @@ export async function deleteUserProfileAction(prevState: ActionState, formData: 
     // TODO after deleting, logout the user
     const responseData = deleteResponse.data?.deleteUserById;
     return {
-      ...(prevState ?? {}),
+      ...prevState,
       data: responseData,
       apiError: null,
       zodErrors: null,
@@ -48,14 +48,14 @@ export async function deleteUserProfileAction(prevState: ActionState, formData: 
     if (errorMessage) {
       console.error('Error Message', errorMessage);
       return {
-        ...(prevState ?? {}),
+        ...prevState,
         apiError: errorMessage,
         zodErrors: null,
       };
     }
 
     return {
-      ...(prevState ?? {}),
+      ...prevState,
       apiError: 'An error occurred while deleting your profile',
       zodErrors: null,
     };

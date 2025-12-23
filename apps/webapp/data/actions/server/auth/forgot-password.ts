@@ -11,7 +11,7 @@ export async function forgotPasswordAction(prevState: ActionState, formData: For
   const validatedFields = ForgotPasswordInputTypeSchema.safeParse(inputData);
   if (!validatedFields.success) {
     return {
-      ...(prevState ?? {}),
+      ...prevState,
       apiError: null,
       zodErrors: validatedFields.error.flatten().fieldErrors,
     };
@@ -19,7 +19,7 @@ export async function forgotPasswordAction(prevState: ActionState, formData: For
 
   // TODO Call the API
   return {
-    ...(prevState ?? {}),
+    ...prevState,
     apiError: 'Feature coming soon',
     zodErrors: null,
   };

@@ -12,7 +12,7 @@ export async function resetPasswordAction(prevState: ActionState, formData: Form
   const validatedFields = ResetPasswordInputTypeSchema.safeParse(inputData);
   if (!validatedFields.success) {
     return {
-      ...(prevState ?? {}),
+      ...prevState,
       apiError: null,
       zodErrors: validatedFields.error.flatten().fieldErrors,
     };
@@ -20,7 +20,7 @@ export async function resetPasswordAction(prevState: ActionState, formData: Form
 
   // TODO Call the API
   return {
-    ...(prevState ?? {}),
+    ...prevState,
     apiError: 'Feature coming soon',
     zodErrors: null,
   };

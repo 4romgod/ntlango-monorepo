@@ -15,7 +15,7 @@ export async function updateUserProfileAction(prevState: ActionState, formData: 
 
   if (!userId || !token) {
     return {
-      ...(prevState ?? {}),
+      ...prevState,
       apiError: 'User is not authenticated',
       zodErrors: null,
     };
@@ -45,7 +45,7 @@ export async function updateUserProfileAction(prevState: ActionState, formData: 
   const validatedFields = UpdateUserInputSchema.safeParse(inputData);
   if (!validatedFields.success) {
     return {
-      ...(prevState ?? {}),
+      ...prevState,
       apiError: null,
       zodErrors: validatedFields.error.flatten().fieldErrors,
     };
@@ -67,7 +67,7 @@ export async function updateUserProfileAction(prevState: ActionState, formData: 
     // TODO after updating, also make sure the user session gets updated!
     const responseData = updateResponse.data?.updateUser;
     return {
-      ...(prevState ?? {}),
+      ...prevState,
       data: responseData,
       apiError: null,
       zodErrors: null,
@@ -79,14 +79,14 @@ export async function updateUserProfileAction(prevState: ActionState, formData: 
     if (errorMessage) {
       console.error('Error Message', errorMessage);
       return {
-        ...(prevState ?? {}),
+        ...prevState,
         apiError: errorMessage,
         zodErrors: null,
       };
     }
 
     return {
-      ...(prevState ?? {}),
+      ...prevState,
       apiError: 'An error occurred while updating your profile',
       zodErrors: null,
     };

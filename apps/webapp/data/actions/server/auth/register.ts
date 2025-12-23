@@ -21,7 +21,7 @@ export async function registerUserAction(prevState: ActionState, formData: FormD
   const validatedFields = CreateUserInputSchema.safeParse(inputData);
   if (!validatedFields.success) {
     return {
-      ...(prevState ?? {}),
+      ...prevState,
       apiError: null,
       zodErrors: validatedFields.error.flatten().fieldErrors,
     };
@@ -37,7 +37,7 @@ export async function registerUserAction(prevState: ActionState, formData: FormD
 
     const responseData = registerResponse.data?.createUser;
     return {
-      ...(prevState ?? {}),
+      ...prevState,
       data: responseData,
       apiError: null,
       zodErrors: null,
@@ -49,13 +49,13 @@ export async function registerUserAction(prevState: ActionState, formData: FormD
     if (errorMessage) {
       console.error('Error Message', errorMessage);
       return {
-        ...(prevState ?? {}),
+        ...prevState,
         apiError: errorMessage,
         zodErrors: null,
       };
     }
     return {
-      ...(prevState ?? {}),
+      ...prevState,
       apiError: 'An error occurred during registration',
       zodErrors: null,
     };

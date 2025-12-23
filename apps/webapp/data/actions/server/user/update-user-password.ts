@@ -15,7 +15,7 @@ export async function updateUserPasswordAction(prevState: ActionState, formData:
 
   if (!userId || !token) {
     return {
-      ...(prevState ?? {}),
+      ...prevState,
       apiError: 'User is not authenticated',
       zodErrors: null,
     };
@@ -26,7 +26,7 @@ export async function updateUserPasswordAction(prevState: ActionState, formData:
 
   if (!currentPassword || !newPassword) {
     return {
-      ...(prevState ?? {}),
+      ...prevState,
       apiError: 'Both current and new passwords are required',
       zodErrors: null,
     };
@@ -44,7 +44,7 @@ export async function updateUserPasswordAction(prevState: ActionState, formData:
   const validatedFields = UpdateUserInputSchema.safeParse(inputData);
   if (!validatedFields.success) {
     return {
-      ...(prevState ?? {}),
+      ...prevState,
       apiError: null,
       zodErrors: validatedFields.error.flatten().fieldErrors,
     };
@@ -67,7 +67,7 @@ export async function updateUserPasswordAction(prevState: ActionState, formData:
     const responseData = updateResponse.data?.updateUser;
 
     return {
-      ...(prevState ?? {}),
+      ...prevState,
       data: responseData,
       apiError: null,
       zodErrors: null,
@@ -80,14 +80,14 @@ export async function updateUserPasswordAction(prevState: ActionState, formData:
     if (errorMessage) {
       console.error('Error Message', errorMessage);
       return {
-        ...(prevState ?? {}),
+        ...prevState,
         apiError: errorMessage,
         zodErrors: null,
       };
     }
 
     return {
-      ...(prevState ?? {}),
+      ...prevState,
       apiError: 'An error occurred while updating your password',
       zodErrors: null,
     };

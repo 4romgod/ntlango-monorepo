@@ -23,7 +23,10 @@ export function getApolloErrorMessage(error: ApolloError): string | null {
   
   // Fall back to network error message
   if (error.networkError) {
-    return error.networkError.message;
+    const networkMessage = (error.networkError as any)?.message;
+    if (typeof networkMessage === 'string') {
+      return networkMessage;
+    }
   }
   
   // Fall back to generic error message

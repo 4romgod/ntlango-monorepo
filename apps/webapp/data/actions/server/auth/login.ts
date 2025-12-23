@@ -16,7 +16,7 @@ export async function loginUserAction(prevState: ActionState, formData: FormData
   const validatedFields = LoginUserInputSchema.safeParse(inputData);
   if (!validatedFields.success) {
     return {
-      ...(prevState ?? {}),
+      ...prevState,
       apiError: null,
       zodErrors: validatedFields.error.flatten().fieldErrors,
     };
@@ -33,7 +33,7 @@ export async function loginUserAction(prevState: ActionState, formData: FormData
     console.log('signIn user', user);
 
     return {
-      ...(prevState ?? {}),
+      ...prevState,
       data: { message: 'Signed in' },
       apiError: null,
       zodErrors: null,
@@ -43,21 +43,21 @@ export async function loginUserAction(prevState: ActionState, formData: FormData
       switch (error.type) {
         case 'CredentialsSignin':
           return {
-            ...(prevState ?? {}),
+            ...prevState,
             data: null,
             apiError: 'Invalid credentials',
             zodErrors: null,
           };
         case 'CallbackRouteError':
           return {
-            ...(prevState ?? {}),
+            ...prevState,
             data: null,
             apiError: error.cause?.err?.message ?? 'Something went wrong',
             zodErrors: null,
           };
         default:
           return {
-            ...(prevState ?? {}),
+            ...prevState,
             data: null,
             apiError: 'Something went wrong',
             zodErrors: null,
