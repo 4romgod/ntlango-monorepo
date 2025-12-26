@@ -45,7 +45,7 @@ export async function registerUserAction(prevState: ActionState, formData: FormD
   } catch (error) {
     console.error('Failed when calling Register User Mutation', error);
     const errorMessage = getApolloErrorMessage(error as ApolloError);
-    
+
     if (errorMessage) {
       console.error('Error Message', errorMessage);
       return {

@@ -12,7 +12,7 @@ import {
   UserRole,
 } from '@ntlango/commons/types';
 import { Types } from 'mongoose';
-import { requireAuthenticatedUser } from '@/graphql/resolvers/utils/requireAuthenticatedUser';
+import { requireAuthenticatedUser } from '@/utils';
 
 jest.mock('@/mongodb/dao', () => ({
   ActivityDAO: {
@@ -25,7 +25,7 @@ jest.mock('@/mongodb/dao', () => ({
   },
 }));
 
-jest.mock('@/graphql/resolvers/utils/requireAuthenticatedUser', () => ({
+jest.mock('@/utils', () => ({
   requireAuthenticatedUser: jest.fn(),
 }));
 
@@ -77,11 +77,12 @@ describe('ActivityResolver', () => {
   it('reads activities for an actor', async () => {
     const activities: Activity[] = [];
     (ActivityDAO.readByActor as jest.Mock).mockResolvedValue(activities);
+    (FollowDAO.readFollowingForUser as jest.Mock).mockResolvedValue([]);
 
-    const result = await resolver.readActivitiesByActor('actor-1', 5);
+    const result = await resolver.readActivitiesByActor('actor-1', {} as never, 5);
 
     expect(ActivityDAO.readByActor).toHaveBeenCalledWith('actor-1', 5);
-    expect(result).toBe(activities);
+    expect(result).toStrictEqual(activities);
   });
 
   it('reads feed including follow relationships', async () => {

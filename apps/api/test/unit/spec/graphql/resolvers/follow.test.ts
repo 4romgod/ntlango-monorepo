@@ -3,7 +3,7 @@ import { FollowResolver } from '@/graphql/resolvers/follow';
 import { FollowDAO } from '@/mongodb/dao';
 import { CreateFollowInput, Follow, FollowTargetType, FollowStatus, User, UserRole } from '@ntlango/commons/types';
 import { Types } from 'mongoose';
-import { requireAuthenticatedUser } from '@/graphql/resolvers/utils/requireAuthenticatedUser';
+import { requireAuthenticatedUser } from '@/utils';
 
 jest.mock('@/mongodb/dao', () => ({
   FollowDAO: {
@@ -14,7 +14,7 @@ jest.mock('@/mongodb/dao', () => ({
   },
 }));
 
-jest.mock('@/graphql/resolvers/utils/requireAuthenticatedUser', () => ({
+jest.mock('@/utils', () => ({
   requireAuthenticatedUser: jest.fn(),
 }));
 

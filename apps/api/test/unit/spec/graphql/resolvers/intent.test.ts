@@ -3,7 +3,7 @@ import { IntentResolver } from '@/graphql/resolvers/intent';
 import { IntentDAO } from '@/mongodb/dao';
 import { Intent, IntentStatus, IntentVisibility, IntentSource, UpsertIntentInput, User, UserRole } from '@ntlango/commons/types';
 import { Types } from 'mongoose';
-import { requireAuthenticatedUser } from '@/graphql/resolvers/utils/requireAuthenticatedUser';
+import { requireAuthenticatedUser } from '@/utils';
 
 jest.mock('@/mongodb/dao', () => ({
   IntentDAO: {
@@ -13,7 +13,7 @@ jest.mock('@/mongodb/dao', () => ({
   },
 }));
 
-jest.mock('@/graphql/resolvers/utils/requireAuthenticatedUser', () => ({
+jest.mock('@/utils', () => ({
   requireAuthenticatedUser: jest.fn(),
 }));
 
@@ -81,7 +81,7 @@ describe('IntentResolver', () => {
     (IntentDAO.readByEvent as jest.Mock).mockResolvedValue(intents);
 
     const eventId = mockEventId;
-    const result = await resolver.readIntentsByEvent(eventId);
+    const result = await resolver.readIntentsByEvent(eventId, {} as never);
 
     expect(IntentDAO.readByEvent).toHaveBeenCalledWith(eventId);
     expect(result).toBe(intents);

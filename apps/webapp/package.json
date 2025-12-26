@@ -48,6 +48,7 @@
     "@graphql-codegen/client-preset": "^4.2.5",
     "@parcel/watcher": "^2.4.1",
     "@types/bcrypt": "^5.0.1",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/lodash": "^4.14.195",
     "@types/nprogress": "^0.2.3",
     "@types/react": "^19.1.4",

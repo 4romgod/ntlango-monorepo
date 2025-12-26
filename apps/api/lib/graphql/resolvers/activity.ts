@@ -5,8 +5,8 @@ import {CreateActivityInputSchema} from '@/validation/zod';
 import {validateInput} from '@/validation';
 import {ActivityDAO, FollowDAO} from '@/mongodb/dao';
 import {ServerContext} from '@/graphql';
-import {requireAuthenticatedUser} from './utils/requireAuthenticatedUser';
 import {RESOLVER_DESCRIPTIONS} from '@/constants';
+import { requireAuthenticatedUser } from '@/utils';
 
 @Resolver(() => Activity)
 export class ActivityResolver {
@@ -54,6 +54,13 @@ export class ActivityResolver {
     });
   }
 
+  // TODO
+  /** The readFeed query performs two sequential database queries (follows then activities) which could impact performance.
+   * Consider optimizing this with a single aggregation pipeline that joins follows and activities,
+   * or implement caching for frequently accessed feeds. Additionally, if a user follows many people,
+   * the $in query could become slow - consider adding pagination at the follow level or implementing
+   * a more sophisticated feed generation strategy.
+   */
   @Query(() => [Activity], {description: RESOLVER_DESCRIPTIONS.ACTIVITY.readFeed})
   async readFeed(@Ctx() context: ServerContext, @Arg('limit', () => Int, {nullable: true}) limit?: number): Promise<Activity[]> {
     const user = await requireAuthenticatedUser(context);
