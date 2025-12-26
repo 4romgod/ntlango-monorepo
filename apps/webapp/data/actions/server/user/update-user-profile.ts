@@ -75,7 +75,7 @@ export async function updateUserProfileAction(prevState: ActionState, formData: 
   } catch (error) {
     console.error('Failed when calling Update User Mutation', error);
     const errorMessage = getApolloErrorMessage(error as ApolloError);
-    
+
     if (errorMessage) {
       console.error('Error Message', errorMessage);
       return {

@@ -20,13 +20,13 @@ export function getApolloErrorMessage(error: ApolloError): string | null {
   if (error.graphQLErrors?.length > 0) {
     return error.graphQLErrors[0].message;
   }
-  
+
   // Fall back to network error message
   const networkError = error.networkError;
   if (networkError && 'message' in networkError && typeof networkError.message === 'string') {
     return networkError.message;
   }
-  
+
   // Fall back to generic error message
   return error.message || null;
 }
