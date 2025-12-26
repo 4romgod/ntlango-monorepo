@@ -24,7 +24,8 @@ export class IntentResolver {
   }
 
   @Query(() => [Intent], {description: RESOLVER_DESCRIPTIONS.INTENT.readIntentsByEvent})
-  async readIntentsByEvent(@Arg('eventId', () => String) eventId: string): Promise<Intent[]> {
+  async readIntentsByEvent(@Arg('eventId', () => String) eventId: string, @Ctx() context: ServerContext): Promise<Intent[]> {
+    await requireAuthenticatedUser(context);
     return IntentDAO.readByEvent(eventId);
   }
 }
