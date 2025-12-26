@@ -1,4 +1,4 @@
-import {gql} from '@apollo/client';
+import { gql } from '@apollo/client';
 
 export const GET_SOCIAL_FEED = gql`
   query GetSocialFeed($limit: Int) {

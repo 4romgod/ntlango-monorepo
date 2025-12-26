@@ -28,7 +28,7 @@ registerEnumType(FollowStatus, {
 @modelOptions({schemaOptions: {timestamps: true}, options: {allowMixed: Severity.ALLOW}})
 @index({followerUserId: 1, targetType: 1, targetId: 1}, {unique: true})
 export class Follow {
-    @prop({required: true, unique: true, index: true, type: () => String})
+    @prop({required: true, index: true, type: () => String})
     @Field(() => ID, {description: SOCIAL_DESCRIPTIONS.FOLLOW.ID})
     followId: string;
 

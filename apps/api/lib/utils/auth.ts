@@ -228,3 +228,18 @@ const isAuthorizedToReadEventParticipants = async (eventId: string | undefined, 
   }
   return participants.some((participant) => participant.userId === user.userId);
 };
+
+/**
+ * Ensures the current GraphQL request has a valid authenticated user.
+ *
+ * @param context - GraphQL server context containing metadata such as the JWT token.
+ * @returns The decoded `User` object from the verified token.
+ * @throws CustomError with `UNAUTHENTICATED` type when no token is present.
+ * @throws Any error propagated from `verifyToken` when the token is invalid.
+ */
+export const requireAuthenticatedUser = async (context: ServerContext): Promise<User> => {
+  if (!context?.token) {
+    throw CustomError(ERROR_MESSAGES.UNAUTHENTICATED, ErrorTypes.UNAUTHENTICATED);
+  }
+  return verifyToken(context.token);
+};

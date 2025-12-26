@@ -2,7 +2,7 @@ import {GraphQLError} from 'graphql';
 import {Types} from 'mongoose';
 import type {Activity as ActivityEntity, CreateActivityInput} from '@ntlango/commons/types';
 import {Activity as ActivityModel} from '@/mongodb/models';
-import {CustomError, ErrorTypes, KnownCommonError} from '@/utils';
+import {KnownCommonError} from '@/utils';
 
 class ActivityDAO {
   static async create(input: CreateActivityInput & {actorId: string}): Promise<ActivityEntity> {

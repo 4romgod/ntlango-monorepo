@@ -5,8 +5,8 @@ import {UpsertIntentInputSchema} from '@/validation/zod';
 import {validateInput} from '@/validation';
 import {IntentDAO} from '@/mongodb/dao';
 import {ServerContext} from '@/graphql';
-import {requireAuthenticatedUser} from './utils/requireAuthenticatedUser';
 import {RESOLVER_DESCRIPTIONS} from '@/constants';
+import { requireAuthenticatedUser } from '@/utils';
 
 @Resolver(() => Intent)
 export class IntentResolver {
