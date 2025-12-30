@@ -3,6 +3,7 @@ import {EventCategoryGroup as EventCategoryGroupModel} from '@/mongodb/models';
 import type {EventCategoryGroup, CreateEventCategoryGroupInput, UpdateEventCategoryGroupInput, QueryOptionsInput} from '@ntlango/commons/types';
 import {SortOrderInput} from '@ntlango/commons/types';
 import {CustomError, ErrorTypes, transformOptionsToQuery} from '@/utils';
+import {ERROR_MESSAGES} from '@/validation';
 import {MockMongoError} from '@/test/utils';
 
 jest.mock('@/mongodb/models', () => ({
@@ -25,6 +26,13 @@ const createMockSuccessMongooseQuery = <T>(result?: T) => ({
   ...result,
   populate: jest.fn().mockReturnThis(),
   exec: jest.fn().mockResolvedValue(result),
+  select: jest.fn().mockReturnThis(),
+});
+
+const createMockFailedMongooseQuery = <T>(error: T) => ({
+  ...error,
+  populate: jest.fn().mockReturnThis(),
+  exec: jest.fn().mockRejectedValue(error),
   select: jest.fn().mockReturnThis(),
 });
 
@@ -150,6 +158,17 @@ describe('EventCategoryGroupDAO', () => {
         CustomError(`Event Category Group with slug ${slug} not found`, ErrorTypes.NOT_FOUND),
       );
     });
+
+    it('should wrap unknown errors', async () => {
+      const slug = 'test-group';
+      const mockQuery = createMockFailedMongooseQuery(new MockMongoError(0));
+
+      (EventCategoryGroupModel.findOne as jest.Mock).mockReturnValue(mockQuery);
+
+      await expect(EventCategoryGroupDAO.readEventCategoryGroupBySlug(slug)).rejects.toThrow(
+        CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR),
+      );
+    });
   });
 
   describe('readEventCategoryGroups', () => {
@@ -200,6 +219,16 @@ describe('EventCategoryGroupDAO', () => {
       expect(mockQuery.exec).toHaveBeenCalled();
       expect(result).toEqual(mockGroups);
     });
+
+    it('should handle errors when reading groups', async () => {
+      const mockQuery = createMockFailedMongooseQuery(new MockMongoError(0));
+
+      (EventCategoryGroupModel.find as jest.Mock).mockReturnValue(mockQuery);
+
+      await expect(EventCategoryGroupDAO.readEventCategoryGroups()).rejects.toThrow(
+        CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR),
+      );
+    });
   });
 
   describe('updateEventCategoryGroup', () => {
@@ -244,6 +273,64 @@ describe('EventCategoryGroupDAO', () => {
 
       await expect(EventCategoryGroupDAO.updateEventCategoryGroup(input)).rejects.toThrow(
         CustomError('Event Category Group not found', ErrorTypes.NOT_FOUND),
+      );
+    });
+
+    it('should wrap unknown errors when updating', async () => {
+      const input: UpdateEventCategoryGroupInput = {
+        eventCategoryGroupId: '1',
+        name: 'Updated Group',
+        eventCategoryList: mockEventCategoryIds,
+      };
+
+      const mockQuery = createMockFailedMongooseQuery(new MockMongoError(0));
+      (EventCategoryGroupModel.findByIdAndUpdate as jest.Mock).mockReturnValue(mockQuery);
+
+      await expect(EventCategoryGroupDAO.updateEventCategoryGroup(input)).rejects.toThrow(
+        CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR),
+      );
+    });
+  });
+
+  describe('deleteEventCategoryGroupBySlug', () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should delete event category group by slug', async () => {
+      const slug = 'test-group';
+      const mockQuery = createMockSuccessMongooseQuery({
+        ...mockEventCategoryGroup,
+        toObject: jest.fn().mockReturnValue(mockEventCategoryGroup),
+      });
+
+      (EventCategoryGroupModel.findOneAndDelete as jest.Mock).mockReturnValue(mockQuery);
+
+      const result = await EventCategoryGroupDAO.deleteEventCategoryGroupBySlug(slug);
+
+      expect(EventCategoryGroupModel.findOneAndDelete).toHaveBeenCalledWith({slug});
+      expect(result).toEqual(mockEventCategoryGroup);
+    });
+
+    it('should throw NOT_FOUND error when deleting non-existent group', async () => {
+      const slug = 'missing-group';
+      const mockQuery = createMockSuccessMongooseQuery(null);
+
+      (EventCategoryGroupModel.findOneAndDelete as jest.Mock).mockReturnValue(mockQuery);
+
+      await expect(EventCategoryGroupDAO.deleteEventCategoryGroupBySlug(slug)).rejects.toThrow(
+        CustomError(`Event Category Group with slug ${slug} not found`, ErrorTypes.NOT_FOUND),
+      );
+    });
+
+    it('should wrap unknown errors when deleting', async () => {
+      const slug = 'test-group';
+      const mockQuery = createMockFailedMongooseQuery(new MockMongoError(0));
+
+      (EventCategoryGroupModel.findOneAndDelete as jest.Mock).mockReturnValue(mockQuery);
+
+      await expect(EventCategoryGroupDAO.deleteEventCategoryGroupBySlug(slug)).rejects.toThrow(
+        CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR),
       );
     });
   });
