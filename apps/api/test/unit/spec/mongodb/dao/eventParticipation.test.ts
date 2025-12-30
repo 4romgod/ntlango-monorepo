@@ -168,6 +168,35 @@ describe('EventParticipantDAO', () => {
         {new: true, upsert: true, setDefaultsOnInsert: true},
       );
     });
+
+    it('should default status when not provided', async () => {
+      const minimalInput: UpsertEventParticipantInput = {
+        eventId: mockEventId,
+        userId: mockUserId,
+      };
+
+      const mockResult = {
+        ...mockEventParticipant,
+        status: ParticipantStatus.Going,
+        toObject: jest.fn().mockReturnValue({
+          ...mockEventParticipant,
+          status: ParticipantStatus.Going,
+        }),
+      };
+
+      (EventParticipantModel.findOneAndUpdate as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(mockResult));
+
+      const result = await EventParticipantDAO.upsert(minimalInput);
+
+      expect(result.status).toBe(ParticipantStatus.Going);
+      expect(EventParticipantModel.findOneAndUpdate).toHaveBeenCalledWith(
+        {eventId: mockEventId, userId: mockUserId},
+        expect.objectContaining({
+          status: ParticipantStatus.Going,
+        }),
+        {new: true, upsert: true, setDefaultsOnInsert: true},
+      );
+    });
   });
 
   describe('cancel', () => {

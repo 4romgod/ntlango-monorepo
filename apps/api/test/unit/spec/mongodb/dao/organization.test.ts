@@ -107,6 +107,14 @@ describe('OrganizationDAO', () => {
 
       await expect(OrganizationDAO.readOrganizationById('org-1')).rejects.toThrow(graphQLError);
     });
+
+    it('wraps unknown errors', async () => {
+      (OrganizationModel.findById as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(new MockMongoError(0)));
+
+      await expect(OrganizationDAO.readOrganizationById('org-1')).rejects.toThrow(
+        CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR),
+      );
+    });
   });
 
   describe('readOrganizationBySlug', () => {
@@ -128,6 +136,14 @@ describe('OrganizationDAO', () => {
 
       await expect(OrganizationDAO.readOrganizationBySlug('missing')).rejects.toThrow(
         CustomError('Organization with slug missing not found', ErrorTypes.NOT_FOUND),
+      );
+    });
+
+    it('wraps unknown errors', async () => {
+      (OrganizationModel.findOne as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(new MockMongoError(0)));
+
+      await expect(OrganizationDAO.readOrganizationBySlug('test-org')).rejects.toThrow(
+        CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR),
       );
     });
   });
@@ -181,6 +197,14 @@ describe('OrganizationDAO', () => {
         CustomError('Organization with id missing not found', ErrorTypes.NOT_FOUND),
       );
     });
+
+    it('wraps unknown errors', async () => {
+      (OrganizationModel.findByIdAndUpdate as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(new MockMongoError(0)));
+
+      await expect(OrganizationDAO.updateOrganization({orgId: 'org-1'})).rejects.toThrow(
+        CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR),
+      );
+    });
   });
 
   describe('deleteOrganizationById', () => {
@@ -202,6 +226,14 @@ describe('OrganizationDAO', () => {
 
       await expect(OrganizationDAO.deleteOrganizationById('missing')).rejects.toThrow(
         CustomError('Organization with id missing not found', ErrorTypes.NOT_FOUND),
+      );
+    });
+
+    it('wraps unknown errors', async () => {
+      (OrganizationModel.findByIdAndDelete as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(new MockMongoError(0)));
+
+      await expect(OrganizationDAO.deleteOrganizationById('org-1')).rejects.toThrow(
+        CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR),
       );
     });
   });

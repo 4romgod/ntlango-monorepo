@@ -119,6 +119,14 @@ describe('VenueDAO', () => {
 
       await expect(VenueDAO.readVenueById('venue-1')).rejects.toThrow(graphQLError);
     });
+
+    it('wraps unknown errors', async () => {
+      (VenueModel.findOne as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(new MockMongoError(0)));
+
+      await expect(VenueDAO.readVenueById('venue-1')).rejects.toThrow(
+        CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR),
+      );
+    });
   });
 
   describe('readVenues', () => {
@@ -159,6 +167,14 @@ describe('VenueDAO', () => {
       expect(VenueModel.find).toHaveBeenCalledWith({orgId: 'org-1'});
       expect(result).toEqual([mockVenue]);
     });
+
+    it('wraps errors', async () => {
+      (VenueModel.find as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(new MockMongoError(0)));
+
+      await expect(VenueDAO.readVenuesByOrgId('org-1')).rejects.toThrow(
+        CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR),
+      );
+    });
   });
 
   describe('update', () => {
@@ -185,6 +201,14 @@ describe('VenueDAO', () => {
 
       await expect(VenueDAO.update({venueId: 'missing'})).rejects.toThrow(CustomError('Venue with id missing not found', ErrorTypes.NOT_FOUND));
     });
+
+    it('wraps unknown errors', async () => {
+      (VenueModel.findOneAndUpdate as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(new MockMongoError(0)));
+
+      await expect(VenueDAO.update({venueId: 'venue-1'})).rejects.toThrow(
+        CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR),
+      );
+    });
   });
 
   describe('delete', () => {
@@ -205,6 +229,14 @@ describe('VenueDAO', () => {
       (VenueModel.findOneAndDelete as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(null));
 
       await expect(VenueDAO.delete('missing')).rejects.toThrow(CustomError('Venue with id missing not found', ErrorTypes.NOT_FOUND));
+    });
+
+    it('wraps unknown errors', async () => {
+      (VenueModel.findOneAndDelete as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(new MockMongoError(0)));
+
+      await expect(VenueDAO.delete('venue-1')).rejects.toThrow(
+        CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR),
+      );
     });
   });
 });

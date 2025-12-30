@@ -95,6 +95,14 @@ describe('OrganizationMembershipDAO', () => {
 
       await expect(OrganizationMembershipDAO.readMembershipById('membership-1')).rejects.toThrow(graphQLError);
     });
+
+    it('wraps unknown errors', async () => {
+      (OrganizationMembershipModel.findOne as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(new MockMongoError(0)));
+
+      await expect(OrganizationMembershipDAO.readMembershipById('membership-1')).rejects.toThrow(
+        CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR),
+      );
+    });
   });
 
   describe('readMembershipsByOrgId', () => {
@@ -152,6 +160,14 @@ describe('OrganizationMembershipDAO', () => {
         CustomError('Organization membership missing not found', ErrorTypes.NOT_FOUND),
       );
     });
+
+    it('wraps unknown errors', async () => {
+      (OrganizationMembershipModel.findOneAndUpdate as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(new MockMongoError(0)));
+
+      await expect(OrganizationMembershipDAO.update({membershipId: 'membership-1'})).rejects.toThrow(
+        CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR),
+      );
+    });
   });
 
   describe('delete', () => {
@@ -173,6 +189,14 @@ describe('OrganizationMembershipDAO', () => {
 
       await expect(OrganizationMembershipDAO.delete('missing')).rejects.toThrow(
         CustomError('Organization membership missing not found', ErrorTypes.NOT_FOUND),
+      );
+    });
+
+    it('wraps unknown errors', async () => {
+      (OrganizationMembershipModel.findOneAndDelete as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(new MockMongoError(0)));
+
+      await expect(OrganizationMembershipDAO.delete('membership-1')).rejects.toThrow(
+        CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR),
       );
     });
   });

@@ -146,6 +146,14 @@ describe('FollowDAO', () => {
       expect(FollowModel.find).toHaveBeenCalledWith({targetType: FollowTargetType.User, targetId: 'user-2'});
       expect(result).toEqual([mockFollow]);
     });
+
+    it('wraps errors', async () => {
+      (FollowModel.find as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(new MockMongoError(0)));
+
+      await expect(FollowDAO.readFollowers(FollowTargetType.User, 'user-2')).rejects.toThrow(
+        CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR),
+      );
+    });
   });
 
   describe('remove', () => {
@@ -176,6 +184,14 @@ describe('FollowDAO', () => {
       await expect(
         FollowDAO.remove({followerUserId: 'user-1', targetType: FollowTargetType.User, targetId: 'user-2'}),
       ).rejects.toThrow(graphQLError);
+    });
+
+    it('wraps unknown errors', async () => {
+      (FollowModel.findOneAndDelete as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(new MockMongoError(0)));
+
+      await expect(
+        FollowDAO.remove({followerUserId: 'user-1', targetType: FollowTargetType.User, targetId: 'user-2'}),
+      ).rejects.toThrow(CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR));
     });
   });
 });

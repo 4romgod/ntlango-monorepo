@@ -148,5 +148,13 @@ describe('ActivityDAO', () => {
       const query = (ActivityModel.find as jest.Mock).mock.results[0].value;
       expect(query.limit).toHaveBeenCalledWith(1);
     });
+
+    it('wraps errors when reading by actor ids', async () => {
+      (ActivityModel.find as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(new MockMongoError(0)));
+
+      await expect(ActivityDAO.readByActorIds(['actor-1'])).rejects.toThrow(
+        CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR),
+      );
+    });
   });
 });

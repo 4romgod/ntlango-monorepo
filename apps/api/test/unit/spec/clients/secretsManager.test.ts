@@ -61,4 +61,21 @@ describe('getConfigValue', () => {
 
     await expect(getConfigValue('JWT_SECRET')).rejects.toThrow('Secret "JWT_SECRET" not found in Secrets Manager');
   });
+
+  it('throws when AWS returns no SecretString', async () => {
+    mockConstants({STAGE: APPLICATION_STAGES.PROD});
+    sendMock.mockResolvedValue({});
+
+    const {getConfigValue} = await import('@/clients/AWS/secretsManager');
+
+    await expect(getConfigValue('JWT_SECRET')).rejects.toThrow('Secret "JWT_SECRET" not found in Secrets Manager');
+  });
+
+  it('throws when NTLANGO_SECRET_ARN is missing outside Dev', async () => {
+    mockConstants({STAGE: APPLICATION_STAGES.PROD, NTLANGO_SECRET_ARN: undefined as unknown as string});
+
+    const {getConfigValue} = await import('@/clients/AWS/secretsManager');
+
+    await expect(getConfigValue('JWT_SECRET')).rejects.toThrow('NTLANGO_SECRET_ARN is required when STAGE is not Dev');
+  });
 });

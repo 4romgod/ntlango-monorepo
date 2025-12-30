@@ -19,6 +19,7 @@ const config: Config = {
   collectCoverage: true,
   coverageDirectory: '<rootDir>/test/unit/coverage',
   coverageReporters: ['text', 'text-summary', 'lcov'],
+  collectCoverageFrom: ['<rootDir>/lib/clients/**/*.ts', '<rootDir>/lib/mongodb/dao/**/*.ts', '!<rootDir>/lib/**/index.ts'],
   coveragePathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/test/'],
 };
 

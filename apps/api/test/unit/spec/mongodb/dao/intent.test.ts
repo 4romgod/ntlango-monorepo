@@ -65,6 +65,37 @@ describe('IntentDAO', () => {
       expect(result).toEqual(mockIntent);
     });
 
+    it('includes optional fields when provided', async () => {
+      (IntentModel.findOneAndUpdate as jest.Mock).mockReturnValue(
+        createMockSuccessMongooseQuery({
+          toObject: () => mockIntent,
+        }),
+      );
+
+      const input: UpsertIntentInput & {userId: string} = {
+        userId: 'user-1',
+        eventId: 'event-1',
+        status: IntentStatus.Going,
+        visibility: IntentVisibility.Private,
+        source: IntentSource.Invite,
+        participantId: 'participant-1',
+        metadata: {note: 'invite'},
+      };
+
+      await IntentDAO.upsert(input);
+
+      const [, updateQuery] = (IntentModel.findOneAndUpdate as jest.Mock).mock.calls[0];
+      expect(updateQuery.$set).toEqual(
+        expect.objectContaining({
+          status: IntentStatus.Going,
+          visibility: IntentVisibility.Private,
+          source: IntentSource.Invite,
+          participantId: 'participant-1',
+          metadata: {note: 'invite'},
+        }),
+      );
+    });
+
     it('uses intentId filter when provided and skips empty updates', async () => {
       (IntentModel.findOneAndUpdate as jest.Mock).mockReturnValue(
         createMockSuccessMongooseQuery({
@@ -140,6 +171,14 @@ describe('IntentDAO', () => {
 
       expect(IntentModel.find).toHaveBeenCalledWith({eventId: 'event-1'});
       expect(result).toEqual([mockIntent]);
+    });
+
+    it('wraps errors', async () => {
+      (IntentModel.find as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(new MockMongoError(0)));
+
+      await expect(IntentDAO.readByEvent('event-1')).rejects.toThrow(
+        CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR),
+      );
     });
   });
 });

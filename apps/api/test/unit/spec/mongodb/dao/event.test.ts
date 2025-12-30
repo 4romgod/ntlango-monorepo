@@ -93,6 +93,20 @@ describe('EventDAO', () => {
       await expect(EventDAO.create(mockEventInput)).rejects.toThrow(CustomError(ERROR_MESSAGES.CONTENT_TOO_LARGE, ErrorTypes.BAD_USER_INPUT));
       expect(EventModel.create).toHaveBeenCalledWith(expect.objectContaining(mockEventInput));
     });
+
+    it('should throw BAD_USER_INPUT GraphQLError when validation errors are returned', async () => {
+      const validationError = {
+        name: 'ValidationError',
+        errors: {
+          title: {message: 'Title is required'},
+        },
+      };
+
+      (EventModel.create as jest.Mock).mockRejectedValue(validationError);
+
+      await expect(EventDAO.create(mockEventInput)).rejects.toThrow(CustomError('Title is required', ErrorTypes.BAD_USER_INPUT));
+      expect(EventModel.create).toHaveBeenCalledWith(expect.objectContaining(mockEventInput));
+    });
   });
 
   describe('readEventById', () => {
