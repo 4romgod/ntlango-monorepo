@@ -71,7 +71,16 @@ This document captures the current data model for Ntlango’s event platform as 
 - People: `organizers [{ userId, role: Host|CoHost|Volunteer }]`.
 - Taxonomy: `eventCategoryList[]` (EventCategory refs), `categoryIds?[]` for flattened ids.
 - Settings: `capacity`, `rsvpLimit`, `waitlistEnabled`, `allowGuestPlusOnes`, `remindersEnabled`, `showAttendees`.
-- Metadata: `tags` (JSON), `additionalDetails` (JSON), `comments` (JSON), `eventLink`.
+- Metadata:
+  - `tags` (JSON): free-form tagging for search and discovery. Typically an array of strings or lightweight tag objects, for example:
+    - `["family-friendly", "outdoors", "live-music"]`
+    - `[{ "key": "audience", "value": "families" }, { "key": "vibe", "value": "chill" }]`
+  - `additionalDetails` (JSON): arbitrary, event-specific key–value metadata not modeled as first-class fields. Expected to be a shallow object whose values are JSON-serializable, for example:
+    - `{ "dressCode": "casual", "parkingInfo": "street + garage", "language": "en" }`
+    - `{ "sponsor": { "name": "Acme Corp", "tier": "gold" } }`
+  - `comments` (JSON): reserved for inline or system-generated comments associated with the event. May be unused in some deployments. When used, it is typically an array of comment objects that reference users rather than storing full user data, for example:
+    - `[{"userId": "u123", "text": "Doors open at 7pm", "createdAt": "2024-01-01T18:00:00Z"}]`
+  - `eventLink`: canonical URL for the event’s public landing page (may point to an internal or external site).
 - `participants` is resolved by GraphQL via `EventParticipant` and is not stored on the Event document.
 
 ### EventParticipant
