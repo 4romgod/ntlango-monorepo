@@ -66,10 +66,10 @@ This document captures the current data model for Ntlango’s event platform as 
 - Status: `status` (Cancelled|Completed|Ongoing|Upcoming).
 - Lifecycle: `lifecycleStatus` (Draft|Published|Cancelled|Completed).
 - Visibility: `visibility` (Public|Private|Unlisted|Invitation), `privacySetting` (Public|Private|Invitation).
-- Schedule: `recurrenceRule` (required), plus optional `primarySchedule { startAt, endAt, timezone, recurrenceRule }` and `occurrences[]`.
-- Location: `location` (Location type above), optional `venueId` and `locationSnapshot`.
+- Schedule: `recurrenceRule` (required), plus `primarySchedule? { startAt, endAt, timezone, recurrenceRule }` and `occurrences?[]`.
+- Location: `location` (Location type above), `venueId?` and `locationSnapshot?`.
 - People: `organizers [{ userId, role: Host|CoHost|Volunteer }]`.
-- Taxonomy: `eventCategoryList[]` (EventCategory refs), optional `categoryIds[]` for flattened ids.
+- Taxonomy: `eventCategoryList[]` (EventCategory refs), `categoryIds?[]` for flattened ids.
 - Settings: `capacity`, `rsvpLimit`, `waitlistEnabled`, `allowGuestPlusOnes`, `remindersEnabled`, `showAttendees`.
 - Metadata: `tags` (JSON), `additionalDetails` (JSON), `comments` (JSON), `eventLink`.
 - `participants` is resolved by GraphQL via `EventParticipant` and is not stored on the Event document.
