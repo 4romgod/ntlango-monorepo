@@ -22,7 +22,7 @@ describe('Custom Graphql Scalar Types', () => {
 
       it('should throw error for unsupported types during serialization', () => {
         const value = {key: 'value'};
-        expect(() => AnyType.serialize(value)).toThrow('AnyType can only serialize string, number, or boolean values');
+        expect(() => AnyType.serialize(value)).toThrow('AnyType can only serialize string, number, boolean, or array of primitive values');
       });
     });
 
@@ -44,7 +44,7 @@ describe('Custom Graphql Scalar Types', () => {
 
       it('should throw error for unsupported types during parsing value', () => {
         const value = {key: 'value'};
-        expect(() => AnyType.parseValue(value)).toThrow('AnyType can only parse string, number, or boolean values');
+        expect(() => AnyType.parseValue(value)).toThrow('AnyType can only parse string, number, boolean, or array of primitive values');
       });
     });
 
@@ -86,7 +86,7 @@ describe('Custom Graphql Scalar Types', () => {
             },
           ],
         };
-        expect(() => AnyType.parseLiteral(ast)).toThrow('AnyType can only parse string, number, or boolean values');
+        expect(() => AnyType.parseLiteral(ast)).toThrow('AnyType can only parse string, number, boolean, or array values');
       });
     });
 

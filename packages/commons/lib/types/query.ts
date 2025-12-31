@@ -64,7 +64,7 @@ export class FilterInput {
     field: string;
 
     @Field((type) => AnyType, {description: QUERY_DESCRIPTIONS.FILTER.VALUE})
-    value: string | number | boolean;
+    value: string | number | boolean | Array<string | number | boolean>;
 
     @Field(() => FilterOperatorInput, {
         nullable: true,

@@ -2,40 +2,41 @@ import type {FilterInput} from '@ntlango/commons/types';
 import {FilterOperatorInput} from '@ntlango/commons/types';
 import type {PipelineStage} from 'mongoose';
 
-// TODO 1. Functionality for RootQuerySelector like ($and, $or, $text)
+// TODO: allow filtering on related/resolved fields (organizers.user.*, participants.*, etc.)
+const buildOperatorSymbol = (operator?: FilterOperatorInput) => {
+  const normalized = operator || FilterOperatorInput.eq;
+  return `$${normalized}` as `$${FilterOperatorInput}`;
+};
+
 export const createEventPipelineStages = (filters: FilterInput[]): PipelineStage[] => {
-  const pipelineStages: PipelineStage[] = [];
-  const matchOptions: PipelineStage.Match = {
-    $match: {},
+  if (!filters.length) {
+    return [];
+  }
+
+  const buildMatchClause = ({field, value, operator}: FilterInput) => {
+    const operatorSymbol = buildOperatorSymbol(operator);
+
+    if (Array.isArray(value)) {
+      if (value.length === 0) {
+        throw new Error(`Filter field "${field}" cannot have an empty array as value`);
+      }
+      const arrayOperator = operatorSymbol === '$ne' ? '$nin' : '$in';
+      return {
+        [field]: {[arrayOperator]: value},
+      };
+    }
+
+    return {
+      [field]: {[operatorSymbol]: value},
+    };
   };
 
-  filters.forEach((filter) => {
-    const {field, value, operator} = filter;
-    const operatorSymbol: `$${FilterOperatorInput}` = `$${operator || FilterOperatorInput.eq}`;
+  const matchClauses = filters.map(buildMatchClause);
+  const matchPayload = matchClauses.length === 1 ? matchClauses[0] : {$and: matchClauses};
 
-    if (field.includes('.')) {
-      const [rootField, nestedField] = field.split('.');
-      const addField: PipelineStage.AddFields = {
-        $addFields: {
-          [`value.${rootField}`]: {
-            $filter: {
-              input: `$${rootField}`,
-              as: `${rootField}Item`,
-              cond: {
-                $eq: [`$$${rootField}Item.${nestedField}`, value],
-              },
-            },
-          },
-        },
-      };
-      pipelineStages.push(addField);
-      matchOptions.$match[`value.${rootField}.0.${nestedField}`] = {[operatorSymbol]: value};
-    } else {
-      matchOptions.$match[field] = {[operatorSymbol]: value};
-    }
-  });
+  const matchStage: PipelineStage.Match = {
+    $match: matchPayload,
+  };
 
-  pipelineStages.push(matchOptions);
-
-  return pipelineStages;
+  return [matchStage];
 };
