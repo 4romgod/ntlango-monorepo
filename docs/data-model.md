@@ -22,7 +22,90 @@ This document captures the current data model for Ntlango’s event platform as 
 
 ## Entities (Current Implementation)
 
+### Visual overview
+The following Mermaid class diagram summarizes the primary relationships among the persisted entities (the Excalidraw file has a richer layout if you prefer a canvas view).
+
+```mermaid
+classDiagram
+    class Event {
+        +string eventId
+        +string slug
+        +EventStatus status
+        +EventVisibility visibility
+        +string recurrenceRule
+        +Location location
+        +EventOrganizer[] organizers
+        +Ref<EventCategory>[] eventCategoryList
+    }
+    class EventCategory {
+        +string eventCategoryId
+        +string slug
+        +string name
+        +string? color
+    }
+    class EventCategoryGroup {
+        +string eventCategoryGroupId
+        +string name
+        +string slug
+    }
+    class Organization {
+        +string orgId
+        +string slug
+        +string name
+    }
+    class Venue {
+        +string venueId
+        +VenueType type
+    }
+    class User {
+        +string userId
+        +string email
+        +string username
+    }
+    class EventOrganizer {
+        +string userId
+        +EventOrganizerRole role
+    }
+    class EventParticipant {
+        +string participantId
+        +string eventId
+        +string userId
+        +ParticipantStatus status
+    }
+    class Intent {
+        +string intentId
+        +string eventId
+        +string userId
+        +IntentStatus status
+    }
+    class Activity {
+        +string activityId
+        +string actorId
+        +ActivityVerb verb
+    }
+    class Follow {
+        +string followId
+        +string followerUserId
+    }
+
+    Event "1" --> "many" EventCategory : references
+    Event "1" --> "many" EventCategoryGroup : groups
+    Event "many" --> "1" Organization : ownedBy
+    Event "0..1" --> "1" Venue : at
+    Event "1" --> "many" EventOrganizer : includes
+    Event "1" --> "many" EventParticipant : resolved
+    EventOrganizer "many" --> "1" User : userId
+    EventParticipant "many" --> "1" User : userId
+    Intent "many" --> "1" Event : references
+    Intent "many" --> "1" User : references
+    Activity "many" --> "1" Event : references
+    Activity "many" --> "1" User : actor
+    Follow "many" --> "1" User : follower
+    Follow "many" --> "1" Organization : target
+```
+
 ### User
+The `User` model represents every person that authenticates with the platform—it drives access control, identity, and personalized behavior (feeds, RSVPs, follows) so other collections can tie metadata back to a real person.
 - `userId`, `email`, `username`, `userRole`, optional `roles[]`.
 - Profile fields: `given_name`, `family_name`, `birthdate`, `gender`, `phone_number`, `profile_picture`, `bio`.
 - `address` (freeform JSON) plus `interests` (EventCategory refs).
@@ -31,6 +114,7 @@ This document captures the current data model for Ntlango’s event platform as 
 - Preferences: `preferences { communicationPrefs, notificationPrefs }`.
 
 ### Organization
+Organizations capture a workspace context for events—defaults for visibility/billing, ownership, and followable state—so individuals can operate together without mixing personas.
 - `orgId`, `slug`, `name`, `description`, `logo`, `ownerId`.
 - `defaultVisibility`, `billingEmail`, `links[]`, `domainsAllowed[]`.
 - `eventDefaults { visibility, remindersEnabled, waitlistEnabled, allowGuestPlusOnes, ticketAccess }`.
@@ -39,28 +123,34 @@ This document captures the current data model for Ntlango’s event platform as 
 - Memberships are stored in `OrganizationMembership` (see below) and resolved in GraphQL.
 
 ### OrganizationMembership
+Tracks which users belong to which organizations plus their role, so permission checks know who can create/publish events or manage billing for that org.
 - `membershipId`, `orgId`, `userId`, `role` (Owner|Admin|Host|Moderator|Member), `joinedAt`.
 - Enforces uniqueness per `(orgId, userId)`.
 
 ### Venue
+Stores reusable meeting spaces for events, including geolocation/address data so the UI and notifications can render consistent location details regardless of who creates the event.
 - `venueId`, optional `orgId`, `type` (Physical|Virtual|Hybrid), `name`.
 - `address { street, city, region, country, postalCode }`.
 - `geo { latitude, longitude }`.
 - `url`, `capacity`, `amenities[]`.
 
 ### EventCategory
+Lightweight taxonomy entries that label events and users for filtering, preferences, and follow features; stored once and referenced via `eventCategoryList` and `interests`.
 - `eventCategoryId`, `slug`, `name`, `iconName`, `description`, optional `color`.
 
 ### EventCategoryGroup
+Groups of categories for UI/curation purposes (e.g., “Music” or “Community”) so we can surface healthy category hierarchies without hardcoding them into business logic.
 - `eventCategoryGroupId`, `name`, `slug`, `eventCategoryList[]`.
 
 ### Location (embedded in Event)
+Embeds the spatial context of an event without separating it into its own collection, so each Event owns a snapshot of where it will happen (useful for recurrence, history, and location changes).
 - `locationType`: `venue` | `online` | `tba`.
 - `coordinates { latitude, longitude }`.
 - `address { street, city, state, postalCode, country }`.
 - `details` (string) for arbitrary location notes.
 
 ### Event
+The `Event` document is the heart of the platform—taking organizer intent, location, schedules, and metadata and storing it as a single source of truth for listing feeds and resolver pipelines.
 - Identity: `eventId`, `slug`, `orgId?`.
 - Content: `title`, `summary`, `description`, `heroImage`, `media`, `mediaAssets[]`.
 - Status: `status` (Cancelled|Completed|Ongoing|Upcoming).
@@ -84,21 +174,25 @@ This document captures the current data model for Ntlango’s event platform as 
 - `participants` is resolved by GraphQL via `EventParticipant` and is not stored on the Event document.
 
 ### EventParticipant
+Event participants are stored separately so RSVP/attendance history can be audited, shared visibility honored, and quantities tracked without mutating the Event document frequently.
 - `participantId`, `eventId`, `userId`, `status` (Interested|Going|Waitlisted|Cancelled|CheckedIn).
 - `quantity`, `invitedBy`, `sharedVisibility` (Public|Followers|Private).
 - `rsvpAt`, `cancelledAt`, `checkedInAt`.
 
 ### Follow
+Follow entries model the social graph edges, letting the feed/caching layer enforce muted or asynchronous follow relationships without denormalizing user objects.
 - `followId`, `followerUserId`, `targetType` (User|Organization), `targetId`.
 - `status` (Active|Muted), `createdAt`.
 
 ### Intent
+Intents are lightweight signals (Interested, Going, etc.) that are cheaper to write/read than EventParticipant rows and feed the UI before tickets are confirmed.
 - `intentId`, `userId`, `eventId`, optional `participantId`.
 - `status` (Interested|Going|Maybe|Declined).
 - `visibility` (Public|Followers|Private), `source` (Manual|Ticket|Invite|OrgAnnouncement).
 - `metadata` (JSON), `createdAt`, `updatedAt`.
 
 ### Activity
+Activities capture actions taken by actors (users/orgs) so the feed knows what happened, when, and how visible the story should be.
 - `activityId`, `actorId`, `verb` (Followed|RSVPd|Commented|Published|CreatedOrg|CheckedIn|Invited).
 - `objectType` (User|Organization|Event|Comment|TicketType), `objectId`.
 - `targetType?`, `targetId?`, `visibility` (Public|Followers|Private), `eventAt`, `metadata`.
