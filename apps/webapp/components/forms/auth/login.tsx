@@ -18,13 +18,13 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useActionState } from 'react';
 import { loginUserAction } from '@/data/actions/server/auth';
 import { FormErrors } from '@/components/form-errors';
-import { useCustomAppContext } from '@/components/app-context';
+import { useAppContext } from '@/hooks/useAppContext';
 
 export default function LoginForm() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [formState, formAction] = useActionState(loginUserAction, {});
-  const { setToastProps, toastProps } = useCustomAppContext();
+  const { setToastProps, toastProps } = useAppContext();
 
   const handleClickShowPassword = () => setShowPassword(prev => !prev);
   const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {

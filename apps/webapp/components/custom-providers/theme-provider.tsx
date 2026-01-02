@@ -3,10 +3,10 @@
 import '@/components/global.css';
 import React, { ReactNode } from 'react';
 import { CssBaseline, ThemeProvider } from '@mui/material';
-import { useCustomAppContext } from '@/components/app-context';
+import { useAppContext } from '@/hooks/useAppContext';
 
 export default function CustomThemeProvider({ children }: { children: ReactNode }) {
-  const { appTheme } = useCustomAppContext();
+  const { appTheme } = useAppContext();
 
   return (
     <ThemeProvider theme={appTheme!}>

@@ -18,7 +18,7 @@ import {
 import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 import { EventStatus } from '@/data/graphql/types/graphql';
 import { StatusFilterProps } from '@/lib/constants';
-import { useEventFilters } from './event-filter-context';
+import { useEventFilters } from '@/hooks/useEventFilters';
 
 const STATUS_COLORS: Record<EventStatus, string> = {
   [EventStatus.Cancelled]: 'error.main',
@@ -63,7 +63,7 @@ export default function StatusFilter({ sxProps }: StatusFilterProps) {
           onChange={handleStatusChange}
           renderValue={selected => (
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-              {selected.map(value => (
+              {selected.map((value: EventStatus) => (
                 <Chip
                   key={value}
                   label={value}

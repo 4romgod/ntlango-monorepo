@@ -1,12 +1,12 @@
 'use client';
 
 import React from 'react';
-import { useCustomAppContext } from '@/components/app-context';
+import { useAppContext } from '@/hooks/useAppContext';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 
 export default function ToastProvider() {
-  const { toastProps, setToastProps } = useCustomAppContext();
+  const { toastProps, setToastProps } = useAppContext();
   const { open, anchorOrigin, autoHideDuration, severity, message } = toastProps;
 
   const handleClose = () => {

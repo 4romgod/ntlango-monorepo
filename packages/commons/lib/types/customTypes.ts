@@ -6,7 +6,7 @@ const ensurePrimitiveArray = (value: unknown): Array<string | number | boolean> 
     if (!Array.isArray(value)) {
         throw new Error('Value is not an array');
     }
-    if (value.every(item => typeof item === 'string' || typeof item === 'number' || typeof item === 'boolean')) {
+    if (value.every((item) => typeof item === 'string' || typeof item === 'number' || typeof item === 'boolean')) {
         return value;
     }
     throw new Error('AnyType array can only contain string, number, or boolean values');
@@ -44,7 +44,7 @@ export const AnyType = new GraphQLScalarType({
             case Kind.BOOLEAN:
                 return ast.value === true;
             case Kind.LIST:
-                return ast.values.map(value => {
+                return ast.values.map((value) => {
                     switch (value.kind) {
                         case Kind.STRING:
                             return value.value;

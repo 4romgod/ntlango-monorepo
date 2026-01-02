@@ -6,13 +6,13 @@ import { Edit as EditIcon, CameraAlt as CameraIcon } from '@mui/icons-material';
 import { Address, UpdateUserInput, User } from '@/data/graphql/types/graphql';
 import { useActionState } from 'react';
 import { updateUserProfileAction } from '@/data/actions/server/user/update-user-profile';
-import { useCustomAppContext } from '@/components/app-context';
+import { useAppContext } from '@/hooks/useAppContext';
 import { FormErrors } from '@/components/form-errors';
 import AddressForm from '@/components/forms/input-address';
 
 export default function EditProfilePage({ user }: { user: User }) {
   const [isEditing, setIsEditing] = useState(false);
-  const { setToastProps, toastProps } = useCustomAppContext();
+  const { setToastProps, toastProps } = useAppContext();
   const [formState, formAction] = useActionState(updateUserProfileAction, {});
   const [loading, setLoading] = useState(false);
 
