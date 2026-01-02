@@ -8,19 +8,19 @@ import {logger} from '@/utils/logger';
 /**
  * Data Access Object for Event Category Group operations.
  *
- * All read and write methods populate the `eventCategoryList` field with full EventCategory objects,
+ * All read and write methods populate the `eventCategories` field with full EventCategory objects,
  * ensuring consistent data structure across all operations. The `deleteEventCategoryGroupBySlug`
  * method is an exception as deleted entities typically don't require populated references.
  */
 class EventCategoryGroupDAO {
   /**
    * Creates a new event category group.
-   * @returns EventCategoryGroup with populated eventCategoryList
+   * @returns EventCategoryGroup with populated eventCategories
    */
   static async create(input: CreateEventCategoryGroupInput): Promise<EventCategoryGroup> {
     try {
       const eventCategoryGroup = await EventCategoryGroupModel.create(input);
-      await eventCategoryGroup.populate('eventCategoryList');
+      await eventCategoryGroup.populate('eventCategories');
       return eventCategoryGroup.toObject();
     } catch (error) {
       logger.info('Error creating event category group', error);
@@ -30,11 +30,11 @@ class EventCategoryGroupDAO {
 
   /**
    * Reads a single event category group by slug.
-   * @returns EventCategoryGroup with populated eventCategoryList
+   * @returns EventCategoryGroup with populated eventCategories
    */
   static async readEventCategoryGroupBySlug(slug: string): Promise<EventCategoryGroup> {
     try {
-      const query = EventCategoryGroupModel.findOne({slug: slug}).populate('eventCategoryList');
+      const query = EventCategoryGroupModel.findOne({slug: slug}).populate('eventCategories');
       const eventCategoryGroup = await query.exec();
       if (!eventCategoryGroup) {
         throw CustomError(`Event Category Group with slug ${slug} not found`, ErrorTypes.NOT_FOUND);
@@ -51,13 +51,13 @@ class EventCategoryGroupDAO {
 
   /**
    * Reads all event category groups, optionally with filters, sorting, and pagination.
-   * @returns Array of EventCategoryGroup objects with populated eventCategoryList
+   * @returns Array of EventCategoryGroup objects with populated eventCategories
    */
   static async readEventCategoryGroups(options?: QueryOptionsInput): Promise<EventCategoryGroup[]> {
     try {
       const query = options
-        ? transformOptionsToQuery(EventCategoryGroupModel, options).populate('eventCategoryList')
-        : EventCategoryGroupModel.find({}).populate('eventCategoryList');
+        ? transformOptionsToQuery(EventCategoryGroupModel, options).populate('eventCategories')
+        : EventCategoryGroupModel.find({}).populate('eventCategories');
       const eventCategoryGroups = await query.exec();
       return eventCategoryGroups.map((eventCategoryGroup) => eventCategoryGroup.toObject());
     } catch (error) {
@@ -68,14 +68,14 @@ class EventCategoryGroupDAO {
 
   /**
    * Updates an event category group.
-   * @returns Updated EventCategoryGroup with populated eventCategoryList
+   * @returns Updated EventCategoryGroup with populated eventCategories
    */
   static async updateEventCategoryGroup(input: UpdateEventCategoryGroupInput) {
     try {
       const updatedEventCategoryGroup = await EventCategoryGroupModel.findByIdAndUpdate(input.eventCategoryGroupId, input, {
         new: true,
       })
-        .populate('eventCategoryList')
+        .populate('eventCategories')
         .exec();
 
       if (!updatedEventCategoryGroup) {

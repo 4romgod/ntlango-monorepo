@@ -10,7 +10,7 @@ export const getCreateEventMutation = (event: any) => {
                 userId
                 role
               }
-              eventCategoryList {
+              eventCategories {
                 eventCategoryId
                 slug
                 name

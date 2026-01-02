@@ -32,7 +32,7 @@ export default async function Page(props: Props) {
     query: GetEventBySlugDocument,
     variables: { slug: params.slug },
   });
-  const { title, organizers, description, media, recurrenceRule, location, eventCategoryList, comments, participants } =
+  const { title, organizers, description, media, recurrenceRule, location, eventCategories, comments, participants } =
     eventRetrieved.readEventBySlug;
   type EventDetailParticipant = NonNullable<
     NonNullable<GetEventBySlugQuery['readEventBySlug']>['participants']
@@ -144,9 +144,10 @@ export default async function Page(props: Props) {
                 <Typography color="text.secondary">No organizers listed.</Typography>
               ) : (
                 <Grid container spacing={3}>
-                  {organizers.map(organizer => (
-                    <Grid key={organizer.userId}>
-                      {organizer.user ? (
+                  {organizers
+                    .filter((organizer) => organizer.user) // Filter out organizers without valid user references
+                    .map((organizer) => (
+                      <Grid key={organizer.user.userId}>
                         <Link
                           href={`/users/${organizer.user.username}`}
                           passHref
@@ -200,19 +201,8 @@ export default async function Page(props: Props) {
                             </Box>
                           </Stack>
                         </Link>
-                      ) : (
-                        <Stack direction="row" spacing={2} alignItems="center" sx={{ p: 2 }}>
-                          <Avatar sx={{ width: 56, height: 56, bgcolor: 'grey.400' }}>?</Avatar>
-                          <Box>
-                            <Typography variant="subtitle1" color="text.secondary">
-                              User unavailable
-                            </Typography>
-                            <Chip label={organizer.role} size="small" variant="outlined" sx={{ mt: 0.5 }} />
-                          </Box>
-                        </Stack>
-                      )}
-                    </Grid>
-                  ))}
+                      </Grid>
+                    ))}
                 </Grid>
               )}
             </Box>
@@ -266,8 +256,8 @@ export default async function Page(props: Props) {
                 Categories
               </Typography>
               <Stack direction="row" spacing={1} sx={{ maxWidth: '100%', overflowX: 'auto' }}>
-                {eventCategoryList.length > 0 ? (
-                  eventCategoryList.map((category, index) => (
+                {eventCategories.length > 0 ? (
+                  eventCategories.map((category, index) => (
                     <EventCategoryChip key={`${category.name}.${index}`} category={category} />
                   ))
                 ) : (

@@ -73,11 +73,11 @@ describe('createEventPipelineStages', () => {
   });
 
   it('should handle nested field filters with different operators', () => {
-    const filters: FilterInput[] = [{field: 'eventCategoryList.name', value: 'Arts', operator: FilterOperatorInput.ne}];
+    const filters: FilterInput[] = [{field: 'eventCategories.name', value: 'Arts', operator: FilterOperatorInput.ne}];
     const expectedPipeline: PipelineStage[] = [
       {
         $match: {
-          'eventCategoryList.name': {$ne: 'Arts'},
+          'eventCategories.name': {$ne: 'Arts'},
         },
       },
     ];

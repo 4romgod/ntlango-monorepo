@@ -8,7 +8,7 @@ export const getReadEventCategoryGroupBySlugQuery = (slug: string) => {
           eventCategoryGroupId
           slug
           name
-          eventCategoryList {
+          eventCategories {
             eventCategoryId
             name
           }

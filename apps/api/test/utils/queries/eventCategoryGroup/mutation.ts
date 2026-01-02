@@ -6,7 +6,7 @@ export const getCreateEventCategoryGroupMutation = (input: any) => {
           eventCategoryGroupId
           slug
           name
-          eventCategoryList {
+          eventCategories {
             eventCategoryId
             name
             slug
@@ -30,7 +30,7 @@ export const getUpdateEventCategoryGroupMutation = (input: any) => {
           eventCategoryGroupId
           slug
           name
-          eventCategoryList {
+          eventCategories {
             eventCategoryId
             name
             slug

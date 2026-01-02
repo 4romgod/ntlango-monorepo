@@ -15,7 +15,7 @@ describe('transformOptionsToPipeline', () => {
 
   it('should include lookup stages always', () => {
     const lookupStages: PipelineStage.Lookup[] = [
-      {$lookup: {from: 'eventcategories', localField: 'eventCategoryList', foreignField: '_id', as: 'eventCategoryList'}},
+      {$lookup: {from: 'eventcategories', localField: 'eventCategories', foreignField: '_id', as: 'eventCategories'}},
     ];
 
     jest.spyOn(lookupModule, 'createEventLookupStages').mockReturnValue(lookupStages);
@@ -66,7 +66,7 @@ describe('transformOptionsToPipeline', () => {
     const filters = [{field: 'status', value: 'Completed', operator: FilterOperatorInput.eq}];
 
     const lookupStages: PipelineStage.Lookup[] = [
-      {$lookup: {from: 'eventcategories', localField: 'eventCategoryList', foreignField: '_id', as: 'eventCategoryList'}},
+      {$lookup: {from: 'eventcategories', localField: 'eventCategories', foreignField: '_id', as: 'eventCategories'}},
     ];
     const sortStages: PipelineStage.Sort[] = [{$sort: {capacity: 1}}];
     const paginationStages: PipelineStage[] = [{$skip: 5}, {$limit: 10}];

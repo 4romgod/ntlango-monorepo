@@ -66,7 +66,7 @@ describe('EventCategoryGroupDAO', () => {
     eventCategoryGroupId: '1',
     name: 'Test Group',
     slug: 'test-group',
-    eventCategoryList: mockPopulatedCategories as any,
+    eventCategories: mockPopulatedCategories as any,
   };
 
   describe('create', () => {
@@ -74,24 +74,24 @@ describe('EventCategoryGroupDAO', () => {
       jest.clearAllMocks();
     });
 
-    it('should create event category group and populate eventCategoryList', async () => {
+    it('should create event category group and populate eventCategories', async () => {
       const input: CreateEventCategoryGroupInput = {
         name: 'Test Group',
-        eventCategoryList: mockEventCategoryIds,
+        eventCategories: mockEventCategoryIds,
       };
 
       const mockCreatedDocument = {
         ...mockEventCategoryGroup,
-        eventCategoryList: mockEventCategoryIds,
+        eventCategories: mockEventCategoryIds,
         populate: jest.fn().mockImplementation(function (this: any, field: string) {
-          if (field === 'eventCategoryList') {
-            this.eventCategoryList = mockPopulatedCategories;
+          if (field === 'eventCategories') {
+            this.eventCategories = mockPopulatedCategories;
           }
           return Promise.resolve(this);
         }),
         toObject: jest.fn().mockReturnValue({
           ...mockEventCategoryGroup,
-          eventCategoryList: mockPopulatedCategories,
+          eventCategories: mockPopulatedCategories,
         }),
       };
 
@@ -100,11 +100,11 @@ describe('EventCategoryGroupDAO', () => {
       const result = await EventCategoryGroupDAO.create(input);
 
       expect(EventCategoryGroupModel.create).toHaveBeenCalledWith(input);
-      expect(mockCreatedDocument.populate).toHaveBeenCalledWith('eventCategoryList');
-      expect(result.eventCategoryList).toEqual(mockPopulatedCategories);
-      expect(result.eventCategoryList).toHaveLength(mockPopulatedCategories.length);
+      expect(mockCreatedDocument.populate).toHaveBeenCalledWith('eventCategories');
+      expect(result.eventCategories).toEqual(mockPopulatedCategories);
+      expect(result.eventCategories).toHaveLength(mockPopulatedCategories.length);
 
-      result.eventCategoryList.forEach((category: any) => {
+      result.eventCategories.forEach((category: any) => {
         expect(category).toHaveProperty('eventCategoryId');
         expect(category).toHaveProperty('name');
         expect(category).toHaveProperty('slug');
@@ -116,7 +116,7 @@ describe('EventCategoryGroupDAO', () => {
     it('should handle errors during creation', async () => {
       const input: CreateEventCategoryGroupInput = {
         name: 'Test Group',
-        eventCategoryList: mockEventCategoryIds,
+        eventCategories: mockEventCategoryIds,
       };
 
       const mongoError = new MockMongoError(11000, 'Duplicate key error');
@@ -131,7 +131,7 @@ describe('EventCategoryGroupDAO', () => {
       jest.clearAllMocks();
     });
 
-    it('should read event category group by slug and populate eventCategoryList', async () => {
+    it('should read event category group by slug and populate eventCategories', async () => {
       const slug = 'test-group';
       const mockQuery = createMockSuccessMongooseQuery({
         ...mockEventCategoryGroup,
@@ -143,7 +143,7 @@ describe('EventCategoryGroupDAO', () => {
       const result = await EventCategoryGroupDAO.readEventCategoryGroupBySlug(slug);
 
       expect(EventCategoryGroupModel.findOne).toHaveBeenCalledWith({slug});
-      expect(mockQuery.populate).toHaveBeenCalledWith('eventCategoryList');
+      expect(mockQuery.populate).toHaveBeenCalledWith('eventCategories');
       expect(mockQuery.exec).toHaveBeenCalled();
       expect(result).toEqual(mockEventCategoryGroup);
     });
@@ -176,7 +176,7 @@ describe('EventCategoryGroupDAO', () => {
       jest.clearAllMocks();
     });
 
-    it('should read all event category groups and populate eventCategoryList', async () => {
+    it('should read all event category groups and populate eventCategories', async () => {
       const mockGroups = [mockEventCategoryGroup];
       const mockQuery = createMockSuccessMongooseQuery(
         mockGroups.map((group) => ({
@@ -190,12 +190,12 @@ describe('EventCategoryGroupDAO', () => {
       const result = await EventCategoryGroupDAO.readEventCategoryGroups();
 
       expect(EventCategoryGroupModel.find).toHaveBeenCalledWith({});
-      expect(mockQuery.populate).toHaveBeenCalledWith('eventCategoryList');
+      expect(mockQuery.populate).toHaveBeenCalledWith('eventCategories');
       expect(mockQuery.exec).toHaveBeenCalled();
       expect(result).toEqual(mockGroups);
     });
 
-    it('should read event category groups with options and populate eventCategoryList', async () => {
+    it('should read event category groups with options and populate eventCategories', async () => {
       const options: QueryOptionsInput = {
         filters: [{field: 'name', value: 'Test Group'}],
         sort: [{field: 'name', order: SortOrderInput.asc}],
@@ -215,7 +215,7 @@ describe('EventCategoryGroupDAO', () => {
       const result = await EventCategoryGroupDAO.readEventCategoryGroups(options);
 
       expect(transformOptionsToQuery).toHaveBeenCalledWith(EventCategoryGroupModel, options);
-      expect(mockQuery.populate).toHaveBeenCalledWith('eventCategoryList');
+      expect(mockQuery.populate).toHaveBeenCalledWith('eventCategories');
       expect(mockQuery.exec).toHaveBeenCalled();
       expect(result).toEqual(mockGroups);
     });
@@ -236,11 +236,11 @@ describe('EventCategoryGroupDAO', () => {
       jest.clearAllMocks();
     });
 
-    it('should update event category group and populate eventCategoryList', async () => {
+    it('should update event category group and populate eventCategories', async () => {
       const input: UpdateEventCategoryGroupInput = {
         eventCategoryGroupId: '1',
         name: 'Updated Group',
-        eventCategoryList: mockEventCategoryIds,
+        eventCategories: mockEventCategoryIds,
       };
 
       const mockQuery = createMockSuccessMongooseQuery({
@@ -256,7 +256,7 @@ describe('EventCategoryGroupDAO', () => {
       expect(EventCategoryGroupModel.findByIdAndUpdate).toHaveBeenCalledWith(input.eventCategoryGroupId, input, {
         new: true,
       });
-      expect(mockQuery.populate).toHaveBeenCalledWith('eventCategoryList');
+      expect(mockQuery.populate).toHaveBeenCalledWith('eventCategories');
       expect(mockQuery.exec).toHaveBeenCalled();
       expect(result.name).toBe('Updated Group');
     });
@@ -265,7 +265,7 @@ describe('EventCategoryGroupDAO', () => {
       const input: UpdateEventCategoryGroupInput = {
         eventCategoryGroupId: 'non-existent',
         name: 'Updated Group',
-        eventCategoryList: mockEventCategoryIds,
+        eventCategories: mockEventCategoryIds,
       };
 
       const mockQuery = createMockSuccessMongooseQuery(null);
@@ -280,7 +280,7 @@ describe('EventCategoryGroupDAO', () => {
       const input: UpdateEventCategoryGroupInput = {
         eventCategoryGroupId: '1',
         name: 'Updated Group',
-        eventCategoryList: mockEventCategoryIds,
+        eventCategories: mockEventCategoryIds,
       };
 
       const mockQuery = createMockFailedMongooseQuery(new MockMongoError(0));

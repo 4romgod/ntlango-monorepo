@@ -43,8 +43,8 @@ describe('EventParticipant Resolver', () => {
       ...eventsMockData[0],
       title: 'Participant Event',
       description: 'Testing participants',
-      eventCategoryList: [category.eventCategoryId],
-      organizers: [{userId: participantUser.userId, role: 'Host'}],
+      eventCategories: [category.eventCategoryId],
+      organizers: [{user: participantUser.userId, role: 'Host'}],
     };
     const event = await EventDAO.create(eventInput);
     eventId = event.eventId;

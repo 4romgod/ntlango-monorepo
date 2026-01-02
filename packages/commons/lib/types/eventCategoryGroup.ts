@@ -22,7 +22,7 @@ export class EventCategoryGroup {
 
     @prop({type: () => [String], ref: () => EventCategory, required: true})
     @Field(() => [EventCategory], {description: EVENT_DESCRIPTIONS.EVENT.EVENT_CATEGORY_LIST})
-    eventCategoryList: Ref<EventCategory>[];
+    eventCategories: Ref<EventCategory>[];
 }
 
 @InputType('UpdateEventCategoryGroupInput', {description: EVENT_CATEGORY_DESCRIPTIONS.GROUP.UPDATE_INPUT})
@@ -34,7 +34,7 @@ export class UpdateEventCategoryGroupInput {
     name: string;
 
     @Field(() => [String], {description: EVENT_DESCRIPTIONS.EVENT.EVENT_CATEGORY_LIST})
-    eventCategoryList: string[];
+    eventCategories: string[];
 }
 
 @InputType('CreateEventCategoryGroupInput', {description: EVENT_CATEGORY_DESCRIPTIONS.GROUP.CREATE_INPUT})
@@ -43,5 +43,5 @@ export class CreateEventCategoryGroupInput {
     name: string;
 
     @Field(() => [String], {description: EVENT_DESCRIPTIONS.EVENT.EVENT_CATEGORY_LIST})
-    eventCategoryList: string[];
+    eventCategories: string[];
 }

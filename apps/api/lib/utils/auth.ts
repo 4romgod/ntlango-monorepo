@@ -190,14 +190,22 @@ const toOrganizerUserId = (organizer: unknown): string | undefined => {
   return undefined;
 };
 
-const getOrganizerIdsFromEvent = (event: {organizers?: Array<{userId?: string}>}): string[] => {
+const getOrganizerIdsFromEvent = (event: {organizers?: Array<{user?: any}>}): string[] => {
   if (!event.organizers) {
     return [];
   }
-  return event.organizers.map((organizer) => organizer.userId).filter((id): id is string => Boolean(id));
+  return event.organizers
+    .map((organizer) => {
+      const user = organizer.user;
+      if (typeof user === 'string') return user;
+      if (user && typeof user === 'object' && 'userId' in user) return user.userId;
+      if (user && typeof user === 'object' && 'toString' in user) return user.toString(); // ObjectId
+      return undefined;
+    })
+    .filter((id): id is string => Boolean(id));
 };
 
-const isUserOrganizer = (event: {organizers?: Array<{userId?: string}>}, user: User) => {
+const isUserOrganizer = (event: {organizers?: Array<{user?: any}>}, user: User) => {
   const organizerIds = getOrganizerIdsFromEvent(event);
   return organizerIds.includes(user.userId);
 };

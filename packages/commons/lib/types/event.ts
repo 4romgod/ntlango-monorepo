@@ -142,9 +142,9 @@ export class EventOccurrence {
 
 @ObjectType('EventOrganizer')
 export class EventOrganizer {
-    @prop({type: () => String, required: true})
-    @Field(() => ID, {description: 'User ID of the organizer'})
-    userId: string;
+    @prop({ref: () => User, type: () => String, required: true})
+    @Field(() => User, {description: 'User reference for the organizer'})
+    user: Ref<User>;
 
     @prop({enum: EventOrganizerRole, type: () => String, required: true})
     @Field(() => EventOrganizerRole, {description: 'Role of the organizer'})
@@ -236,7 +236,7 @@ export class Event {
 
     @prop({type: () => [String], ref: () => EventCategory, required: true})
     @Field(() => [EventCategory], {description: EVENT_DESCRIPTIONS.EVENT.EVENT_CATEGORY_LIST})
-    eventCategoryList: Ref<EventCategory>[];
+    eventCategories: Ref<EventCategory>[];
 
     @prop({type: () => [EventOrganizer], required: true})
     @Field(() => [EventOrganizer], {description: EVENT_DESCRIPTIONS.EVENT.ORGANIZER_LIST})
@@ -278,11 +278,10 @@ export class Event {
     @Field(() => String, {nullable: true, description: 'Hero image for the event'})
     heroImage?: string;
 
-    // TODO do we not need to persist the IDs of participants?
     @Field(() => [EventParticipant], {
         nullable: true,
         description:
-            'Resolved participants (not persisted in Event document; resolved via GraphQL field resolver by querying EventParticipant collection)',
+            'Resolved participants populated via $lookup aggregation (not persisted in Event document; queried from EventParticipant collection)',
     })
     participants?: EventParticipant[];
 }
@@ -338,10 +337,10 @@ export class CreateEventInput {
     showAttendees?: boolean;
 
     @Field(() => [String], {description: EVENT_DESCRIPTIONS.EVENT.EVENT_CATEGORY_LIST})
-    eventCategoryList: string[];
+    eventCategories: string[];
 
     @Field(() => [GraphQLJSON], {description: EVENT_DESCRIPTIONS.EVENT.ORGANIZER_LIST})
-    organizers: Record<string, any>[];
+    organizers: Array<{user: string; role: string}>;
 
     @Field(() => GraphQLJSON, {nullable: true, description: EVENT_DESCRIPTIONS.EVENT.TAGS})
     tags?: Record<string, any>;
@@ -428,10 +427,10 @@ export class UpdateEventInput {
     showAttendees?: boolean;
 
     @Field(() => [String], {nullable: true, description: EVENT_DESCRIPTIONS.EVENT.EVENT_CATEGORY_LIST})
-    eventCategoryList?: string[];
+    eventCategories?: string[];
 
     @Field(() => [GraphQLJSON], {nullable: true, description: EVENT_DESCRIPTIONS.EVENT.ORGANIZER_LIST})
-    organizers?: Record<string, any>[];
+    organizers?: Array<{user: string; role: string}>;
 
     @Field(() => GraphQLJSON, {nullable: true, description: EVENT_DESCRIPTIONS.EVENT.TAGS})
     tags?: Record<string, any>;

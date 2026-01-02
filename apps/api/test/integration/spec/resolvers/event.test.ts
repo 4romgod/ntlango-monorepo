@@ -41,8 +41,8 @@ describe('Event Resolver', () => {
     ...baseEventData,
     title: testEventTitle,
     description: testEventDescription,
-    eventCategoryList: [testEventCategory.eventCategoryId],
-    organizers: [{userId: testUser.userId, role: 'Host'}],
+    eventCategories: [testEventCategory.eventCategoryId],
+    organizers: [{user: testUser.userId, role: 'Host'}],
   });
 
   beforeAll(async () => {
@@ -194,7 +194,7 @@ describe('Event Resolver', () => {
           readEvents(options: $options) {
             eventId
             title
-            eventCategoryList {
+            eventCategories {
               eventCategoryId
             }
           }
@@ -203,7 +203,7 @@ describe('Event Resolver', () => {
             options: {
               filters: [
                 {
-                  field: 'eventCategoryList',
+                  field: 'eventCategories',
                   value: testEventCategory.eventCategoryId,
                 },
               ],
@@ -310,7 +310,7 @@ describe('Event Resolver', () => {
 
     it('returns error for invalid event category', async () => {
       const input = buildEventInput();
-      input.eventCategoryList = ['invalid-category-id'];
+      input.eventCategories = ['invalid-category-id'];
       const response = await request(url).post('').set('token', testUser.token).send(getCreateEventMutation(input));
 
       expect([400, 500]).toContain(response.status);

@@ -24,8 +24,14 @@ export const DeleteEventByIdDocument = graphql(`
         details
       }
       organizers {
-        userId
         role
+        user {
+          userId
+          username
+          given_name
+          family_name
+          profile_picture
+        }
       }
     }
   }
