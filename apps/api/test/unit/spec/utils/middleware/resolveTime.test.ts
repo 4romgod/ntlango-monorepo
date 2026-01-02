@@ -3,6 +3,7 @@ import {HTTP_METHOD_COLOR_MAP, RESOLVE_TIME_COLOR_MAP, GRAPHQL_API_PATH, ANSI_CO
 import {getStatusCodeColor} from '@/utils';
 import type {ServerContext} from '@/graphql';
 import {ResolveTime} from '@/utils/middleware';
+import {logger} from '@/utils/logger';
 
 jest.mock('@/constants', () => ({
   HTTP_METHOD_COLOR_MAP: {
@@ -25,6 +26,15 @@ jest.mock('@/constants', () => ({
 
 jest.mock('@/utils', () => ({
   getStatusCodeColor: jest.fn().mockReturnValue('\x1b[32m'),
+}));
+
+jest.mock('@/utils/logger', () => ({
+  logger: {
+    debug: jest.fn(),
+    info: jest.fn(),
+    warn: jest.fn(),
+    error: jest.fn(),
+  },
 }));
 
 describe('ResolveTime Middleware', () => {
@@ -51,7 +61,6 @@ describe('ResolveTime Middleware', () => {
     };
 
     next = jest.fn().mockResolvedValue(undefined);
-    jest.spyOn(console, 'log').mockImplementation(() => {});
   });
 
   afterEach(() => {
@@ -70,7 +79,7 @@ describe('ResolveTime Middleware', () => {
     const httpMethodColor = HTTP_METHOD_COLOR_MAP[context.req?.method ?? 'UNKNOWN HTTP METHOD'] ?? ANSI_COLOR_CODES.GREEN;
     const statusCodeColor = getStatusCodeColor(context.res?.statusCode || 200);
 
-    expect(console.log).toHaveBeenCalledWith(
+    expect(logger.debug).toHaveBeenCalledWith(
       `${httpMethodColor}GET ${ANSI_COLOR_CODES.GRAY}/api ${ANSI_COLOR_CODES.BLUE}(Query.testField) ${statusCodeColor}200 - ${resolveTimeColor}[100 ms]${ANSI_COLOR_CODES.WHITE}`,
     );
 
@@ -90,7 +99,7 @@ describe('ResolveTime Middleware', () => {
     const httpMethodColor = ANSI_COLOR_CODES.GREEN;
     const statusCodeColor = getStatusCodeColor(200);
 
-    expect(console.log).toHaveBeenCalledWith(
+    expect(logger.debug).toHaveBeenCalledWith(
       `${httpMethodColor}UNKNOWN HTTP METHOD ${ANSI_COLOR_CODES.GRAY}${baseUrl} ${ANSI_COLOR_CODES.BLUE}(Query.testField) ${statusCodeColor}200 - ${resolveTimeColor}[100 ms]${ANSI_COLOR_CODES.WHITE}`,
     );
 

@@ -5,13 +5,13 @@ import { Box, Container, Grid, Typography, Link, Divider, Button } from '@mui/ma
 import { useTheme } from '@mui/material/styles';
 import darkModeColors from '@/components/theme/colors/dark-mode';
 import ToggleThemeMode from '@/components/theme/toggle-theme-mode';
-import { useCustomAppContext } from '@/components/app-context';
+import { useAppContext } from '@/hooks/useAppContext';
 import { footerSections, socialLinks } from './navigation-items';
 import { ROUTES } from '@/lib/constants';
 
 const Footer = () => {
   const theme = useTheme();
-  const { themeMode, setThemeMode } = useCustomAppContext();
+  const { themeMode, setThemeMode } = useAppContext();
 
   const currentYear = new Date().getFullYear();
 

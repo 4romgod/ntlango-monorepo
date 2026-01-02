@@ -5,7 +5,7 @@ import { DateCalendar, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import dayjs, { Dayjs } from 'dayjs';
-import { useEventFilters } from './event-filter-context';
+import { useEventFilters } from '@/hooks/useEventFilters';
 
 export default function DateFilter() {
   const { filters, setDateRange } = useEventFilters();

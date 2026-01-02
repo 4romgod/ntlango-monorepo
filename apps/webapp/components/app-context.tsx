@@ -23,15 +23,13 @@ const toastDefaultProps: ToastProps = {
   message: '',
 };
 
-const CustomAppContext = createContext<CustomAppContextType>({
+export const CustomAppContext = createContext<CustomAppContextType>({
   themeMode: 'light',
   setThemeMode: () => {},
   appTheme: undefined,
   toastProps: toastDefaultProps,
   setToastProps: () => {},
 });
-
-export const useCustomAppContext = () => useContext(CustomAppContext);
 
 export const CustomAppContextProvider = ({ children }: { children: ReactNode }) => {
   const [themeMode, setThemeMode] = useState<PaletteMode>('light');

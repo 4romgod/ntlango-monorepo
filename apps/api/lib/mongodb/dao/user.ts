@@ -16,7 +16,7 @@ class UserDAO {
       const token = await generateToken(tokenPayload);
       return {...tokenPayload, token};
     } catch (error) {
-      logger.info('Error when creating a new user', error);
+      logger.error('Error when creating a new user', error);
       throw KnownCommonError(error);
     }
   }
@@ -37,7 +37,7 @@ class UserDAO {
       const jwtToken = await generateToken(user.toObject());
       return {token: jwtToken, ...user.toObject()};
     } catch (error) {
-      logger.info('Error when user logging in', error);
+      logger.error('Error when user logging in', error);
       if (error instanceof GraphQLError) {
         throw error;
       }
@@ -54,7 +54,7 @@ class UserDAO {
       }
       return user.toObject();
     } catch (error) {
-      logger.info(`Error reading user by userId ${userId}`, error);
+      logger.error(`Error reading user by userId ${userId}`, error);
       if (error instanceof GraphQLError) {
         throw error;
       }
@@ -71,7 +71,7 @@ class UserDAO {
       }
       return user.toObject();
     } catch (error) {
-      logger.info(`Error reading user by username ${username}`, error);
+      logger.error(`Error reading user by username ${username}`, error);
       if (error instanceof GraphQLError) {
         throw error;
       }
@@ -88,7 +88,7 @@ class UserDAO {
       }
       return user.toObject();
     } catch (error) {
-      logger.info(`Error reading user by email ${email}`, error);
+      logger.error(`Error reading user by email ${email}`, error);
       if (error instanceof GraphQLError) {
         throw error;
       }
@@ -103,7 +103,7 @@ class UserDAO {
       const retrieved = await query.exec();
       return retrieved.map((user) => user.toObject());
     } catch (error) {
-      logger.info('Error querying users', error);
+      logger.error('Error querying users', error);
       throw KnownCommonError(error);
     }
   }
@@ -118,7 +118,7 @@ class UserDAO {
       }
       return updatedUser.toObject();
     } catch (error) {
-      logger.info(`Error updating user with userId ${user.userId}`, error);
+      logger.error(`Error updating user with userId ${user.userId}`, error);
       if (error instanceof GraphQLError) {
         throw error;
       }
@@ -135,7 +135,7 @@ class UserDAO {
       }
       return deletedUser.toObject();
     } catch (error) {
-      logger.info(`Error deleting user with userId ${userId}`);
+      logger.error(`Error deleting user with userId ${userId}`);
       if (error instanceof GraphQLError) {
         throw error;
       }
@@ -152,7 +152,7 @@ class UserDAO {
       }
       return deletedUser.toObject();
     } catch (error) {
-      logger.info(`Error deleting user with email ${email}`);
+      logger.error(`Error deleting user with email ${email}`);
       if (error instanceof GraphQLError) {
         throw error;
       }
@@ -169,7 +169,7 @@ class UserDAO {
       }
       return deletedUser.toObject();
     } catch (error) {
-      logger.info(`Error deleting user with username ${username}`, error);
+      logger.error(`Error deleting user with username ${username}`, error);
       if (error instanceof GraphQLError) {
         throw error;
       }
@@ -186,7 +186,7 @@ class UserDAO {
       }
       return updatedUser.toObject();
     } catch (error) {
-      logger.info(`Error promoting user to Admin with userId ${userId}`, error);
+      logger.error(`Error promoting user to Admin with userId ${userId}`, error);
       if (error instanceof GraphQLError) {
         throw error;
       }

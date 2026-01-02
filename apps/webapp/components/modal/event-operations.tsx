@@ -12,12 +12,12 @@ import { deleteEventAction } from '@/data/actions/server/events/delete-event';
 import { EventDetail } from '@/data/graphql/query/Event/types';
 import { ROUTES } from '@/lib/constants';
 import Link from 'next/link';
-import { useCustomAppContext } from '../app-context';
+import { useAppContext } from '@/hooks/useAppContext';
 
 const EventOperationsModal = ({ event }: { event: EventDetail }) => {
   const router = useRouter();
   const [dialogOpen, setDialogOpen] = useState(false);
-  const { setToastProps, toastProps } = useCustomAppContext();
+  const { setToastProps, toastProps } = useAppContext();
 
   const handleDialogOpen = () => {
     setDialogOpen(true);

@@ -20,7 +20,7 @@ import { useActionState } from 'react';
 import { FormErrors } from '@/components/form-errors';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { useCustomAppContext } from '@/components/app-context';
+import { useAppContext } from '@/hooks/useAppContext';
 import { useEffect, useState } from 'react';
 import { FcGoogle } from 'react-icons/fc';
 import { FaFacebookF } from 'react-icons/fa';
@@ -28,7 +28,7 @@ import { FaFacebookF } from 'react-icons/fa';
 export default function RegisterForm() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
-  const { setToastProps, toastProps } = useCustomAppContext();
+  const { setToastProps, toastProps } = useAppContext();
   const [formState, formAction] = useActionState(registerUserAction, {});
 
   const handleClickShowPassword = () => setShowPassword(show => !show);

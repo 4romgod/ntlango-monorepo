@@ -4,15 +4,16 @@ import { useMemo } from 'react';
 import { Box, Grid, Paper, Typography, Button, Stack, Chip, Alert } from '@mui/material';
 import { EventPreview } from '@/data/graphql/query/Event/types';
 import { EventCategory } from '@/data/graphql/types/graphql';
-import { useEventFilters, EventFilterProvider } from '@/components/events/filters/event-filter-context';
+import { EventFilterProvider } from '@/components/events/filters/event-filter-context';
 import EventFiltersPanel from '@/components/events/filters/event-filters-panel';
 import EventTileGrid from '@/components/events/event-tile-grid';
 import SearchInput from '@/components/search/search-box';
 import CustomContainer from '@/components/custom-container';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import ClearIcon from '@mui/icons-material/Clear';
-import { useFilteredEvents } from '@/components/events/filters/useFilteredEvents';
-import { useNetworkActivity } from '@/lib/network/activity';
+import { useFilteredEvents } from '@/hooks/useFilteredEvents';
+import { useNetworkActivity } from '@/hooks/useNetworkActivity';
+import { useEventFilters } from '@/hooks/useEventFilters';
 
 interface EventsContentProps {
   categories: EventCategory[];
@@ -76,7 +77,7 @@ function EventsContent({ categories, initialEvents }: EventsContentProps) {
 
           {/* Search Bar */}
           <SearchInput
-            itemList={filteredEvents.map(item => item.title ?? '')}
+            itemList={filteredEvents.map(item => item.title).filter((title): title is string => !!title)}
             onSearch={handleSearch}
             sx={{
               mx: 'auto',

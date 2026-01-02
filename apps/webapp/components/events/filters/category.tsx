@@ -17,7 +17,7 @@ import {
 } from '@mui/material';
 import CategoryIcon from '@mui/icons-material/Category';
 import { CategoryFilterProps, getEventCategoryIcon } from '@/lib/constants';
-import { useEventFilters } from './event-filter-context';
+import { useEventFilters } from '@/hooks/useEventFilters';
 
 // TODO The interface CategoryFilterProps appears to have been changed to remove the onChange prop, but this may break existing usage patterns.
 // The onChange callback allowed parent components to react to filter changes. Consider whether this removal is intentional or if external state management should be maintained.
@@ -57,7 +57,7 @@ export default function CategoryFilter({ categoryList, sxProps }: CategoryFilter
           onChange={handleCategoryChange}
           renderValue={selected => (
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-              {selected.map(value => (
+              {selected.map((value: string) => (
                 <Chip
                   key={value}
                   label={value}

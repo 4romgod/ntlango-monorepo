@@ -3,7 +3,7 @@
 import React from 'react';
 import { Box, Typography, Slider, Paper, Stack } from '@mui/material';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
-import { useEventFilters } from './event-filter-context';
+import { useEventFilters } from '@/hooks/useEventFilters';
 
 export default function PriceFilter() {
   const { filters, setPriceRange } = useEventFilters();

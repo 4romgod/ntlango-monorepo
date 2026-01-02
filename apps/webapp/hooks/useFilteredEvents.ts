@@ -8,7 +8,7 @@ import {
   GetAllEventsQueryVariables,
 } from '@/data/graphql/types/graphql';
 import { EventPreview } from '@/data/graphql/query/Event/types';
-import { EventFilters } from './event-filter-context';
+import { EventFilters } from '@/components/events/filters/event-filter-context';
 
 const buildFilterInputs = (filters: EventFilters): FilterInput[] => {
   const inputs: FilterInput[] = [];

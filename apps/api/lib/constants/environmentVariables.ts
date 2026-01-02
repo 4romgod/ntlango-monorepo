@@ -65,7 +65,11 @@ const env = parsed.data;
 // Initialize logger with configured log level
 initLogger(env.LOG_LEVEL);
 
-// Log configuration (excluding secrets)
+/**
+ * Log configuration (excluding secrets)
+ * Note: Using console.log here instead of logger because this is bootstrap logging
+ * that happens immediately after logger initialization, ensuring config is always visible
+*/
 const logLevel = Object.keys(LOG_LEVEL_MAP).find(key => LOG_LEVEL_MAP[key] === env.LOG_LEVEL) || 'unknown';
 console.log(`[INFO] Environment configuration loaded:`);
 console.log(`  - Stage: ${env.STAGE}`);

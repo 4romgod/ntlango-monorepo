@@ -18,7 +18,7 @@ export interface EventFilters {
   searchQuery: string;
 }
 
-interface EventFilterContextType {
+export interface EventFilterContextType {
   filters: EventFilters;
   setCategories: (categories: string[]) => void;
   setPriceRange: (range: [number, number]) => void;
@@ -31,7 +31,7 @@ interface EventFilterContextType {
   hasActiveFilters: boolean;
 }
 
-const EventFilterContext = createContext<EventFilterContextType | undefined>(undefined);
+export const EventFilterContext = createContext<EventFilterContextType | undefined>(undefined);
 
 const initialFilters: EventFilters = {
   categories: [],
@@ -112,12 +112,4 @@ export const EventFilterProvider: React.FC<EventFilterProviderProps> = ({ childr
   };
 
   return <EventFilterContext.Provider value={value}>{children}</EventFilterContext.Provider>;
-};
-
-export const useEventFilters = (): EventFilterContextType => {
-  const context = useContext(EventFilterContext);
-  if (!context) {
-    throw new Error('useEventFilters must be used within an EventFilterProvider');
-  }
-  return context;
 };
