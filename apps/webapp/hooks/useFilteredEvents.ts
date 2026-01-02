@@ -15,7 +15,7 @@ const buildFilterInputs = (filters: EventFilters): FilterInput[] => {
 
   if (filters.categories.length > 0) {
     inputs.push({
-      field: 'eventCategoryList.name',
+      field: 'eventCategories.name',
       operator: FilterOperatorInput.Eq,
       value: filters.categories,
     });

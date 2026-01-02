@@ -10,7 +10,7 @@ export const GetAllEventsDocument = graphql(`
       description
       visibility
       lifecycleStatus
-      eventCategoryList {
+      eventCategories {
         eventCategoryId
         slug
         name
@@ -51,7 +51,6 @@ export const GetAllEventsDocument = graphql(`
         order
       }
       organizers {
-        userId
         role
         user {
           userId
@@ -90,7 +89,7 @@ export const GetEventBySlugDocument = graphql(`
       description
       visibility
       lifecycleStatus
-      eventCategoryList {
+      eventCategories {
         eventCategoryId
         slug
         name
@@ -131,7 +130,6 @@ export const GetEventBySlugDocument = graphql(`
         order
       }
       organizers {
-        userId
         role
         user {
           userId

@@ -53,7 +53,7 @@ describe('EventDAO', () => {
     },
     recurrenceRule: 'FREQ=YEARLY;BYMONTH=9;BYMONTHDAY=13',
     organizers: [],
-    eventCategoryList: [],
+    eventCategories: [],
   };
 
   const expectedEvent = {
@@ -61,7 +61,7 @@ describe('EventDAO', () => {
     eventId: 'mockEventId',
     slug: 'sample-event',
     organizers: [],
-    eventCategoryList: [],
+    eventCategories: [],
   };
 
   describe('create', () => {
@@ -293,7 +293,7 @@ describe('EventDAO', () => {
         details: 'updated location',
       },
       organizers: [],
-      eventCategoryList: [],
+      eventCategories: [],
     };
 
     const expectedUpdatedEvent = {

@@ -31,7 +31,7 @@ export default async function UserPage(props: Props) {
       options: {
         filters: [
           {
-            field: 'organizers.userId',
+            field: 'organizers.user',
             operator: FilterOperatorInput.Eq,
             value: user.userId,
           },
@@ -43,7 +43,7 @@ export default async function UserPage(props: Props) {
 
   // TODO get this from user registration
   const categories = (events ?? []).reduce(
-    (accum: EventCategory[], curr: EventPreview) => accum.concat(curr.eventCategoryList),
+    (accum: EventCategory[], curr: EventPreview) => accum.concat(curr.eventCategories),
     [],
   );
 

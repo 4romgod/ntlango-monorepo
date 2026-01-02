@@ -61,7 +61,7 @@ export const EventSchema = z.object({
 
   showAttendees: z.boolean().optional().describe('Show attendee list'),
 
-  eventCategoryList: z
+  eventCategories: z
     .array(z.string())
     .min(1, {message: ERROR_MESSAGES.ATLEAST_ONE('event category')})
     .describe('The categories associated with the event.'),
@@ -69,7 +69,7 @@ export const EventSchema = z.object({
   organizers: z
     .array(
       z.object({
-        userId: z.string().refine(mongoose.Types.ObjectId.isValid, {message: `User ID ${ERROR_MESSAGES.INVALID}`}),
+        user: z.string().refine(mongoose.Types.ObjectId.isValid, {message: `User ID ${ERROR_MESSAGES.INVALID}`}),
         role: z.nativeEnum(EventOrganizerRole),
       }),
     )

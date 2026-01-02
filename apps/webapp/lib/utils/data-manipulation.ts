@@ -9,12 +9,12 @@ export const groupEventsByCategory = (events: EventPreview[]): GroupedEventsByCa
   const groupedEvents: GroupedEventsByCategoryProps = {};
 
   events.forEach((event: EventPreview) => {
-    if (!event.eventCategoryList?.length) {
+    if (!event.eventCategories?.length) {
       groupedEvents['All events'] = [...(groupedEvents['All events'] ?? []), event];
       return;
     }
 
-    event.eventCategoryList.forEach((category: EventCategory) => {
+    event.eventCategories.forEach((category: EventCategory) => {
       if (!groupedEvents[category.name]) {
         groupedEvents[category.name] = [];
       }

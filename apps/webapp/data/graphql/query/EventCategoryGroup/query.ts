@@ -6,7 +6,7 @@ export const GetAllEventCategoryGroupsDocument = graphql(`
       eventCategoryGroupId
       name
       slug
-      eventCategoryList {
+      eventCategories {
         eventCategoryId
         slug
         name

@@ -25,7 +25,7 @@ export type StatusFilterProps = {
 export type CategoryFilterProps = {
   sxProps?: SxProps<Theme>;
   categoryList: EventCategory[];
-  onChange?: (eventCategoryList: string[]) => void;
+  onChange?: (eventCategories: string[]) => void;
 };
 
 export type EventDateInputProps = {

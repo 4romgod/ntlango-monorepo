@@ -78,7 +78,7 @@ async function seedEventCategoryGroups(eventCategoryGroupsInputList: Array<Creat
 
   for (const groupInput of eventCategoryGroupsInputList) {
     // Replace category names with corresponding IDs
-    const resolvedCategoryIds = groupInput.eventCategoryList.map((categoryName) => {
+    const resolvedCategoryIds = groupInput.eventCategories.map((categoryName) => {
       const match = eventCategoryList.find((category) => category.name === categoryName);
       if (!match) {
         throw new Error(`Event category not found: ${categoryName}`);
@@ -88,7 +88,7 @@ async function seedEventCategoryGroups(eventCategoryGroupsInputList: Array<Creat
 
     const categoryGroupWithIds = {
       ...groupInput,
-      eventCategoryList: resolvedCategoryIds,
+      eventCategories: resolvedCategoryIds,
     };
 
     await EventCategoryGroupDAO.create(categoryGroupWithIds);
@@ -184,16 +184,16 @@ async function seedEvents(
     const organizerIds = getRandomUniqueItems(userIds, 2);
     const participantIds = getRandomUniqueItems(userIds, 4);
     const categorySelection =
-      event.eventCategoryList && event.eventCategoryList.length ? event.eventCategoryList : getRandomUniqueItems(eventCategoryIds, 5);
+      event.eventCategories && event.eventCategories.length ? event.eventCategories : getRandomUniqueItems(eventCategoryIds, 5);
 
     const {orgIndex, venueIndex, ...eventBase} = event;
     const eventInput: CreateEventInput = {
       ...eventBase,
       organizers: organizerIds.map((userId, index) => ({
-        userId,
+        user: userId,
         role: index === 0 ? 'Host' : 'CoHost',
       })),
-      eventCategoryList: categorySelection,
+      eventCategories: categorySelection,
       orgId: organization?.orgId,
       venueId: venue?.venueId,
     };

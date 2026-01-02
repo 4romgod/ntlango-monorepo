@@ -57,7 +57,7 @@ describe('Event', () => {
     expect(eventType.location).toBeUndefined();
     expect(eventType.status).toBeUndefined();
     expect(eventType.capacity).toBeUndefined();
-    expect(eventType.eventCategoryList).toBeUndefined();
+    expect(eventType.eventCategories).toBeUndefined();
     expect(eventType.organizers).toBeUndefined();
     expect(eventType.tags).toBeUndefined();
     expect(eventType.media).toBeUndefined();
@@ -83,7 +83,7 @@ describe('CreateEventInput', () => {
     expect(createEventInputType.location).toBeUndefined();
     expect(createEventInputType.status).toBeUndefined();
     expect(createEventInputType.capacity).toBeUndefined();
-    expect(createEventInputType.eventCategoryList).toBeUndefined();
+    expect(createEventInputType.eventCategories).toBeUndefined();
     expect(createEventInputType.organizers).toBeUndefined();
     expect(createEventInputType.tags).toBeUndefined();
     expect(createEventInputType.media).toBeUndefined();
@@ -110,7 +110,7 @@ describe('UpdateEventInput', () => {
     expect(updateEventInputType.location).toBeUndefined();
     expect(updateEventInputType.status).toBeUndefined();
     expect(updateEventInputType.capacity).toBeUndefined();
-    expect(updateEventInputType.eventCategoryList).toBeUndefined();
+    expect(updateEventInputType.eventCategories).toBeUndefined();
     expect(updateEventInputType.organizers).toBeUndefined();
     expect(updateEventInputType.tags).toBeUndefined();
     expect(updateEventInputType.media).toBeUndefined();

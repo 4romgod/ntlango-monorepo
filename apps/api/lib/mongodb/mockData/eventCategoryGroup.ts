@@ -3,27 +3,27 @@ import type {CreateEventCategoryGroupInput} from '@ntlango/commons/types';
 const eventCategoryGroups: CreateEventCategoryGroupInput[] = [
   {
     name: 'Entertainment',
-    eventCategoryList: ['Concerts', 'Nightlife', 'Film & Media', 'Gaming', 'Fashion & Beauty', 'Arts & Culture'],
+    eventCategories: ['Concerts', 'Nightlife', 'Film & Media', 'Gaming', 'Fashion & Beauty', 'Arts & Culture'],
   },
   {
     name: 'Professional & Learning',
-    eventCategoryList: ['Conferences', 'Workshops', 'Networking', 'Technology', 'Startup & Business', 'Education'],
+    eventCategories: ['Conferences', 'Workshops', 'Networking', 'Technology', 'Startup & Business', 'Education'],
   },
   {
     name: 'Health & Wellness',
-    eventCategoryList: ['Fitness', 'Health & Wellness', 'Family & Kids', 'Religious & Spiritual'],
+    eventCategories: ['Fitness', 'Health & Wellness', 'Family & Kids', 'Religious & Spiritual'],
   },
   {
     name: 'Food & Lifestyle',
-    eventCategoryList: ['Food & Drink', 'Fashion & Beauty', 'Travel & Adventure', 'Arts & Culture'],
+    eventCategories: ['Food & Drink', 'Fashion & Beauty', 'Travel & Adventure', 'Arts & Culture'],
   },
   {
     name: 'Sports & Outdoors',
-    eventCategoryList: ['Sports', 'Fitness', 'Travel & Adventure'],
+    eventCategories: ['Sports', 'Fitness', 'Travel & Adventure'],
   },
   {
     name: 'Community & Causes',
-    eventCategoryList: ['Charity & Causes', 'Religious & Spiritual', 'Family & Kids', 'Education'],
+    eventCategories: ['Charity & Causes', 'Religious & Spiritual', 'Family & Kids', 'Education'],
   },
 ];
 

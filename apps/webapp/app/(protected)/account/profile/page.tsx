@@ -49,7 +49,7 @@ export default async function UserPublicProfile() {
   const allEvents = (events.readEvents ?? []) as EventPreview[];
   const rsvpdEvents = allEvents.filter(event => event.participants?.some(p => p.userId === user.userId));
   const organizedEvents = allEvents.filter(event =>
-    event.organizers.some(organizer => organizer.userId === user.userId),
+    event.organizers.some(organizer => organizer.user.userId === user.userId),
   );
   const interests = user.interests ? user.interests : [];
   const age = differenceInYears(new Date(), new Date(user.birthdate));

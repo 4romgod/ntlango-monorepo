@@ -17,7 +17,7 @@ export default async function EventsPage() {
       options: {
         filters: [
           {
-            field: 'organizers.userId',
+            field: 'organizers.user',
             operator: FilterOperatorInput.Eq,
             value: session.user.id,
           },

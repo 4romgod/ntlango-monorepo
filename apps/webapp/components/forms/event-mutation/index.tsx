@@ -29,7 +29,7 @@ export default function EventMutationForm({ categoryList }: EventMutationFormPro
     recurrenceRule: '',
     status: EventStatus.Upcoming,
     capacity: 100,
-    eventCategoryList: [],
+    eventCategories: [],
     organizers: [],
     tags: {},
     media: {
@@ -55,8 +55,8 @@ export default function EventMutationForm({ categoryList }: EventMutationFormPro
     setEventData({ ...eventData, status: selectedStatus });
   };
 
-  const handleEventCategoryListChange = (eventCategoryList: string[]) => {
-    setEventData({ ...eventData, eventCategoryList });
+  const handleEventCategoryListChange = (eventCategories: string[]) => {
+    setEventData({ ...eventData, eventCategories });
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {

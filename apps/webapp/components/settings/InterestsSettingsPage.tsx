@@ -56,13 +56,13 @@ export default function InterestsSettingsPage({
   // Filter event categories based on search term
   const filteredCategoryGroups = eventCategoryGroups
     .map(group => {
-      const filteredCategories = group.eventCategoryList.filter(category =>
+      const filteredCategories = group.eventCategories.filter(category =>
         category.name.toLowerCase().includes(searchTerm.toLowerCase()),
       );
 
-      return { ...group, eventCategoryList: filteredCategories };
+      return { ...group, eventCategories: filteredCategories };
     })
-    .filter(group => group.eventCategoryList.length > 0);
+    .filter(group => group.eventCategories.length > 0);
 
   return (
     <Box sx={{ p: 3, maxWidth: 800, margin: 'auto' }}>
@@ -155,7 +155,7 @@ export default function InterestsSettingsPage({
                     {categoryGroup.name}
                   </Typography>
                   <Grid container spacing={1}>
-                    {categoryGroup.eventCategoryList.map(category => (
+                    {categoryGroup.eventCategories.map(category => (
                       <Grid size={{ xs: 12, sm: 6, md: 4 }} key={category.eventCategoryId}>
                         <FormControlLabel
                           control={

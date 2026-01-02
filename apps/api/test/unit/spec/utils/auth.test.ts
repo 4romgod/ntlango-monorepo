@@ -81,19 +81,19 @@ describe('Auth Utilities', () => {
     });
 
     it('should authorize user for their own event update', async () => {
-      (EventDAO.readEventById as jest.Mock).mockResolvedValue({organizers: [{userId: 'user-id', role: 'Host'}]});
+      (EventDAO.readEventById as jest.Mock).mockResolvedValue({organizers: [{user: 'user-id', role: 'Host'}]});
       const result = await isAuthorizedByOperation(OPERATION_NAMES.UPDATE_EVENT, {eventId: 'event-id'}, mockUser);
       expect(result).toBe(true);
     });
 
     it("should deny user for another user's event update", async () => {
-      (EventDAO.readEventById as jest.Mock).mockResolvedValue({organizers: [{userId: 'another-id', role: 'Host'}]});
+      (EventDAO.readEventById as jest.Mock).mockResolvedValue({organizers: [{user: 'another-id', role: 'Host'}]});
       const result = await isAuthorizedByOperation(OPERATION_NAMES.UPDATE_EVENT, {eventId: 'event-id'}, mockUser);
       expect(result).toBe(false);
     });
 
     it('should handle various organizer ID formats - string ID', async () => {
-      (EventDAO.readEventById as jest.Mock).mockResolvedValue({organizers: [{userId: 'user-id', role: 'Host'}]});
+      (EventDAO.readEventById as jest.Mock).mockResolvedValue({organizers: [{user: 'user-id', role: 'Host'}]});
       const result = await isAuthorizedByOperation(OPERATION_NAMES.UPDATE_EVENT, {eventId: 'event-id'}, mockUser);
       expect(result).toBe(true);
     });
@@ -101,7 +101,7 @@ describe('Auth Utilities', () => {
     it('should handle various organizer ID formats - ObjectId', async () => {
       const mockObjectId = new Types.ObjectId('507f1f77bcf86cd799439011');
       (EventDAO.readEventById as jest.Mock).mockResolvedValue({
-        organizers: [{userId: '507f1f77bcf86cd799439011', role: 'Host'}],
+        organizers: [{user: '507f1f77bcf86cd799439011', role: 'Host'}],
       });
       const mockUserWithObjectId = {...mockUser, userId: '507f1f77bcf86cd799439011'};
       const result = await isAuthorizedByOperation(OPERATION_NAMES.UPDATE_EVENT, {eventId: 'event-id'}, mockUserWithObjectId);
@@ -110,7 +110,7 @@ describe('Auth Utilities', () => {
 
     it('should handle various organizer ID formats - object with userId', async () => {
       (EventDAO.readEventById as jest.Mock).mockResolvedValue({
-        organizers: [{userId: '507f1f77bcf86cd799439011', role: 'Host'}],
+        organizers: [{user: '507f1f77bcf86cd799439011', role: 'Host'}],
       });
       const mockUserWithObjectId = {...mockUser, userId: '507f1f77bcf86cd799439011'};
       const result = await isAuthorizedByOperation(OPERATION_NAMES.UPDATE_EVENT, {eventId: 'event-id'}, mockUserWithObjectId);
@@ -119,7 +119,7 @@ describe('Auth Utilities', () => {
 
     it('should handle organizer with valid userId', async () => {
       (EventDAO.readEventById as jest.Mock).mockResolvedValue({
-        organizers: [{userId: 'user-id', role: 'CoHost'}],
+        organizers: [{user: 'user-id', role: 'CoHost'}],
       });
       const result = await isAuthorizedByOperation(OPERATION_NAMES.UPDATE_EVENT, {eventId: 'event-id'}, mockUser);
       expect(result).toBe(true);
@@ -139,9 +139,9 @@ describe('Auth Utilities', () => {
     it('should handle mixed organizer formats', async () => {
       (EventDAO.readEventById as jest.Mock).mockResolvedValue({
         organizers: [
-          {userId: 'other-user-id', role: 'Host'},
-          {userId: 'user-id', role: 'CoHost'},
-          {userId: 'another-id', role: 'Volunteer'},
+          {user: 'other-user-id', role: 'Host'},
+          {user: 'user-id', role: 'CoHost'},
+          {user: 'another-id', role: 'Volunteer'},
         ],
       });
       const result = await isAuthorizedByOperation(OPERATION_NAMES.UPDATE_EVENT, {eventId: 'event-id'}, mockUser);
@@ -249,7 +249,7 @@ describe('Auth Utilities', () => {
           roles: [UserRole.User],
           expectAuthorized: true,
           mockDAO: true,
-          eventDAOResult: [{userId: 'current-user-id'}],
+          eventDAOResult: [{user: 'current-user-id'}],
           testDescription: `should AUTHORIZE a user with the correct role and permission for ${OPERATION_NAMES.UPDATE_EVENT} on item`,
         },
         {
@@ -258,7 +258,7 @@ describe('Auth Utilities', () => {
           roles: [UserRole.User],
           expectAuthorized: false,
           mockDAO: true,
-          eventDAOResult: [{userId: 'another-id'}],
+          eventDAOResult: [{user: 'another-id'}],
           testDescription: `should throw UNAUTHORIZED Error when user lacks permission for ${OPERATION_NAMES.UPDATE_EVENT} on item`,
         },
         {

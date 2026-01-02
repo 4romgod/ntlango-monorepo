@@ -32,7 +32,7 @@ export default async function Page(props: Props) {
     query: GetEventBySlugDocument,
     variables: { slug: params.slug },
   });
-  const { title, organizers, description, media, recurrenceRule, location, eventCategoryList, comments, participants } =
+  const { title, organizers, description, media, recurrenceRule, location, eventCategories, comments, participants } =
     eventRetrieved.readEventBySlug;
   type EventDetailParticipant = NonNullable<
     NonNullable<GetEventBySlugQuery['readEventBySlug']>['participants']
@@ -145,7 +145,7 @@ export default async function Page(props: Props) {
               ) : (
                 <Grid container spacing={3}>
                   {organizers.map(organizer => (
-                    <Grid key={organizer.userId}>
+                    <Grid key={organizer.user.userId}>
                       {organizer.user ? (
                         <Link
                           href={`/users/${organizer.user.username}`}
@@ -266,8 +266,8 @@ export default async function Page(props: Props) {
                 Categories
               </Typography>
               <Stack direction="row" spacing={1} sx={{ maxWidth: '100%', overflowX: 'auto' }}>
-                {eventCategoryList.length > 0 ? (
-                  eventCategoryList.map((category, index) => (
+                {eventCategories.length > 0 ? (
+                  eventCategories.map((category, index) => (
                     <EventCategoryChip key={`${category.name}.${index}`} category={category} />
                   ))
                 ) : (

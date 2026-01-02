@@ -35,7 +35,7 @@ classDiagram
         +string recurrenceRule
         +Location location
         +EventOrganizer[] organizers
-        +Ref<EventCategory>[] eventCategoryList
+        +Ref<EventCategory>[] eventCategories
     }
     class EventCategory {
         +string eventCategoryId
@@ -135,12 +135,12 @@ Stores reusable meeting spaces for events, including geolocation/address data so
 - `url`, `capacity`, `amenities[]`.
 
 ### EventCategory
-Lightweight taxonomy entries that label events and users for filtering, preferences, and follow features; stored once and referenced via `eventCategoryList` and `interests`.
+Lightweight taxonomy entries that label events and users for filtering, preferences, and follow features; stored once and referenced via `eventCategories` and `interests`.
 - `eventCategoryId`, `slug`, `name`, `iconName`, `description`, optional `color`.
 
 ### EventCategoryGroup
 Groups of categories for UI/curation purposes (e.g., “Music” or “Community”) so we can surface healthy category hierarchies without hardcoding them into business logic.
-- `eventCategoryGroupId`, `name`, `slug`, `eventCategoryList[]`.
+- `eventCategoryGroupId`, `name`, `slug`, `eventCategories[]`.
 
 ### Location (embedded in Event)
 Embeds the spatial context of an event without separating it into its own collection, so each Event owns a snapshot of where it will happen (useful for recurrence, history, and location changes).
@@ -158,8 +158,8 @@ The `Event` document is the heart of the platform—taking organizer intent, loc
 - Visibility: `visibility` (Public|Private|Unlisted|Invitation), `privacySetting` (Public|Private|Invitation).
 - Schedule: `recurrenceRule` (required), plus `primarySchedule? { startAt, endAt, timezone, recurrenceRule }` and `occurrences?[]`.
 - Location: `location` (Location type above), `venueId?` and `locationSnapshot?`.
-- People: `organizers [{ userId, role: Host|CoHost|Volunteer }]`.
-- Taxonomy: `eventCategoryList[]` (EventCategory refs) for flattened ids.
+- People: `organizers [{ user: Ref<User>, role: Host|CoHost|Volunteer }]`.
+- Taxonomy: `eventCategories[]` (EventCategory refs) for flattened ids.
 - Settings: `capacity`, `rsvpLimit`, `waitlistEnabled`, `allowGuestPlusOnes`, `remindersEnabled`, `showAttendees`.
 - Metadata:
   - `tags` (JSON): free-form tagging for search and discovery. Typically an array of strings or lightweight tag objects, for example:
@@ -233,7 +233,7 @@ Activities capture actions taken by actors (users/orgs) so the feed knows what h
 - **Reference + resolve:** Most relationships are stored as IDs and resolved in GraphQL (e.g., Event → EventParticipant, Organization → OrganizationMembership).
 - **Use JSON for flexible fields:** `tags`, `additionalDetails`, `comments`, and several metadata blobs are stored as JSON to move fast.
 - **Indexes (implemented):**
-  - Event: `eventId`, `slug` are unique; `eventCategoryList` is populated for reads.
+  - Event: `eventId`, `slug` are unique; `eventCategories` and `organizers.user` are populated for reads.
   - EventParticipant: unique `{eventId, userId}`.
   - Organization: unique `slug`.
   - OrganizationMembership: unique `{orgId, userId}`.

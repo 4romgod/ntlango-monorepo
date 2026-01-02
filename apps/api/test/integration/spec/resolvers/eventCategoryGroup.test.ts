@@ -70,7 +70,7 @@ describe('EventCategoryGroup Resolver', () => {
       .send(
         getCreateEventCategoryGroupMutation({
           name,
-          eventCategoryList: categories.map((category) => category.eventCategoryId),
+          eventCategories: categories.map((category) => category.eventCategoryId),
         }),
       );
 
@@ -96,16 +96,16 @@ describe('EventCategoryGroup Resolver', () => {
       await EventCategoryGroupDAO.deleteEventCategoryGroupBySlug(createdGroup.slug).catch(() => {});
     });
 
-    it('populates eventCategoryList with full category objects on creation', async () => {
+    it('populates eventCategories with full category objects on creation', async () => {
       const createdGroup = await createGroup(uniqueGroupName('Populated Group'));
 
-      // Verify eventCategoryList is populated with full objects, not just IDs
-      expect(createdGroup.eventCategoryList).toBeDefined();
-      expect(Array.isArray(createdGroup.eventCategoryList)).toBe(true);
-      expect(createdGroup.eventCategoryList).toHaveLength(categories.length);
+      // Verify eventCategories is populated with full objects, not just IDs
+      expect(createdGroup.eventCategories).toBeDefined();
+      expect(Array.isArray(createdGroup.eventCategories)).toBe(true);
+      expect(createdGroup.eventCategories).toHaveLength(categories.length);
 
       // Each item should be a full EventCategory object with all fields
-      createdGroup.eventCategoryList.forEach((category: any, index: number) => {
+      createdGroup.eventCategories.forEach((category: any, index: number) => {
         expect(category).toHaveProperty('eventCategoryId');
         expect(category).toHaveProperty('name');
         expect(category).toHaveProperty('slug');
@@ -133,7 +133,7 @@ describe('EventCategoryGroup Resolver', () => {
           getUpdateEventCategoryGroupMutation({
             eventCategoryGroupId: createdGroup.eventCategoryGroupId,
             name: updatedName,
-            eventCategoryList: categories.map((category) => category.eventCategoryId),
+            eventCategories: categories.map((category) => category.eventCategoryId),
           }),
         );
       expect(updateResponse.status).toBe(200);
@@ -160,7 +160,7 @@ describe('EventCategoryGroup Resolver', () => {
         .send(
           getCreateEventCategoryGroupMutation({
             name: 'Unauthorized Group',
-            eventCategoryList: categories.map((category) => category.eventCategoryId),
+            eventCategories: categories.map((category) => category.eventCategoryId),
           }),
         );
       expect(response.status).toBe(401);
