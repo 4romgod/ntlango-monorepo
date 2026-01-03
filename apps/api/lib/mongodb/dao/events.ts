@@ -6,6 +6,7 @@ import {ERROR_MESSAGES} from '@/validation';
 import {EventParticipantDAO} from '@/mongodb/dao';
 import {ParticipantStatus} from '@ntlango/commons/types';
 import {logger} from '@/utils/logger';
+import {hasOccurrenceInRange} from '@/utils/rrule';
 
 
 class EventDAO {
@@ -62,7 +63,26 @@ class EventDAO {
     try {
       logger.debug('Reading events with options:', options);
       const pipeline = transformOptionsToPipeline(options);
-      const events = await EventModel.aggregate<EventEntity>(pipeline).exec();
+      let events = await EventModel.aggregate<EventEntity>(pipeline).exec();
+      
+      // Apply date range filtering if provided (filter in application layer since RRULEs are strings)
+      if (options?.dateRange?.startDate && options?.dateRange?.endDate) {
+        const {startDate, endDate} = options.dateRange;
+        logger.debug('Applying date range filter:', {startDate, endDate});
+        
+        events = events.filter(event => {
+          if (!event.recurrenceRule) {
+            return false;
+          }
+          
+          return hasOccurrenceInRange(
+            event.recurrenceRule,
+            new Date(startDate),
+            new Date(endDate)
+          );
+        });
+      }
+      
       return events;
     } catch (error) {
       logger.error('Error reading events', error);

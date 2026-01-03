@@ -2,8 +2,11 @@
 
 import { useMemo, useState } from 'react';
 import { Box } from '@mui/material';
+import dayjs from 'dayjs';
 import { EventPreview } from '@/data/graphql/query/Event/types';
 import { EventCategory, EventStatus } from '@/data/graphql/types/graphql';
+import { DATE_FILTER_OPTIONS, DATE_FILTER_LABELS, type DateFilterOption } from '@ntlango/commons/lib/constants';
+import { getDateRangeForFilter } from '@/lib/utils/dateFilters';
 import { EventFilterProvider } from '@/components/events/filters/event-filter-context';
 import CustomContainer from '@/components/custom-container';
 import { useFilteredEvents } from '@/hooks/useFilteredEvents';
@@ -26,13 +29,16 @@ interface EventsClientWrapperProps {
 }
 
 function EventsContent({ categories, initialEvents }: EventsContentProps) {
-  const { filters, setSearchQuery, resetFilters, hasActiveFilters, removeCategory, removeStatus, setCategories, setStatuses } = useEventFilters();
+  const { filters, setSearchQuery, resetFilters, hasActiveFilters, removeCategory, removeStatus, setCategories, setStatuses, setDateRange } = useEventFilters();
   const { events: serverEvents, loading, error } = useFilteredEvents(filters, initialEvents);
   const networkRequests = useNetworkActivity();
 
   const [categoryAnchor, setCategoryAnchor] = useState<null | HTMLElement>(null);
   const [statusAnchor, setStatusAnchor] = useState<null | HTMLElement>(null);
   const [dateAnchor, setDateAnchor] = useState<null | HTMLElement>(null);
+  const [selectedDateOption, setSelectedDateOption] = useState<string | null>(null);
+  const [customDateAnchor, setCustomDateAnchor] = useState<null | HTMLElement>(null);
+  const [customDateValue, setCustomDateValue] = useState<Date | null>(null);
 
   const showSkeletons = loading || networkRequests > 0;
 
@@ -63,18 +69,48 @@ function EventsContent({ categories, initialEvents }: EventsContentProps) {
     setStatuses(newStatuses);
   };
 
-  const handleDateSelect = (option: string) => {
-    // Handle date range selection
+  const handleDateSelect = (option: string, event?: React.MouseEvent<HTMLElement>) => {
+    if (option === DATE_FILTER_OPTIONS.CUSTOM) {
+      // Keep menu open and show date picker anchored to the menu
+      setCustomDateAnchor(dateAnchor);
+      // Don't set selectedDateOption yet - wait for actual date selection
+    } else {
+      // Close menu for predefined options
+      setDateAnchor(null);
+      // Display the label for the selected option
+      const label = DATE_FILTER_LABELS[option as DateFilterOption] || option;
+      setSelectedDateOption(label);
+      // Apply date range filter
+      const { startDate, endDate } = getDateRangeForFilter(option as DateFilterOption);
+      setDateRange(dayjs(startDate), dayjs(endDate));
+    }
+  };
+
+  const handleCustomDateClose = () => {
+    setCustomDateAnchor(null);
     setDateAnchor(null);
   };
 
-  const statuses = [
-    EventStatus.Upcoming,
-    EventStatus.Ongoing,
-    EventStatus.Completed,
-    EventStatus.Cancelled,
-  ];
-  const dateOptions = ['Today', 'Tomorrow', 'This Week', 'This Weekend', 'This Month', 'Custom'];
+  const handleCustomDateChange = (date: any) => {
+    if (date) {
+      const jsDate = date.toDate();
+      setCustomDateValue(jsDate);
+      // Format the date for display
+      const formattedDate = jsDate.toLocaleDateString('en-US', { 
+        month: 'short', 
+        day: 'numeric',
+        year: 'numeric'
+      });
+      setSelectedDateOption(formattedDate);
+      // Apply custom date filter
+      const { startDate, endDate } = getDateRangeForFilter(DATE_FILTER_OPTIONS.CUSTOM, jsDate);
+      setDateRange(dayjs(startDate), dayjs(endDate));
+    }
+    handleCustomDateClose();
+  };
+
+  const statuses = Object.values(EventStatus);
+  const dateOptions = Object.values(DATE_FILTER_OPTIONS);
 
   const eventTitles = filteredEvents.map(item => item.title).filter((title): title is string => !!title);
 
@@ -90,6 +126,7 @@ function EventsContent({ categories, initialEvents }: EventsContentProps) {
         <FilterButtons
           categoryCount={filters.categories.length}
           statusCount={filters.statuses.length}
+          selectedDateOption={selectedDateOption}
           hasActiveFilters={hasActiveFilters}
           onCategoryClick={(e) => setCategoryAnchor(e.currentTarget)}
           onStatusClick={(e) => setStatusAnchor(e.currentTarget)}
@@ -125,8 +162,12 @@ function EventsContent({ categories, initialEvents }: EventsContentProps) {
         <DateMenu
           anchorEl={dateAnchor}
           dateOptions={dateOptions}
+          selectedOption={selectedDateOption}
+          customDateAnchor={customDateAnchor}
           onClose={() => setDateAnchor(null)}
           onSelect={handleDateSelect}
+          onCustomDateChange={handleCustomDateChange}
+          onCustomDateClose={handleCustomDateClose}
         />
 
         <EventsList
