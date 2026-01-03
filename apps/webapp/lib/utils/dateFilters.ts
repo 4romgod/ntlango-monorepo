@@ -45,10 +45,14 @@ export function getDateRangeForFilter(
       start = new Date(now);
       const dayOfWeek = start.getDay();
       
-      if (dayOfWeek < 6) {
-        start.setDate(start.getDate() + (6 - dayOfWeek));
+      if (dayOfWeek === 6) {
+        // Already Saturday, keep start as is
       } else if (dayOfWeek === 0) {
+        // Sunday: weekend started on Saturday
         start.setDate(start.getDate() - 1);
+      } else {
+        // Weekday: move forward to upcoming Saturday
+        start.setDate(start.getDate() + (6 - dayOfWeek));
       }
       
       end = new Date(start);
