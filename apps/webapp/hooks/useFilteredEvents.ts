@@ -6,6 +6,7 @@ import {
   GetAllEventsDocument,
   GetAllEventsQuery,
   GetAllEventsQueryVariables,
+  DateRangeInput,
 } from '@/data/graphql/types/graphql';
 import { EventPreview } from '@/data/graphql/query/Event/types';
 import { EventFilters } from '@/components/events/filters/event-filter-context';
@@ -32,10 +33,25 @@ const buildFilterInputs = (filters: EventFilters): FilterInput[] => {
   return inputs;
 };
 
+const buildDateRange = (filters: EventFilters): DateRangeInput | undefined => {
+  if (filters.dateRange.start && filters.dateRange.end) {
+    // Convert dayjs objects to JavaScript Date objects, then to ISO strings
+    const startDate = filters.dateRange.start.toDate();
+    const endDate = filters.dateRange.end.toDate();
+    
+    return {
+      startDate: startDate.toISOString() as any,
+      endDate: endDate.toISOString() as any,
+    };
+  }
+  return undefined;
+};
+
 export const useFilteredEvents = (filters: EventFilters, initialEvents: EventPreview[]) => {
   const [events, setEvents] = useState<EventPreview[]>(initialEvents);
   const [error, setError] = useState<string | null>(null);
   const filterInputs = useMemo(() => buildFilterInputs(filters), [filters.categories, filters.statuses]);
+  const dateRange = useMemo(() => buildDateRange(filters), [filters.dateRange]);
   const [loadEvents, { loading }] = useLazyQuery<GetAllEventsQuery, GetAllEventsQueryVariables>(GetAllEventsDocument);
 
   useEffect(() => {
@@ -43,7 +59,7 @@ export const useFilteredEvents = (filters: EventFilters, initialEvents: EventPre
   }, [initialEvents]);
 
   useEffect(() => {
-    if (filterInputs.length === 0) {
+    if (filterInputs.length === 0 && !dateRange) {
       setEvents(initialEvents);
       setError(null);
       return;
@@ -56,7 +72,12 @@ export const useFilteredEvents = (filters: EventFilters, initialEvents: EventPre
     setError(null);
 
     loadEvents({
-      variables: { options: { filters: filterInputs } },
+      variables: { 
+        options: { 
+          filters: filterInputs.length > 0 ? filterInputs : undefined,
+          dateRange,
+        } 
+      },
       fetchPolicy: 'network-only',
       context: {
         fetchOptions: {
@@ -86,7 +107,7 @@ export const useFilteredEvents = (filters: EventFilters, initialEvents: EventPre
       isCurrent = false;
       abortController.abort();
     };
-  }, [filterInputs, initialEvents, loadEvents]);
+  }, [filterInputs, dateRange, initialEvents, loadEvents]);
 
-  return { events, loading, error, hasFilterInputs: filterInputs.length > 0 };
+  return { events, loading, error, hasFilterInputs: filterInputs.length > 0 || !!dateRange };
 };

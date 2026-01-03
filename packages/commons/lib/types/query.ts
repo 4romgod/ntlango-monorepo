@@ -74,6 +74,15 @@ export class FilterInput {
     operator?: FilterOperatorInput;
 }
 
+@InputType('DateRangeInput', {description: 'Date range filter for events'})
+export class DateRangeInput {
+    @Field(() => Date, {nullable: true, description: 'Start date of the range'})
+    startDate?: Date;
+
+    @Field(() => Date, {nullable: true, description: 'End date of the range'})
+    endDate?: Date;
+}
+
 @InputType('QueryOptionsInput', {description: QUERY_DESCRIPTIONS.QUERY.INPUT})
 export class QueryOptionsInput {
     @Field(() => PaginationInput, {nullable: true, description: QUERY_DESCRIPTIONS.QUERY.PAGINATION})
@@ -84,4 +93,7 @@ export class QueryOptionsInput {
 
     @Field(() => [FilterInput], {nullable: true, description: QUERY_DESCRIPTIONS.QUERY.FILTER})
     filters?: FilterInput[];
+
+    @Field(() => DateRangeInput, {nullable: true, description: 'Filter events by date range (evaluates RRULEs)'})
+    dateRange?: DateRangeInput;
 }
