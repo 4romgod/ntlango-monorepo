@@ -1,4 +1,4 @@
-import {RRule, RRuleSet, rrulestr} from 'rrule';
+import {RRuleSet, rrulestr} from 'rrule';
 import {logger} from './logger';
 import {DATE_FILTER_OPTIONS, type DateFilterOption} from '@ntlango/commons';
 
