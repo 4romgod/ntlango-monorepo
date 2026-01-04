@@ -66,10 +66,11 @@ function getRandomUniqueItems(array: Array<string>, count: number) {
 
 async function seedEventCategories(categories: Array<CreateEventCategoryInput>) {
   logger.info('Starting to seed event category data...');
+  
+  const existing = await EventCategoryDAO.readEventCategories();
+  
   for (const category of categories) {
     try {
-      // Check if category with this name already exists
-      const existing = await EventCategoryDAO.readEventCategories();
       const found = existing.find(c => c.name === category.name);
       
       if (found) {
@@ -93,14 +94,12 @@ async function seedEventCategoryGroups(eventCategoryGroupsInputList: Array<Creat
 
   for (const groupInput of eventCategoryGroupsInputList) {
     try {
-      // Check if group already exists
       const found = existingGroups.find(g => g.name === groupInput.name);
       if (found) {
         logger.info(`   Event Category Group "${groupInput.name}" already exists, skipping...`);
         continue;
       }
 
-      // Replace category names with corresponding IDs
       const resolvedCategoryIds = groupInput.eventCategories.map((categoryName) => {
         const match = eventCategoryList.find((category) => category.name === categoryName);
         if (!match) {

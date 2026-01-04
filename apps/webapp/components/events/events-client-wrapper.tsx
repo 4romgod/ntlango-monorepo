@@ -1,12 +1,11 @@
 "use client";
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { Box } from '@mui/material';
 import dayjs from 'dayjs';
 import { EventPreview } from '@/data/graphql/query/Event/types';
 import { EventCategory, EventStatus } from '@/data/graphql/types/graphql';
 import { DATE_FILTER_OPTIONS, DATE_FILTER_LABELS, type DateFilterOption } from '@ntlango/commons/lib/constants';
-import { getDateRangeForFilter } from '@/lib/utils/dateFilters';
 import { EventFilterProvider } from '@/components/events/filters/event-filter-context';
 import CustomContainer from '@/components/custom-container';
 import { useFilteredEvents } from '@/hooks/useFilteredEvents';
@@ -40,6 +39,14 @@ function EventsContent({ categories, initialEvents }: EventsContentProps) {
   const [customDateAnchor, setCustomDateAnchor] = useState<null | HTMLElement>(null);
   const [customDateValue, setCustomDateValue] = useState<Date | null>(null);
 
+  // Sync selectedDateOption with filter state - clear when filters are reset
+  useEffect(() => {
+    if (!filters.dateRange.start && !filters.dateRange.end) {
+      setSelectedDateOption(null);
+      setCustomDateValue(null);
+    }
+  }, [filters.dateRange.start, filters.dateRange.end]);
+
   const showSkeletons = loading || networkRequests > 0;
 
   const filteredEvents = useMemo(() => {
@@ -70,7 +77,7 @@ function EventsContent({ categories, initialEvents }: EventsContentProps) {
   };
 
   const handleDateSelect = (option: string, event?: React.MouseEvent<HTMLElement>) => {
-    if (option === DATE_FILTER_OPTIONS.CUSTOM) {
+    if (option === 'custom') {
       // Keep menu open and show date picker anchored to the menu
       setCustomDateAnchor(dateAnchor);
       // Don't set selectedDateOption yet - wait for actual date selection
@@ -80,9 +87,10 @@ function EventsContent({ categories, initialEvents }: EventsContentProps) {
       // Display the label for the selected option
       const label = DATE_FILTER_LABELS[option as DateFilterOption] || option;
       setSelectedDateOption(label);
-      // Apply date range filter
-      const { startDate, endDate } = getDateRangeForFilter(option as DateFilterOption);
-      setDateRange(dayjs(startDate), dayjs(endDate));
+      // Apply date range filter - backend will calculate the actual dates
+      // Just store dummy dates for UI display purposes
+      const now = dayjs();
+      setDateRange(now, now, option);
     }
   };
 
@@ -102,9 +110,9 @@ function EventsContent({ categories, initialEvents }: EventsContentProps) {
         year: 'numeric'
       });
       setSelectedDateOption(formattedDate);
-      // Apply custom date filter
-      const { startDate, endDate } = getDateRangeForFilter(DATE_FILTER_OPTIONS.CUSTOM, jsDate);
-      setDateRange(dayjs(startDate), dayjs(endDate));
+      // Apply custom date filter - store the actual date
+      // Use 'custom' as filterOption internally to distinguish from predefined options
+      setDateRange(date, date, 'custom');
     }
     handleCustomDateClose();
   };

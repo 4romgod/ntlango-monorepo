@@ -34,18 +34,18 @@ export const AWS_REGIONS = {
     Ohio: 'us-east-2',
 };
 
-export const DATE_FILTER_OPTIONS = {
-    TODAY: 'today',
-    TOMORROW: 'tomorrow',
-    THIS_WEEK: 'this-week',
-    THIS_WEEKEND: 'this-weekend',
-    THIS_MONTH: 'this-month',
-    CUSTOM: 'custom',
-} as const;
+export enum DATE_FILTER_OPTIONS {
+    TODAY = 'today',
+    TOMORROW = 'tomorrow',
+    THIS_WEEK = 'this-week',
+    THIS_WEEKEND = 'this-weekend',
+    THIS_MONTH = 'this-month',
+    CUSTOM = 'custom', // UI-only: frontend uses this to show date picker, backend receives customDate field
+}
 
-export type DateFilterOption = (typeof DATE_FILTER_OPTIONS)[keyof typeof DATE_FILTER_OPTIONS];
+export type DateFilterOption = Exclude<DATE_FILTER_OPTIONS, DATE_FILTER_OPTIONS.CUSTOM>;
 
-export const DATE_FILTER_LABELS: Record<DateFilterOption, string> = {
+export const DATE_FILTER_LABELS: Record<DATE_FILTER_OPTIONS, string> = {
     [DATE_FILTER_OPTIONS.TODAY]: 'Today',
     [DATE_FILTER_OPTIONS.TOMORROW]: 'Tomorrow',
     [DATE_FILTER_OPTIONS.THIS_WEEK]: 'This Week',

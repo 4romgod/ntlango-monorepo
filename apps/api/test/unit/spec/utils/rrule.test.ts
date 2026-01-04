@@ -1,4 +1,5 @@
 import {getDateRangeForFilter, hasOccurrenceInRange, getNextOccurrence} from '@/utils/rrule';
+import {DATE_FILTER_OPTIONS} from '@ntlango/commons';
 
 describe('RRule Utilities', () => {
   describe('hasOccurrenceInRange', () => {
@@ -69,7 +70,7 @@ describe('RRule Utilities', () => {
 
   describe('getDateRangeForFilter', () => {
     it('should return correct range for "today"', () => {
-      const {startDate, endDate} = getDateRangeForFilter('today');
+      const {startDate, endDate} = getDateRangeForFilter(DATE_FILTER_OPTIONS.TODAY);
       
       const now = new Date();
       expect(startDate.getDate()).toBe(now.getDate());
@@ -78,7 +79,7 @@ describe('RRule Utilities', () => {
     });
 
     it('should return correct range for "tomorrow"', () => {
-      const {startDate, endDate} = getDateRangeForFilter('tomorrow');
+      const {startDate, endDate} = getDateRangeForFilter(DATE_FILTER_OPTIONS.TOMORROW);
       
       const tomorrow = new Date();
       tomorrow.setDate(tomorrow.getDate() + 1);
@@ -89,7 +90,7 @@ describe('RRule Utilities', () => {
     });
 
     it('should return correct range for "this-week"', () => {
-      const {startDate, endDate} = getDateRangeForFilter('this-week');
+      const {startDate, endDate} = getDateRangeForFilter(DATE_FILTER_OPTIONS.THIS_WEEK);
       
       expect(startDate.getDay()).toBe(0); // Sunday
       expect(endDate.getDay()).toBe(6); // Saturday
@@ -97,7 +98,7 @@ describe('RRule Utilities', () => {
     });
 
     it('should return correct range for "this-month"', () => {
-      const {startDate, endDate} = getDateRangeForFilter('this-month');
+      const {startDate, endDate} = getDateRangeForFilter(DATE_FILTER_OPTIONS.THIS_MONTH);
       
       const now = new Date();
       expect(startDate.getDate()).toBe(1); // First day
@@ -107,7 +108,7 @@ describe('RRule Utilities', () => {
 
     it('should return correct range for custom date', () => {
       const customDate = new Date('2025-06-15T12:00:00Z');
-      const {startDate, endDate} = getDateRangeForFilter('custom', customDate);
+      const {startDate, endDate} = getDateRangeForFilter(DATE_FILTER_OPTIONS.CUSTOM, customDate);
       
       expect(startDate.getDate()).toBe(15);
       expect(startDate.getMonth()).toBe(5); // June (0-indexed)

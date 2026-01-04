@@ -1,4 +1,4 @@
-import {RRule, RRuleSet, rrulestr} from 'rrule';
+import {RRuleSet, rrulestr} from 'rrule';
 import {logger} from './logger';
 import {DATE_FILTER_OPTIONS, type DateFilterOption} from '@ntlango/commons';
 
@@ -56,7 +56,7 @@ export function getNextOccurrence(rruleString: string, fromDate: Date = new Date
  * Parse date filter option and return appropriate date range
  */
 export function getDateRangeForFilter(
-  filterOption: DateFilterOption,
+  filterOption: DateFilterOption | typeof DATE_FILTER_OPTIONS.CUSTOM,
   customDate?: Date
 ): {startDate: Date; endDate: Date} {
   const now = new Date();
@@ -94,13 +94,15 @@ export function getDateRangeForFilter(
       const start = new Date(now);
       const dayOfWeek = start.getDay();
       
-      // If today is before Saturday, go to next Saturday
-      if (dayOfWeek < 6) {
+      if (dayOfWeek === 0) {
+        // Sunday: go to next Saturday (6 days forward)
+        start.setDate(start.getDate() + 6);
+      } else if (dayOfWeek === 6) {
+        // Saturday: start today
+        // (start is already set to now)
+      } else {
+        // Monday-Friday: go to upcoming Saturday
         start.setDate(start.getDate() + (6 - dayOfWeek));
-      }
-      // If today is Sunday (0), Saturday was yesterday
-      else if (dayOfWeek === 0) {
-        start.setDate(start.getDate() - 1);
       }
       
       const end = new Date(start);
@@ -117,6 +119,7 @@ export function getDateRangeForFilter(
     }
 
     case DATE_FILTER_OPTIONS.CUSTOM: {
+      // Internal case used when customDate is provided
       if (!customDate) {
         throw new Error('Custom date filter requires a customDate parameter');
       }
