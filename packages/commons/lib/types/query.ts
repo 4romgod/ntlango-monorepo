@@ -2,7 +2,7 @@ import {InputType, Field, Int, registerEnumType} from 'type-graphql';
 
 import {QUERY_DESCRIPTIONS} from '../constants';
 import {AnyType} from './customTypes';
-import {DATE_FILTER_OPTIONS, DateFilterOption} from '@ntlango/commons/constants';
+import {DATE_FILTER_OPTIONS, DateFilterOption} from '../constants';
 
 export enum SortOrderInput {
     asc = 'asc',
