@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import { useState } from 'react';
 import {
@@ -11,95 +13,159 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  Avatar,
+  Typography,
 } from '@mui/material';
-import { Clear, Home, Login, Menu, Event, Business, Place, People, ControlPointOutlined } from '@mui/icons-material';
+import { Clear, Login, Menu, ControlPointOutlined, MailOutline, NotificationsOutlined, Settings, Logout } from '@mui/icons-material';
+import { useSession } from 'next-auth/react';
+import NavLinksList from '@/components/navigation/main/nav-links-list';
+import { logoutUserAction } from '@/data/actions/server/auth/logout';
 import { useRouter } from 'next/navigation';
 import { ROUTES } from '@/lib/constants';
+import { getDisplayName, getAvatarSrc } from '@/lib/utils';
 
 export default function TemporaryDrawer({ isAuthN }: { isAuthN: boolean }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const { data: session } = useSession();
 
   const toggleDrawer = (newOpen: boolean) => () => {
     setOpen(newOpen);
   };
 
-  const navLinks = [
-    { label: 'Events', href: ROUTES.EVENTS.ROOT, icon: Event },
-    { label: 'Organizations', href: ROUTES.ORGANIZATIONS.ROOT, icon: Business },
-    { label: 'Venues', href: ROUTES.VENUES.ROOT, icon: Place },
-    { label: 'Community', href: ROUTES.USERS.ROOT, icon: People },
-  ];
-
   const DrawerList = (
-    <Box sx={{ width: 250 }} role="presentation" onClick={toggleDrawer(false)}>
-      <ListItem>
-        <ListItemButton>
-          <Clear fontSize="large" />
-        </ListItemButton>
-      </ListItem>
-      <List>
-        <Link href={ROUTES.ROOT}>
+    <Box sx={{ width: 280 }} role="presentation" onClick={toggleDrawer(false)}>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 2, py: 1 }}>
+        {isAuthN ? (
+          <Link
+            href={ROUTES.ACCOUNT.PROFILE}
+            aria-label="View profile"
+            style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none' }}
+          >
+            <Avatar
+              src={getAvatarSrc(session?.user)}
+              alt={getDisplayName(session?.user)}
+              sx={{ width: 48, height: 48 }}
+            />
+            <Box>
+              <Typography variant="subtitle1" sx={{ color: 'text.primary' }}>
+                {getDisplayName(session?.user)}
+              </Typography>
+              {session?.user?.email && (
+                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                  {session.user.email}
+                </Typography>
+              )}
+            </Box>
+          </Link>
+        ) : (
+          <Box />
+        )}
+
+        <IconButton
+          onClick={toggleDrawer(false)}
+          aria-label="close drawer"
+        >
+          <Clear />
+        </IconButton>
+      </Box>
+
+      <Divider sx={{ my: 1 }} />
+
+      {isAuthN && (
+        <List>
           <ListItem disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                <Home />
-              </ListItemIcon>
-              <ListItemText primary={'Home'} />
-            </ListItemButton>
-          </ListItem>
-        </Link>
-
-        <Divider sx={{ my: 1 }} />
-
-        {navLinks.map(link => (
-          <Link key={link.label} href={link.href}>
-            <ListItem disablePadding>
+            <Link href={ROUTES.ACCOUNT.ROOT}>
               <ListItemButton>
                 <ListItemIcon>
-                  <link.icon />
+                  <Settings />
                 </ListItemIcon>
-                <ListItemText primary={link.label} />
+                <ListItemText primary={'Settings'} />
               </ListItemButton>
-            </ListItem>
-          </Link>
-        ))}
+            </Link>
+          </ListItem>
 
-        <Divider sx={{ my: 1 }} />
-
-        {!isAuthN && (
-          <>
-            <ListItem disablePadding>
-              <ListItemButton onClick={() => router.push(ROUTES.AUTH.LOGIN)}>
+          <ListItem disablePadding>
+            <Link href={ROUTES.ACCOUNT.MESSAGES}>
+              <ListItemButton>
                 <ListItemIcon>
-                  <Login />
+                  <MailOutline />
                 </ListItemIcon>
-                <ListItemText primary={'Log in'} />
+                <ListItemText primary={'Messages'} />
               </ListItemButton>
-            </ListItem>
+            </Link>
+          </ListItem>
 
-            <Box sx={{ px: 2, pt: 1 }}>
-              <Button variant="contained" color="secondary" fullWidth onClick={() => router.push(ROUTES.AUTH.REGISTER)}>
-                Join Ntlango
-              </Button>
-            </Box>
-          </>
-        )}
+          <ListItem disablePadding>
+            <Link href={ROUTES.ACCOUNT.NOTIFICATIONS}>
+              <ListItemButton>
+                <ListItemIcon>
+                  <NotificationsOutlined />
+                </ListItemIcon>
+                <ListItemText primary={'Notifications'} />
+              </ListItemButton>
+            </Link>
+          </ListItem>
 
-        {isAuthN && (
-          <Box sx={{ px: 2 }}>
-            <Button
-              variant="contained"
-              color="secondary"
-              fullWidth
-              startIcon={<ControlPointOutlined />}
-              onClick={() => router.push(ROUTES.ACCOUNT.EVENTS.CREATE)}
+          <ListItem disablePadding>
+            <ListItemButton
+              onClick={async () => {
+                try {
+                  await logoutUserAction();
+                } catch (error) {
+                  console.error('Failed to log out:', error);
+                } finally {
+                  setOpen(false);
+                }
+              }}
             >
-              Host an event
+              <ListItemIcon>
+                <Logout />
+              </ListItemIcon>
+              <ListItemText primary={'Logout'} />
+            </ListItemButton>
+          </ListItem>
+        </List>
+      )}
+
+      <Divider sx={{ my: 1 }} />
+
+      <NavLinksList variant="drawer" />
+
+      <Divider sx={{ my: 1 }} />
+
+      {!isAuthN && (
+        <>
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => router.push(ROUTES.AUTH.LOGIN)}>
+              <ListItemIcon>
+                <Login />
+              </ListItemIcon>
+              <ListItemText primary={'Log in'} />
+            </ListItemButton>
+          </ListItem>
+
+          <Box sx={{ px: 2, pt: 1 }}>
+            <Button variant="contained" color="secondary" fullWidth onClick={() => router.push(ROUTES.AUTH.REGISTER)}>
+              Join Ntlango
             </Button>
           </Box>
-        )}
-      </List>
+        </>
+      )}
+
+      {isAuthN && (
+        <Box sx={{ px: 2 }}>
+          <Button
+            variant="contained"
+            color="secondary"
+            fullWidth
+            startIcon={<ControlPointOutlined />}
+            onClick={() => router.push(ROUTES.ACCOUNT.EVENTS.CREATE)}
+          >
+            Host an event
+          </Button>
+        </Box>
+      )}
     </Box>
   );
 
@@ -109,7 +175,7 @@ export default function TemporaryDrawer({ isAuthN }: { isAuthN: boolean }) {
         color="inherit"
         aria-label="open drawer"
         onClick={toggleDrawer(true)}
-        edge="start"
+        edge="end"
         size="large"
         sx={{
           mr: 2,
@@ -119,7 +185,7 @@ export default function TemporaryDrawer({ isAuthN }: { isAuthN: boolean }) {
       >
         <Menu color="primary" />
       </IconButton>
-      <Drawer open={open} onClose={toggleDrawer(false)}>
+      <Drawer anchor="right" open={open} onClose={toggleDrawer(false)}>
         {DrawerList}
       </Drawer>
     </div>
