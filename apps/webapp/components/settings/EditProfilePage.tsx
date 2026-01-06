@@ -11,8 +11,6 @@ import {
   IconButton,
   CircularProgress,
   Stack,
-  Divider,
-  Paper,
 } from '@mui/material';
 import { Edit as EditIcon, CameraAlt as CameraIcon, Save as SaveIcon, Cancel as CancelIcon } from '@mui/icons-material';
 import { Address, UpdateUserInput, User } from '@/data/graphql/types/graphql';
@@ -79,13 +77,28 @@ export default function EditProfilePage({ user }: { user: User }) {
   };
 
   return (
-    <Box>
-      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 5 }}>
+    <>
+      <Stack
+        direction={{ xs: 'column', sm: 'row' }}
+        justifyContent="space-between"
+        alignItems={{ xs: 'flex-start', sm: 'center' }}
+        spacing={{ xs: 2, sm: 0 }}
+        sx={{ mb: { xs: 2, sm: 3 } }}
+      >
         <Box>
-          <Typography variant="h4" fontWeight={700} gutterBottom sx={{ color: 'text.primary' }}>
+          <Typography
+            variant="h4"
+            fontWeight={700}
+            gutterBottom
+            sx={{ color: 'text.primary', fontSize: { xs: '1.5rem', sm: '2.125rem' } }}
+          >
             Edit Profile
           </Typography>
-          <Typography variant="body1" color="text.secondary" sx={{ mt: 0.5 }}>
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{ mt: 0.5 }}
+          >
             Update your profile information and how others see you
           </Typography>
         </Box>
@@ -97,7 +110,7 @@ export default function EditProfilePage({ user }: { user: User }) {
             variant="contained"
             color="secondary"
             size="large"
-            sx={{ borderRadius: 2, px: 3, textTransform: 'none', fontWeight: 600 }}
+            sx={{ borderRadius: 2, px: { xs: 2, sm: 3 }, textTransform: 'none', fontWeight: 600, width: { xs: '100%', sm: 'auto' } }}
           >
             Edit Profile
           </Button>
@@ -106,97 +119,59 @@ export default function EditProfilePage({ user }: { user: User }) {
 
       <Box component="form" action={formAction} noValidate>
         {/* Profile Picture Section */}
-        <Paper
-          elevation={0}
-          sx={{
-            p: 4,
-            mb: 4,
-            border: '1px solid',
-            borderColor: 'divider',
-            borderRadius: 3,
-            bgcolor: 'action.hover',
-          }}
-        >
-          <Typography variant="h6" fontWeight={600} gutterBottom sx={{ mb: 3 }}>
+        <Box sx={{ mb: 2 }}>
+          <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>
             Profile Picture
           </Typography>
 
-          <Stack direction="row" spacing={4} alignItems="center">
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center">
             <Box sx={{ position: 'relative' }}>
               <Avatar
                 src={profile.profile_picture || ''}
                 alt={`${profile.given_name} ${profile.family_name}`}
                 sx={(theme) => ({
-                  width: 140,
-                  height: 140,
-                  border: '5px solid',
-                  borderColor: 'background.paper',
-                  boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
+                  width: { xs: 80, sm: 100 },
+                  height: { xs: 80, sm: 100 },
                   background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
                 })}
               />
               {isEditing && (
                 <Box sx={{ position: 'absolute', bottom: 0, right: 0 }}>
-                  <input accept="image/*" style={{ display: 'none' }} id="profile-picture-upload" type="file" />
+                  <input
+                    accept="image/*"
+                    style={{ display: 'none' }}
+                    id="profile-picture-upload"
+                    type="file"
+                  />
                   <label htmlFor="profile-picture-upload">
                     <IconButton
                       component="span"
                       sx={{
                         bgcolor: 'secondary.main',
                         color: 'secondary.contrastText',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                        width: 48,
-                        height: 48,
+                        width: 40,
+                        height: 40,
                         '&:hover': {
                           bgcolor: 'secondary.dark',
-                          transform: 'scale(1.05)',
-                          boxShadow: '0 6px 16px rgba(0,0,0,0.2)',
                         },
-                        transition: 'all 0.2s ease',
                       }}
                     >
-                      <CameraIcon fontSize="medium" />
+                      <CameraIcon />
                     </IconButton>
                   </label>
                 </Box>
               )}
             </Box>
-            <Box>
-              <Typography variant="body1" fontWeight={500} gutterBottom>
-                {isEditing ? 'Upload a new photo' : 'Your profile photo'}
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                {isEditing ? 'Click the camera icon to change your profile picture.' : 'This is how others will see you on Ntlango.'}
-              </Typography>
-              <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
-                • Recommended size: 400x400px<br />
-                • Maximum file size: 5MB<br />
-                • Supported formats: JPG, PNG, GIF
-              </Typography>
-            </Box>
           </Stack>
-        </Paper>
+        </Box>
 
         {/* Contact Information */}
-        <Paper
-          elevation={0}
-          sx={{
-            p: 4,
-            mb: 4,
-            border: '1px solid',
-            borderColor: 'divider',
-            borderRadius: 3,
-          }}
-        >
-          <Typography variant="h6" fontWeight={600} gutterBottom sx={{ mb: 1 }}>
+        <Box sx={{ mb: 2 }}>
+          <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>
             Contact Information
           </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-            Your personal details and contact information
-          </Typography>
-          <Divider sx={{ mb: 4 }} />
 
-          <Grid container spacing={3}>
+          <Grid container spacing={{ xs: 2, sm: 3 }}>
             <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 fullWidth
@@ -285,40 +260,32 @@ export default function EditProfilePage({ user }: { user: User }) {
               <FormErrors error={formState?.zodErrors?.bio} />
             </Grid>
           </Grid>
-        </Paper>
+        </Box>
 
         {/* Address Information */}
-        <Paper
-          elevation={0}
-          sx={{
-            p: 4,
-            mb: 4,
-            border: '1px solid',
-            borderColor: 'divider',
-            borderRadius: 3,
-          }}
-        >
-          <Typography variant="h6" fontWeight={600} gutterBottom sx={{ mb: 1 }}>
+        <Box sx={{ mb: 2 }}>
+          <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>
             Home Address
           </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-            We'll use this to show you nearby events
-          </Typography>
-          <Divider sx={{ mb: 4 }} />
 
           <AddressForm value={profile.address} onChange={handleAddressChange} disabled={!isEditing} name="address" />
-        </Paper>
+        </Box>
 
         {/* Action Buttons */}
         {isEditing && (
-          <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 4 }}>
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            spacing={2}
+            justifyContent="flex-end"
+            sx={{ mt: 2 }}
+          >
             <Button
               startIcon={<CancelIcon />}
               onClick={() => setIsEditing(false)}
               disabled={loading}
               variant="outlined"
               size="large"
-              sx={{ borderRadius: 2, px: 4, textTransform: 'none', fontWeight: 600 }}
+              sx={{ borderRadius: 2, px: { xs: 2, sm: 4 }, textTransform: 'none', fontWeight: 600, width: { xs: '100%', sm: 'auto' } }}
             >
               Cancel
             </Button>
@@ -329,13 +296,13 @@ export default function EditProfilePage({ user }: { user: User }) {
               type="submit"
               disabled={loading}
               size="large"
-              sx={{ borderRadius: 2, px: 4, textTransform: 'none', fontWeight: 600, boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}
+              sx={{ borderRadius: 2, px: { xs: 2, sm: 4 }, textTransform: 'none', fontWeight: 600, boxShadow: '0 4px 12px rgba(0,0,0,0.15)', width: { xs: '100%', sm: 'auto' } }}
             >
               {loading ? 'Saving...' : 'Save Changes'}
             </Button>
           </Stack>
         )}
       </Box>
-    </Box>
+    </>
   );
 }

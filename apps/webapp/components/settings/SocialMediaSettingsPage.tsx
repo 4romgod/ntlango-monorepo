@@ -13,8 +13,6 @@ import {
   CardContent,
   useMediaQuery,
   useTheme,
-  Paper,
-  Divider,
   Stack,
   InputAdornment,
 } from '@mui/material';
@@ -104,8 +102,8 @@ export default function SocialMediaSettingsPage() {
 
   return (
     <Box>
-      <Box sx={{ mb: 5 }}>
-        <Typography variant="h4" fontWeight={700} gutterBottom sx={{ color: 'text.primary' }}>
+      <Box sx={{ mb: { xs: 3, sm: 5 } }}>
+        <Typography variant="h4" fontWeight={700} gutterBottom sx={{ color: 'text.primary', fontSize: { xs: '1.5rem', sm: '2.125rem' } }}>
           Social Media Settings
         </Typography>
         <Typography variant="body1" color="text.secondary" sx={{ mt: 0.5 }}>
@@ -113,27 +111,15 @@ export default function SocialMediaSettingsPage() {
         </Typography>
       </Box>
 
-      <Grid container spacing={4}>
+      <Grid container spacing={2}>
         {/* Connected Accounts */}
         <Grid size={{ xs: 12 }}>
-          <Paper
-            elevation={0}
-            sx={{
-              p: 4,
-              border: '1px solid',
-              borderColor: 'divider',
-              borderRadius: 3,
-            }}
-          >
-            <Typography variant="h6" fontWeight={600} gutterBottom sx={{ mb: 1 }}>
+          <Box>
+            <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>
               Connected Accounts
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-              Link your social media accounts to share your activities
-            </Typography>
-            <Divider sx={{ mb: 4 }} />
 
-            <Grid container spacing={2.5}>
+            <Grid container spacing={{ xs: 2, sm: 2.5 }}>
               {socialAccounts.map(account => (
                 <Grid size={{ xs: 12 }} key={account.id}>
                   <Card 
@@ -210,6 +196,7 @@ export default function SocialMediaSettingsPage() {
                               px: 3,
                               textTransform: 'none',
                               fontWeight: 600,
+                              width: { xs: '100%', sm: 'auto' },
                             }}
                           >
                             {account.connected ? 'Disconnect' : 'Connect'}
@@ -221,42 +208,17 @@ export default function SocialMediaSettingsPage() {
                 </Grid>
               ))}
             </Grid>
-          </Paper>
+          </Box>
         </Grid>
 
         {/* Sharing Preferences */}
         <Grid size={{ xs: 12 }}>
-          <Paper
-            elevation={0}
-            sx={{
-              p: 4,
-              border: '1px solid',
-              borderColor: 'divider',
-              borderRadius: 3,
-            }}
-          >
-            <Typography variant="h6" fontWeight={600} gutterBottom sx={{ mb: 1 }}>
+          <Box>
+            <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>
               Sharing Preferences
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-              Control how your activities are shared
-            </Typography>
-            <Divider sx={{ mb: 4 }} />
 
-            <Box
-              sx={{
-                p: 3,
-                borderRadius: 2,
-                bgcolor: 'background.default',
-                border: '1px solid',
-                borderColor: 'divider',
-                transition: 'all 0.2s ease',
-                '&:hover': {
-                  borderColor: 'secondary.main',
-                  bgcolor: 'action.hover',
-                },
-              }}
-            >
+            <Box sx={{ py: 1 }}>
               <FormControlLabel
                 control={
                   <Switch
@@ -277,27 +239,15 @@ export default function SocialMediaSettingsPage() {
                 }
               />
             </Box>
-          </Paper>
+          </Box>
         </Grid>
 
         {/* Custom Profile Link */}
         <Grid size={{ xs: 12 }}>
-          <Paper
-            elevation={0}
-            sx={{
-              p: 4,
-              border: '1px solid',
-              borderColor: 'divider',
-              borderRadius: 3,
-            }}
-          >
-            <Typography variant="h6" fontWeight={600} gutterBottom sx={{ mb: 1 }}>
+          <Box>
+            <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>
               Custom Profile Link
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-              Create a personalized link to your profile
-            </Typography>
-            <Divider sx={{ mb: 4 }} />
 
             {isEditingLink ? (
               <Stack spacing={2}>
@@ -317,14 +267,14 @@ export default function SocialMediaSettingsPage() {
                   }}
                   color="secondary"
                 />
-                <Stack direction="row" spacing={2} justifyContent="flex-end">
+                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="flex-end">
                   <Button
                     onClick={() => {
                       setIsEditingLink(false);
                       setTempLink(customLink);
                     }}
                     variant="outlined"
-                    sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
+                    sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600, width: { xs: '100%', sm: 'auto' } }}
                   >
                     Cancel
                   </Button>
@@ -332,7 +282,7 @@ export default function SocialMediaSettingsPage() {
                     onClick={handleSaveLink}
                     variant="contained"
                     color="secondary"
-                    sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
+                    sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600, width: { xs: '100%', sm: 'auto' } }}
                   >
                     Save Link
                   </Button>
@@ -385,17 +335,17 @@ export default function SocialMediaSettingsPage() {
                 </Button>
               </Box>
             )}
-          </Paper>
+          </Box>
         </Grid>
       </Grid>
 
-      <Stack direction="row" justifyContent="flex-end" sx={{ mt: 4 }}>
+      <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="flex-end" sx={{ mt: 2 }}>
         <Button
           variant="contained"
           color="secondary"
           onClick={handleSaveSettings}
           size="large"
-          sx={{ borderRadius: 2, px: 4, textTransform: 'none', fontWeight: 600, boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}
+          sx={{ borderRadius: 2, px: 4, textTransform: 'none', fontWeight: 600, boxShadow: '0 4px 12px rgba(0,0,0,0.15)', width: { xs: '100%', sm: 'auto' } }}
         >
           Save Changes
         </Button>

@@ -115,7 +115,7 @@ export default async function SettingsPage() {
   };
 
   return (
-    <Container maxWidth="xl">
+    <Container maxWidth="xl" sx={{ px: { xs: 0, sm: 2, md: 3 } }}>
       <CustomTabs tabsProps={tabsProps} />
     </Container>
   );

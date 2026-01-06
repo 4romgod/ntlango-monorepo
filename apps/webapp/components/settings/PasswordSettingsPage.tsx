@@ -11,8 +11,6 @@ import {
   IconButton,
   InputAdornment,
   LinearProgress,
-  Paper,
-  Divider,
   Stack,
 } from '@mui/material';
 import { Visibility, VisibilityOff, Security as SecurityIcon } from '@mui/icons-material';
@@ -194,8 +192,8 @@ export default function PasswordSettingsPage() {
 
   return (
     <Box>
-      <Box sx={{ mb: 5 }}>
-        <Typography variant="h4" fontWeight={700} gutterBottom sx={{ color: 'text.primary' }}>
+      <Box sx={{ mb: { xs: 3, sm: 5 } }}>
+        <Typography variant="h4" fontWeight={700} gutterBottom sx={{ color: 'text.primary', fontSize: { xs: '1.5rem', sm: '2.125rem' } }}>
           Password Management
         </Typography>
         <Typography variant="body1" color="text.secondary" sx={{ mt: 0.5 }}>
@@ -204,43 +202,12 @@ export default function PasswordSettingsPage() {
       </Box>
 
       <form onSubmit={handleChangePassword}>
-        <Paper
-          elevation={0}
-          sx={{
-            p: 4,
-            mb: 4,
-            border: '1px solid',
-            borderColor: 'divider',
-            borderRadius: 3,
-          }}
-        >
-          <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 3 }}>
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: 48,
-                height: 48,
-                borderRadius: 2,
-                bgcolor: 'secondary.main',
-                color: 'white',
-              }}
-            >
-              <SecurityIcon />
-            </Box>
-            <Box>
-              <Typography variant="h6" fontWeight={600}>
-                Change Password
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Choose a strong, unique password
-              </Typography>
-            </Box>
-          </Stack>
-          <Divider sx={{ mb: 4 }} />
+        <Box>
+          <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>
+            Change Password
+          </Typography>
 
-          <Grid container spacing={3}>
+          <Grid container spacing={{ xs: 2, sm: 3 }}>
             <Grid size={{ xs: 12 }}>
               <TextField
                 fullWidth
@@ -400,52 +367,19 @@ export default function PasswordSettingsPage() {
             </Alert>
           )}
 
-          <Stack direction="row" justifyContent="flex-end" sx={{ mt: 4 }}>
+          <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="flex-end" sx={{ mt: 2 }}>
             <Button
               type="submit"
               variant="contained"
               color="secondary"
               disabled={!isFormValid || isPending}
               size="large"
-              sx={{ borderRadius: 2, px: 4, textTransform: 'none', fontWeight: 600, boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}
+              sx={{ borderRadius: 2, px: 4, textTransform: 'none', fontWeight: 600, boxShadow: '0 4px 12px rgba(0,0,0,0.15)', width: { xs: '100%', sm: 'auto' } }}
             >
               {isPending ? 'Changing Password...' : 'Change Password'}
             </Button>
           </Stack>
-        </Paper>
-
-        {/* Security Tips */}
-        <Paper
-          elevation={0}
-          sx={{
-            p: 4,
-            border: '1px solid',
-            borderColor: 'info.light',
-            borderRadius: 3,
-            bgcolor: (theme) => theme.palette.mode === 'dark' ? 'info.dark' : 'info.lighter',
-          }}
-        >
-          <Typography variant="h6" fontWeight={600} gutterBottom color="info.main" sx={{ mb: 3 }}>
-            Password Security Tips
-          </Typography>
-          <Box component="ul" sx={{ m: 0, pl: 3, color: 'text.secondary' }}>
-            <Typography component="li" variant="body2" sx={{ mb: 1.5 }}>
-              <strong>Use at least 12 characters</strong> - Longer passwords are harder to crack
-            </Typography>
-            <Typography component="li" variant="body2" sx={{ mb: 1.5 }}>
-              <strong>Mix character types</strong> - Combine uppercase, lowercase, numbers, and symbols
-            </Typography>
-            <Typography component="li" variant="body2" sx={{ mb: 1.5 }}>
-              <strong>Avoid common patterns</strong> - Don't use sequences like "123" or "abc"
-            </Typography>
-            <Typography component="li" variant="body2" sx={{ mb: 1.5 }}>
-              <strong>Don't reuse passwords</strong> - Use a unique password for each account
-            </Typography>
-            <Typography component="li" variant="body2">
-              <strong>Consider a password manager</strong> - They can generate and store strong passwords
-            </Typography>
-          </Box>
-        </Paper>
+        </Box>
       </form>
     </Box>
   );

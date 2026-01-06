@@ -16,8 +16,6 @@ import {
   TextField,
   InputAdornment,
   Stack,
-  Divider,
-  Paper,
 } from '@mui/material';
 import { Search as SearchIcon, Add as AddIcon, Save as SaveIcon, Close as CloseIcon } from '@mui/icons-material';
 import { EventCategoryGroup, EventCategory, User } from '@/data/graphql/types/graphql';
@@ -70,9 +68,9 @@ export default function InterestsSettingsPage({
   return (
     <Box>
       <Stack spacing={4}>
-        <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
+        <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ xs: 'flex-start', sm: 'center' }} spacing={{ xs: 2, sm: 0 }} sx={{ mb: { xs: 3, sm: 5 } }}>
           <Box>
-            <Typography variant="h4" fontWeight={700} gutterBottom sx={{ color: 'text.primary' }}>
+            <Typography variant="h4" fontWeight={700} gutterBottom sx={{ color: 'text.primary', fontSize: { xs: '1.5rem', sm: '2.125rem' } }}>
               My Interests
             </Typography>
             <Typography variant="body1" color="text.secondary" sx={{ mt: 0.5 }}>
@@ -90,45 +88,20 @@ export default function InterestsSettingsPage({
               setOpenModal(true);
             }}
             size="large"
-            sx={{ borderRadius: 2, px: 3, textTransform: 'none', fontWeight: 600, boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}
+            sx={{ borderRadius: 2, px: 3, textTransform: 'none', fontWeight: 600, boxShadow: '0 4px 12px rgba(0,0,0,0.15)', width: { xs: '100%', sm: 'auto' } }}
           >
             Edit Interests
           </Button>
         </Stack>
 
         {/* Selected Interests Display */}
-        <Paper
-          elevation={0}
-          sx={{
-            p: 4,
-            border: '1px solid',
-            borderColor: 'divider',
-            borderRadius: 3,
-          }}
-        >
-          <Typography variant="h6" fontWeight={600} gutterBottom sx={{ mb: 1 }}>
-            Your Interests
-            <Typography component="span" variant="body2" color="text.secondary" sx={{ ml: 1 }}>
-              ({selectedInterests.length} selected)
-            </Typography>
+        <Box>
+          <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>
+            Your Interests ({selectedInterests.length})
           </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-            These help us personalize your event recommendations
-          </Typography>
-          <Divider sx={{ mb: 4 }} />
 
           {selectedInterests.length === 0 ? (
-            <Box 
-              sx={{ 
-                textAlign: 'center', 
-                py: 8,
-                px: 2,
-                borderRadius: 2,
-                border: '2px dashed',
-                borderColor: 'divider',
-                bgcolor: 'background.default',
-              }}
-            >
+            <Box sx={{ textAlign: 'center', py: 4 }}>
               <AddIcon sx={{ fontSize: 48, color: 'text.secondary', mb: 2, opacity: 0.5 }} />
               <Typography variant="h6" fontWeight={600} gutterBottom>
                 No interests selected yet
@@ -157,7 +130,7 @@ export default function InterestsSettingsPage({
               ))}
             </Box>
           )}
-        </Paper>
+        </Box>
       </Stack>
 
       {/* Interest Selection Modal */}
@@ -216,14 +189,11 @@ export default function InterestsSettingsPage({
           </Box>
 
           {/* Selected Count & Chips */}
-          <Paper
-            elevation={0}
+          <Box
             sx={{
-              p: 3,
-              mb: 3,
+              p: 2,
+              mb: 2,
               bgcolor: (theme) => theme.palette.mode === 'dark' ? 'secondary.dark' : 'secondary.lighter',
-              border: '1px solid',
-              borderColor: 'secondary.light',
               borderRadius: 2,
             }}
           >
@@ -252,7 +222,7 @@ export default function InterestsSettingsPage({
                 </Typography>
               )}
             </Box>
-          </Paper>
+          </Box>
 
           {/* Category Groups */}
           <Box sx={{ maxHeight: 400, overflow: 'auto', pr: 1 }}>
@@ -269,11 +239,10 @@ export default function InterestsSettingsPage({
                   <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 700, color: 'primary.main' }}>
                     {categoryGroup.name}
                   </Typography>
-                  <Grid container spacing={1.5}>
+                  <Grid container spacing={{ xs: 1, sm: 1.5 }}>
                     {categoryGroup.eventCategories.map(category => (
                       <Grid size={{ xs: 12, sm: 6 }} key={category.eventCategoryId}>
-                        <Paper
-                          elevation={0}
+                        <Box
                           sx={{
                             p: 1.5,
                             border: '2px solid',
@@ -289,7 +258,6 @@ export default function InterestsSettingsPage({
                             '&:hover': {
                               borderColor: 'secondary.main',
                               bgcolor: 'action.hover',
-                              boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
                             },
                           }}
                         >
@@ -304,7 +272,7 @@ export default function InterestsSettingsPage({
                             label={<Typography variant="body2" fontWeight={500}>{category.name}</Typography>}
                             sx={{ m: 0, width: '100%', userSelect: 'none' }}
                           />
-                        </Paper>
+                        </Box>
                       </Grid>
                     ))}
                   </Grid>
