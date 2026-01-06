@@ -11,6 +11,9 @@ import {
   IconButton,
   InputAdornment,
   LinearProgress,
+  Paper,
+  Divider,
+  Stack,
 } from '@mui/material';
 import { Visibility, VisibilityOff, Security as SecurityIcon } from '@mui/icons-material';
 import { updateUserPasswordAction } from '@/data/actions/server/user/update-user-password';
@@ -190,167 +193,261 @@ export default function PasswordSettingsPage() {
     settings.currentPassword && settings.newPassword && settings.confirmNewPassword && passwordStrength.score >= 40;
 
   return (
-    <Box sx={{ p: 3, maxWidth: 600, margin: 'auto' }}>
-      <Typography variant="h4" fontWeight="bold" sx={{ mb: 5 }}>
-        Password Management
-      </Typography>
+    <Box>
+      <Box sx={{ mb: 5 }}>
+        <Typography variant="h4" fontWeight={700} gutterBottom sx={{ color: 'text.primary' }}>
+          Password Management
+        </Typography>
+        <Typography variant="body1" color="text.secondary" sx={{ mt: 0.5 }}>
+          Update your password to keep your account secure
+        </Typography>
+      </Box>
 
       <form onSubmit={handleChangePassword}>
-        <Grid container spacing={3}>
-          <Grid size={{ xs: 12 }}>
-            <Typography variant="subtitle1" sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
-              <SecurityIcon sx={{ mr: 1, color: 'text.secondary' }} />
-              Change Password
-            </Typography>
+        <Paper
+          elevation={0}
+          sx={{
+            p: 4,
+            mb: 4,
+            border: '1px solid',
+            borderColor: 'divider',
+            borderRadius: 3,
+          }}
+        >
+          <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 3 }}>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: 48,
+                height: 48,
+                borderRadius: 2,
+                bgcolor: 'secondary.main',
+                color: 'white',
+              }}
+            >
+              <SecurityIcon />
+            </Box>
+            <Box>
+              <Typography variant="h6" fontWeight={600}>
+                Change Password
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Choose a strong, unique password
+              </Typography>
+            </Box>
+          </Stack>
+          <Divider sx={{ mb: 4 }} />
 
-            <Grid container spacing={2}>
-              <Grid size={{ xs: 12 }}>
-                <TextField
-                  fullWidth
-                  label="Current Password"
-                  type={showCurrentPassword ? 'text' : 'password'}
-                  name="currentPassword"
-                  value={settings.currentPassword}
-                  onChange={handleInputChange}
-                  variant="outlined"
-                  disabled={isPending}
-                  error={passwordError.includes('Current password') || !!actionState.zodErrors?.currentPassword}
-                  helperText={actionState.zodErrors?.currentPassword?.[0]}
-                  slotProps={{
-                    input: {
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton
-                            aria-label="toggle password visibility"
-                            onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                            edge="end"
-                            disabled={isPending}
-                          >
-                            {showCurrentPassword ? <VisibilityOff /> : <Visibility />}
-                          </IconButton>
-                        </InputAdornment>
-                      ),
-                    },
-                  }}
-                  color="secondary"
-                  sx={{ pb: 4 }}
-                />
-
-                <TextField
-                  fullWidth
-                  label="New Password"
-                  type={showNewPassword ? 'text' : 'password'}
-                  name="newPassword"
-                  value={settings.newPassword}
-                  onChange={handleInputChange}
-                  variant="outlined"
-                  disabled={isPending}
-                  error={
-                    passwordError.includes('New password') ||
-                    passwordError.includes('Password is too weak') ||
-                    !!actionState.zodErrors?.newPassword
-                  }
-                  helperText={actionState.zodErrors?.newPassword?.[0]}
-                  slotProps={{
-                    input: {
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton
-                            aria-label="toggle password visibility"
-                            onClick={() => setShowNewPassword(!showNewPassword)}
-                            edge="end"
-                            disabled={isPending}
-                          >
-                            {showNewPassword ? <VisibilityOff /> : <Visibility />}
-                          </IconButton>
-                        </InputAdornment>
-                      ),
-                    },
-                  }}
-                  color="secondary"
-                  sx={{ pb: 4 }}
-                />
-
-                {settings.newPassword && (
-                  <Box sx={{ mb: 3, mt: -3 }}>
-                    <Typography variant="caption" color="text.secondary" sx={{ mb: 1, display: 'block' }}>
-                      Password Strength: {passwordStrength.score}%
-                    </Typography>
-                    <LinearProgress
-                      variant="determinate"
-                      value={passwordStrength.score}
-                      color={passwordStrength.color}
-                      sx={{ height: 8, borderRadius: 4, mb: 1 }}
-                    />
-                    {passwordStrength.feedback.length > 0 && (
-                      <Typography variant="caption" color="text.secondary">
-                        Suggestions: {passwordStrength.feedback.join(', ')}
-                      </Typography>
-                    )}
-                  </Box>
-                )}
-
-                <TextField
-                  fullWidth
-                  label="Confirm New Password"
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  name="confirmNewPassword"
-                  value={settings.confirmNewPassword}
-                  onChange={handleInputChange}
-                  variant="outlined"
-                  disabled={isPending}
-                  error={
-                    passwordError.includes('do not match') ||
-                    passwordError.includes('confirm') ||
-                    !!actionState.zodErrors?.confirmNewPassword
-                  }
-                  helperText={actionState.zodErrors?.confirmNewPassword?.[0]}
-                  slotProps={{
-                    input: {
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton
-                            aria-label="toggle password visibility"
-                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                            edge="end"
-                            disabled={isPending}
-                          >
-                            {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
-                          </IconButton>
-                        </InputAdornment>
-                      ),
-                    },
-                  }}
-                  color="secondary"
-                />
-              </Grid>
+          <Grid container spacing={3}>
+            <Grid size={{ xs: 12 }}>
+              <TextField
+                fullWidth
+                label="Current Password"
+                type={showCurrentPassword ? 'text' : 'password'}
+                name="currentPassword"
+                value={settings.currentPassword}
+                onChange={handleInputChange}
+                variant="outlined"
+                disabled={isPending}
+                error={passwordError.includes('Current password') || !!actionState.zodErrors?.currentPassword}
+                helperText={actionState.zodErrors?.currentPassword?.[0]}
+                slotProps={{
+                  input: {
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                          edge="end"
+                          disabled={isPending}
+                        >
+                          {showCurrentPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  },
+                }}
+                color="secondary"
+              />
             </Grid>
 
-            {passwordError && (
-              <Alert severity="error" sx={{ mt: 2 }}>
-                {passwordError}
-              </Alert>
-            )}
+            <Grid size={{ xs: 12 }}>
+              <TextField
+                fullWidth
+                label="New Password"
+                type={showNewPassword ? 'text' : 'password'}
+                name="newPassword"
+                value={settings.newPassword}
+                onChange={handleInputChange}
+                variant="outlined"
+                disabled={isPending}
+                error={
+                  passwordError.includes('New password') ||
+                  passwordError.includes('Password is too weak') ||
+                  !!actionState.zodErrors?.newPassword
+                }
+                helperText={actionState.zodErrors?.newPassword?.[0]}
+                slotProps={{
+                  input: {
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={() => setShowNewPassword(!showNewPassword)}
+                          edge="end"
+                          disabled={isPending}
+                        >
+                          {showNewPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  },
+                }}
+                color="secondary"
+              />
 
-            {successMessage && (
-              <Alert severity="success" sx={{ mt: 2 }}>
-                {successMessage}
-              </Alert>
-            )}
+              {settings.newPassword && (
+                <Box
+                  sx={{
+                    mt: 3,
+                    p: 3,
+                    borderRadius: 2,
+                    border: '1px solid',
+                    borderColor: `${passwordStrength.color}.main`,
+                    bgcolor: `${passwordStrength.color}.lighter`,
+                    background: `linear-gradient(145deg, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0) 100%)`,
+                  }}
+                >
+                  <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
+                    <Typography variant="body2" fontWeight={600}>
+                      Password Strength
+                    </Typography>
+                    <Typography variant="body2" fontWeight={700} color={`${passwordStrength.color}.main`}>
+                      {passwordStrength.score >= 80 ? 'Strong' : passwordStrength.score >= 60 ? 'Good' : passwordStrength.score >= 40 ? 'Fair' : 'Weak'}
+                    </Typography>
+                  </Stack>
+                  <LinearProgress
+                    variant="determinate"
+                    value={passwordStrength.score}
+                    color={passwordStrength.color}
+                    sx={{ height: 10, borderRadius: 5, mb: 2 }}
+                  />
+                  {passwordStrength.feedback.length > 0 && (
+                    <Box>
+                      <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ display: 'block', mb: 1 }}>
+                        Suggestions to improve:
+                      </Typography>
+                      <Box component="ul" sx={{ m: 0, pl: 2.5 }}>
+                        {passwordStrength.feedback.map((tip, index) => (
+                          <Typography key={index} component="li" variant="caption" color="text.secondary" sx={{ mb: 0.5 }}>
+                            {tip}
+                          </Typography>
+                        ))}
+                      </Box>
+                    </Box>
+                  )}
+                </Box>
+              )}
+            </Grid>
 
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                disabled={!isFormValid || isPending}
-                sx={{ minWidth: 140 }}
-              >
-                {isPending ? 'Changing...' : 'Change Password'}
-              </Button>
-            </Box>
+            <Grid size={{ xs: 12 }}>
+              <TextField
+                fullWidth
+                label="Confirm New Password"
+                type={showConfirmPassword ? 'text' : 'password'}
+                name="confirmNewPassword"
+                value={settings.confirmNewPassword}
+                onChange={handleInputChange}
+                variant="outlined"
+                disabled={isPending}
+                error={
+                  passwordError.includes('do not match') ||
+                  passwordError.includes('confirm') ||
+                  !!actionState.zodErrors?.confirmNewPassword
+                }
+                helperText={actionState.zodErrors?.confirmNewPassword?.[0]}
+                slotProps={{
+                  input: {
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          edge="end"
+                          disabled={isPending}
+                        >
+                          {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  },
+                }}
+                color="secondary"
+              />
+            </Grid>
           </Grid>
-        </Grid>
+
+          {passwordError && (
+            <Alert severity="error" sx={{ mt: 3, borderRadius: 2 }}>
+              {passwordError}
+            </Alert>
+          )}
+
+          {successMessage && (
+            <Alert severity="success" sx={{ mt: 3, borderRadius: 2 }}>
+              {successMessage}
+            </Alert>
+          )}
+
+          <Stack direction="row" justifyContent="flex-end" sx={{ mt: 4 }}>
+            <Button
+              type="submit"
+              variant="contained"
+              color="secondary"
+              disabled={!isFormValid || isPending}
+              size="large"
+              sx={{ borderRadius: 2, px: 4, textTransform: 'none', fontWeight: 600, boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}
+            >
+              {isPending ? 'Changing Password...' : 'Change Password'}
+            </Button>
+          </Stack>
+        </Paper>
+
+        {/* Security Tips */}
+        <Paper
+          elevation={0}
+          sx={{
+            p: 4,
+            border: '1px solid',
+            borderColor: 'info.light',
+            borderRadius: 3,
+            bgcolor: 'info.lighter',
+            background: 'linear-gradient(145deg, rgba(33,150,243,0.02) 0%, rgba(33,150,243,0.05) 100%)',
+          }}
+        >
+          <Typography variant="h6" fontWeight={600} gutterBottom color="info.main" sx={{ mb: 3 }}>
+            Password Security Tips
+          </Typography>
+          <Box component="ul" sx={{ m: 0, pl: 3, color: 'text.secondary' }}>
+            <Typography component="li" variant="body2" sx={{ mb: 1.5 }}>
+              <strong>Use at least 12 characters</strong> - Longer passwords are harder to crack
+            </Typography>
+            <Typography component="li" variant="body2" sx={{ mb: 1.5 }}>
+              <strong>Mix character types</strong> - Combine uppercase, lowercase, numbers, and symbols
+            </Typography>
+            <Typography component="li" variant="body2" sx={{ mb: 1.5 }}>
+              <strong>Avoid common patterns</strong> - Don't use sequences like "123" or "abc"
+            </Typography>
+            <Typography component="li" variant="body2" sx={{ mb: 1.5 }}>
+              <strong>Don't reuse passwords</strong> - Use a unique password for each account
+            </Typography>
+            <Typography component="li" variant="body2">
+              <strong>Consider a password manager</strong> - They can generate and store strong passwords
+            </Typography>
+          </Box>
+        </Paper>
       </form>
     </Box>
   );

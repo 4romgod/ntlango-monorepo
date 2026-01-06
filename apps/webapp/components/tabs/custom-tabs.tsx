@@ -41,7 +41,11 @@ export default function CustomTabs({ tabsProps }: { tabsProps: CustomTabsProps }
   const tabPanels = useMemo(
     () =>
       tabs.map(({ content }, index) => (
-        <CustomTabPanel key={`${id}-panel-content-${index}`} value={value} index={index} id={id}>
+        <CustomTabPanel
+          key={`${id}-panel-content-${index}`}
+          value={value} index={index}
+          id={id}
+        >
           {content}
         </CustomTabPanel>
       )),

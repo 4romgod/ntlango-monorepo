@@ -17,9 +17,7 @@ export function CustomTabPanel(props: TabPanelProps) {
         <Paper
           elevation={0}
           sx={{
-            border: '1px solid',
             borderColor: 'divider',
-            borderRadius: 3,
             p: 4,
             minHeight: 400,
           }}
