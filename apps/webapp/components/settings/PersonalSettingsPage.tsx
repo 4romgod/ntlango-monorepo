@@ -85,10 +85,10 @@ export default function PersonalSettingsPage({ user }: { user: User }) {
     <Box>
       <Stack spacing={4}>
         <Box>
-          <Typography variant="h4" fontWeight={700} gutterBottom>
+          <Typography variant="h4" fontWeight={700} gutterBottom sx={{ color: 'text.primary' }}>
             Personal Settings
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body1" color="text.secondary" sx={{ mt: 0.5 }}>
             Manage your personal information and privacy preferences
           </Typography>
         </Box>
@@ -98,17 +98,20 @@ export default function PersonalSettingsPage({ user }: { user: User }) {
           <Paper
             elevation={0}
             sx={{
-              p: 3,
-              mb: 3,
+              p: 4,
+              mb: 4,
               border: '1px solid',
               borderColor: 'divider',
               borderRadius: 3,
             }}
           >
-            <Typography variant="h6" fontWeight={600} gutterBottom>
+            <Typography variant="h6" fontWeight={600} gutterBottom sx={{ mb: 1 }}>
               Personal Details
             </Typography>
-            <Divider sx={{ mb: 3 }} />
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+              Basic information about yourself
+            </Typography>
+            <Divider sx={{ mb: 4 }} />
 
             <Grid container spacing={3}>
               <Grid size={{ xs: 12 }}>
@@ -153,26 +156,34 @@ export default function PersonalSettingsPage({ user }: { user: User }) {
           <Paper
             elevation={0}
             sx={{
-              p: 3,
-              mb: 3,
+              p: 4,
+              mb: 4,
               border: '1px solid',
               borderColor: 'divider',
               borderRadius: 3,
             }}
           >
-            <Typography variant="h6" fontWeight={600} gutterBottom>
+            <Typography variant="h6" fontWeight={600} gutterBottom sx={{ mb: 1 }}>
               Privacy Settings
             </Typography>
-            <Divider sx={{ mb: 3 }} />
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+              Control who can see your information
+            </Typography>
+            <Divider sx={{ mb: 4 }} />
 
-            <Stack spacing={2}>
+            <Stack spacing={2.5}>
               <Box
                 sx={{
-                  p: 2,
+                  p: 3,
                   borderRadius: 2,
                   bgcolor: 'background.default',
                   border: '1px solid',
                   borderColor: 'divider',
+                  transition: 'all 0.2s ease',
+                  '&:hover': {
+                    borderColor: 'secondary.main',
+                    bgcolor: 'action.hover',
+                  },
                 }}
               >
                 <FormControlLabel
@@ -185,10 +196,10 @@ export default function PersonalSettingsPage({ user }: { user: User }) {
                   }
                   label={
                     <Box>
-                      <Typography variant="body2" fontWeight={600}>
+                      <Typography variant="body1" fontWeight={600}>
                         Private Profile
                       </Typography>
-                      <Typography variant="caption" color="text.secondary">
+                      <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
                         Only you can see your profile information
                       </Typography>
                     </Box>
@@ -198,11 +209,16 @@ export default function PersonalSettingsPage({ user }: { user: User }) {
 
               <Box
                 sx={{
-                  p: 2,
+                  p: 3,
                   borderRadius: 2,
                   bgcolor: 'background.default',
                   border: '1px solid',
                   borderColor: 'divider',
+                  transition: 'all 0.2s ease',
+                  '&:hover': {
+                    borderColor: 'secondary.main',
+                    bgcolor: 'action.hover',
+                  },
                 }}
               >
                 <FormControlLabel
@@ -215,10 +231,10 @@ export default function PersonalSettingsPage({ user }: { user: User }) {
                   }
                   label={
                     <Box>
-                      <Typography variant="body2" fontWeight={600}>
+                      <Typography variant="body1" fontWeight={600}>
                         Show Email Address
                       </Typography>
-                      <Typography variant="caption" color="text.secondary">
+                      <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
                         Allow other members to see your email
                       </Typography>
                     </Box>
@@ -228,11 +244,16 @@ export default function PersonalSettingsPage({ user }: { user: User }) {
 
               <Box
                 sx={{
-                  p: 2,
+                  p: 3,
                   borderRadius: 2,
                   bgcolor: 'background.default',
                   border: '1px solid',
                   borderColor: 'divider',
+                  transition: 'all 0.2s ease',
+                  '&:hover': {
+                    borderColor: 'secondary.main',
+                    bgcolor: 'action.hover',
+                  },
                 }}
               >
                 <FormControlLabel
@@ -245,10 +266,10 @@ export default function PersonalSettingsPage({ user }: { user: User }) {
                   }
                   label={
                     <Box>
-                      <Typography variant="body2" fontWeight={600}>
+                      <Typography variant="body1" fontWeight={600}>
                         Show Phone Number
                       </Typography>
-                      <Typography variant="caption" color="text.secondary">
+                      <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
                         Allow other members to see your phone
                       </Typography>
                     </Box>
@@ -265,7 +286,8 @@ export default function PersonalSettingsPage({ user }: { user: User }) {
               variant="contained"
               color="secondary"
               type="submit"
-              sx={{ borderRadius: 2 }}
+              size="large"
+              sx={{ borderRadius: 2, px: 4, textTransform: 'none', fontWeight: 600, boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}
             >
               Save Changes
             </Button>

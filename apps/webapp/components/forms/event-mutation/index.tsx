@@ -131,7 +131,7 @@ export default function EventMutationForm({ categoryList }: EventMutationFormPro
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -316,12 +316,14 @@ export default function EventMutationForm({ categoryList }: EventMutationFormPro
                   color="secondary"
                   value={eventData.heroImage}
                   onChange={handleChange}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <ImageIcon />
-                      </InputAdornment>
-                    ),
+                  slotProps={{
+                    input: {
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <ImageIcon />
+                        </InputAdornment>
+                      )
+                    }
                   }}
                   sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
                 />
@@ -342,12 +344,14 @@ export default function EventMutationForm({ categoryList }: EventMutationFormPro
                   color="secondary"
                   value={eventData.eventLink}
                   onChange={handleChange}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <LinkIcon />
-                      </InputAdornment>
-                    ),
+                  slotProps={{
+                    input: {
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <LinkIcon />
+                        </InputAdornment>
+                      ),
+                    },
                   }}
                   sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
                 />

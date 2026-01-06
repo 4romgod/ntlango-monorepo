@@ -15,6 +15,9 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Paper,
+  Divider,
+  Stack,
 } from '@mui/material';
 import { Delete as DeleteIcon } from '@mui/icons-material';
 import { User } from '@/data/graphql/types/graphql';
@@ -116,133 +119,284 @@ export default function AccountSettingsPage({ user }: { user: User }) {
   }, [deleteUserFormState]);
 
   return (
-    <Box sx={{ p: 3, maxWidth: 600, margin: 'auto' }}>
-      <Typography variant="h4" fontWeight="bold" sx={{ mb: 5 }}>
-        Account Management
-      </Typography>
-
-      <Box component="form" action={updateUserFormAction} noValidate>
-        <Grid container spacing={3}>
-          <Grid size={{ xs: 12 }}>
-            <TextField
-              fullWidth
-              label="Username"
-              name="username"
-              value={settings.username}
-              onChange={handleInputChange}
-              variant="outlined"
-              slotProps={{
-                input: {
-                  readOnly: true,
-                },
-              }}
-              color="secondary"
-              sx={{
-                pb: 4,
-              }}
-              disabled
-            />
-
-            <TextField
-              fullWidth
-              label="Email"
-              name="email"
-              value={settings.email}
-              onChange={handleInputChange}
-              variant="outlined"
-              color="secondary"
-              sx={{
-                pb: 4,
-              }}
-            />
-
-            <FormControl
-              fullWidth
-              variant="outlined"
-              sx={{
-                pb: 4,
-              }}
-            >
-              <InputLabel color="secondary">Language</InputLabel>
-              <Select
-                name="language"
-                // TODO value={settings.language}
-                onChange={e => handleInputChange(e as React.ChangeEvent<HTMLInputElement>)}
-                label="Language"
-                color="secondary"
-              >
-                {languages.map(lang => (
-                  <MenuItem key={lang.value} value={lang.value}>
-                    {lang.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
-            <FormControl fullWidth variant="outlined">
-              <InputLabel color="secondary">Time Zone</InputLabel>
-              <Select
-                name="timeZone"
-                // TODO value={settings.timeZone}
-                onChange={e => handleInputChange(e as React.ChangeEvent<HTMLInputElement>)}
-                label="Time Zone"
-                color="secondary"
-              >
-                {timeZones.map(zone => (
-                  <MenuItem key={zone.value} value={zone.value}>
-                    {zone.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-              <Button variant="contained" color="primary" type="submit" disabled={isPending}>
-                Save Changes
-              </Button>
-            </Box>
-          </Grid>
-        </Grid>
+    <Box>
+      <Box sx={{ mb: 5 }}>
+        <Typography variant="h4" fontWeight={700} gutterBottom sx={{ color: 'text.primary' }}>
+          Account Management
+        </Typography>
+        <Typography variant="body1" color="text.secondary" sx={{ mt: 0.5 }}>
+          Manage your account settings and preferences
+        </Typography>
       </Box>
 
-      {/* Delete Account Section - No form wrapper needed here */}
-      <Box sx={{ mt: 4 }}>
-        <Typography variant="subtitle1" color="primary" sx={{ display: 'flex', alignItems: 'center' }}>
-          <DeleteIcon sx={{ mr: 1 }} />
-          Delete Account
-        </Typography>
-        <Typography variant="body2" sx={{ color: 'text.secondary', mb: 2 }}>
-          Permanently remove your account and all associated data
-        </Typography>
-        <Button
-          variant="outlined"
-          color="error"
-          startIcon={<DeleteIcon />}
-          onClick={() => setOpenDeleteAccountDialog(true)}
-          disabled={isPending}
+      <Box component="form" action={updateUserFormAction} noValidate>
+        <Paper
+          elevation={0}
+          sx={{
+            p: 4,
+            mb: 4,
+            border: '1px solid',
+            borderColor: 'divider',
+            borderRadius: 3,
+          }}
         >
-          Delete Account
-        </Button>
+          <Typography variant="h6" fontWeight={600} gutterBottom sx={{ mb: 1 }}>
+            Account Details
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+            Your username and email address
+          </Typography>
+          <Divider sx={{ mb: 4 }} />
+
+          <Grid container spacing={3}>
+            <Grid size={{ xs: 12 }}>
+              <TextField
+                fullWidth
+                label="Username"
+                name="username"
+                value={settings.username}
+                onChange={handleInputChange}
+                variant="outlined"
+                slotProps={{
+                  input: {
+                    readOnly: true,
+                  },
+                }}
+                color="secondary"
+                disabled
+                helperText="Your username cannot be changed"
+              />
+            </Grid>
+
+            <Grid size={{ xs: 12 }}>
+              <TextField
+                fullWidth
+                label="Email"
+                name="email"
+                value={settings.email}
+                onChange={handleInputChange}
+                variant="outlined"
+                color="secondary"
+              />
+            </Grid>
+          </Grid>
+        </Paper>
+
+        <Paper
+          elevation={0}
+          sx={{
+            p: 4,
+            mb: 4,
+            border: '1px solid',
+            borderColor: 'divider',
+            borderRadius: 3,
+          }}
+        >
+          <Typography variant="h6" fontWeight={600} gutterBottom sx={{ mb: 1 }}>
+            Preferences
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+            Set your language and timezone
+          </Typography>
+          <Divider sx={{ mb: 4 }} />
+
+          <Grid container spacing={3}>
+            <Grid size={{ xs: 12 }}>
+              <FormControl fullWidth variant="outlined">
+                <InputLabel color="secondary">Language</InputLabel>
+                <Select
+                  name="language"
+                  // TODO value={settings.language}
+                  onChange={e => handleInputChange(e as React.ChangeEvent<HTMLInputElement>)}
+                  label="Language"
+                  color="secondary"
+                >
+                  {languages.map(lang => (
+                    <MenuItem key={lang.value} value={lang.value}>
+                      {lang.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+
+            <Grid size={{ xs: 12 }}>
+              <FormControl fullWidth variant="outlined">
+                <InputLabel color="secondary">Time Zone</InputLabel>
+                <Select
+                  name="timeZone"
+                  // TODO value={settings.timeZone}
+                  onChange={e => handleInputChange(e as React.ChangeEvent<HTMLInputElement>)}
+                  label="Time Zone"
+                  color="secondary"
+                >
+                  {timeZones.map(zone => (
+                    <MenuItem key={zone.value} value={zone.value}>
+                      {zone.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+          </Grid>
+        </Paper>
+
+        <Stack direction="row" justifyContent="flex-end">
+          <Button
+            variant="contained"
+            color="secondary"
+            type="submit"
+            disabled={isPending}
+            size="large"
+            sx={{ borderRadius: 2, px: 4, textTransform: 'none', fontWeight: 600, boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}
+          >
+            Save Changes
+          </Button>
+        </Stack>
+      </Box>
+
+      {/* Delete Account Section - Danger Zone */}
+      <Paper
+        elevation={0}
+        sx={{
+          p: 4,
+          border: '2px solid',
+          borderColor: 'error.main',
+          borderRadius: 3,
+          bgcolor: (theme) => theme.palette.mode === 'dark' ? 'error.dark' : 'error.lighter',
+        }}
+      >
+        <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 48,
+              height: 48,
+              borderRadius: 2,
+              bgcolor: 'error.main',
+              color: 'white',
+            }}
+          >
+            <DeleteIcon />
+          </Box>
+          <Box>
+            <Typography variant="h6" fontWeight={600} color="error.main" gutterBottom>
+              Danger Zone
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Irreversible and destructive actions
+            </Typography>
+          </Box>
+        </Stack>
+
+        <Divider sx={{ my: 3 }} />
+
+        <Box sx={{ mb: 3 }}>
+          <Typography variant="subtitle1" fontWeight={600} gutterBottom>
+            Delete Account
+          </Typography>
+          <Typography variant="body2" sx={{ color: 'text.secondary', mb: 3 }}>
+            Permanently remove your account and all associated data. This action cannot be undone and all your events,
+            purchases, and profile information will be permanently deleted.
+          </Typography>
+          <Button
+            variant="contained"
+            color="error"
+            startIcon={<DeleteIcon />}
+            onClick={() => setOpenDeleteAccountDialog(true)}
+            disabled={isPending}
+            size="large"
+            sx={{
+              borderRadius: 2,
+              px: 3,
+              textTransform: 'none',
+              fontWeight: 600,
+              boxShadow: (theme) => `0 4px 12px ${theme.palette.error.main}40`,
+            }}
+          >
+            Delete My Account
+          </Button>
+        </Box>
 
         {/* Delete Account Confirmation Dialog */}
-        <Dialog open={openDeleteAccountDialog} onClose={() => setOpenDeleteAccountDialog(false)}>
-          <DialogTitle>Delete Account</DialogTitle>
+        <Dialog
+          open={openDeleteAccountDialog}
+          onClose={() => setOpenDeleteAccountDialog(false)}
+          PaperProps={{
+            sx: {
+              borderRadius: 3,
+              p: 2,
+            },
+          }}
+        >
+          <DialogTitle sx={{ pb: 2 }}>
+            <Stack direction="row" spacing={2} alignItems="center">
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: 48,
+                  height: 48,
+                  borderRadius: 2,
+                  bgcolor: 'error.main',
+                  color: 'white',
+                }}
+              >
+                <DeleteIcon />
+              </Box>
+              <Typography variant="h5" fontWeight={600}>
+                Delete Account?
+              </Typography>
+            </Stack>
+          </DialogTitle>
           <DialogContent>
-            <Typography variant="body1">
-              Are you sure you want to permanently delete your account? This action cannot be undone and will remove all
-              your data.
+            <Typography variant="body1" sx={{ mb: 2 }}>
+              Are you absolutely sure you want to permanently delete your account?
             </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+              This action will:
+            </Typography>
+            <Box component="ul" sx={{ pl: 3, color: 'text.secondary' }}>
+              <Typography component="li" variant="body2" sx={{ mb: 0.5 }}>
+                Permanently delete all your personal data
+              </Typography>
+              <Typography component="li" variant="body2" sx={{ mb: 0.5 }}>
+                Remove all your events and purchases
+              </Typography>
+              <Typography component="li" variant="body2" sx={{ mb: 0.5 }}>
+                Cancel any active subscriptions
+              </Typography>
+              <Typography component="li" variant="body2">
+                This action cannot be reversed
+              </Typography>
+            </Box>
           </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setOpenDeleteAccountDialog(false)} color="secondary" disabled={isPending}>
+          <DialogActions sx={{ px: 3, pb: 2 }}>
+            <Button
+              onClick={() => setOpenDeleteAccountDialog(false)}
+              variant="outlined"
+              disabled={isPending}
+              size="large"
+              sx={{ borderRadius: 2, px: 3, textTransform: 'none', fontWeight: 600 }}
+            >
               Cancel
             </Button>
-            <Button color="error" variant="contained" onClick={handleDeleteConfirm} disabled={isPending}>
-              {isPending ? 'Deleting...' : 'Confirm Delete'}
+            <Button
+              color="error"
+              variant="contained"
+              onClick={handleDeleteConfirm}
+              disabled={isPending}
+              size="large"
+              sx={{ borderRadius: 2, px: 3, textTransform: 'none', fontWeight: 600 }}
+            >
+              {isPending ? 'Deleting...' : 'Yes, Delete My Account'}
             </Button>
           </DialogActions>
         </Dialog>
-      </Box>
+      </Paper>
     </Box>
   );
 }

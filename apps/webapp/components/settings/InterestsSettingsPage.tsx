@@ -72,10 +72,10 @@ export default function InterestsSettingsPage({
       <Stack spacing={4}>
         <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
           <Box>
-            <Typography variant="h4" fontWeight={700} gutterBottom>
+            <Typography variant="h4" fontWeight={700} gutterBottom sx={{ color: 'text.primary' }}>
               My Interests
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body1" color="text.secondary" sx={{ mt: 0.5 }}>
               Select interests to get personalized event recommendations
             </Typography>
           </Box>
@@ -89,7 +89,8 @@ export default function InterestsSettingsPage({
               setSearchTerm('');
               setOpenModal(true);
             }}
-            sx={{ borderRadius: 2 }}
+            size="large"
+            sx={{ borderRadius: 2, px: 3, textTransform: 'none', fontWeight: 600, boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}
           >
             Edit Interests
           </Button>
@@ -99,24 +100,41 @@ export default function InterestsSettingsPage({
         <Paper
           elevation={0}
           sx={{
-            p: 3,
+            p: 4,
             border: '1px solid',
             borderColor: 'divider',
             borderRadius: 3,
           }}
         >
-          <Typography variant="h6" fontWeight={600} gutterBottom>
-            Selected Interests ({selectedInterests.length})
+          <Typography variant="h6" fontWeight={600} gutterBottom sx={{ mb: 1 }}>
+            Your Interests
+            <Typography component="span" variant="body2" color="text.secondary" sx={{ ml: 1 }}>
+              ({selectedInterests.length} selected)
+            </Typography>
           </Typography>
-          <Divider sx={{ mb: 3 }} />
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+            These help us personalize your event recommendations
+          </Typography>
+          <Divider sx={{ mb: 4 }} />
 
           {selectedInterests.length === 0 ? (
-            <Box sx={{ textAlign: 'center', py: 6 }}>
-              <Typography variant="body2" color="text.secondary" gutterBottom>
-                You haven&apos;t selected any interests yet
+            <Box 
+              sx={{ 
+                textAlign: 'center', 
+                py: 8,
+                px: 2,
+                borderRadius: 2,
+                border: '2px dashed',
+                borderColor: 'divider',
+                bgcolor: 'background.default',
+              }}
+            >
+              <AddIcon sx={{ fontSize: 48, color: 'text.secondary', mb: 2, opacity: 0.5 }} />
+              <Typography variant="h6" fontWeight={600} gutterBottom>
+                No interests selected yet
               </Typography>
-              <Typography variant="caption" color="text.secondary">
-                Click &quot;Edit Interests&quot; to get started and receive personalized recommendations!
+              <Typography variant="body2" color="text.secondary" gutterBottom>
+                Click "Edit Interests" to get started and receive personalized recommendations!
               </Typography>
             </Box>
           ) : (
@@ -128,7 +146,13 @@ export default function InterestsSettingsPage({
                   onDelete={() => handleRemoveInterest(interest.eventCategoryId)}
                   color="secondary"
                   variant="filled"
-                  sx={{ borderRadius: 2 }}
+                  sx={{ 
+                    borderRadius: 2, 
+                    py: 2.5,
+                    px: 0.5,
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                  }}
                 />
               ))}
             </Box>
@@ -145,15 +169,25 @@ export default function InterestsSettingsPage({
         PaperProps={{
           sx: {
             borderRadius: 3,
+            maxHeight: '90vh',
           },
         }}
       >
-        <DialogTitle>
+        <DialogTitle sx={{ pb: 2 }}>
           <Stack direction="row" justifyContent="space-between" alignItems="center">
-            <Typography variant="h6" fontWeight={700}>
-              Select Your Interests
-            </Typography>
-            <Button size="small" onClick={() => setOpenModal(false)} sx={{ minWidth: 'auto' }}>
+            <Box>
+              <Typography variant="h5" fontWeight={700}>
+                Select Your Interests
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                Choose categories you're interested in
+              </Typography>
+            </Box>
+            <Button 
+              size="small" 
+              onClick={() => setOpenModal(false)} 
+              sx={{ minWidth: 'auto', color: 'text.secondary' }}
+            >
               <CloseIcon />
             </Button>
           </Stack>
@@ -166,12 +200,14 @@ export default function InterestsSettingsPage({
               placeholder="Search interests..."
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon />
+                    </InputAdornment>
+                  ),
+                },
               }}
               variant="outlined"
               color="secondary"
@@ -183,17 +219,18 @@ export default function InterestsSettingsPage({
           <Paper
             elevation={0}
             sx={{
-              p: 2,
+              p: 3,
               mb: 3,
-              bgcolor: 'secondary.main',
-              color: 'secondary.contrastText',
+              bgcolor: (theme) => theme.palette.mode === 'dark' ? 'secondary.dark' : 'secondary.lighter',
+              border: '1px solid',
+              borderColor: 'secondary.light',
               borderRadius: 2,
             }}
           >
-            <Typography variant="subtitle2" fontWeight={600} gutterBottom>
-              Selected: {tempInterests.length} interests
+            <Typography variant="subtitle1" fontWeight={600} gutterBottom color="secondary.main">
+              {tempInterests.length} {tempInterests.length === 1 ? 'interest' : 'interests'} selected
             </Typography>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1.5 }}>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 2 }}>
               {tempInterests.length > 0 ? (
                 tempInterests.map(interest => (
                   <Chip
@@ -205,67 +242,84 @@ export default function InterestsSettingsPage({
                       bgcolor: 'background.paper',
                       color: 'text.primary',
                       borderRadius: 1.5,
+                      fontWeight: 500,
                     }}
                   />
                 ))
               ) : (
-                <Typography variant="caption" sx={{ opacity: 0.8 }}>
-                  No interests selected yet
+                <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
+                  No interests selected yet. Start by checking some categories below.
                 </Typography>
               )}
             </Box>
           </Paper>
 
           {/* Category Groups */}
-          <Box sx={{ maxHeight: 400, overflow: 'auto' }}>
-            {filteredCategoryGroups.map(categoryGroup => (
-              <Box key={categoryGroup.eventCategoryGroupId} sx={{ mb: 3 }}>
-                <Typography variant="subtitle1" sx={{ mb: 1.5, fontWeight: 700, color: 'primary.main' }}>
-                  {categoryGroup.name}
+          <Box sx={{ maxHeight: 400, overflow: 'auto', pr: 1 }}>
+            {filteredCategoryGroups.length === 0 ? (
+              <Box sx={{ textAlign: 'center', py: 6 }}>
+                <SearchIcon sx={{ fontSize: 48, color: 'text.secondary', mb: 2, opacity: 0.5 }} />
+                <Typography variant="body1" color="text.secondary">
+                  No interests found matching "{searchTerm}"
                 </Typography>
-                <Grid container spacing={1}>
-                  {categoryGroup.eventCategories.map(category => (
-                    <Grid size={{xs: 12, sm: 6}} key={category.eventCategoryId}>
-                      <Paper
-                        elevation={0}
-                        sx={{
-                          p: 1,
-                          border: '1px solid',
-                          borderColor: tempInterests.some(item => item.eventCategoryId === category.eventCategoryId)
-                            ? 'secondary.main'
-                            : 'divider',
-                          borderRadius: 2,
-                          bgcolor: tempInterests.some(item => item.eventCategoryId === category.eventCategoryId)
-                            ? 'secondary.light'
-                            : 'transparent',
-                          transition: 'all 0.2s',
-                          '&:hover': {
-                            borderColor: 'secondary.main',
-                            bgcolor: 'action.hover',
-                          },
-                        }}
-                      >
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={tempInterests.some(item => item.eventCategoryId === category.eventCategoryId)}
-                              onChange={() => handleInterestToggle(category)}
-                              color="secondary"
-                            />
-                          }
-                          label={<Typography variant="body2">{category.name}</Typography>}
-                          sx={{ m: 0, width: '100%' }}
-                        />
-                      </Paper>
-                    </Grid>
-                  ))}
-                </Grid>
               </Box>
-            ))}
+            ) : (
+              filteredCategoryGroups.map(categoryGroup => (
+                <Box key={categoryGroup.eventCategoryGroupId} sx={{ mb: 4 }}>
+                  <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 700, color: 'primary.main' }}>
+                    {categoryGroup.name}
+                  </Typography>
+                  <Grid container spacing={1.5}>
+                    {categoryGroup.eventCategories.map(category => (
+                      <Grid size={{ xs: 12, sm: 6 }} key={category.eventCategoryId}>
+                        <Paper
+                          elevation={0}
+                          sx={{
+                            p: 1.5,
+                            border: '2px solid',
+                            borderColor: tempInterests.some(item => item.eventCategoryId === category.eventCategoryId)
+                              ? 'secondary.main'
+                              : 'divider',
+                            borderRadius: 2,
+                            bgcolor: tempInterests.some(item => item.eventCategoryId === category.eventCategoryId)
+                              ? 'secondary.lighter'
+                              : 'transparent',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s ease',
+                            '&:hover': {
+                              borderColor: 'secondary.main',
+                              bgcolor: 'action.hover',
+                              boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+                            },
+                          }}
+                        >
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={tempInterests.some(item => item.eventCategoryId === category.eventCategoryId)}
+                                onChange={() => handleInterestToggle(category)}
+                                color="secondary"
+                              />
+                            }
+                            label={<Typography variant="body2" fontWeight={500}>{category.name}</Typography>}
+                            sx={{ m: 0, width: '100%', userSelect: 'none' }}
+                          />
+                        </Paper>
+                      </Grid>
+                    ))}
+                  </Grid>
+                </Box>
+              ))
+            )}
           </Box>
         </DialogContent>
-        <DialogActions sx={{ p: 3, pt: 2 }}>
-          <Button onClick={() => setOpenModal(false)} variant="outlined" sx={{ borderRadius: 2 }}>
+        <DialogActions sx={{ p: 3, pt: 2, gap: 1 }}>
+          <Button 
+            onClick={() => setOpenModal(false)} 
+            variant="outlined" 
+            size="large"
+            sx={{ borderRadius: 2, px: 3, textTransform: 'none', fontWeight: 600 }}
+          >
             Cancel
           </Button>
           <Button
@@ -273,9 +327,10 @@ export default function InterestsSettingsPage({
             onClick={handleSaveInterests}
             color="secondary"
             variant="contained"
-            sx={{ borderRadius: 2 }}
+            size="large"
+            sx={{ borderRadius: 2, px: 3, textTransform: 'none', fontWeight: 600, boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}
           >
-            Save Interests
+            Save {tempInterests.length} {tempInterests.length === 1 ? 'Interest' : 'Interests'}
           </Button>
         </DialogActions>
       </Dialog>
