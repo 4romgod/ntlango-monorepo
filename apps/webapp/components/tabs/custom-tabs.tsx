@@ -148,7 +148,7 @@ export default function CustomTabs({ tabsProps }: { tabsProps: CustomTabsProps }
                       lineHeight: 1,
                     }}
                   >
-                    {effectiveOrientation === 'horizontal' ? name : (isSmallScreen ? null : name)}
+                    {name}
                   </span>}
                 icon={icon}
                 iconPosition={effectiveOrientation === 'horizontal' ? 'top' : 'start'}
