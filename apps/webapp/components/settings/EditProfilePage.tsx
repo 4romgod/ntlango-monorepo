@@ -95,9 +95,9 @@ export default function EditProfilePage({ user }: { user: User }) {
             Edit Profile
           </Typography>
           <Typography
-            variant="body2"
+            variant="body1"
             color="text.secondary"
-            sx={{ mt: 0.5 }}
+            sx={{ mt: 0.5, fontSize: { xs: '0.875rem', sm: '1rem' } }}
           >
             Update your profile information and how others see you
           </Typography>
