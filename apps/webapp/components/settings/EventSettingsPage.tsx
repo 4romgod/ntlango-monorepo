@@ -14,8 +14,6 @@ import {
   InputLabel,
   Slider,
   Alert,
-  Paper,
-  Divider,
   Stack,
 } from '@mui/material';
 import { User } from '@/data/graphql/types/graphql';
@@ -74,8 +72,8 @@ export default function EventSettingsPage({ user }: { user: User }) {
 
   return (
     <Box>
-      <Box sx={{ mb: 5 }}>
-        <Typography variant="h4" fontWeight={700} gutterBottom sx={{ color: 'text.primary' }}>
+      <Box sx={{ mb: { xs: 3, sm: 5 } }}>
+        <Typography variant="h4" fontWeight={700} gutterBottom sx={{ color: 'text.primary', fontSize: { xs: '1.5rem', sm: '2.125rem' } }}>
           Event Preferences
         </Typography>
         <Typography variant="body1" color="text.secondary" sx={{ mt: 0.5 }}>
@@ -83,41 +81,16 @@ export default function EventSettingsPage({ user }: { user: User }) {
         </Typography>
       </Box>
 
-      <Grid container spacing={4}>
+      <Grid container spacing={2}>
         {/* Notification Preferences */}
         <Grid size={{ xs: 12 }}>
-          <Paper
-            elevation={0}
-            sx={{
-              p: 4,
-              border: '1px solid',
-              borderColor: 'divider',
-              borderRadius: 3,
-            }}
-          >
-            <Typography variant="h6" fontWeight={600} gutterBottom sx={{ mb: 1 }}>
+          <Box>
+            <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>
               Notification Preferences
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-              Choose how you want to receive event updates
-            </Typography>
-            <Divider sx={{ mb: 4 }} />
 
-            <Stack spacing={2.5}>
-              <Box
-                sx={{
-                  p: 3,
-                  borderRadius: 2,
-                  bgcolor: 'background.default',
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  transition: 'all 0.2s ease',
-                  '&:hover': {
-                    borderColor: 'secondary.main',
-                    bgcolor: 'action.hover',
-                  },
-                }}
-              >
+            <Stack spacing={2}>
+              <Box sx={{ py: 1 }}>
                 <FormControlLabel
                   control={
                     <Switch
@@ -139,20 +112,7 @@ export default function EventSettingsPage({ user }: { user: User }) {
                 />
               </Box>
 
-              <Box
-                sx={{
-                  p: 3,
-                  borderRadius: 2,
-                  bgcolor: 'background.default',
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  transition: 'all 0.2s ease',
-                  '&:hover': {
-                    borderColor: 'secondary.main',
-                    bgcolor: 'action.hover',
-                  },
-                }}
-              >
+              <Box sx={{ py: 1 }}>
                 <FormControlLabel
                   control={
                     <Switch
@@ -174,20 +134,7 @@ export default function EventSettingsPage({ user }: { user: User }) {
                 />
               </Box>
 
-              <Box
-                sx={{
-                  p: 3,
-                  borderRadius: 2,
-                  bgcolor: 'background.default',
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  transition: 'all 0.2s ease',
-                  '&:hover': {
-                    borderColor: 'secondary.main',
-                    bgcolor: 'action.hover',
-                  },
-                }}
-              >
+              <Box sx={{ py: 1 }}>
                 <FormControlLabel
                   control={
                     <Switch
@@ -209,34 +156,19 @@ export default function EventSettingsPage({ user }: { user: User }) {
                 />
               </Box>
             </Stack>
-          </Paper>
+          </Box>
         </Grid>
 
         {/* Event Discovery */}
         <Grid size={{ xs: 12 }}>
-          <Paper
-            elevation={0}
-            sx={{
-              p: 4,
-              border: '1px solid',
-              borderColor: 'divider',
-              borderRadius: 3,
-            }}
-          >
-            <Typography variant="h6" fontWeight={600} gutterBottom sx={{ mb: 1 }}>
+          <Box>
+            <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>
               Event Discovery
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-              Control how far you're willing to travel for events
-            </Typography>
-            <Divider sx={{ mb: 4 }} />
 
-            <Box sx={{ px: 2 }}>
+            <Box>
               <Typography variant="body1" fontWeight={600} gutterBottom>
                 Maximum Distance: <Typography component="span" color="secondary.main">{settings.maxDistanceForEvents} miles</Typography>
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                We'll only show you events within this radius
               </Typography>
               <Slider
                 value={settings.maxDistanceForEvents}
@@ -244,39 +176,27 @@ export default function EventSettingsPage({ user }: { user: User }) {
                 valueLabelDisplay="auto"
                 step={5}
                 marks={[
-                  { value: 5, label: '5mi' },
-                  { value: 25, label: '25mi' },
-                  { value: 50, label: '50mi' },
-                  { value: 75, label: '75mi' },
-                  { value: 100, label: '100mi' },
+                  { value: 5, label: '5 mi' },
+                  { value: 25, label: '25 mi' },
+                  { value: 50, label: '50 mi' },
+                  { value: 75, label: '75 mi' },
+                  { value: 100, label: '100 mi' },
                 ]}
                 min={5}
                 max={100}
                 color="secondary"
-                sx={{ mt: 2 }}
+                sx={{ mt: 2, mx: 1 }}
               />
             </Box>
-          </Paper>
+          </Box>
         </Grid>
 
         {/* Notification Frequency */}
         <Grid size={{ xs: 12 }}>
-          <Paper
-            elevation={0}
-            sx={{
-              p: 4,
-              border: '1px solid',
-              borderColor: 'divider',
-              borderRadius: 3,
-            }}
-          >
-            <Typography variant="h6" fontWeight={600} gutterBottom sx={{ mb: 1 }}>
+          <Box>
+            <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>
               Notification Frequency
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-              How often would you like to receive event notifications?
-            </Typography>
-            <Divider sx={{ mb: 4 }} />
 
             <FormControl fullWidth variant="outlined">
               <InputLabel color="secondary">Frequency</InputLabel>
@@ -296,40 +216,18 @@ export default function EventSettingsPage({ user }: { user: User }) {
                 <MenuItem value="monthly">Monthly - Get a monthly summary</MenuItem>
               </Select>
             </FormControl>
-          </Paper>
+          </Box>
         </Grid>
 
         {/* Preferred Event Types */}
         <Grid size={{ xs: 12 }}>
-          <Paper
-            elevation={0}
-            sx={{
-              p: 4,
-              border: '1px solid',
-              borderColor: 'divider',
-              borderRadius: 3,
-            }}
-          >
-            <Typography variant="h6" fontWeight={600} gutterBottom sx={{ mb: 1 }}>
+          <Box>
+            <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>
               Preferred Event Types
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-              Enable notifications for specific event categories
-            </Typography>
-            <Divider sx={{ mb: 4 }} />
 
             {!hasInterests ? (
-              <Box
-                sx={{
-                  textAlign: 'center',
-                  py: 6,
-                  px: 2,
-                  borderRadius: 2,
-                  border: '2px dashed',
-                  borderColor: 'divider',
-                  bgcolor: 'background.default',
-                }}
-              >
+              <Box sx={{ textAlign: 'center', py: 4 }}>
                 <Typography variant="body1" color="text.secondary" gutterBottom>
                   You haven't selected any interests yet.
                 </Typography>
@@ -338,23 +236,10 @@ export default function EventSettingsPage({ user }: { user: User }) {
                 </Typography>
               </Box>
             ) : (
-              <Grid container spacing={2}>
+              <Grid container spacing={{ xs: 1.5, sm: 2 }}>
                 {user.interests?.map(category => (
                   <Grid size={{ xs: 12, sm: 6, md: 4 }} key={category.eventCategoryId}>
-                    <Box
-                      sx={{
-                        p: 2,
-                        borderRadius: 2,
-                        bgcolor: 'background.default',
-                        border: '1px solid',
-                        borderColor: 'divider',
-                        transition: 'all 0.2s ease',
-                        '&:hover': {
-                          borderColor: 'secondary.main',
-                          bgcolor: 'action.hover',
-                        },
-                      }}
-                    >
+                    <Box sx={{ py: 1 }}>
                       <FormControlLabel
                         control={
                           <Switch
@@ -370,33 +255,17 @@ export default function EventSettingsPage({ user }: { user: User }) {
                 ))}
               </Grid>
             )}
-          </Paper>
-        </Grid>
-
-        {/* Info Alert */}
-        <Grid size={{ xs: 12 }}>
-          <Alert 
-            severity="info" 
-            sx={{ 
-              borderRadius: 2,
-              border: '1px solid',
-              borderColor: 'info.light',
-            }}
-          >
-            <Typography variant="body2" fontWeight={500}>
-              These settings help us personalize your event recommendations and notification preferences to match your interests.
-            </Typography>
-          </Alert>
+          </Box>
         </Grid>
       </Grid>
 
-      <Stack direction="row" justifyContent="flex-end" sx={{ mt: 4 }}>
+      <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="flex-end" sx={{ mt: 2 }}>
         <Button 
           variant="contained" 
           color="secondary" 
           onClick={handleSave}
           size="large"
-          sx={{ borderRadius: 2, px: 4, textTransform: 'none', fontWeight: 600, boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}
+          sx={{ borderRadius: 2, px: 4, textTransform: 'none', fontWeight: 600, boxShadow: '0 4px 12px rgba(0,0,0,0.15)', width: { xs: '100%', sm: 'auto' } }}
         >
           Save Changes
         </Button>

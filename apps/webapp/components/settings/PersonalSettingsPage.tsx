@@ -13,8 +13,6 @@ import {
   FormControl,
   InputLabel,
   Stack,
-  Divider,
-  Paper,
 } from '@mui/material';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -84,8 +82,8 @@ export default function PersonalSettingsPage({ user }: { user: User }) {
   return (
     <Box>
       <Stack spacing={4}>
-        <Box>
-          <Typography variant="h4" fontWeight={700} gutterBottom sx={{ color: 'text.primary' }}>
+        <Box sx={{ mb: { xs: 3, sm: 5 } }}>
+          <Typography variant="h4" fontWeight={700} gutterBottom sx={{ color: 'text.primary', fontSize: { xs: '1.5rem', sm: '2.125rem' } }}>
             Personal Settings
           </Typography>
           <Typography variant="body1" color="text.secondary" sx={{ mt: 0.5 }}>
@@ -95,25 +93,12 @@ export default function PersonalSettingsPage({ user }: { user: User }) {
 
         <Box component="form" action={formAction} noValidate>
           {/* Personal Details */}
-          <Paper
-            elevation={0}
-            sx={{
-              p: 4,
-              mb: 4,
-              border: '1px solid',
-              borderColor: 'divider',
-              borderRadius: 3,
-            }}
-          >
-            <Typography variant="h6" fontWeight={600} gutterBottom sx={{ mb: 1 }}>
+          <Box sx={{ mb: 2 }}>
+            <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>
               Personal Details
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-              Basic information about yourself
-            </Typography>
-            <Divider sx={{ mb: 4 }} />
 
-            <Grid container spacing={3}>
+            <Grid container spacing={{ xs: 2, sm: 3 }}>
               <Grid size={{ xs: 12 }}>
                 <FormControl fullWidth>
                   <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en">
@@ -150,42 +135,16 @@ export default function PersonalSettingsPage({ user }: { user: User }) {
                 </FormControl>
               </Grid>
             </Grid>
-          </Paper>
+          </Box>
 
           {/* Privacy Settings */}
-          <Paper
-            elevation={0}
-            sx={{
-              p: 4,
-              mb: 4,
-              border: '1px solid',
-              borderColor: 'divider',
-              borderRadius: 3,
-            }}
-          >
-            <Typography variant="h6" fontWeight={600} gutterBottom sx={{ mb: 1 }}>
+          <Box sx={{ mb: 2 }}>
+            <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>
               Privacy Settings
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-              Control who can see your information
-            </Typography>
-            <Divider sx={{ mb: 4 }} />
 
-            <Stack spacing={2.5}>
-              <Box
-                sx={{
-                  p: 3,
-                  borderRadius: 2,
-                  bgcolor: 'background.default',
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  transition: 'all 0.2s ease',
-                  '&:hover': {
-                    borderColor: 'secondary.main',
-                    bgcolor: 'action.hover',
-                  },
-                }}
-              >
+            <Stack spacing={2}>
+              <Box sx={{ py: 1 }}>
                 <FormControlLabel
                   control={
                     <Switch
@@ -207,20 +166,7 @@ export default function PersonalSettingsPage({ user }: { user: User }) {
                 />
               </Box>
 
-              <Box
-                sx={{
-                  p: 3,
-                  borderRadius: 2,
-                  bgcolor: 'background.default',
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  transition: 'all 0.2s ease',
-                  '&:hover': {
-                    borderColor: 'secondary.main',
-                    bgcolor: 'action.hover',
-                  },
-                }}
-              >
+              <Box sx={{ py: 1 }}>
                 <FormControlLabel
                   control={
                     <Switch
@@ -242,20 +188,7 @@ export default function PersonalSettingsPage({ user }: { user: User }) {
                 />
               </Box>
 
-              <Box
-                sx={{
-                  p: 3,
-                  borderRadius: 2,
-                  bgcolor: 'background.default',
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  transition: 'all 0.2s ease',
-                  '&:hover': {
-                    borderColor: 'secondary.main',
-                    bgcolor: 'action.hover',
-                  },
-                }}
-              >
+              <Box sx={{ py: 1 }}>
                 <FormControlLabel
                   control={
                     <Switch
@@ -277,17 +210,17 @@ export default function PersonalSettingsPage({ user }: { user: User }) {
                 />
               </Box>
             </Stack>
-          </Paper>
+          </Box>
 
           {/* Action Button */}
-          <Stack direction="row" justifyContent="flex-end">
+          <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="flex-end" sx={{ mt: { xs: 3, sm: 4 } }}>
             <Button
               startIcon={<SaveIcon />}
               variant="contained"
               color="secondary"
               type="submit"
               size="large"
-              sx={{ borderRadius: 2, px: 4, textTransform: 'none', fontWeight: 600, boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}
+              sx={{ borderRadius: 2, px: 4, textTransform: 'none', fontWeight: 600, boxShadow: '0 4px 12px rgba(0,0,0,0.15)', width: { xs: '100%', sm: 'auto' } }}
             >
               Save Changes
             </Button>

@@ -37,6 +37,9 @@ export default function CustomTabs({ tabsProps }: { tabsProps: CustomTabsProps }
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
 
+  // Use horizontal orientation on mobile for more content space
+  const effectiveOrientation = isSmallScreen ? 'horizontal' : orientation;
+
   // Memoize tab panels to avoid unnecessary re-renders
   const tabPanels = useMemo(
     () =>
@@ -65,19 +68,19 @@ export default function CustomTabs({ tabsProps }: { tabsProps: CustomTabsProps }
       aria-label={tabsTitle}
       sx={{
         display: 'flex',
-        flexDirection: orientation === 'vertical' ? 'row' : 'column',
-        height: orientation === 'vertical' ? '100%' : 'auto',
+        flexDirection: effectiveOrientation === 'vertical' ? 'row' : 'column',
+        height: effectiveOrientation === 'vertical' ? '100%' : 'auto',
       }}
     >
       <Box
         sx={{
-          borderBottom: orientation === 'horizontal' ? 1 : 0,
+          borderBottom: effectiveOrientation === 'horizontal' ? 1 : 0,
           borderColor: 'divider',
           display: 'flex',
           flexDirection: 'column',
           backgroundColor: 'background.default',
-          minHeight: '100vh',
-          ...(orientation === 'vertical' ? { minWidth: isSmallScreen ? 'auto' : '200px' } : {}),
+          minHeight: effectiveOrientation === 'vertical' ? '100vh' : 'auto',
+          ...(effectiveOrientation === 'vertical' ? { minWidth: isSmallScreen ? 'auto' : '200px' } : {}),
         }}
       >
         {tabsTitle && (
@@ -95,7 +98,7 @@ export default function CustomTabs({ tabsProps }: { tabsProps: CustomTabsProps }
         )}
 
         <Tabs
-          orientation={orientation}
+          orientation={effectiveOrientation}
           variant={variant}
           value={value}
           onChange={handleChange}
@@ -104,15 +107,15 @@ export default function CustomTabs({ tabsProps }: { tabsProps: CustomTabsProps }
           indicatorColor="secondary"
           slotProps={{
             indicator: {
-              style: orientation === 'vertical' ? { left: 0, width: 4 } : undefined,
+              style: effectiveOrientation === 'vertical' ? { left: 0, width: 4 } : undefined,
             },
           }}
           sx={{
-            height: orientation === 'vertical' ? '100%' : 'auto',
+            height: effectiveOrientation === 'vertical' ? '100%' : 'auto',
             '& .MuiTab-root': {
-              minHeight: orientation === 'vertical' ? 48 : undefined,
-              textAlign: 'left',
-              justifyContent: 'flex-start',
+              minHeight: effectiveOrientation === 'vertical' ? 48 : undefined,
+              textAlign: effectiveOrientation === 'horizontal' ? 'center' : 'left',
+              justifyContent: effectiveOrientation === 'horizontal' ? 'center' : 'flex-start',
               alignItems: 'center',
               '&:hover': {
                 backgroundColor: 'action.hover',
@@ -121,25 +124,40 @@ export default function CustomTabs({ tabsProps }: { tabsProps: CustomTabsProps }
                 fontWeight: 'bold',
               },
             },
+            '& .MuiTab-icon': {
+              marginRight: effectiveOrientation === 'vertical' ? '8px !important' : '0 !important',
+              marginBottom: effectiveOrientation === 'horizontal' ? '4px !important' : '0 !important',
+            },
           }}
         >
           {tabs.map(({ name, icon, description, disabled }, index) => (
             <Tooltip
               key={`${id}-tab-${index}`}
               title={description}
-              placement={orientation === 'vertical' ? 'right' : 'bottom'}
+              placement={effectiveOrientation === 'vertical' ? 'right' : 'bottom'}
               arrow
             >
               <Tab
                 id={`${id}-tab-${index}`}
                 aria-controls={`${id}-panel-${index}`}
-                label={isSmallScreen ? null : <span style={{ textTransform: 'none' }}>{name}</span>}
+                label={
+                  <span
+                    style={{
+                      textTransform: 'none',
+                      fontSize: effectiveOrientation === 'horizontal' ? '0.75rem' : undefined,
+                      lineHeight: 1,
+                    }}
+                  >
+                    {name}
+                  </span>}
                 icon={icon}
-                iconPosition="start"
+                iconPosition={effectiveOrientation === 'horizontal' ? 'top' : 'start'}
                 disabled={disabled}
                 sx={{
-                  minWidth: isSmallScreen ? 'auto' : undefined,
                   opacity: disabled ? 0.5 : 1,
+                  px: effectiveOrientation === 'horizontal' ? 2 : undefined,
+                  py: effectiveOrientation === 'vertical' ? 1.5 : undefined,
+                  minWidth: isSmallScreen ? 'auto' : undefined,
                 }}
               />
             </Tooltip>

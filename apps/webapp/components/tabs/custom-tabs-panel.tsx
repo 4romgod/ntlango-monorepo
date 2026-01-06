@@ -18,8 +18,7 @@ export function CustomTabPanel(props: TabPanelProps) {
           elevation={0}
           sx={{
             borderColor: 'divider',
-            p: 4,
-            minHeight: 400,
+            p: { xs: 2, sm: 3, md: 4 },
           }}
         >
           {children}

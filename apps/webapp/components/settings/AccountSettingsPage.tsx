@@ -15,8 +15,6 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  Paper,
-  Divider,
   Stack,
 } from '@mui/material';
 import { Delete as DeleteIcon } from '@mui/icons-material';
@@ -120,8 +118,8 @@ export default function AccountSettingsPage({ user }: { user: User }) {
 
   return (
     <Box>
-      <Box sx={{ mb: 5 }}>
-        <Typography variant="h4" fontWeight={700} gutterBottom sx={{ color: 'text.primary' }}>
+      <Box sx={{ mb: { xs: 3, sm: 5 } }}>
+        <Typography variant="h4" fontWeight={700} gutterBottom sx={{ color: 'text.primary', fontSize: { xs: '1.5rem', sm: '2.125rem' } }}>
           Account Management
         </Typography>
         <Typography variant="body1" color="text.secondary" sx={{ mt: 0.5 }}>
@@ -130,25 +128,12 @@ export default function AccountSettingsPage({ user }: { user: User }) {
       </Box>
 
       <Box component="form" action={updateUserFormAction} noValidate>
-        <Paper
-          elevation={0}
-          sx={{
-            p: 4,
-            mb: 4,
-            border: '1px solid',
-            borderColor: 'divider',
-            borderRadius: 3,
-          }}
-        >
-          <Typography variant="h6" fontWeight={600} gutterBottom sx={{ mb: 1 }}>
+        <Box sx={{ mb: 2 }}>
+          <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>
             Account Details
           </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-            Your username and email address
-          </Typography>
-          <Divider sx={{ mb: 4 }} />
 
-          <Grid container spacing={3}>
+          <Grid container spacing={{ xs: 2, sm: 3 }}>
             <Grid size={{ xs: 12 }}>
               <TextField
                 fullWidth
@@ -180,27 +165,14 @@ export default function AccountSettingsPage({ user }: { user: User }) {
               />
             </Grid>
           </Grid>
-        </Paper>
+        </Box>
 
-        <Paper
-          elevation={0}
-          sx={{
-            p: 4,
-            mb: 4,
-            border: '1px solid',
-            borderColor: 'divider',
-            borderRadius: 3,
-          }}
-        >
-          <Typography variant="h6" fontWeight={600} gutterBottom sx={{ mb: 1 }}>
+        <Box sx={{ mb: 2 }}>
+          <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>
             Preferences
           </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-            Set your language and timezone
-          </Typography>
-          <Divider sx={{ mb: 4 }} />
 
-          <Grid container spacing={3}>
+          <Grid container spacing={{ xs: 2, sm: 3 }}>
             <Grid size={{ xs: 12 }}>
               <FormControl fullWidth variant="outlined">
                 <InputLabel color="secondary">Language</InputLabel>
@@ -239,16 +211,16 @@ export default function AccountSettingsPage({ user }: { user: User }) {
               </FormControl>
             </Grid>
           </Grid>
-        </Paper>
+        </Box>
 
-        <Stack direction="row" justifyContent="flex-end">
+        <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="flex-end" sx={{ mt: 2 }}>
           <Button
             variant="contained"
             color="secondary"
             type="submit"
             disabled={isPending}
             size="large"
-            sx={{ borderRadius: 2, px: 4, textTransform: 'none', fontWeight: 600, boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}
+            sx={{ borderRadius: 2, px: 4, textTransform: 'none', fontWeight: 600, boxShadow: '0 4px 12px rgba(0,0,0,0.15)', width: { xs: '100%', sm: 'auto' } }}
           >
             Save Changes
           </Button>
@@ -256,17 +228,17 @@ export default function AccountSettingsPage({ user }: { user: User }) {
       </Box>
 
       {/* Delete Account Section - Danger Zone */}
-      <Paper
-        elevation={0}
+      <Box
         sx={{
-          p: 4,
+          p: 2,
+          mt: 3,
           border: '2px solid',
           borderColor: 'error.main',
-          borderRadius: 3,
+          borderRadius: 2,
           bgcolor: (theme) => theme.palette.mode === 'dark' ? 'error.dark' : 'error.lighter',
         }}
       >
-        <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems={{ xs: 'flex-start', sm: 'center' }} sx={{ mb: 2 }}>
           <Box
             sx={{
               display: 'flex',
@@ -291,9 +263,7 @@ export default function AccountSettingsPage({ user }: { user: User }) {
           </Box>
         </Stack>
 
-        <Divider sx={{ my: 3 }} />
-
-        <Box sx={{ mb: 3 }}>
+        <Box sx={{ mb: 3, mt: 2 }}>
           <Typography variant="subtitle1" fontWeight={600} gutterBottom>
             Delete Account
           </Typography>
@@ -314,6 +284,7 @@ export default function AccountSettingsPage({ user }: { user: User }) {
               textTransform: 'none',
               fontWeight: 600,
               boxShadow: (theme) => `0 4px 12px ${theme.palette.error.main}40`,
+              width: { xs: '100%', sm: 'auto' },
             }}
           >
             Delete My Account
@@ -396,7 +367,7 @@ export default function AccountSettingsPage({ user }: { user: User }) {
             </Button>
           </DialogActions>
         </Dialog>
-      </Paper>
+      </Box>
     </Box>
   );
 }
