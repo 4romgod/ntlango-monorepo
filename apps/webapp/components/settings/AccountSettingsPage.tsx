@@ -263,8 +263,7 @@ export default function AccountSettingsPage({ user }: { user: User }) {
           border: '2px solid',
           borderColor: 'error.main',
           borderRadius: 3,
-          bgcolor: 'error.lighter',
-          background: 'linear-gradient(145deg, rgba(255,0,0,0.02) 0%, rgba(255,0,0,0.05) 100%)',
+          bgcolor: (theme) => theme.palette.mode === 'dark' ? 'error.dark' : 'error.lighter',
         }}
       >
         <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
@@ -314,7 +313,7 @@ export default function AccountSettingsPage({ user }: { user: User }) {
               px: 3,
               textTransform: 'none',
               fontWeight: 600,
-              boxShadow: '0 4px 12px rgba(255,0,0,0.25)',
+              boxShadow: (theme) => `0 4px 12px ${theme.palette.error.main}40`,
             }}
           >
             Delete My Account

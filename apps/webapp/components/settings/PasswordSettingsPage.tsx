@@ -316,8 +316,7 @@ export default function PasswordSettingsPage() {
                     borderRadius: 2,
                     border: '1px solid',
                     borderColor: `${passwordStrength.color}.main`,
-                    bgcolor: `${passwordStrength.color}.lighter`,
-                    background: `linear-gradient(145deg, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0) 100%)`,
+                    bgcolor: (theme) => theme.palette.mode === 'dark' ? `${passwordStrength.color}.dark` : `${passwordStrength.color}.lighter`,
                   }}
                 >
                   <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
@@ -423,8 +422,7 @@ export default function PasswordSettingsPage() {
             border: '1px solid',
             borderColor: 'info.light',
             borderRadius: 3,
-            bgcolor: 'info.lighter',
-            background: 'linear-gradient(145deg, rgba(33,150,243,0.02) 0%, rgba(33,150,243,0.05) 100%)',
+            bgcolor: (theme) => theme.palette.mode === 'dark' ? 'info.dark' : 'info.lighter',
           }}
         >
           <Typography variant="h6" fontWeight={600} gutterBottom color="info.main" sx={{ mb: 3 }}>

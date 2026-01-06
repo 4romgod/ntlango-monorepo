@@ -200,12 +200,14 @@ export default function InterestsSettingsPage({
               placeholder="Search interests..."
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon />
+                    </InputAdornment>
+                  ),
+                },
               }}
               variant="outlined"
               color="secondary"
@@ -219,7 +221,7 @@ export default function InterestsSettingsPage({
             sx={{
               p: 3,
               mb: 3,
-              background: 'linear-gradient(135deg, rgba(156, 39, 176, 0.1) 0%, rgba(103, 58, 183, 0.1) 100%)',
+              bgcolor: (theme) => theme.palette.mode === 'dark' ? 'secondary.dark' : 'secondary.lighter',
               border: '1px solid',
               borderColor: 'secondary.light',
               borderRadius: 2,
@@ -287,11 +289,9 @@ export default function InterestsSettingsPage({
                             '&:hover': {
                               borderColor: 'secondary.main',
                               bgcolor: 'action.hover',
-                              transform: 'translateY(-2px)',
                               boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
                             },
                           }}
-                          onClick={() => handleInterestToggle(category)}
                         >
                           <FormControlLabel
                             control={

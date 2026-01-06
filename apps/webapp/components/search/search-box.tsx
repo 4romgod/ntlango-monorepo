@@ -37,14 +37,15 @@ export default function SearchBar({
             {...params}
             label="Search events by title, description..."
             placeholder="Try 'music', 'festival', or 'workshop'"
-            InputProps={{
-              ...params.InputProps,
-              type: 'search',
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon sx={{ color: 'text.secondary' }} />
-                </InputAdornment>
-              ),
+            slotProps={{
+              input: {
+                type: 'search',
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon sx={{ color: 'text.secondary' }} />
+                  </InputAdornment>
+                ),
+              },
             }}
             sx={{
               '& .MuiOutlinedInput-root': {

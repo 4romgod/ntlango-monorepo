@@ -114,7 +114,7 @@ export default function EditProfilePage({ user }: { user: User }) {
             border: '1px solid',
             borderColor: 'divider',
             borderRadius: 3,
-            background: 'linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 100%)',
+            bgcolor: 'action.hover',
           }}
         >
           <Typography variant="h6" fontWeight={600} gutterBottom sx={{ mb: 3 }}>
@@ -126,14 +126,14 @@ export default function EditProfilePage({ user }: { user: User }) {
               <Avatar
                 src={profile.profile_picture || ''}
                 alt={`${profile.given_name} ${profile.family_name}`}
-                sx={{ 
-                  width: 140, 
-                  height: 140, 
-                  border: '5px solid', 
-                  borderColor: 'background.paper', 
+                sx={(theme) => ({
+                  width: 140,
+                  height: 140,
+                  border: '5px solid',
+                  borderColor: 'background.paper',
                   boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                }}
+                  background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
+                })}
               />
               {isEditing && (
                 <Box sx={{ position: 'absolute', bottom: 0, right: 0 }}>
