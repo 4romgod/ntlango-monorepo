@@ -30,7 +30,7 @@ export async function loginUserAction(prevState: ActionState, formData: FormData
 
   try {
     logger.debug('Attempting sign in');
-    const user = await signIn('credentials', {
+    await signIn('credentials', {
       email,
       password,
       redirectTo: DEFAULT_LOGIN_REDIRECT,
@@ -45,6 +45,12 @@ export async function loginUserAction(prevState: ActionState, formData: FormData
       zodErrors: null,
     };
   } catch (error) {
+    // NEXT_REDIRECT is not an error - it's how Next.js performs redirects in server actions
+    if (error instanceof Error && (error.message === 'NEXT_REDIRECT' || (error as any).digest?.startsWith('NEXT_REDIRECT'))) {
+      logger.info('Login successful, redirecting user', { email, redirect: DEFAULT_LOGIN_REDIRECT });
+      throw error;
+    }
+    
     logger.error('Login failed', { error, email: inputData.email });
     if (error instanceof AuthError) {
       switch (error.type) {

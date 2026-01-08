@@ -87,6 +87,7 @@ export const generateToken = async (user: User, secret?: string, expiresIn?: str
   if (!jwtSecret) {
     throw CustomError(ERROR_MESSAGES.UNAUTHENTICATED, ErrorTypes.UNAUTHENTICATED);
   }
+  // TODO 1 hour is for testing, consider longer expiry for production
   const tokenExpiry: StringValue | number = (expiresIn ?? '1h') as StringValue | number;
   const signOptions: SignOptions = {expiresIn: tokenExpiry};
   return sign(user, jwtSecret as Secret, signOptions);

@@ -140,7 +140,7 @@ const getActorLabel = (activity: GetSocialFeedQuery['readFeed'][number]): string
 export default async function HomePage() {
   const session = await auth();
   const token = session?.user?.token;
-  const isAuth = isAuthenticated(token);
+  const isAuth = await isAuthenticated(token);
 
   const { data: events } = await getClient().query({ query: GetAllEventsDocument });
   const { data } = await getClient().query({ query: GetAllEventCategoriesDocument });
