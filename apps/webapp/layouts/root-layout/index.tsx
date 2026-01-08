@@ -21,6 +21,8 @@ type RootLayoutProps = { children: ReactNode; session: Session | null };
 export default function RootLayout({ children, session }: RootLayoutProps) {
   const navHeight = 64;
 
+  const isAuthN = Boolean(session?.user?.userId && session?.user?.token);
+
   return (
     <html lang="en">
       <body>
@@ -31,7 +33,7 @@ export default function RootLayout({ children, session }: RootLayoutProps) {
                 <CustomThemeProvider>
                   <ToastProvider />
                   <TopProgressBar />
-                  <MainNavigation isAuthN={Boolean(session)} />
+                  <MainNavigation isAuthN={isAuthN} />
                   <Box
                     sx={{
                       minHeight: '100vh',

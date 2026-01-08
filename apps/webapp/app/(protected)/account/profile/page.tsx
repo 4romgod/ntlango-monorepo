@@ -33,6 +33,7 @@ import { EventPreview } from '@/data/graphql/query/Event/types';
 import { ROUTES } from '@/lib/constants';
 import { omit } from 'lodash';
 import Link from 'next/link';
+import { getAvatarSrc } from '@/lib/utils';
 
 export default async function UserPublicProfile() {
   const session = await auth();
@@ -92,12 +93,12 @@ export default async function UserPublicProfile() {
               borderColor: 'divider',
             }}
           >
-            {/* Cover Image */}
             <Box
               sx={{
                 height: 200,
                 position: 'relative',
                 bgcolor: 'primary.main',
+                boxShadow: '0 10px 30px rgba(0,0,0,0.08)',
               }}
             >
               <Link href={ROUTES.ACCOUNT.ROOT}>
@@ -124,13 +125,11 @@ export default async function UserPublicProfile() {
               </Link>
             </Box>
 
-            {/* Profile Info */}
             <Box sx={{ px: { xs: 3, sm: 4 }, pb: 4 }}>
-              {/* Avatar */}
               <Box sx={{ display: 'flex', alignItems: 'flex-end', mt: -8 }}>
                 <Box sx={{ position: 'relative' }}>
                   <Avatar
-                    src={user.profile_picture || '/api/placeholder/120/120'}
+                    src={getAvatarSrc(session?.user)}
                     alt={`${user.given_name} ${user.family_name}`}
                     sx={{
                       width: 140,
