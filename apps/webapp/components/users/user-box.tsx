@@ -1,18 +1,15 @@
-import { Typography, Grid, Avatar, Box, Paper, Chip, Stack } from '@mui/material';
-import { Person, Star } from '@mui/icons-material';
+'use client';
+
+import { Typography, Grid, Avatar, Box, Paper } from '@mui/material';
+import { Person } from '@mui/icons-material';
 import { User } from '@/data/graphql/types/graphql';
 import Link from 'next/link';
 import { ROUTES } from '@/lib/constants';
 import { getAvatarSrc, getDisplayName } from '@/lib/utils';
 
 export default function UserBox({ user }: { user: User }) {
-  const displayName = getDisplayName(user) !== 'Account' 
-    ? getDisplayName(user)
-    : user.username;
+  const displayName = getDisplayName(user) !== 'Account' ? getDisplayName(user) : user.username;
   
-  // Count interests if available
-  const interestsCount = Array.isArray(user.interests) ? user.interests.length : 0;
-
   return (
     <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
       <Link href={ROUTES.USERS.USER(user.username)} style={{ textDecoration: 'none' }}>
@@ -28,7 +25,7 @@ export default function UserBox({ user }: { user: User }) {
             cursor: 'pointer',
             '&:hover': {
               borderColor: 'primary.main',
-              boxShadow: '0 4px 20px #4f46e520',
+              boxShadow: (theme) => `0 4px 20px ${theme.palette.primary.main}20`,
               transform: 'translateY(-4px)',
             },
           }}

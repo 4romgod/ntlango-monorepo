@@ -32,8 +32,7 @@ const VenueCard = ({ venueId, name, type, capacity, address, amenities }: VenueC
         display: 'flex',
         flexDirection: 'column',
         border: '1px solid',
-        borderColor: 'divider',
-        transition: 'all 0.3s ease'
+        borderColor: 'divider'
       }}
     >
       <CardContent sx={{ flexGrow: 1, p: 3 }}>
