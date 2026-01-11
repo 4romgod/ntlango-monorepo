@@ -62,7 +62,7 @@ const Footer = () => {
         <Grid container spacing={4}>
           {footerSections.map(section => (
             <Grid size={{ xs: 6, sm: 3 }} key={section.title}>
-              <Typography variant="h6" fontWeight="bold" gutterBottom color={theme.palette.text.primary}>
+              <Typography variant="h6" fontWeight="bold" gutterBottom color={theme.palette.text.secondary}>
                 {section.title}
               </Typography>
               <Box component="ul" sx={{ listStyle: 'none', p: 0, m: 0 }}>

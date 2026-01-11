@@ -28,15 +28,22 @@ export default function EventCarousel({
   const containerRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Check scroll position to show/hide arrows
+  // Check scroll position to show/hide arrows and update current index
   const checkScrollPosition = useCallback(() => {
     if (containerRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = containerRef.current;
       setCanScrollLeft(scrollLeft > 0);
       setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
+      
+      // Calculate current index based on scroll position (for mobile)
+      if (isMobile) {
+        const index = Math.round(scrollLeft / clientWidth);
+        setCurrentIndex(index);
+      }
     }
-  }, []);
+  }, [isMobile]);
 
   useEffect(() => {
     checkScrollPosition();
@@ -185,6 +192,31 @@ export default function EventCarousel({
             </Box>
           ))}
         </Box>
+
+        {/* Indicators for mobile */}
+        {isMobile && events.length > 1 && (
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              gap: 1,
+              mt: 2,
+            }}
+          >
+            {events.map((_, index) => (
+              <Box
+                key={index}
+                sx={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: '50%',
+                  bgcolor: currentIndex === index ? 'primary.main' : 'action.disabled',
+                  transition: 'background-color 0.3s',
+                }}
+              />
+            ))}
+          </Box>
+        )}
       </Box>
     </Box>
   );

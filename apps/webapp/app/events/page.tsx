@@ -16,13 +16,19 @@ export const metadata: Metadata = {
   },
 };
 
+// Enable ISR with 60-second revalidation for performance
+export const revalidate = 60;
+
 export default async function Events() {
-  const { data: events } = await getClient().query({
-    query: GetAllEventsDocument,
-  });
-  const { data: eventCategories } = await getClient().query({
-    query: GetAllEventCategoriesDocument,
-  });
+  // Parallelize queries for faster page load
+  const [{ data: events }, { data: eventCategories }] = await Promise.all([
+    getClient().query({
+      query: GetAllEventsDocument,
+    }),
+    getClient().query({
+      query: GetAllEventCategoriesDocument,
+    }),
+  ]);
 
   const allCategories: EventCategory[] = eventCategories.readEventCategories;
   const eventsList = (events.readEvents ?? []) as EventPreview[];

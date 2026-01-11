@@ -33,12 +33,7 @@ const VenueCard = ({ venueId, name, type, capacity, address, amenities }: VenueC
         flexDirection: 'column',
         border: '1px solid',
         borderColor: 'divider',
-        transition: 'all 0.3s ease',
-        '&:hover': {
-          boxShadow: 4,
-          transform: 'translateY(-4px)',
-          borderColor: 'primary.main',
-        },
+        transition: 'all 0.3s ease'
       }}
     >
       <CardContent sx={{ flexGrow: 1, p: 3 }}>
@@ -137,6 +132,7 @@ const VenueCard = ({ venueId, name, type, capacity, address, amenities }: VenueC
         {venueId ? (
           <Button
             variant="outlined"
+            color="secondary"
             size="medium"
             component={Link}
             href={detailsHref}
@@ -152,6 +148,7 @@ const VenueCard = ({ venueId, name, type, capacity, address, amenities }: VenueC
         ) : (
           <Button
             variant="outlined"
+            color="secondary"
             size="medium"
             component={Link}
             href={ROUTES.VENUES.ROOT}
@@ -167,6 +164,7 @@ const VenueCard = ({ venueId, name, type, capacity, address, amenities }: VenueC
         )}
         <Button
           variant="contained"
+          color="secondary"
           size="medium"
           component={Link}
           href={ROUTES.EVENTS.ROOT}

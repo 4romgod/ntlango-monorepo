@@ -90,7 +90,7 @@ export default function MainNavigation({ isAuthN }: MainNavigationProps) {
             <Box
               component="div"
               sx={{
-                display: 'flex',
+                display: { xs: 'none', md: 'flex' },
                 alignItems: 'center',
                 gap: 1.5,
               }}
@@ -145,10 +145,6 @@ export default function MainNavigation({ isAuthN }: MainNavigationProps) {
                 sx={{
                   display: { xs: 'none', md: 'inline-flex' },
                   color: 'text.secondary',
-                  borderRadius: 10,
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  backgroundColor: 'background.paper',
                   padding: 0,
                   marginX: 1.5,
                   '&:hover': { color: 'text.primary' },
@@ -165,10 +161,6 @@ export default function MainNavigation({ isAuthN }: MainNavigationProps) {
                 sx={{
                   display: { xs: 'none', md: 'inline-flex' },
                   color: 'text.secondary',
-                  borderRadius: 10,
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  backgroundColor: 'background.paper',
                   padding: 0,
                   marginX: 1.5,
                   '&:hover': { color: 'text.primary' },

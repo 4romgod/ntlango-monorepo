@@ -26,6 +26,9 @@ export const metadata: Metadata = {
   title: 'Organizations · Ntlango',
 };
 
+// Enable ISR with 120-second revalidation (organizations change less frequently)
+export const revalidate = 120;
+
 export default async function OrganizationsPage() {
   const { data } = await getClient().query<OrganizationsResponse>({
     query: GET_ORGANIZATIONS,

@@ -1,60 +1,79 @@
 'use client';
 
-// Insipred by https://dev.to/vvo/show-a-top-progress-bar-on-fetch-and-router-events-in-next-js-4df3
-import Router from 'next/router';
+import { useEffect } from 'react';
+import { usePathname, useSearchParams } from 'next/navigation';
 import NProgress from 'nprogress';
 
-enum ROUTING_STATE {
-  loading = 'loading',
-  stopped = 'stopped',
-}
-
-let timer: NodeJS.Timeout;
-let state: ROUTING_STATE;
-let activeRequests = 0;
-const delay = 150;
-
-function load() {
-  if (state === ROUTING_STATE.loading) return;
-  state = ROUTING_STATE.loading;
-  timer = setTimeout(() => {
-    NProgress.start();
-  }, delay); // only show progress bar if it takes longer than the delay
-}
-
-function stop() {
-  if (activeRequests > 0) return;
-  state = ROUTING_STATE.stopped;
-  clearTimeout(timer);
-  NProgress.done();
-}
-
-Router.events.on('routeChangeStart', load);
-Router.events.on('routeChangeComplete', stop);
-Router.events.on('routeChangeError', stop);
-
-const originalFetch = window.fetch;
-window.fetch = async function (...args) {
-  if (activeRequests === 0) {
-    load();
-  }
-
-  activeRequests++;
-
-  try {
-    const response = await originalFetch(...args);
-    return response;
-  } catch (error) {
-    console.log(error);
-    return Promise.reject(error);
-  } finally {
-    activeRequests -= 1;
-    if (activeRequests === 0) {
-      stop();
-    }
-  }
-};
-
 export default function TopProgressBar() {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    NProgress.configure({ 
+      showSpinner: false,
+      minimum: 0.2,
+      easing: 'ease',
+      speed: 400,
+    });
+
+    // Add custom styling for thicker, more visible bar
+    const style = document.createElement('style');
+    style.innerHTML = `
+      #nprogress .bar {
+        height: 4px !important;
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Start progress bar on link clicks
+    const handleAnchorClick = (event: MouseEvent) => {
+      const target = event.currentTarget as HTMLAnchorElement;
+      const href = target.getAttribute('href');
+
+      // Only track internal navigation
+      if (
+        href &&
+        href.startsWith('/') &&
+        !event.metaKey &&
+        !event.ctrlKey &&
+        !event.shiftKey &&
+        !event.defaultPrevented
+      ) {
+        NProgress.start();
+      }
+    };
+
+    // Add click listeners to all links
+    const links = document.querySelectorAll('a[href^="/"]');
+    links.forEach((link) => {
+      link.addEventListener('click', handleAnchorClick as any);
+    });
+
+    // Observer to handle dynamically added links
+    const observer = new MutationObserver(() => {
+      const newLinks = document.querySelectorAll('a[href^="/"]');
+      newLinks.forEach((link) => {
+        link.removeEventListener('click', handleAnchorClick as any);
+        link.addEventListener('click', handleAnchorClick as any);
+      });
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+
+    return () => {
+      links.forEach((link) => {
+        link.removeEventListener('click', handleAnchorClick as any);
+      });
+      observer.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    NProgress.done();
+  }, [pathname, searchParams]);
+
   return null;
 }

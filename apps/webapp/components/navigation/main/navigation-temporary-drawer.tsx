@@ -70,72 +70,96 @@ export default function TemporaryDrawer({ isAuthN }: { isAuthN: boolean }) {
         </IconButton>
       </Box>
 
-      <Divider sx={{ my: 1 }} />
+      {isAuthN && <Divider sx={{ my: 1 }} />}
 
       {isAuthN && (
-        <List>
-          <ListItem disablePadding>
-            <Link href={ROUTES.ACCOUNT.ROOT}>
-              <ListItemButton>
-                <ListItemIcon>
-                  <Settings />
-                </ListItemIcon>
-                <ListItemText primary={'Settings'} />
-              </ListItemButton>
-            </Link>
-          </ListItem>
-
-          <ListItem disablePadding>
-            <Link href={ROUTES.ACCOUNT.MESSAGES}>
-              <ListItemButton>
-                <ListItemIcon>
-                  <MailOutline />
-                </ListItemIcon>
-                <ListItemText primary={'Messages'} />
-              </ListItemButton>
-            </Link>
-          </ListItem>
-
-          <ListItem disablePadding>
-            <Link href={ROUTES.ACCOUNT.NOTIFICATIONS}>
-              <ListItemButton>
-                <ListItemIcon>
-                  <NotificationsOutlined />
-                </ListItemIcon>
-                <ListItemText primary={'Notifications'} />
-              </ListItemButton>
-            </Link>
-          </ListItem>
-
-          <ListItem disablePadding>
-            <ListItemButton
-              onClick={async () => {
-                try {
-                  await logoutUserAction();
-                } catch (error) {
-                  console.error('Failed to log out:', error);
-                } finally {
-                  setOpen(false);
-                }
-              }}
+        <>
+          <Box sx={{ px: 2, pb: 1 }}>
+            <Button
+              variant="contained"
+              color="secondary"
+              fullWidth
+              startIcon={<ControlPointOutlined />}
+              onClick={() => router.push(ROUTES.ACCOUNT.EVENTS.CREATE)}
             >
-              <ListItemIcon>
-                <Logout />
-              </ListItemIcon>
-              <ListItemText primary={'Logout'} />
-            </ListItemButton>
-          </ListItem>
-        </List>
-      )}
+              Host an event
+            </Button>
+          </Box>
 
-      <Divider sx={{ my: 1 }} />
+          <Divider sx={{ my: 1 }} />
+        </>
+      )}
 
       <NavLinksList variant="drawer" />
 
-      <Divider sx={{ my: 1 }} />
+      {isAuthN && (
+        <>
+          <Divider sx={{ my: 1 }} />
+
+          <List>
+            <ListItem disablePadding>
+              <Link href={ROUTES.ACCOUNT.MESSAGES}>
+                <ListItemButton>
+                  <ListItemIcon>
+                    <MailOutline />
+                  </ListItemIcon>
+                  <ListItemText primary={'Messages'} />
+                </ListItemButton>
+              </Link>
+            </ListItem>
+
+            <ListItem disablePadding>
+              <Link href={ROUTES.ACCOUNT.NOTIFICATIONS}>
+                <ListItemButton>
+                  <ListItemIcon>
+                    <NotificationsOutlined />
+                  </ListItemIcon>
+                  <ListItemText primary={'Notifications'} />
+                </ListItemButton>
+              </Link>
+            </ListItem>
+          </List>
+
+          <Divider sx={{ my: 1 }} />
+
+          <List>
+            <ListItem disablePadding>
+              <Link href={ROUTES.ACCOUNT.ROOT}>
+                <ListItemButton>
+                  <ListItemIcon>
+                    <Settings />
+                  </ListItemIcon>
+                  <ListItemText primary={'Settings'} />
+                </ListItemButton>
+              </Link>
+            </ListItem>
+
+            <ListItem disablePadding>
+              <ListItemButton
+                onClick={async () => {
+                  try {
+                    await logoutUserAction();
+                  } catch (error) {
+                    console.error('Failed to log out:', error);
+                  } finally {
+                    setOpen(false);
+                  }
+                }}
+              >
+                <ListItemIcon>
+                  <Logout />
+                </ListItemIcon>
+                <ListItemText primary={'Logout'} />
+              </ListItemButton>
+            </ListItem>
+          </List>
+        </>
+      )}
 
       {!isAuthN && (
         <>
+          <Divider sx={{ my: 1 }} />
+
           <ListItem disablePadding>
             <ListItemButton onClick={() => router.push(ROUTES.AUTH.LOGIN)}>
               <ListItemIcon>
@@ -151,20 +175,6 @@ export default function TemporaryDrawer({ isAuthN }: { isAuthN: boolean }) {
             </Button>
           </Box>
         </>
-      )}
-
-      {isAuthN && (
-        <Box sx={{ px: 2 }}>
-          <Button
-            variant="contained"
-            color="secondary"
-            fullWidth
-            startIcon={<ControlPointOutlined />}
-            onClick={() => router.push(ROUTES.ACCOUNT.EVENTS.CREATE)}
-          >
-            Host an event
-          </Button>
-        </Box>
       )}
     </Box>
   );
