@@ -67,6 +67,7 @@ const OrganizationCard = ({
         <Button
           size="small"
           variant="contained"
+          color="secondary"
           component={Link}
           href={slug ? ROUTES.ORGANIZATIONS.ORG(slug) : ROUTES.ORGANIZATIONS.ROOT}
         >

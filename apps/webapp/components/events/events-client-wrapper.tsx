@@ -9,7 +9,6 @@ import { DATE_FILTER_OPTIONS, DATE_FILTER_LABELS, type DateFilterOption } from '
 import { EventFilterProvider } from '@/components/events/filters/event-filter-context';
 import CustomContainer from '@/components/custom-container';
 import { useFilteredEvents } from '@/hooks/useFilteredEvents';
-import { useNetworkActivity } from '@/hooks/useNetworkActivity';
 import { useEventFilters } from '@/hooks/useEventFilters';
 import EventsHeader from '@/components/events/filters/events-header';
 import FilterButtons from '@/components/events/filters/filter-buttons';
@@ -30,7 +29,6 @@ interface EventsClientWrapperProps {
 function EventsContent({ categories, initialEvents }: EventsContentProps) {
   const { filters, setSearchQuery, resetFilters, hasActiveFilters, removeCategory, removeStatus, setCategories, setStatuses, setDateRange } = useEventFilters();
   const { events: serverEvents, loading, error } = useFilteredEvents(filters, initialEvents);
-  const networkRequests = useNetworkActivity();
 
   const [categoryAnchor, setCategoryAnchor] = useState<null | HTMLElement>(null);
   const [statusAnchor, setStatusAnchor] = useState<null | HTMLElement>(null);
@@ -46,8 +44,6 @@ function EventsContent({ categories, initialEvents }: EventsContentProps) {
       setCustomDateValue(null);
     }
   }, [filters.dateRange.start, filters.dateRange.end]);
-
-  const showSkeletons = loading || networkRequests > 0;
 
   const filteredEvents = useMemo(() => {
     const query = filters.searchQuery.trim().toLowerCase();
@@ -124,7 +120,7 @@ function EventsContent({ categories, initialEvents }: EventsContentProps) {
 
   return (
     <Box component="main" sx={{ minHeight: '100vh', py: 4 }}>
-      <CustomContainer maxWidthOverrides={{ lg: '95%' }}>
+      <CustomContainer>
         <EventsHeader 
           eventCount={filteredEvents.length}
           eventTitles={eventTitles}
@@ -180,7 +176,7 @@ function EventsContent({ categories, initialEvents }: EventsContentProps) {
 
         <EventsList
           events={filteredEvents}
-          loading={showSkeletons}
+          loading={loading}
           error={error}
           hasActiveFilters={hasActiveFilters}
           onClearFilters={resetFilters}

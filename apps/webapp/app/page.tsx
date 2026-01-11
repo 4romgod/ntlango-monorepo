@@ -35,6 +35,9 @@ export const metadata: Metadata = {
   },
 };
 
+// Enable ISR with 60-second revalidation for performance
+export const revalidate = 60;
+
 type OrganizationSummary = {
   orgId: string;
   slug?: string;
@@ -79,17 +82,17 @@ const socialHighlights: SocialHighlight[] = [
   {
     title: 'Follow the people who inspire you',
     description: 'Track hosts, friends, and organizations with updates that land directly on your feed.',
-    icon: <People fontSize="small" />,
+    icon: <People fontSize="small" color="primary" />,
   },
   {
     title: 'Share RSVP intent with the right crowd',
     description: 'Control whether your Going or Interested signals are public or kept within your followers.',
-    icon: <PersonAdd fontSize="small" />,
+    icon: <PersonAdd fontSize="small" color="primary" />,
   },
   {
     title: 'See the moments that matter',
     description: 'Activity cards surface RSVPs, launches, and check-ins from your circle.',
-    icon: <DynamicFeed fontSize="small" />,
+    icon: <DynamicFeed fontSize="small" color="primary" />,
   },
 ];
 
@@ -142,10 +145,14 @@ export default async function HomePage() {
   const token = session?.user?.token;
   const isAuth = await isAuthenticated(token);
 
-  const { data: events } = await getClient().query({ query: GetAllEventsDocument });
-  const { data } = await getClient().query({ query: GetAllEventCategoriesDocument });
-  const orgResponse = await getClient().query<OrganizationResponse>({ query: GET_ORGANIZATIONS });
-  const venueResponse = await getClient().query<VenuesResponse>({ query: GET_VENUES });
+  // Parallelize all independent queries for faster page load
+  const [{ data: events }, { data }, orgResponse, venueResponse] = await Promise.all([
+    getClient().query({ query: GetAllEventsDocument }),
+    getClient().query({ query: GetAllEventCategoriesDocument }),
+    getClient().query<OrganizationResponse>({ query: GET_ORGANIZATIONS }),
+    getClient().query<VenuesResponse>({ query: GET_VENUES }),
+  ]);
+
   const eventCategories = data.readEventCategories?.slice(0, 6) ?? [];
   const eventList = (events.readEvents ?? []) as EventPreview[];
   const featuredEvents = eventList.slice(0, 8);
@@ -216,8 +223,8 @@ export default async function HomePage() {
           overflow: 'hidden',
           py: { xs: 7, md: 10 },
           px: { xs: 2, md: 3 },
-          backgroundColor: '#0f172a',
-          color: '#e2e8f0',
+          backgroundColor: 'hero.background',
+          color: 'hero.textSecondary',
         }}
       >
         <CustomContainer>
@@ -229,11 +236,11 @@ export default async function HomePage() {
                 variant="outlined"
                 sx={{
                   mb: 3,
-                  borderColor: 'rgba(255,255,255,0.4)',
-                  color: '#f8fafc',
+                  borderColor: 'hero.cardBorder',
+                  color: 'hero.text',
                   fontWeight: 700,
                   letterSpacing: 0.6,
-                  backgroundColor: 'rgba(255,255,255,0.06)',
+                  backgroundColor: 'hero.cardBg',
                 }}
               />
               <Typography
@@ -243,7 +250,7 @@ export default async function HomePage() {
                   fontSize: { xs: '2rem', md: '2.6rem' },
                   lineHeight: 1.1,
                   mb: 2,
-                  color: '#f8fafc',
+                  color: 'hero.text',
                 }}
               >
                 Where unforgettable experiences find their people.
@@ -253,8 +260,9 @@ export default async function HomePage() {
                 sx={{
                   fontWeight: 400,
                   fontSize: { xs: '1rem', md: '1.08rem' },
-                  color: 'rgba(226, 232, 240, 0.85)',
+                  color: 'hero.textSecondary',
                   mb: 3,
+                  opacity: 0.85,
                 }}
               >
                 Ntlango is the modern layer for community-led events—discover inspiring gatherings or host your own with
@@ -281,9 +289,9 @@ export default async function HomePage() {
                   sx={{
                     px: 2.3,
                     py: 1,
-                    borderColor: 'rgba(255,255,255,0.4)',
-                    color: '#f8fafc',
-                    '&:hover': { borderColor: '#f8fafc', backgroundColor: 'rgba(255,255,255,0.08)' },
+                    borderColor: 'hero.cardBorder',
+                    color: 'hero.text',
+                    '&:hover': { borderColor: 'hero.text', backgroundColor: 'hero.cardBg' },
                   }}
                 >
                   Host with Ntlango
@@ -296,14 +304,15 @@ export default async function HomePage() {
                       sx={{
                         p: 1.5,
                         borderRadius: 3,
-                        backgroundColor: 'rgba(255,255,255,0.06)',
-                        border: '1px solid rgba(255,255,255,0.1)',
+                        backgroundColor: 'hero.cardBg',
+                        border: '1px solid',
+                        borderColor: 'hero.cardBorder',
                       }}
                     >
-                      <Typography variant="h6" sx={{ fontWeight: 800, color: '#f8fafc' }}>
+                      <Typography variant="h6" sx={{ fontWeight: 800, color: 'hero.text' }}>
                         {stat.value}
                       </Typography>
-                      <Typography variant="body2" sx={{ color: 'rgba(226,232,240,0.75)' }}>
+                      <Typography variant="body2" sx={{ color: 'hero.textSecondary', opacity: 0.75 }}>
                         {stat.label}
                       </Typography>
                     </Box>
@@ -317,19 +326,20 @@ export default async function HomePage() {
                 sx={{
                   p: 2.1,
                   borderRadius: 4,
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  backgroundColor: 'rgba(255,255,255,0.06)',
-                  color: '#e2e8f0',
+                  border: '1px solid',
+                  borderColor: 'hero.cardBorder',
+                  backgroundColor: 'hero.cardBg',
+                  color: 'hero.textSecondary',
                   boxShadow: '0 30px 80px rgba(0,0,0,0.35)',
                 }}
               >
-                <Typography variant="overline" sx={{ color: 'rgba(226,232,240,0.7)', letterSpacing: 1 }}>
+                <Typography variant="overline" sx={{ color: 'hero.textSecondary', opacity: 0.7, letterSpacing: 1 }}>
                   Featured gathering
                 </Typography>
-                <Typography variant="h5" sx={{ fontWeight: 700, color: '#f8fafc', mt: 1 }}>
+                <Typography variant="h5" sx={{ fontWeight: 700, color: 'hero.text', mt: 1 }}>
                   {heroEvent?.title ?? 'Immersive night market'}
                 </Typography>
-                <Typography variant="body2" sx={{ color: 'rgba(226,232,240,0.75)', mt: 1.5 }}>
+                <Typography variant="body2" sx={{ color: 'hero.textSecondary', opacity: 0.75, mt: 1.5 }}>
                   {heroEvent ? RRule.fromString(heroEvent.recurrenceRule).toText() : 'Every Friday · 7:00pm'}
                 </Typography>
                 <Box
@@ -337,7 +347,8 @@ export default async function HomePage() {
                     mt: 3,
                     borderRadius: 3,
                     overflow: 'hidden',
-                    border: '1px solid rgba(255,255,255,0.1)',
+                    border: '1px solid',
+                    borderColor: 'hero.cardBorder',
                   }}
                 >
                   <Box
@@ -359,7 +370,7 @@ export default async function HomePage() {
                     gap: 2,
                   }}
                 >
-                  <Typography variant="body1" sx={{ color: '#f8fafc', fontWeight: 600 }}>
+                  <Typography variant="body1" sx={{ color: 'hero.text', fontWeight: 600 }}>
                     {heroEvent ? `${heroEventRsvps} RSVPs` : '120 RSVPs forming'}
                   </Typography>
                   {heroEvent && (
@@ -381,9 +392,29 @@ export default async function HomePage() {
       </Box>
 
       <Box
-        id="explore-categories"
+        id="featured-events"
         sx={{
           backgroundColor: 'background.paper',
+          py: { xs: 5, md: 7 },
+        }}
+      >
+        <Container>
+          <EventsCarousel
+            events={featuredEvents}
+            title="Upcoming Events"
+            autoplay={false}
+            autoplayInterval={6000}
+            itemWidth={260}
+            showIndicators={true}
+            viewAllEventsButton={true}
+          />
+        </Container>
+      </Box>
+
+      <Box
+        id="explore-categories"
+        sx={{
+          backgroundColor: 'background.default',
           py: { xs: 5, md: 7 },
         }}
       >
@@ -423,119 +454,86 @@ export default async function HomePage() {
       <Box
         id="communities"
         sx={{
-          backgroundColor: 'background.default',
+          backgroundColor: 'background.paper',
           py: { xs: 5, md: 7 },
         }}
       >
         <Container>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-            <Box>
-              <Typography variant="h5" fontWeight="bold">
-                Featured communities
+          <Typography variant="h4" fontWeight="bold" sx={{ mb: 1, textAlign: 'center' }}>
+            The community behind the gatherings
+          </Typography>
+          <Typography variant="body1" color="text.secondary" sx={{ mb: 5, textAlign: 'center' }}>
+            Discover the organizations and venues powering the events you care about.
+          </Typography>
+
+          <Box sx={{ mb: 5 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+              <Typography variant="h6" fontWeight="bold">
+                Featured organizations
               </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Discover the organizations powering the events you care about.
-              </Typography>
-            </Box>
-            <Box>
-              <Button component={Link} href={ROUTES.ORGANIZATIONS.ROOT} variant="outlined" size="small">
-                Explore all organizations
+              <Button component={Link} href={ROUTES.ORGANIZATIONS.ROOT} variant="text" size="small" color="secondary">
+                View all
               </Button>
             </Box>
+            <Box
+              sx={{
+                display: 'grid',
+                gridTemplateColumns: {
+                  xs: 'repeat(1, minmax(0, 1fr))',
+                  sm: 'repeat(3, minmax(0, 1fr))',
+                  lg: 'repeat(3, minmax(0, 1fr))',
+                },
+                gap: 3,
+              }}
+            >
+              {featuredOrganizations.map(organization => (
+                <Box key={organization.orgId}>
+                  <OrganizationCard {...organization} />
+                </Box>
+              ))}
+              {featuredOrganizations.length === 0 && (
+                <Box>
+                  <Typography variant="body2" color="text.secondary">
+                    No highlighted communities yet.
+                  </Typography>
+                </Box>
+              )}
+            </Box>
           </Box>
-          <Box
-            sx={{
-              display: 'grid',
-              gridTemplateColumns: {
-                xs: 'repeat(1, minmax(0, 1fr))',
-                sm: 'repeat(3, minmax(0, 1fr))',
-                lg: 'repeat(4, minmax(0, 1fr))',
-              },
-              gap: 3,
-            }}
-          >
-            {featuredOrganizations.map(organization => (
-              <Box key={organization.orgId}>
-                <OrganizationCard {...organization} />
-              </Box>
-            ))}
-            {featuredOrganizations.length === 0 && (
-              <Box>
-                <Typography variant="body2" color="text.secondary">
-                  No highlighted communities yet.
-                </Typography>
-              </Box>
-            )}
-          </Box>
-        </Container>
-      </Box>
 
-      <Box
-        id="featured-events"
-        sx={{
-          backgroundColor: 'background.paper',
-          py: { xs: 5, md: 7 },
-        }}
-      >
-        <Container>
-          <EventsCarousel
-            events={featuredEvents}
-            title="Upcoming Events"
-            autoplay={false}
-            autoplayInterval={6000}
-            itemWidth={260}
-            showIndicators={true}
-            viewAllEventsButton={true}
-          />
-        </Container>
-      </Box>
-
-      <Box
-        id="venues"
-        sx={{
-          backgroundColor: 'background.paper',
-          py: { xs: 5, md: 7 },
-        }}
-      >
-        <Container>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-            <Box>
-              <Typography variant="h5" fontWeight="bold">
+          <Box>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+              <Typography variant="h6" fontWeight="bold">
                 Featured venues
               </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Spaces that host events big and small.
-              </Typography>
-            </Box>
-            <Box>
-              <Button component={Link} href={ROUTES.VENUES.ROOT} variant="outlined" size="small">
-                Browse all venues
+              <Button component={Link} href={ROUTES.VENUES.ROOT} variant="text" size="small" color="secondary">
+                View all
               </Button>
             </Box>
-          </Box>
-          <Box
-            sx={{
-              display: 'grid',
-              gridTemplateColumns: {
-                xs: 'repeat(1, minmax(0, 1fr))',
-                sm: 'repeat(3, minmax(0, 1fr))',
-                lg: 'repeat(3, minmax(0, 1fr))',
-              },
-              gap: 3,
-            }}
-          >
-            {featuredVenues.map(venue => (
-              <Box key={venue.venueId}>
-                <VenueCard {...venue} />
-              </Box>
-            ))}
-            {featuredVenues.length === 0 && (
-              <Box>
-                <Typography variant="body2" color="text.secondary">
-                  No venues available at the moment.
-                </Typography>
-              </Box>
-            )}
+            <Box
+              sx={{
+                display: 'grid',
+                gridTemplateColumns: {
+                  xs: 'repeat(1, minmax(0, 1fr))',
+                  sm: 'repeat(3, minmax(0, 1fr))',
+                  lg: 'repeat(3, minmax(0, 1fr))',
+                },
+                gap: 3,
+              }}
+            >
+              {featuredVenues.map(venue => (
+                <Box key={venue.venueId}>
+                  <VenueCard {...venue} />
+                </Box>
+              ))}
+              {featuredVenues.length === 0 && (
+                <Box>
+                  <Typography variant="body2" color="text.secondary">
+                    No venues available at the moment.
+                  </Typography>
+                </Box>
+              )}
+            </Box>
           </Box>
         </Container>
       </Box>
@@ -572,7 +570,7 @@ export default async function HomePage() {
                       borderRadius: 3,
                     }}
                   >
-                    <Box sx={{ color: 'primary.main' }}>{highlight.icon}</Box>
+                    <Box>{highlight.icon}</Box>
                     <Box>
                       <Typography variant="subtitle1" fontWeight="600">
                         {highlight.title}
@@ -680,7 +678,7 @@ export default async function HomePage() {
       <Box
         id="create-event-cta"
         sx={{
-          backgroundColor: 'background.default',
+          backgroundColor: 'background.paper',
           py: { xs: 5, md: 7 },
         }}
       >
@@ -696,7 +694,7 @@ export default async function HomePage() {
                     border: '1px solid',
                     borderColor: 'divider',
                     backgroundColor: 'background.paper',
-                    boxShadow: '0 18px 36px rgba(0,0,0,0.08)',
+                    boxShadow: 2,
                   }}
                 >
                   <Box

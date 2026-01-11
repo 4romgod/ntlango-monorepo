@@ -29,6 +29,9 @@ export const metadata: Metadata = {
   title: 'Venues · Ntlango',
 };
 
+// Enable ISR with 120-second revalidation (venues change less frequently)
+export const revalidate = 120;
+
 export default async function VenuesPage() {
   const { data } = await getClient().query<VenuesResponse>({
     query: GET_VENUES,

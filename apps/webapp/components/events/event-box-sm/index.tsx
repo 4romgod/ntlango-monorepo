@@ -52,10 +52,9 @@ export default function EventBoxSm({ event }: { event: EventPreview }) {
           border: '1px solid',
           borderColor: 'divider',
           backgroundColor: 'background.paper',
-          transition: 'transform 0.2s, box-shadow 0.2s',
+          transition: 'all 0.25s ease-in-out',
           '&:hover': {
-            transform: 'translateY(-4px)',
-            boxShadow: '0 8px 16px rgba(0,0,0,0.12)',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
           },
           borderRadius: 2,
           overflow: 'hidden',
