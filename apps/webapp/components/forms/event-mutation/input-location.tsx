@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useCallback } from 'react';
-import { TextField, Grid, Typography, Box, FormControl } from '@mui/material';
+import { TextField, Grid, Box, FormControl, Card } from '@mui/material';
 import { LocationInputProps } from '@/lib/constants';
 import { Location } from '@/data/graphql/types/graphql';
 import LocationTypeRadioButtons from '@/components/buttons/location-type-radio-button';
@@ -54,17 +54,13 @@ const LocationInput: React.FC<LocationInputProps> = ({ onChange }) => {
 
   return (
     <Box>
-      <Typography variant="h5" gutterBottom>
-        Location
-      </Typography>
-
-      <FormControl component="fieldset" sx={{ width: '100%', mb: 4 }}>
+      <FormControl component="fieldset" sx={{ width: '100%', mb: 3 }}>
         <LocationTypeRadioButtons selectedType={locationType} onChange={handleLocationTypeChange} />
       </FormControl>
 
       {/* TODO use the address input component */}
       {locationType === 'venue' && (
-        <Box>
+        <Card elevation={0} sx={{ borderRadius: 2, p: 2, bgcolor: 'background.default' }}>
           <Grid container spacing={2}>
             {addressFields.map(({ label, name }) => (
               <Grid size={{ xs: 12, sm: 6 }} key={name}>
@@ -75,13 +71,13 @@ const LocationInput: React.FC<LocationInputProps> = ({ onChange }) => {
                   size="small"
                   onChange={handleInputChange}
                   required
-                  sx={{ mt: 1 }}
                   color="secondary"
+                  sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
                 />
               </Grid>
             ))}
           </Grid>
-        </Box>
+        </Card>
       )}
     </Box>
   );

@@ -12,6 +12,7 @@ import {
   Grid,
   Box,
   FormControlLabel,
+  Card,
 } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
@@ -21,14 +22,13 @@ import dayjs, { Dayjs } from 'dayjs';
 import EventRadioButtons from '@/components/buttons/event-type-radio-button';
 import { EventDateInputProps } from '@/lib/constants';
 
-// TODO persist the recurrence rule in local storage
-// TODO add date like in input-address
+// TODO: persist the recurrence rule in local storage
+// TODO: add date like in input-address
 export default function EventDateInput({ onChange }: EventDateInputProps) {
   const [eventType, setEvent] = useState<string>('single');
   const [startDateTime, setStartDateTime] = useState<Dayjs | null>(dayjs());
   const [endDateTime, setEndDateTime] = useState<Dayjs | null>(dayjs().add(1, 'hour'));
 
-  // Recurring-specific
   const [frequency, setFrequency] = useState<Frequency>(Frequency.WEEKLY);
   const [interval, setInterval] = useState<number>(1);
   const [daysOfWeek, setDaysOfWeek] = useState<WeekdayStr[]>([]);
@@ -68,95 +68,99 @@ export default function EventDateInput({ onChange }: EventDateInputProps) {
 
   return (
     <Box>
-      <Typography variant="h5" gutterBottom>
-        Date and Time
-      </Typography>
-
-      <FormControl component="fieldset" sx={{ width: '100%', mb: 4 }}>
+      <FormControl component="fieldset" sx={{ width: '100%', mb: 3 }}>
         <EventRadioButtons selectedType={eventType} onChange={setEvent} />
       </FormControl>
 
       {/* Date and Time Pickers */}
-      <Grid container spacing={3}>
-        <Grid size={{ xs: 12, sm: 6 }}>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DateTimePicker
-              label="Start Date and Time"
-              value={startDateTime}
-              onChange={setStartDateTime}
-              sx={{
-                width: '100%',
-              }}
-            />
-          </LocalizationProvider>
-        </Grid>
-        <Grid size={{ xs: 12, sm: 6 }}>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DateTimePicker
-              label="End Date and Time"
-              value={endDateTime}
-              onChange={setEndDateTime}
-              sx={{ width: '100%' }}
-            />
-          </LocalizationProvider>
-        </Grid>
-
-        {/* Recurring Event Settings */}
-        {eventType === 'recurring' && (
-          <>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <FormControl fullWidth color="secondary">
-                <InputLabel color="secondary">Frequency</InputLabel>
-                <Select
-                  value={frequency}
-                  onChange={e => setFrequency(Number(e.target.value) as Frequency)}
-                  color="secondary"
-                >
-                  <MenuItem value={Frequency.DAILY}>Daily</MenuItem>
-                  <MenuItem value={Frequency.WEEKLY}>Weekly</MenuItem>
-                  <MenuItem value={Frequency.MONTHLY}>Monthly</MenuItem>
-                  <MenuItem value={Frequency.YEARLY}>Yearly</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField
-                fullWidth
-                label="Interval"
-                type="number"
-                value={interval}
-                onChange={e => setInterval(parseInt(e.target.value))}
-                color="secondary"
+      <Card elevation={0} sx={{ borderRadius: 2, p: 2, bgcolor: 'background.default' }}>
+        <Grid container spacing={3}>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DateTimePicker
+                label="Start Date and Time"
+                value={startDateTime}
+                onChange={setStartDateTime}
+                sx={{
+                  width: '100%',
+                  '& .MuiOutlinedInput-root': { borderRadius: 2 },
+                }}
               />
-            </Grid>
+            </LocalizationProvider>
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DateTimePicker
+                label="End Date and Time"
+                value={endDateTime}
+                onChange={setEndDateTime}
+                sx={{
+                  width: '100%',
+                  '& .MuiOutlinedInput-root': { borderRadius: 2 },
+                }}
+              />
+            </LocalizationProvider>
+          </Grid>
 
-            {frequency === Frequency.WEEKLY && (
-              <Grid size={{ xs: 12 }}>
-                <Typography variant="body1" gutterBottom>
-                  Days of the Week
-                </Typography>
-                <Grid container spacing={1}>
-                  {ALL_WEEKDAYS.map(day => (
-                    <Grid key={day}>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            value={day}
-                            checked={daysOfWeek.includes(day)}
-                            onChange={handleDayChange}
-                            color="secondary"
-                          />
-                        }
-                        label={day}
-                      />
-                    </Grid>
-                  ))}
-                </Grid>
+          {/* Recurring Event Settings */}
+          {eventType === 'recurring' && (
+            <>
+              <Grid size={{ xs: 12, sm: 6 }}>
+                <FormControl fullWidth color="secondary">
+                  <InputLabel color="secondary">Frequency</InputLabel>
+                  <Select
+                    value={frequency}
+                    onChange={e => setFrequency(Number(e.target.value) as Frequency)}
+                    color="secondary"
+                    sx={{ borderRadius: 2 }}
+                  >
+                    <MenuItem value={Frequency.DAILY}>Daily</MenuItem>
+                    <MenuItem value={Frequency.WEEKLY}>Weekly</MenuItem>
+                    <MenuItem value={Frequency.MONTHLY}>Monthly</MenuItem>
+                    <MenuItem value={Frequency.YEARLY}>Yearly</MenuItem>
+                  </Select>
+                </FormControl>
               </Grid>
-            )}
-          </>
-        )}
-      </Grid>
+              <Grid size={{ xs: 12, sm: 6 }}>
+                <TextField
+                  fullWidth
+                  label="Interval"
+                  type="number"
+                  value={interval}
+                  onChange={e => setInterval(parseInt(e.target.value))}
+                  color="secondary"
+                  sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                />
+              </Grid>
+
+              {frequency === Frequency.WEEKLY && (
+                <Grid size={{ xs: 12 }}>
+                  <Typography variant="body2" fontWeight={600} sx={{ mb: 1 }}>
+                    Days of the Week
+                  </Typography>
+                  <Grid container spacing={1}>
+                    {ALL_WEEKDAYS.map(day => (
+                      <Grid key={day}>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              value={day}
+                              checked={daysOfWeek.includes(day)}
+                              onChange={handleDayChange}
+                              color="primary"
+                            />
+                          }
+                          label={day}
+                        />
+                      </Grid>
+                    ))}
+                  </Grid>
+                </Grid>
+              )}
+            </>
+          )}
+        </Grid>
+      </Card>
     </Box>
   );
 }

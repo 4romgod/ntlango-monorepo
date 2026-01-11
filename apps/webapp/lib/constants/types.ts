@@ -1,4 +1,5 @@
 import { CreateEventInput, EventCategory, Location } from '@/data/graphql/types/graphql';
+import { EventDetail } from '@/data/graphql/query/Event/types';
 import { SxProps, Theme } from '@mui/material';
 
 export type DisplayEventFiltersProps = {
@@ -8,6 +9,7 @@ export type DisplayEventFiltersProps = {
 export type EventMutationFormProps = {
   onSubmit?: (eventData: CreateEventInput) => void;
   categoryList: EventCategory[];
+  event?: EventDetail;
 };
 
 export type LocationInputProps = {
