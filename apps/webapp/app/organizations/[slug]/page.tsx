@@ -116,9 +116,6 @@ export default async function OrganizationPage({ params }: Props) {
                 #{tag}
               </Button>
             ))}
-            <Button component={Link} href={ROUTES.ORGANIZATIONS.ROOT} size="small" variant="text">
-              Back to organizations
-            </Button>
           </Stack>
         </Box>
         <Box sx={{ textAlign: 'center' }}>

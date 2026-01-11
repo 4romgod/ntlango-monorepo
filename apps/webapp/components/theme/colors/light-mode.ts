@@ -9,6 +9,7 @@ declare module '@mui/material/styles' {
       overlay: string;
       cardBg: string;
       cardBorder: string;
+      gradient: string;
     };
     icon: {
       primary: string;
@@ -28,6 +29,7 @@ declare module '@mui/material/styles' {
       overlay: string;
       cardBg: string;
       cardBorder: string;
+      gradient?: string;
     };
     icon?: {
       primary: string;
@@ -105,6 +107,7 @@ const lightModeColors: PaletteOptions = {
     overlay: 'rgba(15, 23, 42, 0.5)',  // Slate overlay
     cardBg: 'rgba(255, 255, 255, 0.08)',  // Neutral white tint
     cardBorder: 'rgba(255, 255, 255, 0.15)',  // Subtle border
+    gradient: 'linear-gradient(135deg, #4f46e5 0%, #3730a3 100%)',  // Indigo gradient
   },
   icon: {
     primary: '#4f46e5',       // Indigo - navigation, core actions

@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState, useEffect } from 'react';
-import { Box } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import dayjs from 'dayjs';
 import { EventPreview } from '@/data/graphql/query/Event/types';
 import { EventCategory, EventStatus } from '@/data/graphql/types/graphql';
@@ -15,18 +15,24 @@ import FilterButtons from '@/components/events/filters/filter-buttons';
 import ActiveFiltersPills from '@/components/events/filters/active-filters-pills';
 import { CategoryMenu, StatusMenu, DateMenu } from '@/components/events/filters/filter-menus';
 import EventsList from '@/components/events/filters/events-list';
+import EventsSidebar, { PlatformStats } from '@/components/events/events-sidebar';
+import { PopularOrganization } from '@/components/events/popular-organizer-box';
 
 interface EventsContentProps {
   categories: EventCategory[];
   initialEvents: EventPreview[];
+  popularOrganization: PopularOrganization | null;
+  stats: PlatformStats;
 }
 
 interface EventsClientWrapperProps {
   events: EventPreview[];
   categories: EventCategory[];
+  popularOrganization: PopularOrganization | null;
+  stats: PlatformStats;
 }
 
-function EventsContent({ categories, initialEvents }: EventsContentProps) {
+function EventsContent({ categories, initialEvents, popularOrganization, stats }: EventsContentProps) {
   const { filters, setSearchQuery, resetFilters, hasActiveFilters, removeCategory, removeStatus, setCategories, setStatuses, setDateRange } = useEventFilters();
   const { events: serverEvents, loading, error } = useFilteredEvents(filters, initialEvents);
 
@@ -121,75 +127,108 @@ function EventsContent({ categories, initialEvents }: EventsContentProps) {
   return (
     <Box component="main" sx={{ minHeight: '100vh', py: 4 }}>
       <CustomContainer>
-        <EventsHeader 
-          eventCount={filteredEvents.length}
-          eventTitles={eventTitles}
-          onSearch={setSearchQuery}
-        />
+        <Grid container spacing={3}>
+          {/* Main Content - Events List */}
+          <Grid size={{ xs: 12, lg: 8 }}>
+            <EventsHeader 
+              eventCount={filteredEvents.length}
+              eventTitles={eventTitles}
+              onSearch={setSearchQuery}
+            />
 
-        <FilterButtons
-          categoryCount={filters.categories.length}
-          statusCount={filters.statuses.length}
-          selectedDateOption={selectedDateOption}
-          hasActiveFilters={hasActiveFilters}
-          onCategoryClick={(e) => setCategoryAnchor(e.currentTarget)}
-          onStatusClick={(e) => setStatusAnchor(e.currentTarget)}
-          onDateClick={(e) => setDateAnchor(e.currentTarget)}
-          onClearAll={resetFilters}
-        />
+            <FilterButtons
+              categoryCount={filters.categories.length}
+              statusCount={filters.statuses.length}
+              selectedDateOption={selectedDateOption}
+              hasActiveFilters={hasActiveFilters}
+              onCategoryClick={(e) => setCategoryAnchor(e.currentTarget)}
+              onStatusClick={(e) => setStatusAnchor(e.currentTarget)}
+              onDateClick={(e) => setDateAnchor(e.currentTarget)}
+              onClearAll={resetFilters}
+            />
 
-        {hasActiveFilters && (
-          <ActiveFiltersPills
-            categories={filters.categories}
-            statuses={filters.statuses}
-            onRemoveCategory={removeCategory}
-            onRemoveStatus={removeStatus}
-          />
-        )}
+            {hasActiveFilters && (
+              <ActiveFiltersPills
+                categories={filters.categories}
+                statuses={filters.statuses}
+                onRemoveCategory={removeCategory}
+                onRemoveStatus={removeStatus}
+              />
+            )}
 
-        <CategoryMenu
-          anchorEl={categoryAnchor}
-          categories={categories}
-          selectedCategories={filters.categories}
-          onClose={() => setCategoryAnchor(null)}
-          onToggle={handleCategoryToggle}
-        />
+            <CategoryMenu
+              anchorEl={categoryAnchor}
+              categories={categories}
+              selectedCategories={filters.categories}
+              onClose={() => setCategoryAnchor(null)}
+              onToggle={handleCategoryToggle}
+            />
 
-        <StatusMenu
-          anchorEl={statusAnchor}
-          statuses={statuses}
-          selectedStatuses={filters.statuses}
-          onClose={() => setStatusAnchor(null)}
-          onToggle={handleStatusToggle}
-        />
+            <StatusMenu
+              anchorEl={statusAnchor}
+              statuses={statuses}
+              selectedStatuses={filters.statuses}
+              onClose={() => setStatusAnchor(null)}
+              onToggle={handleStatusToggle}
+            />
 
-        <DateMenu
-          anchorEl={dateAnchor}
-          dateOptions={dateOptions}
-          selectedOption={selectedDateOption}
-          customDateAnchor={customDateAnchor}
-          onClose={() => setDateAnchor(null)}
-          onSelect={handleDateSelect}
-          onCustomDateChange={handleCustomDateChange}
-          onCustomDateClose={handleCustomDateClose}
-        />
+            <DateMenu
+              anchorEl={dateAnchor}
+              dateOptions={dateOptions}
+              selectedOption={selectedDateOption}
+              customDateAnchor={customDateAnchor}
+              onClose={() => setDateAnchor(null)}
+              onSelect={handleDateSelect}
+              onCustomDateChange={handleCustomDateChange}
+              onCustomDateClose={handleCustomDateClose}
+            />
 
-        <EventsList
-          events={filteredEvents}
-          loading={loading}
-          error={error}
-          hasActiveFilters={hasActiveFilters}
-          onClearFilters={resetFilters}
-        />
+            <EventsList
+              events={filteredEvents}
+              loading={loading}
+              error={error}
+              hasActiveFilters={hasActiveFilters}
+              onClearFilters={resetFilters}
+            />
+          </Grid>
+
+          {/* Sidebar - Discovery Widgets */}
+          <Grid 
+            size={{ xs: 12, lg: 4 }}
+            sx={{
+              display: { xs: 'none', lg: 'block' },
+            }}
+          >
+            <Box
+              sx={{
+                position: 'sticky',
+                top: 80, // Account for header height
+                maxHeight: 'calc(100vh - 96px)', // Prevent sidebar from being taller than viewport
+                overflowY: 'auto',
+                '&::-webkit-scrollbar': {
+                  display: 'none',
+                },
+                msOverflowStyle: 'none', // IE and Edge
+                scrollbarWidth: 'none', // Firefox
+              }}
+            >
+              <EventsSidebar 
+                popularOrganization={popularOrganization} 
+                stats={stats}
+                trendingCategories={categories.slice(0, 6)}
+              />
+            </Box>
+          </Grid>
+        </Grid>
       </CustomContainer>
     </Box>
   );
 }
 
-export default function EventsClientWrapper({ events, categories }: EventsClientWrapperProps) {
+export default function EventsClientWrapper({ events, categories, popularOrganization, stats }: EventsClientWrapperProps) {
   return (
     <EventFilterProvider>
-      <EventsContent categories={categories} initialEvents={events} />
+      <EventsContent categories={categories} initialEvents={events} popularOrganization={popularOrganization} stats={stats} />
     </EventFilterProvider>
   );
 }

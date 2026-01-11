@@ -64,6 +64,7 @@ const darkModeColors: PaletteOptions = {
     overlay: 'rgba(0, 0, 0, 0.6)',
     cardBg: 'rgba(255, 255, 255, 0.05)',  // Subtle white overlay
     cardBorder: 'rgba(255, 255, 255, 0.1)',  // Subtle border
+    gradient: 'linear-gradient(135deg, #6366f1 0%, #4338ca 100%)',  // Softer indigo for dark mode
   },
   icon: {
     primary: '#6366f1',       // Indigo - less intense for dark mode

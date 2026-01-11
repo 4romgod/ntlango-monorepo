@@ -56,7 +56,9 @@ const OrganizationCard = ({
         )}
         <Stack direction="row" spacing={1} flexWrap="wrap" mt={2} gap={1}>
           {tags?.slice(0, 4).map(tag => (
-            <Chip key={tag} label={tag} size="small" />
+            <Button key={tag} size="small" variant="outlined" sx={{ textTransform: 'none', fontWeight: 500 }}>
+              #{tag}
+            </Button>
           ))}
         </Stack>
       </CardContent>

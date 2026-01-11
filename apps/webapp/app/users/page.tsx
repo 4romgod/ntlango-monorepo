@@ -1,11 +1,12 @@
 import { getClient } from '@/data/graphql';
 import { GetAllUsersDocument } from '@/data/graphql/types/graphql';
 import { Container, Typography, Grid, Box, Paper, Chip } from '@mui/material';
-import { People, TrendingUp, Diversity3 } from '@mui/icons-material';
+import { Diversity3, People } from '@mui/icons-material';
 import type { Metadata } from 'next';
 import SearchInput from '@/components/search/search-box';
 import UserBox from '@/components/users/user-box';
 import CustomContainer from '@/components/custom-container';
+import HeroSection from '@/components/users/hero-section';
 
 export const metadata: Metadata = {
   title: 'Community · Ntlango',
@@ -24,83 +25,7 @@ export default async function Page() {
   return (
     <Box>
       {/* Hero Section */}
-      <Box
-        sx={{
-          background: 'linear-gradient(135deg, #4f46e5 0%, #3730a3 100%)',
-          color: 'white',
-          py: 8,
-          mb: 6,
-        }}
-      >
-        <CustomContainer>
-          <Box textAlign="center" maxWidth="800px" mx="auto">
-            <People sx={{ fontSize: 64, mb: 2, opacity: 0.9 }} />
-            <Typography variant="h3" fontWeight="bold" gutterBottom>
-              Discover Your Community
-            </Typography>
-            <Typography variant="h6" sx={{ opacity: 0.95, mb: 4, fontWeight: 400 }}>
-              Connect with event-goers, organizers, and creators in your area
-            </Typography>
-
-            {/* Stats */}
-            <Grid container spacing={3} justifyContent="center" sx={{ mt: 2 }}>
-              <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-                <Paper
-                  elevation={0}
-                  sx={{
-                    p: 3,
-                    background: 'rgba(255, 255, 255, 0.15)',
-                    backdropFilter: 'blur(10px)',
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    color: 'white',
-                  }}
-                >
-                  <Typography variant="h4" fontWeight="bold">
-                    {activeUsers.length.toLocaleString()}
-                  </Typography>
-                  <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                    Active Members
-                  </Typography>
-                </Paper>
-              </Grid>
-              <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-                <Paper
-                  elevation={0}
-                  sx={{
-                    p: 3,
-                    background: 'rgba(255, 255, 255, 0.15)',
-                    backdropFilter: 'blur(10px)',
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    color: 'white',
-                  }}
-                >
-                  <Diversity3 sx={{ fontSize: 40, mb: 1 }} />
-                  <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                    Strong Community
-                  </Typography>
-                </Paper>
-              </Grid>
-              <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-                <Paper
-                  elevation={0}
-                  sx={{
-                    p: 3,
-                    background: 'rgba(255, 255, 255, 0.15)',
-                    backdropFilter: 'blur(10px)',
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    color: 'white',
-                  }}
-                >
-                  <TrendingUp sx={{ fontSize: 40, mb: 1 }} />
-                  <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                    Growing Daily
-                  </Typography>
-                </Paper>
-              </Grid>
-            </Grid>
-          </Box>
-        </CustomContainer>
-      </Box>
+      <HeroSection totalUsers={users.length} activeUsers={activeUsers.length} />
 
       {/* Content Section */}
       <CustomContainer>

@@ -49,13 +49,17 @@ export default function TopProgressBar() {
       link.addEventListener('click', handleAnchorClick as any);
     });
 
-    // Observer to handle dynamically added links
+    // Debounced observer to handle dynamically added links
+    let debounceTimer: NodeJS.Timeout;
     const observer = new MutationObserver(() => {
-      const newLinks = document.querySelectorAll('a[href^="/"]');
-      newLinks.forEach((link) => {
-        link.removeEventListener('click', handleAnchorClick as any);
-        link.addEventListener('click', handleAnchorClick as any);
-      });
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        const newLinks = document.querySelectorAll('a[href^="/"]');
+        newLinks.forEach((link) => {
+          link.removeEventListener('click', handleAnchorClick as any);
+          link.addEventListener('click', handleAnchorClick as any);
+        });
+      }, 100); // Debounce by 100ms
     });
 
     observer.observe(document.body, {
@@ -64,10 +68,12 @@ export default function TopProgressBar() {
     });
 
     return () => {
+      clearTimeout(debounceTimer);
       links.forEach((link) => {
         link.removeEventListener('click', handleAnchorClick as any);
       });
       observer.disconnect();
+      document.head.removeChild(style);
     };
   }, []);
 
