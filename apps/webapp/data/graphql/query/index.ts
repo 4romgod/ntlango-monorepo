@@ -8,4 +8,5 @@ export * from './Organization/query';
 export * from './Venue/query';
 export * from './Activity/query';
 export * from './Follow/query';
+export * from './Follow/types';
 export * from '../mutation/Follow/mutation';

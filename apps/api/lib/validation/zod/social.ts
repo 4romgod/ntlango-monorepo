@@ -22,11 +22,6 @@ export const UpdateFollowNotificationPreferencesInputSchema = z.object({
   notificationPreferences: FollowNotificationPreferencesInputSchema,
 });
 
-export const UpdateFollowApprovalInputSchema = z.object({
-  followId: objectIdSchema,
-  approvalStatus: z.nativeEnum(FollowApprovalStatus),
-});
-
 export const UpsertIntentInputSchema = z.object({
   intentId: objectIdSchema.optional(),
   eventId: objectIdSchema,

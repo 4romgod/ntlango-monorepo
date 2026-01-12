@@ -6,6 +6,7 @@ import {
   UnfollowDocument,
   GetFollowingDocument,
   GetFollowersDocument,
+  GetPendingFollowRequestsDocument,
   AcceptFollowRequestDocument,
   RejectFollowRequestDocument,
   UpdateFollowNotificationPreferencesDocument,
@@ -110,9 +111,25 @@ export function useFollowers(targetType: FollowTargetType, targetId: string) {
   };
 }
 
-export function useFollowRequests() {
+/**
+ * React hook to manage pending follow requests for a given follow target type.
+ *
+ * @param targetType - The type of entity whose pending follow requests should be fetched.
+ *   This should be one of the values defined by the `FollowTargetType` GraphQL type
+ *   (for example, a user or another followable resource type, depending on your schema).
+ */
+export function useFollowRequests(targetType: FollowTargetType) {
   const { data: session } = useSession();
   const token = session?.user?.token;
+
+  const { data, loading: queryLoading, error, refetch } = useQuery(GetPendingFollowRequestsDocument, {
+    variables: { targetType },
+    context: {
+      headers: {
+        ...(token ? { token } : {}),
+      },
+    },
+  });
 
   const [acceptRequest, { loading: acceptLoading }] = useMutation(AcceptFollowRequestDocument, {
     refetchQueries: ['GetPendingFollowRequests', 'GetFollowers'],
@@ -145,11 +162,15 @@ export function useFollowRequests() {
   };
 
   return {
+    requests: data?.readPendingFollowRequests ?? [],
+    loading: queryLoading,
+    error,
+    refetch,
     accept,
     reject,
     acceptLoading,
     rejectLoading,
-    isLoading: acceptLoading || rejectLoading,
+    isLoading: queryLoading || acceptLoading || rejectLoading,
   };
 }
 

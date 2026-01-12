@@ -114,12 +114,3 @@ export class UpdateFollowNotificationPreferencesInput {
     @Field(() => FollowNotificationPreferencesInput, {description: SOCIAL_DESCRIPTIONS.FOLLOW.NOTIFICATION_PREFERENCES})
     notificationPreferences: FollowNotificationPreferencesInput;
 }
-
-@InputType('UpdateFollowApprovalInput', {description: 'Input for updating follow approval status'})
-export class UpdateFollowApprovalInput {
-    @Field(() => ID, {description: SOCIAL_DESCRIPTIONS.FOLLOW.ID})
-    followId: string;
-
-    @Field(() => FollowApprovalStatus, {description: SOCIAL_DESCRIPTIONS.FOLLOW.APPROVAL_STATUS})
-    approvalStatus: FollowApprovalStatus;
-}
