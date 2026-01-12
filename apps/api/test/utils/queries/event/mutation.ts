@@ -7,7 +7,10 @@ export const getCreateEventMutation = (event: any) => {
               title
               description
               organizers {
-                userId
+                user {
+                  userId
+                  username
+                }
                 role
               }
               eventCategories {

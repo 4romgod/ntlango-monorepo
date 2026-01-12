@@ -1,31 +1,34 @@
 import 'reflect-metadata';
-import {Arg, Ctx, Mutation, Query, Resolver} from 'type-graphql';
-import {Intent, UpsertIntentInput} from '@ntlango/commons/types';
+import {Arg, Authorized, Ctx, Mutation, Query, Resolver} from 'type-graphql';
+import {Intent, UpsertIntentInput, UserRole} from '@ntlango/commons/types';
 import {UpsertIntentInputSchema} from '@/validation/zod';
 import {validateInput} from '@/validation';
 import {IntentDAO} from '@/mongodb/dao';
 import type {ServerContext} from '@/graphql';
 import {RESOLVER_DESCRIPTIONS} from '@/constants';
-import {requireAuthenticatedUser} from '@/utils';
+import {getAuthenticatedUser} from '@/utils';
 
 @Resolver(() => Intent)
 export class IntentResolver {
+  @Authorized([UserRole.Admin, UserRole.Host, UserRole.User])
   @Mutation(() => Intent, {description: RESOLVER_DESCRIPTIONS.INTENT.upsertIntent})
   async upsertIntent(@Arg('input', () => UpsertIntentInput) input: UpsertIntentInput, @Ctx() context: ServerContext): Promise<Intent> {
     validateInput(UpsertIntentInputSchema, input);
-    const user = await requireAuthenticatedUser(context);
+    const user = getAuthenticatedUser(context);
     return IntentDAO.upsert({...input, userId: user.userId});
   }
 
+  @Authorized([UserRole.Admin, UserRole.Host, UserRole.User])
   @Query(() => [Intent], {description: RESOLVER_DESCRIPTIONS.INTENT.readIntentsByUser})
   async readIntentsByUser(@Ctx() context: ServerContext): Promise<Intent[]> {
-    const user = await requireAuthenticatedUser(context);
+    const user = getAuthenticatedUser(context);
     return IntentDAO.readByUser(user.userId);
   }
 
+  @Authorized([UserRole.Admin, UserRole.Host, UserRole.User])
   @Query(() => [Intent], {description: RESOLVER_DESCRIPTIONS.INTENT.readIntentsByEvent})
   async readIntentsByEvent(@Arg('eventId', () => String) eventId: string, @Ctx() context: ServerContext): Promise<Intent[]> {
-    await requireAuthenticatedUser(context);
+    getAuthenticatedUser(context);
     return IntentDAO.readByEvent(eventId);
   }
 }

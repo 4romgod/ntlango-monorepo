@@ -4,7 +4,7 @@ import {ActivityDAO, FollowDAO} from '@/mongodb/dao';
 import type {Activity, CreateActivityInput, User} from '@ntlango/commons/types';
 import {ActivityObjectType, ActivityVerb, ActivityVisibility, FollowTargetType, UserRole} from '@ntlango/commons/types';
 import {Types} from 'mongoose';
-import {requireAuthenticatedUser} from '@/utils';
+import type {ServerContext} from '@/graphql';
 
 jest.mock('@/mongodb/dao', () => ({
   ActivityDAO: {
@@ -15,10 +15,6 @@ jest.mock('@/mongodb/dao', () => ({
   FollowDAO: {
     readFollowingForUser: jest.fn(),
   },
-}));
-
-jest.mock('@/utils', () => ({
-  requireAuthenticatedUser: jest.fn(),
 }));
 
 describe('ActivityResolver', () => {
@@ -34,10 +30,13 @@ describe('ActivityResolver', () => {
     userRole: UserRole.User,
   };
 
+  const mockContext: Partial<ServerContext> = {
+    user: mockUser,
+  };
+
   beforeEach(() => {
     resolver = new ActivityResolver();
     jest.clearAllMocks();
-    (requireAuthenticatedUser as jest.Mock).mockResolvedValue(mockUser);
   });
 
   it('logs an activity', async () => {
@@ -59,9 +58,8 @@ describe('ActivityResolver', () => {
 
     (ActivityDAO.create as jest.Mock).mockResolvedValue(mockActivity);
 
-    const result = await resolver.logActivity(activityInput, {} as never);
+    const result = await resolver.logActivity(activityInput, mockContext as ServerContext);
 
-    expect(requireAuthenticatedUser).toHaveBeenCalled();
     expect(ActivityDAO.create).toHaveBeenCalledWith({...activityInput, actorId: mockUser.userId});
     expect(result).toEqual(mockActivity);
   });
@@ -71,7 +69,7 @@ describe('ActivityResolver', () => {
     (ActivityDAO.readByActor as jest.Mock).mockResolvedValue(activities);
     (FollowDAO.readFollowingForUser as jest.Mock).mockResolvedValue([]);
 
-    const result = await resolver.readActivitiesByActor('actor-1', {} as never, 5);
+    const result = await resolver.readActivitiesByActor('actor-1', mockContext as ServerContext, 5);
 
     expect(ActivityDAO.readByActor).toHaveBeenCalledWith('actor-1', 5);
     expect(result).toStrictEqual(activities);
@@ -86,9 +84,8 @@ describe('ActivityResolver', () => {
     (FollowDAO.readFollowingForUser as jest.Mock).mockResolvedValue(follows);
     (ActivityDAO.readByActorIds as jest.Mock).mockResolvedValue(feed);
 
-    const result = await resolver.readFeed({} as never, 10);
+    const result = await resolver.readFeed(mockContext as ServerContext, 10);
 
-    expect(requireAuthenticatedUser).toHaveBeenCalled();
     expect(FollowDAO.readFollowingForUser).toHaveBeenCalledWith(mockUser.userId);
     expect(ActivityDAO.readByActorIds).toHaveBeenCalledWith(['friend-1', mockUser.userId], 10);
     expect(result).toBe(feed);

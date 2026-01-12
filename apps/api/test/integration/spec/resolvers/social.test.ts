@@ -281,7 +281,7 @@ describe('Social resolver integration', () => {
 
   it('allows following an organization', async () => {
     const org = await EventCategoryDAO.create({
-      name: 'Follow Org',
+      name: `Follow Org ${Date.now()}`,
       iconName: 'org',
       description: 'Org for following',
     });

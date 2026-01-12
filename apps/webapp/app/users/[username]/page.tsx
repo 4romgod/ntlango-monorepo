@@ -33,6 +33,7 @@ import { EventPreview } from '@/data/graphql/query/Event/types';
 import { ROUTES } from '@/lib/constants';
 import { omit } from 'lodash';
 import Link from 'next/link';
+import FollowButton from '@/components/users/follow-button';
 
 interface Props {
   params: Promise<{ username: string }>;
@@ -113,7 +114,7 @@ export default async function UserPage(props: Props) {
                 bgcolor: 'primary.main',
               }}
             >
-              {isOwnProfile && (
+              {isOwnProfile ? (
                 <Link href={ROUTES.ACCOUNT.ROOT}>
                   <Button
                     startIcon={<EditIcon />}
@@ -136,6 +137,16 @@ export default async function UserPage(props: Props) {
                     Edit Profile
                   </Button>
                 </Link>
+              ) : (
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: 20,
+                    right: 20,
+                  }}
+                >
+                  <FollowButton targetUserId={user.userId} size="small" />
+                </Box>
               )}
             </Box>
 

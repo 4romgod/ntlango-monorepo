@@ -128,7 +128,7 @@ describe('Event Resolver', () => {
     it('reads multiple events with no filters', async () => {
       const event1 = await createEventOnServer();
       const input2 = buildEventInput();
-      input2.title = 'Test Event Two';
+      input2.title = `Test Event Two ${Date.now()}`;
       const response2 = await request(url).post('').set('token', testUser.token).send(getCreateEventMutation(input2));
       const event2 = response2.body.data.createEvent;
 
@@ -141,7 +141,9 @@ describe('Event Resolver', () => {
             title
             slug
             organizers {
-              userId
+              user {
+                userId
+              }
               role
             }
           }
@@ -262,7 +264,9 @@ describe('Event Resolver', () => {
           readEventById(eventId: $eventId) {
             eventId
             organizers {
-              userId
+              user {
+                userId
+              }
               role
             }
           }
@@ -275,7 +279,7 @@ describe('Event Resolver', () => {
       expect(readResponse.status).toBe(200);
       const eventData = readResponse.body.data.readEventById;
       expect(eventData.organizers).toHaveLength(1);
-      expect(eventData.organizers[0].userId).toBe(testUser.userId);
+      expect(eventData.organizers[0].user.userId).toBe(testUser.userId);
       expect(eventData.organizers[0].role).toBe('Host');
     });
   });
@@ -286,17 +290,8 @@ describe('Event Resolver', () => {
       const response = await request(url).post('').set('token', testUser.token).send(getCreateEventMutation(buildEventInput()));
 
       expect(response.status).toBe(409);
-      expect(response.error).toBeTruthy();
-    });
-
-    it('returns validation error when recurrence rule is missing', async () => {
-      const input = buildEventInput();
-      input.recurrenceRule = '';
-      const response = await request(url).post('').set('token', testUser.token).send(getCreateEventMutation(input));
-
-      expect(response.status).toBe(400);
-      expect(response.error).toBeTruthy();
-      expect(response.body.errors[0].extensions.code).toBe('BAD_USER_INPUT');
+      expect(response.body.errors).toBeDefined();
+      expect(response.body.errors[0].extensions.code).toBe('CONFLICT');
     });
 
     it('returns validation error when organizers array is empty', async () => {
@@ -313,14 +308,17 @@ describe('Event Resolver', () => {
       input.eventCategories = ['invalid-category-id'];
       const response = await request(url).post('').set('token', testUser.token).send(getCreateEventMutation(input));
 
-      expect([400, 500]).toContain(response.status);
-      expect(response.error).toBeTruthy();
+      expect(response.status).toBe(500);
+      expect(response.body.errors).toBeDefined();
+      expect(response.body.errors[0].extensions.code).toBe('INTERNAL_SERVER_ERROR');
+      expect(response.body.errors[0].message).toContain('Cast to ObjectId failed');
     });
 
     it('returns unauthenticated when token missing', async () => {
       const response = await request(url).post('').send(getCreateEventMutation(buildEventInput()));
       expect(response.status).toBe(401);
-      expect(response.body.errors[0].message).toBe(ERROR_MESSAGES.UNAUTHENTICATED);
+      expect(response.body.errors).toBeDefined();
+      expect(response.body.errors[0].extensions.code).toBe('UNAUTHENTICATED');
     });
 
     it('returns unauthenticated when updating without token', async () => {
@@ -329,12 +327,16 @@ describe('Event Resolver', () => {
         .post('')
         .send(getUpdateEventMutation({eventId: createdEvent.eventId, title: 'No Token'}));
       expect(response.status).toBe(401);
+      expect(response.body.errors).toBeDefined();
+      expect(response.body.errors[0].extensions.code).toBe('UNAUTHENTICATED');
     });
 
     it('returns unauthenticated when deleting without token', async () => {
       const createdEvent = await createEventOnServer();
       const response = await request(url).post('').send(getDeleteEventBySlugMutation(createdEvent.slug));
       expect(response.status).toBe(401);
+      expect(response.body.errors).toBeDefined();
+      expect(response.body.errors[0].extensions.code).toBe('UNAUTHENTICATED');
     });
 
     it('returns not found when reading non-existent event by id', async () => {

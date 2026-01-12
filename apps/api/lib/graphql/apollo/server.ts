@@ -17,6 +17,7 @@ import type {User, EventCategory} from '@ntlango/commons/types';
 
 export interface ServerContext {
   token?: string;
+  user?: User;
   req?: Request;
   res?: Response;
   loaders: {

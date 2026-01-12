@@ -2,7 +2,7 @@ import {GraphQLError} from 'graphql';
 import {FollowDAO} from '@/mongodb/dao';
 import {Follow as FollowModel} from '@/mongodb/models';
 import type {Follow, CreateFollowInput} from '@ntlango/commons/types';
-import {FollowStatus, FollowTargetType} from '@ntlango/commons/types';
+import {FollowContentVisibility, FollowTargetType, FollowApprovalStatus} from '@ntlango/commons/types';
 import {CustomError, ErrorTypes} from '@/utils';
 import {MockMongoError} from '@/test/utils';
 import {ERROR_MESSAGES} from '@/validation';
@@ -10,6 +10,7 @@ import {ERROR_MESSAGES} from '@/validation';
 jest.mock('@/mongodb/models', () => ({
   Follow: {
     findOneAndUpdate: jest.fn(),
+    findOne: jest.fn(),
     find: jest.fn(),
     findOneAndDelete: jest.fn(),
   },
@@ -31,7 +32,10 @@ describe('FollowDAO', () => {
     followerUserId: 'user-1',
     targetType: FollowTargetType.User,
     targetId: 'user-2',
-    status: FollowStatus.Active,
+    notificationPreferences: {
+      contentVisibility: FollowContentVisibility.Active,
+    },
+    approvalStatus: FollowApprovalStatus.Accepted,
     createdAt: new Date('2024-01-01T00:00:00Z'),
   };
 
@@ -51,7 +55,9 @@ describe('FollowDAO', () => {
         followerUserId: 'user-1',
         targetType: FollowTargetType.User,
         targetId: 'user-2',
-        status: FollowStatus.Active,
+        notificationPreferences: {
+          contentVisibility: FollowContentVisibility.Active,
+        },
       };
 
       const result = await FollowDAO.upsert(input);
@@ -59,15 +65,23 @@ describe('FollowDAO', () => {
       expect(FollowModel.findOneAndUpdate).toHaveBeenCalledWith(
         {followerUserId: 'user-1', targetType: FollowTargetType.User, targetId: 'user-2'},
         expect.objectContaining({
-          $set: expect.objectContaining({targetType: FollowTargetType.User, targetId: 'user-2', status: FollowStatus.Active}),
-          $setOnInsert: expect.objectContaining({followId: expect.any(String), createdAt: expect.any(Date)}),
+          $set: expect.objectContaining({
+            targetType: FollowTargetType.User,
+            targetId: 'user-2',
+            'notificationPreferences.contentVisibility': FollowContentVisibility.Active,
+          }),
+          $setOnInsert: expect.objectContaining({
+            followId: expect.any(String),
+            createdAt: expect.any(Date),
+            approvalStatus: FollowApprovalStatus.Accepted,
+          }),
         }),
         expect.objectContaining({new: true, upsert: true, setDefaultsOnInsert: true}),
       );
       expect(result).toEqual(mockFollow);
     });
 
-    it('omits status when not provided', async () => {
+    it('omits notificationPreferences when not provided', async () => {
       (FollowModel.findOneAndUpdate as jest.Mock).mockReturnValue(
         createMockSuccessMongooseQuery({
           toObject: () => mockFollow,
@@ -77,7 +91,7 @@ describe('FollowDAO', () => {
       await FollowDAO.upsert({followerUserId: 'user-1', targetType: FollowTargetType.User, targetId: 'user-2'});
 
       const [, update] = (FollowModel.findOneAndUpdate as jest.Mock).mock.calls[0];
-      expect(update.$set.status).toBeUndefined();
+      expect(update.$set['notificationPreferences.contentVisibility']).toBeUndefined();
     });
 
     it('throws when upsert returns null', async () => {
@@ -192,6 +206,117 @@ describe('FollowDAO', () => {
       await expect(
         FollowDAO.remove({followerUserId: 'user-1', targetType: FollowTargetType.User, targetId: 'user-2'}),
       ).rejects.toThrow(CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR));
+    });
+  });
+
+  describe('updateNotificationPreferences', () => {
+    it('updates notification preferences successfully', async () => {
+      const updatedFollow = {
+        ...mockFollow,
+        notificationPreferences: {contentVisibility: FollowContentVisibility.Muted},
+      };
+      (FollowModel.findOneAndUpdate as jest.Mock).mockReturnValue(
+        createMockSuccessMongooseQuery({
+          toObject: () => updatedFollow,
+        }),
+      );
+
+      const result = await FollowDAO.updateNotificationPreferences('follow-1', 'user-1', {
+        contentVisibility: FollowContentVisibility.Muted,
+      });
+
+      expect(FollowModel.findOneAndUpdate).toHaveBeenCalledWith(
+        {followId: 'follow-1', followerUserId: 'user-1'},
+        {$set: {'notificationPreferences.contentVisibility': FollowContentVisibility.Muted}},
+        {new: true},
+      );
+      expect(result).toEqual(updatedFollow);
+    });
+
+    it('throws NOT_FOUND when follow does not exist', async () => {
+      (FollowModel.findOneAndUpdate as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(null));
+
+      await expect(
+        FollowDAO.updateNotificationPreferences('follow-1', 'user-1', {contentVisibility: FollowContentVisibility.Muted}),
+      ).rejects.toThrow(CustomError('Follow not found or user not authorized', ErrorTypes.NOT_FOUND));
+    });
+  });
+
+  describe('updateApprovalStatus', () => {
+    it('updates approval status successfully', async () => {
+      const mockFollowDoc = {
+        ...mockFollow,
+        targetId: 'user-2',
+        approvalStatus: FollowApprovalStatus.Pending,
+        save: jest.fn().mockResolvedValue(undefined),
+        toObject: () => ({...mockFollow, approvalStatus: FollowApprovalStatus.Accepted}),
+      };
+      (FollowModel.findOne as jest.Mock).mockReturnValue({
+        exec: jest.fn().mockResolvedValue(mockFollowDoc),
+      });
+
+      const result = await FollowDAO.updateApprovalStatus('follow-1', 'user-2', FollowApprovalStatus.Accepted);
+
+      expect(FollowModel.findOne).toHaveBeenCalledWith({followId: 'follow-1'});
+      expect(mockFollowDoc.save).toHaveBeenCalled();
+      expect(result.approvalStatus).toBe(FollowApprovalStatus.Accepted);
+    });
+
+    it('throws NOT_FOUND when follow does not exist', async () => {
+      (FollowModel.findOne as jest.Mock).mockReturnValue({
+        exec: jest.fn().mockResolvedValue(null),
+      });
+
+      await expect(FollowDAO.updateApprovalStatus('follow-1', 'user-2', FollowApprovalStatus.Accepted)).rejects.toThrow(
+        CustomError('Follow request not found', ErrorTypes.NOT_FOUND),
+      );
+    });
+
+    it('throws UNAUTHORIZED when user is not the target', async () => {
+      const mockFollowDoc = {
+        ...mockFollow,
+        targetId: 'user-3',
+      };
+      (FollowModel.findOne as jest.Mock).mockReturnValue({
+        exec: jest.fn().mockResolvedValue(mockFollowDoc),
+      });
+
+      await expect(FollowDAO.updateApprovalStatus('follow-1', 'user-2', FollowApprovalStatus.Accepted)).rejects.toThrow(
+        CustomError('Not authorized to modify this follow request', ErrorTypes.UNAUTHORIZED),
+      );
+    });
+  });
+
+  describe('readPendingFollows', () => {
+    it('reads pending follow requests', async () => {
+      const pendingFollow = {
+        ...mockFollow,
+        approvalStatus: FollowApprovalStatus.Pending,
+      };
+      (FollowModel.find as jest.Mock).mockReturnValue(
+        createMockSuccessMongooseQuery([
+          {
+            toObject: () => pendingFollow,
+          },
+        ]),
+      );
+
+      const result = await FollowDAO.readPendingFollows('user-2', FollowTargetType.User);
+
+      expect(FollowModel.find).toHaveBeenCalledWith({
+        targetId: 'user-2',
+        targetType: FollowTargetType.User,
+        approvalStatus: FollowApprovalStatus.Pending,
+      });
+      expect(result).toEqual([pendingFollow]);
+    });
+
+    it('wraps errors', async () => {
+      (FollowModel.find as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(new MockMongoError(0)));
+
+      await expect(FollowDAO.readPendingFollows('user-2', FollowTargetType.User)).rejects.toThrow(
+        CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR),
+      );
     });
   });
 });

@@ -1,16 +1,30 @@
 import mongoose from 'mongoose';
 import {z} from 'zod';
-import {FollowStatus, FollowTargetType} from '@ntlango/commons/types/follow';
+import {FollowContentVisibility, FollowTargetType, FollowApprovalStatus} from '@ntlango/commons/types/follow';
 import {IntentSource, IntentStatus, IntentVisibility} from '@ntlango/commons/types/intent';
 import {ActivityObjectType, ActivityVerb, ActivityVisibility} from '@ntlango/commons/types/activity';
 import {ERROR_MESSAGES} from '@/validation';
 
 const objectIdSchema = z.string().refine(mongoose.Types.ObjectId.isValid, {message: ERROR_MESSAGES.INVALID}).describe('MongoDB ObjectId');
 
+export const FollowNotificationPreferencesInputSchema = z.object({
+  contentVisibility: z.nativeEnum(FollowContentVisibility).optional(),
+});
+
 export const CreateFollowInputSchema = z.object({
   targetType: z.nativeEnum(FollowTargetType),
   targetId: objectIdSchema,
-  status: z.nativeEnum(FollowStatus).optional(),
+  notificationPreferences: FollowNotificationPreferencesInputSchema.optional(),
+});
+
+export const UpdateFollowNotificationPreferencesInputSchema = z.object({
+  followId: objectIdSchema,
+  notificationPreferences: FollowNotificationPreferencesInputSchema,
+});
+
+export const UpdateFollowApprovalInputSchema = z.object({
+  followId: objectIdSchema,
+  approvalStatus: z.nativeEnum(FollowApprovalStatus),
 });
 
 export const UpsertIntentInputSchema = z.object({

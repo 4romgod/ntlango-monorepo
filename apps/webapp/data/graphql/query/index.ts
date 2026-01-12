@@ -6,4 +6,6 @@ export * from './User/mutation';
 export * from './User/query';
 export * from './Organization/query';
 export * from './Venue/query';
-export * from './Social/query';
+export * from './Activity/query';
+export * from './Follow/query';
+export * from '../mutation/Follow/mutation';

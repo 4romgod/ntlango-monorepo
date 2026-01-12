@@ -99,7 +99,11 @@ export const SOCIAL_DESCRIPTIONS = {
         FOLLOWER_USER_ID: 'User who is doing the following.',
         TARGET_TYPE: 'Specifies whether the follow target is a User or an Organization.',
         TARGET_ID: 'ID of the user or organization being followed.',
-        STATUS: 'Current status of the follow relationship.',
+        NOTIFICATION_PREFERENCES: "Nested object containing the follower's notification and feed preferences.",
+        NOTIFICATION_PREFERENCES_INPUT: 'Input type for updating notification preferences.',
+        CONTENT_VISIBILITY: "Controls whether content from this follow appears in the follower's feed (Active) or is hidden (Muted).",
+        APPROVAL_STATUS:
+            'The approval state of the follow request: Pending (awaiting approval), Accepted (approved), or Rejected (denied by followee).',
     },
     INTENT: {
         TYPE: 'Represents a user intent signal (Interested, Going, Maybe, Declined) for an event.',
@@ -239,8 +243,12 @@ export const RESOLVER_DESCRIPTIONS = {
     FOLLOW: {
         follow: 'Create or re-activate a follow connection from the authenticated user.',
         unfollow: 'Remove a follow connection initiated by the authenticated user.',
+        updateFollowNotificationPreferences: 'Update notification preferences for a follow relationship (e.g., mute/unmute content).',
+        acceptFollowRequest: 'Accept a pending follow request (called by the user being followed).',
+        rejectFollowRequest: 'Reject a pending follow request (called by the user being followed).',
         readFollowing: 'List the users and organizations that the authenticated user follows.',
         readFollowers: 'List followers for a specific user or organization.',
+        readPendingFollowRequests: "List pending follow requests awaiting the authenticated user's approval.",
     },
     INTENT: {
         upsertIntent: 'Create or update an intent for an event on behalf of the authenticated user.',
