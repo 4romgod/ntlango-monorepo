@@ -296,13 +296,12 @@ describe('Auth Utilities', () => {
         });
       });
 
-      // Reason to deny is user is, if an operation is not protected, our codebase should not even invoke the authChecker
-      it('should DENY a user when calling a non-protected operation', async () => {
+      // Operations that don't require ownership should be allowed for users with valid roles
+      it('should ALLOW a user when calling a non-protected operation', async () => {
         const mockResolveInfo: GraphQLResolveInfo = {fieldName: 'non-protected'} as any;
 
-        await expect(authChecker({context: mockContext, info: mockResolveInfo, args: {}, root}, [UserRole.User])).rejects.toThrow(
-          CustomError(ERROR_MESSAGES.UNAUTHORIZED, ErrorTypes.UNAUTHORIZED),
-        );
+        const result = await authChecker({context: mockContext, info: mockResolveInfo, args: {}, root}, [UserRole.User]);
+        expect(result).toBe(true);
       });
     });
 

@@ -1,5 +1,5 @@
 import {ActivityObjectType, ActivityVerb, ActivityVisibility} from '@ntlango/commons/types/activity';
-import {FollowStatus, FollowTargetType} from '@ntlango/commons/types/follow';
+import {FollowContentVisibility, FollowTargetType, FollowApprovalStatus} from '@ntlango/commons/types/follow';
 import {IntentVisibility, IntentSource, IntentStatus} from '@ntlango/commons/types/intent';
 
 export type FollowSeed = {
@@ -7,7 +7,10 @@ export type FollowSeed = {
   targetType: FollowTargetType;
   targetUserIndex?: number;
   targetOrgIndex?: number;
-  status?: FollowStatus;
+  notificationPreferences?: {
+    contentVisibility?: FollowContentVisibility;
+  };
+  approvalStatus?: FollowApprovalStatus;
 };
 
 export type IntentSeed = {
@@ -36,7 +39,18 @@ export type ActivitySeed = {
 export const followSeedData: FollowSeed[] = [
   {followerIndex: 0, targetType: FollowTargetType.User, targetUserIndex: 1},
   {followerIndex: 0, targetType: FollowTargetType.Organization, targetOrgIndex: 0},
-  {followerIndex: 2, targetType: FollowTargetType.User, targetUserIndex: 0, status: FollowStatus.Muted},
+  {
+    followerIndex: 2,
+    targetType: FollowTargetType.User,
+    targetUserIndex: 0,
+    notificationPreferences: {contentVisibility: FollowContentVisibility.Muted},
+  },
+  {
+    followerIndex: 1,
+    targetType: FollowTargetType.User,
+    targetUserIndex: 2,
+    approvalStatus: FollowApprovalStatus.Pending,
+  },
 ];
 
 export const intentSeedData: IntentSeed[] = [

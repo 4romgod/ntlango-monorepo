@@ -48,6 +48,9 @@ export const authChecker = async (resolverData: ResolverData<ServerContext>, rol
     const userRole = user.userRole;
     const operationName = info.fieldName;
 
+    // Attach verified user to context so resolvers can access it
+    context.user = user;
+
     if (!roles.includes(userRole)) {
       logger.debug(`${userRole} type user: '${user.username}' was denied for operation ${operationName}`);
       throw CustomError(ERROR_MESSAGES.UNAUTHORIZED, ErrorTypes.UNAUTHORIZED);
@@ -68,8 +71,9 @@ export const authChecker = async (resolverData: ResolverData<ServerContext>, rol
       throw CustomError(ERROR_MESSAGES.UNAUTHORIZED, ErrorTypes.UNAUTHORIZED);
     }
 
-    logger.debug(`${userRole} type user: '${user.username}' attempted to access non-protected operation ${operationName}`);
-    throw CustomError(ERROR_MESSAGES.UNAUTHORIZED, ErrorTypes.UNAUTHORIZED);
+    // Operation doesn't require ownership, user role is valid, allow access
+    logger.debug(`${userRole} type user: '${user.username}' has permission for operation ${operationName}. All users allowed.`);
+    return true;
   }
 
   throw CustomError(ERROR_MESSAGES.UNAUTHENTICATED, ErrorTypes.UNAUTHENTICATED);
@@ -239,16 +243,16 @@ const isAuthorizedToReadEventParticipants = async (eventId: string | undefined, 
 };
 
 /**
- * Ensures the current GraphQL request has a valid authenticated user.
+ * Retrieves the authenticated user from context.
+ * Should only be called in resolvers decorated with @Authorized, which ensures context.user is populated.
  *
- * @param context - GraphQL server context containing metadata such as the JWT token.
- * @returns The decoded `User` object from the verified token.
- * @throws CustomError with `UNAUTHENTICATED` type when no token is present.
- * @throws Any error propagated from `verifyToken` when the token is invalid.
+ * @param context - GraphQL server context containing the verified user (set by authChecker).
+ * @returns The authenticated User object.
+ * @throws CustomError with UNAUTHENTICATED type if user is not in context (should never happen with @Authorized).
  */
-export const requireAuthenticatedUser = async (context: ServerContext): Promise<User> => {
-  if (!context?.token) {
+export const getAuthenticatedUser = (context: ServerContext): User => {
+  if (!context?.user) {
     throw CustomError(ERROR_MESSAGES.UNAUTHENTICATED, ErrorTypes.UNAUTHENTICATED);
   }
-  return verifyToken(context.token);
+  return context.user;
 };

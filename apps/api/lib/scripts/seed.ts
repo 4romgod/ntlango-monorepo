@@ -343,12 +343,17 @@ async function seedFollows(seedData: FollowSeed[], userIds: string[], organizati
       continue;
     }
 
-    await FollowDAO.upsert({
+    const createdFollow = await FollowDAO.upsert({
       followerUserId,
       targetType: seed.targetType,
       targetId,
-      status: seed.status,
+      notificationPreferences: seed.notificationPreferences,
     });
+    
+    // Update approval status if provided (requires separate call after initial creation)
+    if (seed.approvalStatus) {
+      await FollowDAO.updateApprovalStatus(createdFollow.followId, targetId, seed.approvalStatus);
+    }
   }
   logger.info('Completed seeding follow edges.');
 }
