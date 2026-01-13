@@ -27,6 +27,9 @@ class FollowDAO {
           follow.notificationPreferences = follow.notificationPreferences || {};
           follow.notificationPreferences.contentVisibility = notificationPreferences.contentVisibility;
         }
+        if (approvalStatus !== undefined) {
+          follow.approvalStatus = approvalStatus;
+        }
         await follow.save();
       } else {
         // Create new follow - triggers pre-validation hooks
