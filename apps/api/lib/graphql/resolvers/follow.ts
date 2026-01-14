@@ -1,13 +1,15 @@
 import 'reflect-metadata';
-import {Arg, Authorized, Ctx, ID, Mutation, Query, Resolver} from 'type-graphql';
+import {Arg, Authorized, Ctx, FieldResolver, ID, Mutation, Query, Resolver, Root} from 'type-graphql';
 import {
   CreateFollowInput,
   Follow,
   FollowTargetType,
+  User,
   UserRole,
   UpdateFollowNotificationPreferencesInput,
   FollowApprovalStatus,
   FollowPolicy,
+  Organization,
 } from '@ntlango/commons/types';
 import {
   CreateFollowInputSchema,
@@ -21,6 +23,27 @@ import {getAuthenticatedUser} from '@/utils';
 
 @Resolver(() => Follow)
 export class FollowResolver {
+  @FieldResolver(() => User)
+  async follower(@Root() follow: Follow): Promise<User> {
+    return UserDAO.readUserById(follow.followerUserId);
+  }
+
+  @FieldResolver(() => User, {nullable: true})
+  async targetUser(@Root() follow: Follow): Promise<User | null> {
+    if (follow.targetType !== FollowTargetType.User) {
+      return null;
+    }
+    return UserDAO.readUserById(follow.targetId);
+  }
+
+  @FieldResolver(() => Organization, {nullable: true})
+  async targetOrganization(@Root() follow: Follow): Promise<Organization | null> {
+    if (follow.targetType !== FollowTargetType.Organization) {
+      return null;
+    }
+    return OrganizationDAO.readOrganizationById(follow.targetId);
+  }
+
   @Authorized([UserRole.Admin, UserRole.Host, UserRole.User])
   @Mutation(() => Follow, {description: RESOLVER_DESCRIPTIONS.FOLLOW.follow})
   async follow(@Arg('input', () => CreateFollowInput) input: CreateFollowInput, @Ctx() context: ServerContext): Promise<Follow> {
@@ -96,6 +119,16 @@ export class FollowResolver {
   ): Promise<Follow[]> {
     const user = getAuthenticatedUser(context);
     return FollowDAO.readPendingFollows(user.userId, targetType);
+  }
+
+  @Authorized([UserRole.Admin, UserRole.Host, UserRole.User])
+  @Query(() => [Follow], {description: 'Get all follow requests for the authenticated user, including accepted and rejected'})
+  async readFollowRequests(
+    @Arg('targetType', () => FollowTargetType) targetType: FollowTargetType,
+    @Ctx() context: ServerContext,
+  ): Promise<Follow[]> {
+    const user = getAuthenticatedUser(context);
+    return FollowDAO.readFollowRequests(user.userId, targetType);
   }
 
   @Query(() => [Follow], {description: RESOLVER_DESCRIPTIONS.FOLLOW.readFollowers})
