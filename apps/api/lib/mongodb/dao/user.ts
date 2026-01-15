@@ -209,9 +209,17 @@ class UserDAO {
         throw CustomError('You cannot block yourself', ErrorTypes.BAD_USER_INPUT);
       }
 
-      const user = await UserModel.findById(userId).exec();
+      const [user, blockedUser] = await Promise.all([
+        UserModel.findById(userId).exec(),
+        UserModel.findById(blockedUserId).exec(),
+      ]);
+
       if (!user) {
         throw CustomError(ERROR_MESSAGES.NOT_FOUND('User', 'ID', userId), ErrorTypes.NOT_FOUND);
+      }
+
+      if (!blockedUser) {
+        throw CustomError(ERROR_MESSAGES.NOT_FOUND('User', 'ID', blockedUserId), ErrorTypes.NOT_FOUND);
       }
 
       if (user.blockedUserIds?.includes(blockedUserId)) {

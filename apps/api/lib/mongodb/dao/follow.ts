@@ -140,6 +140,29 @@ class FollowDAO {
   }
 
   /**
+   * Check if a user follows a specific target.
+   * More efficient than loading all follows when checking a single relationship.
+   */
+  static async isFollowing(
+    followerUserId: string,
+    targetType: FollowTargetType,
+    targetId: string,
+  ): Promise<boolean> {
+    try {
+      const follow = await FollowModel.findOne({
+        followerUserId,
+        targetType,
+        targetId,
+        approvalStatus: FollowApprovalStatus.Accepted,
+      }).exec();
+      return follow !== null;
+    } catch (error) {
+      logger.error('Error checking follow status', error);
+      throw KnownCommonError(error);
+    }
+  }
+
+  /**
    * Unfollow a target (user or organization).
    * Called by the follower when they want to stop following someone.
    * Removes the follow edge regardless of approval status.

@@ -248,6 +248,7 @@ export const RESOLVER_DESCRIPTIONS = {
         unfollow: 'Remove a follow connection initiated by the authenticated user.',
         acceptFollowRequest: 'Accept a pending follow request (called by the user being followed)',
         rejectFollowRequest: 'Reject a pending follow request (called by the user being followed).',
+        removeFollower: 'Remove a follower from your account.',
         readFollowing: 'List the users and organizations that the authenticated user follows.',
         readFollowers: 'List followers for a specific user or organization.',
         readPendingFollowRequests: "List pending follow requests awaiting the authenticated user's approval.",

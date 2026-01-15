@@ -113,7 +113,7 @@ export function BlockedUsersList({ open, onClose }: BlockedUsersListProps) {
                 }
               >
                 <ListItemAvatar>
-                  <Link href={`/users/${user.userId}`}>
+                  <Link href={`/users/${user.username}`}>
                     <Avatar src={user.profile_picture || undefined} alt={user.username}>
                       {user.username[0]?.toUpperCase()}
                     </Avatar>
@@ -121,7 +121,7 @@ export function BlockedUsersList({ open, onClose }: BlockedUsersListProps) {
                 </ListItemAvatar>
                 <ListItemText
                   primary={
-                    <Link href={`/users/${user.userId}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                    <Link href={`/users/${user.username}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                       {user.username}
                     </Link>
                   }

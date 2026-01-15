@@ -109,7 +109,7 @@ export class FollowResolver {
   }
 
   @Authorized([UserRole.Admin, UserRole.Host, UserRole.User])
-  @Mutation(() => Boolean, {description: 'Remove a follower from your account'})
+  @Mutation(() => Boolean, {description: RESOLVER_DESCRIPTIONS.FOLLOW.removeFollower})
   async removeFollower(
     @Arg('followerUserId', () => ID) followerUserId: string,
     @Arg('targetType', () => FollowTargetType, {defaultValue: FollowTargetType.User}) targetType: FollowTargetType,
@@ -166,13 +166,8 @@ export class FollowResolver {
       }
 
       if (visibility === SocialVisibility.Followers && viewerId && viewerId !== targetId) {
-        // Check if viewer follows the target
-        const viewerFollowsTarget = await FollowDAO.readFollowingForUser(viewerId);
-        const isFollowing = viewerFollowsTarget.some(
-          f => f.targetId === targetId && 
-               f.targetType === FollowTargetType.User && 
-               f.approvalStatus === FollowApprovalStatus.Accepted
-        );
+        // Check if viewer follows the target (single query instead of loading all follows)
+        const isFollowing = await FollowDAO.isFollowing(viewerId, FollowTargetType.User, targetId);
         if (!isFollowing) {
           return [];
         }
@@ -187,12 +182,8 @@ export class FollowResolver {
       }
 
       if (visibility === SocialVisibility.Followers && viewerId && viewerId !== targetOrg.ownerId) {
-        const viewerFollowsTarget = await FollowDAO.readFollowingForUser(viewerId);
-        const isFollowing = viewerFollowsTarget.some(
-          f => f.targetId === targetId && 
-               f.targetType === FollowTargetType.Organization && 
-               f.approvalStatus === FollowApprovalStatus.Accepted
-        );
+        // Check if viewer follows the target (single query instead of loading all follows)
+        const isFollowing = await FollowDAO.isFollowing(viewerId, FollowTargetType.Organization, targetId);
         if (!isFollowing) {
           return [];
         }
