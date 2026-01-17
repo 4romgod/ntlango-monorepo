@@ -5,7 +5,11 @@ export const getCreateUserMutation = (user: any) => {
               userId
               email
               username
-              address
+              location {
+                city
+                state
+                country
+              }
               token
             }
         }`,
@@ -22,7 +26,11 @@ export const getUpdateUserMutation = (user: any) => {
               userId
               email
               username
-              address
+              location {
+                city
+                state
+                country
+              }
               family_name
               userRole
             }

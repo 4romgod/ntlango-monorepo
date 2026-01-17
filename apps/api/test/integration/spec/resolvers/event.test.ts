@@ -170,7 +170,7 @@ describe('Event Resolver', () => {
       const readResponse = await request(url)
         .post('')
         .send({
-          query: `query ReadEvents($options: QueryOptionsInput) {
+          query: `query ReadEvents($options: EventsQueryOptionsInput) {
           readEvents(options: $options) {
             eventId
             title
@@ -196,7 +196,7 @@ describe('Event Resolver', () => {
       const readResponse = await request(url)
         .post('')
         .send({
-          query: `query ReadEvents($options: QueryOptionsInput) {
+          query: `query ReadEvents($options: EventsQueryOptionsInput) {
           readEvents(options: $options) {
             eventId
             title
@@ -228,7 +228,7 @@ describe('Event Resolver', () => {
       const readResponse = await request(url)
         .post('')
         .send({
-          query: `query ReadEvents($options: QueryOptionsInput) {
+          query: `query ReadEvents($options: EventsQueryOptionsInput) {
           readEvents(options: $options) {
             eventId
             title

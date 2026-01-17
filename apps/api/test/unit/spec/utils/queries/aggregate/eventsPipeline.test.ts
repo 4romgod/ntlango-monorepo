@@ -1,4 +1,4 @@
-import {transformOptionsToPipeline} from '@/utils';
+import {transformEventOptionsToPipeline} from '@/utils';
 import type {QueryOptionsInput} from '@ntlango/commons/types';
 import {FilterOperatorInput, SortOrderInput} from '@ntlango/commons/types';
 import type {PipelineStage} from 'mongoose';
@@ -7,9 +7,9 @@ import * as lookupModule from '@/utils/queries/aggregate/lookup';
 import * as sortModule from '@/utils/queries/aggregate/sort';
 import * as paginationModule from '@/utils/queries/aggregate/pagination';
 
-describe('transformOptionsToPipeline', () => {
+describe('transformEventOptionsToPipeline', () => {
   it('should return an empty pipeline when no options are provided', () => {
-    const pipeline = transformOptionsToPipeline();
+    const pipeline = transformEventOptionsToPipeline();
     expect(pipeline).toEqual([...lookupModule.createEventLookupStages()]);
   });
 
@@ -20,7 +20,7 @@ describe('transformOptionsToPipeline', () => {
 
     jest.spyOn(lookupModule, 'createEventLookupStages').mockReturnValue(lookupStages);
 
-    const pipeline = transformOptionsToPipeline({});
+    const pipeline = transformEventOptionsToPipeline({});
     expect(pipeline).toEqual(lookupStages);
   });
 
@@ -32,7 +32,7 @@ describe('transformOptionsToPipeline', () => {
     jest.spyOn(sortModule, 'createSortStages').mockReturnValue(sortStages);
 
     const options: QueryOptionsInput = {sort: sortInput};
-    const pipeline = transformOptionsToPipeline(options);
+    const pipeline = transformEventOptionsToPipeline(options);
     expect(pipeline).toEqual([...sortStages]);
   });
 
@@ -44,7 +44,7 @@ describe('transformOptionsToPipeline', () => {
     jest.spyOn(paginationModule, 'createPaginationStages').mockReturnValue(paginationStages);
 
     const options: QueryOptionsInput = {pagination: paginationInput};
-    const pipeline = transformOptionsToPipeline(options);
+    const pipeline = transformEventOptionsToPipeline(options);
     expect(pipeline).toEqual([...paginationStages]);
   });
 
@@ -56,7 +56,7 @@ describe('transformOptionsToPipeline', () => {
     jest.spyOn(filterModule, 'createEventPipelineStages').mockReturnValue(filterStages);
 
     const options: QueryOptionsInput = {filters};
-    const pipeline = transformOptionsToPipeline(options);
+    const pipeline = transformEventOptionsToPipeline(options);
     expect(pipeline).toEqual([...filterStages]);
   });
 
@@ -78,7 +78,7 @@ describe('transformOptionsToPipeline', () => {
     jest.spyOn(filterModule, 'createEventPipelineStages').mockReturnValue(filterStages);
 
     const options: QueryOptionsInput = {sort: sortInput, pagination: paginationInput, filters};
-    const pipeline = transformOptionsToPipeline(options);
+    const pipeline = transformEventOptionsToPipeline(options);
     expect(pipeline).toEqual([...lookupStages, ...filterStages, ...sortStages, ...paginationStages]);
   });
 });

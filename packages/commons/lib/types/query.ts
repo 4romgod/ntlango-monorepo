@@ -99,8 +99,49 @@ export class DateRangeInput {
     endDate?: Date;
 }
 
-@InputType('QueryOptionsInput', {description: QUERY_DESCRIPTIONS.QUERY.INPUT})
+@InputType('LocationFilterInput', {description: 'Location-based filtering for events'})
+export class LocationFilterInput {
+    @Field(() => String, {nullable: true, description: 'Filter by city name'})
+    city?: string;
+
+    @Field(() => String, {nullable: true, description: 'Filter by state/province (e.g., "Gauteng", "California", "Bavaria")'})
+    state?: string;
+
+    @Field(() => String, {nullable: true, description: 'Filter by country'})
+    country?: string;
+
+    @Field(() => Number, {nullable: true, description: 'Latitude for proximity search'})
+    latitude?: number;
+
+    @Field(() => Number, {nullable: true, description: 'Longitude for proximity search'})
+    longitude?: number;
+
+    @Field(() => Number, {nullable: true, description: 'Radius in kilometers for proximity search (default: 50km)'})
+    radiusKm?: number;
+}
+
+/**
+ * Generic query options for non-event entities (organizations, venues, users, categories, etc.)
+ * Contains only pagination, sort, and filters - no event-specific date filtering.
+ */
+@InputType('QueryOptionsInput', {description: 'Generic query options for pagination, sorting, and filtering'})
 export class QueryOptionsInput {
+    @Field(() => PaginationInput, {nullable: true, description: QUERY_DESCRIPTIONS.QUERY.PAGINATION})
+    pagination?: PaginationInput;
+
+    @Field(() => [SortInput], {nullable: true, description: QUERY_DESCRIPTIONS.QUERY.SORT})
+    sort?: SortInput[];
+
+    @Field(() => [FilterInput], {nullable: true, description: QUERY_DESCRIPTIONS.QUERY.FILTER})
+    filters?: FilterInput[];
+}
+
+/**
+ * Extended query options specifically for Events.
+ * Includes all generic options plus event-specific fields: date filtering, location, and category filtering.
+ */
+@InputType('EventsQueryOptionsInput', {description: 'Query options for events with date, location, and category filtering'})
+export class EventsQueryOptionsInput {
     @Field(() => PaginationInput, {nullable: true, description: QUERY_DESCRIPTIONS.QUERY.PAGINATION})
     pagination?: PaginationInput;
 
@@ -129,4 +170,7 @@ export class QueryOptionsInput {
         description: 'Custom date to filter events. Highest precedence: when provided, this overrides both dateFilterOption and dateRange.',
     })
     customDate?: Date;
+
+    @Field(() => LocationFilterInput, {nullable: true, description: 'Location-based filtering for proximity search'})
+    location?: LocationFilterInput;
 }

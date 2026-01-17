@@ -14,12 +14,12 @@ import {
   Card,
 } from '@mui/material';
 import { Edit as EditIcon, CameraAlt as CameraIcon, Save as SaveIcon, Cancel as CancelIcon } from '@mui/icons-material';
-import { Address, UpdateUserInput, User } from '@/data/graphql/types/graphql';
+import { UpdateUserInput, User, UserLocationInput } from '@/data/graphql/types/graphql';
 import { useActionState } from 'react';
 import { updateUserProfileAction } from '@/data/actions/server/user/update-user-profile';
 import { useAppContext } from '@/hooks/useAppContext';
 import { FormErrors } from '@/components/form-errors';
-import AddressForm from '@/components/forms/input-address';
+import LocationForm from '@/components/forms/input-location';
 import { BUTTON_STYLES, SECTION_TITLE_STYLES } from '@/lib/constants';
 
 export default function EditProfilePage({ user }: { user: User }) {
@@ -37,7 +37,7 @@ export default function EditProfilePage({ user }: { user: User }) {
     phone_number: user.phone_number,
     birthdate: user.birthdate,
     username: user.username,
-    address: user.address,
+    location: user.location,
   });
 
   useEffect(() => {
@@ -71,10 +71,10 @@ export default function EditProfilePage({ user }: { user: User }) {
     }));
   };
 
-  const handleAddressChange = (address: Address) => {
+  const handleLocationChange = (location: UserLocationInput) => {
     setProfile(prev => ({
       ...prev,
-      address: address,
+      location: location,
     }));
   };
 
@@ -265,7 +265,7 @@ export default function EditProfilePage({ user }: { user: User }) {
           </Grid>
         </Card>
 
-        {/* Address Information */}
+        {/* Location Information */}
         <Card
           elevation={0}
           sx={{
@@ -275,10 +275,10 @@ export default function EditProfilePage({ user }: { user: User }) {
           }}
         >
           <Typography variant="h6" sx={{ ...SECTION_TITLE_STYLES, fontSize: '1.125rem', mb: 3 }}>
-            Home Address
+            Location
           </Typography>
 
-          <AddressForm value={profile.address} onChange={handleAddressChange} disabled={!isEditing} name="address" />
+          <LocationForm value={profile.location} onChange={handleLocationChange} disabled={!isEditing} name="location" />
         </Card>
 
         {/* Action Buttons */}

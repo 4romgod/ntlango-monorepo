@@ -74,7 +74,7 @@ export const USER_DESCRIPTIONS = {
     UPDATE_INPUT: 'Input type for updating an existing user with personal details and roles within the system.',
     LOGIN_INPUT: 'Input type for user login, including fields for email and password.',
     ID: "Unique identifier for the user (e.g., '123e4567-e89b-12d3-a456-426614174000')",
-    ADDRESS: "User's residential address, (e.g., '123 Main St, Springfield, IL')",
+    LOCATION: "User's location with city, state, country, and optional coordinates for personalized recommendations",
     BIRTHDATE: "User's birth date in YYYY-MM-DD format, (e.g. '2002-05-01')",
     EMAIL: "User's email address (e.g., 'user@example.com')",
     ENCRYPTED_PASSWORD: "User's password stored in encrypted form (e.g., '$2b$10$EixZaYVK1fsbw1ZfbX3OXe')",

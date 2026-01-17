@@ -57,14 +57,10 @@ describe('UserDAO', () => {
     email: 'test@example.com',
     password: 'password',
     username: 'testUser',
-    address: {
-      locationType: 'venue',
-      address: {
-        country: 'South Africa',
-        city: 'Durban',
-        state: 'KZN',
-        zipCode: '0900',
-      },
+    location: {
+      city: 'Durban',
+      state: 'KZN',
+      country: 'South Africa',
     },
     interests: [],
     birthdate: '1997-07-05',

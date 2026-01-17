@@ -1,16 +1,21 @@
-import type {QueryOptionsInput} from '@ntlango/commons/types';
+import type {EventsQueryOptionsInput} from '@ntlango/commons/types';
 import type {PipelineStage} from 'mongoose';
-import {createEventPipelineStages} from './filter';
+import {createEventPipelineStages, createLocationMatchStage} from './filter';
 import {createEventLookupStages} from './lookup';
 import {createSortStages} from './sort';
 import {createPaginationStages} from './pagination';
+import {logger} from '@/utils/logger';
 
-export const transformOptionsToPipeline = (options?: QueryOptionsInput): PipelineStage[] => {
+export const transformEventOptionsToPipeline = (options?: EventsQueryOptionsInput): PipelineStage[] => {
   const pipeline: PipelineStage[] = [];
   pipeline.push(...createEventLookupStages());
 
   if (options) {
-    const {filters, sort, pagination} = options;
+    const {filters, sort, pagination,  location} = options;
+
+    if (location) {
+      pipeline.push(...createLocationMatchStage(location));
+    }
 
     if (filters) {
       pipeline.push(...createEventPipelineStages(filters));
@@ -24,6 +29,8 @@ export const transformOptionsToPipeline = (options?: QueryOptionsInput): Pipelin
       pipeline.push(...createPaginationStages(pagination));
     }
   }
+
+  logger.debug('[transformEventOptionsToPipeline] MongoDB aggregation pipeline:', JSON.stringify(pipeline, null, 2));
 
   return pipeline;
 };

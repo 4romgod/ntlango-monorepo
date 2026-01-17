@@ -6,11 +6,10 @@ const users: CreateUserInput[] = [
     // id: 'user001',
     email: 'user001@gmail.com',
     username: 'jackBaur',
-    address: {
-      country: 'South Africa',
-      state: 'KZN',
+    location: {
       city: 'Durban',
-      zipCode: '8000',
+      state: 'KZN',
+      country: 'South Africa',
     },
     interests: [],
     birthdate: '1994-06-26',
@@ -31,11 +30,10 @@ const users: CreateUserInput[] = [
     // id: 'host001',
     email: 'jay@rocknation.com',
     username: 'jayz',
-    address: {
-      country: 'South Africa',
-      state: 'Gauteng',
+    location: {
       city: 'Centurion',
-      zipCode: '0600',
+      state: 'Gauteng',
+      country: 'South Africa',
     },
     interests: [],
     birthdate: '1990-01-21',
@@ -57,11 +55,10 @@ const users: CreateUserInput[] = [
     // id: 'user002',
     email: 'celin@yahoo.com',
     username: 'celin352',
-    address: {
-      country: 'South Africa',
-      state: 'Western Cape',
+    location: {
       city: 'Parklands',
-      zipCode: '0901',
+      state: 'Western Cape',
+      country: 'South Africa',
     },
     interests: [],
     birthdate: '1999-06-25',
@@ -83,11 +80,10 @@ const users: CreateUserInput[] = [
     // id: 'host002',
     email: 'Jeff@amazon.com',
     username: 'jeffbez',
-    address: {
-      country: 'South Africa',
-      state: 'Limpopo',
+    location: {
       city: 'Polokwane',
-      zipCode: '0800',
+      state: 'Limpopo',
+      country: 'South Africa',
     },
     interests: [],
     birthdate: '1997-07-05',
@@ -109,11 +105,10 @@ const users: CreateUserInput[] = [
     // id: 'user003',
     email: 'thandi.mvubu@outlook.com',
     username: 'thandimvubu',
-    address: {
-      country: 'South Africa',
-      state: 'Western Cape',
+    location: {
       city: 'Cape Town',
-      zipCode: '8001',
+      state: 'Western Cape',
+      country: 'South Africa',
     },
     interests: [],
     birthdate: '1995-03-14',
@@ -135,11 +130,10 @@ const users: CreateUserInput[] = [
     // id: 'user004',
     email: 'sipho.ndlovu@gmail.com',
     username: 'sipho_ndlovu',
-    address: {
-      country: 'South Africa',
-      state: 'Gauteng',
+    location: {
       city: 'Johannesburg',
-      zipCode: '2001',
+      state: 'Gauteng',
+      country: 'South Africa',
     },
     interests: [],
     birthdate: '1992-11-08',
@@ -161,11 +155,10 @@ const users: CreateUserInput[] = [
     // id: 'user005',
     email: 'amara.johnson@live.com',
     username: 'amarajay',
-    address: {
-      country: 'South Africa',
-      state: 'Eastern Cape',
+    location: {
       city: 'Port Elizabeth',
-      zipCode: '6001',
+      state: 'Eastern Cape',
+      country: 'South Africa',
     },
     interests: [],
     birthdate: '1998-08-19',

@@ -1,6 +1,7 @@
 "use client";
 
-import { Menu, MenuItem, Checkbox, ListItemText, ListItemIcon, Popover, Box } from '@mui/material';
+import { useState } from 'react';
+import { Menu, MenuItem, Checkbox, ListItemText, ListItemIcon, Popover, Box, TextField, Button, Stack, Typography, Slider, Divider } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
@@ -8,6 +9,10 @@ import { Dayjs } from 'dayjs';
 import { EventCategory, EventStatus } from '@/data/graphql/types/graphql';
 import { getEventCategoryIcon } from '@/lib/constants';
 import { DATE_FILTER_LABELS } from '@/lib/constants/date-filters';
+import { useAppContext } from '@/hooks/useAppContext';
+import { LocationFilter } from '@/components/events/filters/event-filter-context';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import MyLocationIcon from '@mui/icons-material/MyLocation';
 
 interface CategoryMenuProps {
   anchorEl: HTMLElement | null;
@@ -224,5 +229,218 @@ export function DateMenu({
         </Box>
       </Popover>
     </>
+  );
+}
+
+interface LocationMenuProps {
+  anchorEl: HTMLElement | null;
+  currentLocation: LocationFilter;
+  onClose: () => void;
+  onApply: (location: LocationFilter) => void;
+  onClear: () => void;
+}
+
+export function LocationMenu({ 
+  anchorEl, 
+  currentLocation,
+  onClose, 
+  onApply,
+  onClear,
+}: LocationMenuProps) {
+  const { setToastProps, toastProps } = useAppContext();
+  const [city, setCity] = useState(currentLocation.city || '');
+  const [state, setState] = useState(currentLocation.state || '');
+  const [country, setCountry] = useState(currentLocation.country || '');
+  const [radiusKm, setRadiusKm] = useState(currentLocation.radiusKm || 50);
+  const [useMyLocation, setUseMyLocation] = useState(!!currentLocation.latitude);
+  const [gettingLocation, setGettingLocation] = useState(false);
+  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(
+    currentLocation.latitude && currentLocation.longitude 
+      ? { lat: currentLocation.latitude, lng: currentLocation.longitude }
+      : null
+  );
+
+  const showError = (message: string) => {
+    setToastProps({
+      ...toastProps,
+      open: true,
+      severity: 'error',
+      message,
+    });
+  };
+
+  const handleGetMyLocation = () => {
+    if (!navigator.geolocation) {
+      showError('Geolocation is not supported by your browser');
+      return;
+    }
+
+    setGettingLocation(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setCoords({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        });
+        setUseMyLocation(true);
+        setGettingLocation(false);
+      },
+      (error) => {
+        console.error('Error getting location:', error);
+        showError('Unable to get your location. Please check your browser permissions.');
+        setGettingLocation(false);
+      }
+    );
+  };
+
+  const handleApply = () => {
+    const location: LocationFilter = {};
+    
+    if (city.trim()) location.city = city.trim();
+    if (state.trim()) location.state = state.trim();
+    if (country.trim()) location.country = country.trim();
+    
+    if (useMyLocation && coords) {
+      location.latitude = coords.lat;
+      location.longitude = coords.lng;
+      location.radiusKm = radiusKm;
+    }
+    
+    onApply(location);
+    onClose();
+  };
+
+  const handleClear = () => {
+    setCity('');
+    setState('');
+    setCountry('');
+    setUseMyLocation(false);
+    setCoords(null);
+    setRadiusKm(50);
+    onClear();
+    onClose();
+  };
+
+  const hasValues = city || state || country || useMyLocation;
+
+  return (
+    <Popover
+      open={Boolean(anchorEl)}
+      anchorEl={anchorEl}
+      onClose={onClose}
+      anchorOrigin={{
+        vertical: 'bottom',
+        horizontal: 'left',
+      }}
+      transformOrigin={{
+        vertical: 'top',
+        horizontal: 'left',
+      }}
+      slotProps={{
+        paper: {
+          className: 'glass-card',
+          sx: {
+            mt: 1,
+            width: 320,
+            p: 2,
+          },
+        },
+      }}
+    >
+      <Stack spacing={2}>
+        <Stack direction="row" alignItems="center" spacing={1}>
+          <LocationOnIcon color="primary" />
+          <Typography variant="subtitle1" fontWeight={600}>
+            Filter by Location
+          </Typography>
+        </Stack>
+
+        <TextField
+          label="City"
+          size="small"
+          fullWidth
+          value={city}
+          onChange={(e) => setCity(e.target.value)}
+          placeholder="e.g., San Francisco"
+        />
+
+        <TextField
+          label="State / Province"
+          size="small"
+          fullWidth
+          value={state}
+          onChange={(e) => setState(e.target.value)}
+          placeholder="e.g., California"
+        />
+
+        <TextField
+          label="Country"
+          size="small"
+          fullWidth
+          value={country}
+          onChange={(e) => setCountry(e.target.value)}
+          placeholder="e.g., United States"
+        />
+
+        <Divider sx={{ my: 1 }} />
+
+        <Box>
+          <Button
+            variant={useMyLocation ? "contained" : "outlined"}
+            size="small"
+            fullWidth
+            startIcon={<MyLocationIcon />}
+            onClick={handleGetMyLocation}
+            disabled={gettingLocation}
+            sx={{ mb: 1 }}
+          >
+            {gettingLocation ? 'Getting location...' : useMyLocation ? 'Using my location' : 'Use my location'}
+          </Button>
+          
+          {useMyLocation && coords && (
+            <Box sx={{ px: 1 }}>
+              <Typography variant="caption" color="text.secondary" gutterBottom>
+                Search radius: {radiusKm} km
+              </Typography>
+              <Slider
+                value={radiusKm}
+                onChange={(_, value) => setRadiusKm(value as number)}
+                min={5}
+                max={200}
+                step={5}
+                marks={[
+                  { value: 5, label: '5' },
+                  { value: 50, label: '50' },
+                  { value: 100, label: '100' },
+                  { value: 200, label: '200' },
+                ]}
+                valueLabelDisplay="auto"
+                valueLabelFormat={(value) => `${value} km`}
+                size="small"
+              />
+            </Box>
+          )}
+        </Box>
+
+        <Stack direction="row" spacing={1} justifyContent="flex-end">
+          <Button 
+            variant="text" 
+            size="small" 
+            onClick={handleClear}
+            disabled={!hasValues}
+          >
+            Clear
+          </Button>
+          <Button 
+            variant="contained" 
+            size="small" 
+            onClick={handleApply}
+            disabled={!hasValues}
+          >
+            Apply
+          </Button>
+        </Stack>
+      </Stack>
+    </Popover>
   );
 }

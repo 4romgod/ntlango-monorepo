@@ -38,7 +38,7 @@ This backlog captures known missing work discovered from TODO/FIXME markers and 
 | WEB-001 | Replace date-fns auth validation TODO | P3 | Backlog | `apps/webapp/data/validation/auth.ts` | Decide on date lib; standardize client validation. |
 | WEB-002 | Wire forgot-password API call | P2 | Backlog | `apps/webapp/data/actions/server/auth/forgot-password.ts` | Implement API integration. |
 | WEB-003 | Wire reset-password API call | P2 | Backlog | `apps/webapp/data/actions/server/auth/reset-password.ts` | Implement API integration. |
-| WEB-004 | Validate profile address before JSON.parse | P2 | Backlog | `apps/webapp/data/actions/server/user/update-user-profile.ts` | Prevent runtime parse errors. |
+| WEB-004 | Validate profile location before JSON.parse | P2 | Backlog | `apps/webapp/data/actions/server/user/update-user-profile.ts` | Prevent runtime parse errors. |
 | WEB-005 | Sync user session after profile update | P2 | Backlog | `apps/webapp/data/actions/server/user/update-user-profile.ts` | Ensure session reflects updates. |
 | WEB-006 | Verify current password before update | P2 | Backlog | `apps/webapp/data/actions/server/user/update-user-password.ts` | Add API check + session refresh. |
 | WEB-007 | Log out after account deletion | P2 | Backlog | `apps/webapp/data/actions/server/user/delete-user-profile.ts` | Session cleanup after delete. |

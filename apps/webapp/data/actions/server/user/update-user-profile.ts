@@ -1,5 +1,6 @@
 'use server';
 
+import { z } from 'zod';
 import { UpdateUserInput, UpdateUserDocument, Gender } from '@/data/graphql/types/graphql';
 import { UpdateUserInputSchema } from '@/data/validation';
 import { getClient } from '@/data/graphql';
@@ -8,6 +9,35 @@ import { ApolloError } from '@apollo/client';
 import { getApolloErrorMessage } from '@/data/actions/types';
 import { logger } from '@/lib/utils';
 import type { ActionState } from '@/data/actions/types';
+
+// Zod schemas for validating JSON-parsed fields (matches UserLocationInput GraphQL type)
+const CoordinatesSchema = z.object({
+  latitude: z.number(),
+  longitude: z.number(),
+}).optional();
+
+const LocationSchema = z.object({
+  city: z.string(),
+  state: z.string().optional(),
+  country: z.string(),
+  coordinates: CoordinatesSchema,
+}).optional();
+
+const InterestsSchema = z.array(z.string()).optional();
+
+/**
+ * Safely parse JSON with Zod validation
+ */
+function safeJsonParse<T>(jsonStr: string | undefined, schema: z.ZodType<T>): T | undefined {
+  if (!jsonStr) return undefined;
+  try {
+    const parsed = JSON.parse(jsonStr);
+    const result = schema.safeParse(parsed);
+    return result.success ? result.data : undefined;
+  } catch {
+    return undefined;
+  }
+}
 
 export async function updateUserProfileAction(prevState: ActionState, formData: FormData): Promise<ActionState> {
   const session = await auth();
@@ -29,11 +59,14 @@ export async function updateUserProfileAction(prevState: ActionState, formData: 
     };
   }
 
-  const address = formData.get('address')?.toString();
+  const locationStr = formData.get('location')?.toString();
   const genderStr = formData.get('gender')?.toString();
   const gender = Object.values(Gender).includes(genderStr as Gender) ? (genderStr as Gender) : undefined;
   const interestsStr = formData.get('interests')?.toString();
-  const interests = interestsStr ? JSON.parse(interestsStr) : undefined;
+  
+  // Safely parse JSON fields with validation
+  const location = safeJsonParse(locationStr, LocationSchema);
+  const interests = safeJsonParse(interestsStr, InterestsSchema);
 
   let inputData: UpdateUserInput = {
     userId: userId,
@@ -46,7 +79,7 @@ export async function updateUserProfileAction(prevState: ActionState, formData: 
     profile_picture: formData.get('profile_picture')?.toString() || undefined,
     birthdate: formData.get('birthdate')?.toString() || undefined,
     gender: gender,
-    address: address ? JSON.parse(address) : undefined, // TODO validate before you parse
+    location: location,
     interests: interests,
   };
 

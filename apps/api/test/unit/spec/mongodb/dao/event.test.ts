@@ -1,11 +1,11 @@
-import {RsvpInput, UpdateEventInput, QueryOptionsInput, CreateEventInput} from '@ntlango/commons/types';
+import {RsvpInput, UpdateEventInput, EventsQueryOptionsInput, CreateEventInput} from '@ntlango/commons/types';
 import {PipelineStage} from 'mongoose';
 import {EventDAO, EventParticipantDAO} from '@/mongodb/dao';
 import {Event as EventModel} from '@/mongodb/models';
 import {SortOrderInput} from '@ntlango/commons/types';
 import {DATE_FILTER_OPTIONS} from '@ntlango/commons/constants';
 import {EventStatus} from '@ntlango/commons/types/event';
-import {CustomError, ErrorTypes, transformOptionsToPipeline} from '@/utils';
+import {CustomError, ErrorTypes, transformEventOptionsToPipeline} from '@/utils';
 import {GraphQLError} from 'graphql';
 import {ERROR_MESSAGES} from '@/validation';
 import {MockMongoError} from '@/test/utils';
@@ -241,7 +241,7 @@ describe('EventDAO', () => {
   });
 
   describe('readEvents', () => {
-    const mockOptions: QueryOptionsInput = {
+    const mockOptions: EventsQueryOptionsInput = {
       filters: [{field: 'title', value: 'Sample'}],
       sort: [{field: 'startDateTime', order: SortOrderInput.asc}],
       pagination: {limit: 10, skip: 0},
@@ -254,7 +254,7 @@ describe('EventDAO', () => {
 
     it('should read events and return the populated event objects', async () => {
       (EventModel.aggregate as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(mockMongooseEvents));
-      const pipeline: PipelineStage[] = transformOptionsToPipeline(mockOptions);
+      const pipeline: PipelineStage[] = transformEventOptionsToPipeline(mockOptions);
 
       const events = await EventDAO.readEvents(mockOptions);
       expect(events).toEqual(mockMongooseEvents);
@@ -263,7 +263,7 @@ describe('EventDAO', () => {
 
     it('should throw INTERNAL_SERVER_ERROR GraphQLError when EventModel.aggregate throws an UNKNOWN error', async () => {
       (EventModel.aggregate as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(new MockMongoError(0)));
-      const pipeline: PipelineStage[] = transformOptionsToPipeline(mockOptions);
+      const pipeline: PipelineStage[] = transformEventOptionsToPipeline(mockOptions);
 
       await expect(EventDAO.readEvents(mockOptions)).rejects.toThrow(
         CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR),
@@ -273,7 +273,7 @@ describe('EventDAO', () => {
 
     it('should return an empty array if no events are found', async () => {
       (EventModel.aggregate as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery([]));
-      const pipeline: PipelineStage[] = transformOptionsToPipeline(mockOptions);
+      const pipeline: PipelineStage[] = transformEventOptionsToPipeline(mockOptions);
 
       const events = await EventDAO.readEvents(mockOptions);
       expect(events).toEqual([]);

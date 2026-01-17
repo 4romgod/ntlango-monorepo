@@ -7,6 +7,15 @@ import isBetween from 'dayjs/plugin/isBetween';
 
 dayjs.extend(isBetween);
 
+export interface LocationFilter {
+  city?: string;
+  state?: string;
+  country?: string;
+  latitude?: number;
+  longitude?: number;
+  radiusKm?: number;
+}
+
 export interface EventFilters {
   categories: string[];
   priceRange: [number, number];
@@ -17,6 +26,7 @@ export interface EventFilters {
   };
   statuses: EventStatus[];
   searchQuery: string;
+  location: LocationFilter;
 }
 
 export interface EventFilterContextType {
@@ -26,6 +36,8 @@ export interface EventFilterContextType {
   setDateRange: (start: Dayjs | null, end: Dayjs | null, filterOption?: string) => void;
   setStatuses: (statuses: EventStatus[]) => void;
   setSearchQuery: (query: string) => void;
+  setLocation: (location: LocationFilter) => void;
+  clearLocation: () => void;
   resetFilters: () => void;
   removeCategory: (category: string) => void;
   removeStatus: (status: EventStatus) => void;
@@ -40,6 +52,7 @@ const initialFilters: EventFilters = {
   dateRange: { start: null, end: null },
   statuses: [],
   searchQuery: '',
+  location: {},
 };
 
 interface EventFilterProviderProps {
@@ -69,6 +82,14 @@ export const EventFilterProvider: React.FC<EventFilterProviderProps> = ({ childr
     setFilters(prev => ({ ...prev, searchQuery: query }));
   };
 
+  const setLocation = (location: LocationFilter) => {
+    setFilters(prev => ({ ...prev, location }));
+  };
+
+  const clearLocation = () => {
+    setFilters(prev => ({ ...prev, location: {} }));
+  };
+
   const resetFilters = () => {
     setFilters(initialFilters);
   };
@@ -88,6 +109,7 @@ export const EventFilterProvider: React.FC<EventFilterProviderProps> = ({ childr
   };
 
   const hasActiveFilters = useMemo(() => {
+    const hasLocation = !!(filters.location.city || filters.location.state || filters.location.country || filters.location.latitude);
     return (
       filters.categories.length > 0 ||
       filters.statuses.length > 0 ||
@@ -95,7 +117,8 @@ export const EventFilterProvider: React.FC<EventFilterProviderProps> = ({ childr
       filters.dateRange.start !== null ||
       filters.dateRange.end !== null ||
       filters.priceRange[0] !== initialFilters.priceRange[0] ||
-      filters.priceRange[1] !== initialFilters.priceRange[1]
+      filters.priceRange[1] !== initialFilters.priceRange[1] ||
+      hasLocation
     );
   }, [filters]);
 
@@ -106,6 +129,8 @@ export const EventFilterProvider: React.FC<EventFilterProviderProps> = ({ childr
     setDateRange,
     setStatuses,
     setSearchQuery,
+    setLocation,
+    clearLocation,
     resetFilters,
     removeCategory,
     removeStatus,

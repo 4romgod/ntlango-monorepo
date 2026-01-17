@@ -1,7 +1,7 @@
 import {GraphQLError} from 'graphql';
 import {Event as EventModel} from '@/mongodb/models';
-import type {Event as EventEntity, UpdateEventInput, CreateEventInput, QueryOptionsInput, RsvpInput, CancelRsvpInput} from '@ntlango/commons/types';
-import {CustomError, ErrorTypes, KnownCommonError, extractValidationErrorMessage, transformOptionsToPipeline, validateUserIdentifiers} from '@/utils';
+import type {Event as EventEntity, UpdateEventInput, CreateEventInput, EventsQueryOptionsInput, RsvpInput, CancelRsvpInput} from '@ntlango/commons/types';
+import {CustomError, ErrorTypes, KnownCommonError, extractValidationErrorMessage, transformEventOptionsToPipeline, validateUserIdentifiers, enrichLocationWithCoordinates} from '@/utils';
 import {ERROR_MESSAGES} from '@/validation';
 import {EventParticipantDAO} from '@/mongodb/dao';
 import {ParticipantStatus, DATE_FILTER_OPTIONS} from '@ntlango/commons';
@@ -12,6 +12,11 @@ import {hasOccurrenceInRange, getDateRangeForFilter} from '@/utils/rrule';
 class EventDAO {
   static async create(input: CreateEventInput): Promise<EventEntity> {
     try {
+      // Geocode address to coordinates if location has address but no coordinates
+      if (input.location) {
+        await enrichLocationWithCoordinates(input.location);
+      }
+      
       const event = await EventModel.create(input);
       return event.toObject();
     } catch (error) {
@@ -59,10 +64,13 @@ class EventDAO {
     }
   }
 
-  static async readEvents(options?: QueryOptionsInput): Promise<EventEntity[]> {
+  static async readEvents(options?: EventsQueryOptionsInput): Promise<EventEntity[]> {
     try {
       logger.debug('Reading events with options:', options);
-      const pipeline = transformOptionsToPipeline(options);
+      
+      // Transform options to aggregation pipeline (handles filters, location, sort, pagination)
+      const pipeline = transformEventOptionsToPipeline(options);
+      
       let events = await EventModel.aggregate<EventEntity>(pipeline).exec();
       
       // Apply date range filtering if provided (filter in application layer since RRULEs are strings)
@@ -118,6 +126,11 @@ class EventDAO {
 
       if (!event) {
         throw CustomError(`Event with eventId ${eventId} not found`, ErrorTypes.NOT_FOUND);
+      }
+      
+      // Geocode address to coordinates if location is being updated
+      if (restInput.location) {
+        await enrichLocationWithCoordinates(restInput.location);
       }
       
       // Filter out undefined values to avoid overwriting with undefined
