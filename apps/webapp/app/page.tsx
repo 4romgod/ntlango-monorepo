@@ -112,9 +112,10 @@ export default async function HomePage() {
   const featuredEvents = eventList.slice(0, 8);
   const heroEvent = eventList[0] ?? null;
 
-  // Fetch social feed for authenticated users
+  // Fetch social feed for authenticated users with valid tokens
   let socialFeed: GetSocialFeedQuery['readFeed'] = [];
-  if (isAuth) {
+  const hasValidToken = token && typeof token === 'string' && token.includes('.');
+  if (isAuth && hasValidToken) {
     try {
       const feedResponse = await getClient().query<GetSocialFeedQuery>({
         query: GetSocialFeedDocument,
@@ -138,7 +139,7 @@ export default async function HomePage() {
       <CategoryExplorer categories={eventCategories} />
       <SocialFeed 
         isAuthenticated={isAuth} 
-        hasToken={!!token} 
+        hasToken={!!hasValidToken} 
         socialFeed={socialFeed} 
       />
     </Box>
