@@ -1,3 +1,4 @@
+export * from './apollo-error';
 export * from './data-manipulation';
 export * from './auth';
 export * from './general';

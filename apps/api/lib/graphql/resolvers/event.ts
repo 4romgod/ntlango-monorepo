@@ -1,10 +1,10 @@
 import 'reflect-metadata';
-import {Arg, Mutation, Resolver, Query, Authorized, FieldResolver, Root, Ctx} from 'type-graphql';
-import {CreateEventInput, Event, UpdateEventInput, UserRole, EventsQueryOptionsInput, EventCategory, EventOrganizer, User} from '@ntlango/commons/types';
+import {Arg, Mutation, Resolver, Query, Authorized, FieldResolver, Root, Ctx, Int} from 'type-graphql';
+import {CreateEventInput, Event, UpdateEventInput, UserRole, EventsQueryOptionsInput, EventCategory, EventOrganizer, User, EventParticipant, ParticipantStatus} from '@ntlango/commons/types';
 import {ERROR_MESSAGES, validateInput, validateMongodbId} from '@/validation';
 import {CreateEventInputSchema, UpdateEventInputSchema} from '@/validation/zod';
 import {RESOLVER_DESCRIPTIONS} from '@/constants';
-import {EventDAO} from '@/mongodb/dao';
+import {EventDAO, FollowDAO, EventParticipantDAO} from '@/mongodb/dao';
 import type {ServerContext} from '@/graphql';
 import {logger} from '@/utils/logger';
 
@@ -101,5 +101,46 @@ export class EventResolver {
 
     // Filter out organizers where user could not be loaded
     return organizersWithUsers.filter((o) => o.user !== null && typeof o.user === 'object' && 'userId' in o.user) as any;
+  }
+
+  /**
+   * Field resolver to get the count of users who have saved this event.
+   */
+  @FieldResolver(() => Int, {description: 'Number of users who have saved this event'})
+  async savedByCount(@Root() event: Event): Promise<number> {
+    return FollowDAO.countSavesForEvent(event.eventId);
+  }
+
+  /**
+   * Field resolver to check if the current user has saved this event.
+   * Returns false if user is not authenticated.
+   */
+  @FieldResolver(() => Boolean, {description: 'Whether the current user has saved this event'})
+  async isSavedByMe(@Root() event: Event, @Ctx() context: ServerContext): Promise<boolean> {
+    if (!context.user?.userId) {
+      return false;
+    }
+    return FollowDAO.isEventSavedByUser(event.eventId, context.user.userId);
+  }
+
+  /**
+   * Field resolver to get the count of RSVPs for this event.
+   * By default counts Going and Interested statuses (excludes Cancelled).
+   */
+  @FieldResolver(() => Int, {description: 'Number of people who have RSVP\'d to this event'})
+  async rsvpCount(@Root() event: Event): Promise<number> {
+    return EventParticipantDAO.countByEvent(event.eventId, [ParticipantStatus.Going, ParticipantStatus.Interested]);
+  }
+
+  /**
+   * Field resolver to get the current user's RSVP status for this event.
+   * Returns null if user is not authenticated or has not RSVP'd.
+   */
+  @FieldResolver(() => EventParticipant, {nullable: true, description: "Current user's RSVP for this event"})
+  async myRsvp(@Root() event: Event, @Ctx() context: ServerContext): Promise<EventParticipant | null> {
+    if (!context.user?.userId) {
+      return null;
+    }
+    return EventParticipantDAO.readByEventAndUser(event.eventId, context.user.userId);
   }
 }

@@ -94,14 +94,20 @@ export default async function HomePage() {
     }
   }
 
-  // Fallback to all events only if:
+  // Fallback to all events if:
   // 1. User is not authenticated or has no location preferences, OR
-  // 2. Personalized fetch failed (error state)
-  // Do NOT fallback if personalized fetch succeeded but returned empty results
-  // (user with location preferences should see no events rather than irrelevant global ones)
-  const shouldFetchAllEvents = !isAuth || !userLocation || !personalizedFetchSucceeded;
+  // 2. Personalized fetch failed (error state), OR
+  // 3. Personalized fetch succeeded but returned empty results (better UX than empty carousel)
+  const shouldFetchAllEvents = !isAuth || !userLocation || !personalizedFetchSucceeded || eventList.length === 0;
   if (shouldFetchAllEvents) {
-    const eventsResponse = await getClient().query({ query: GetAllEventsDocument });
+    const eventsResponse = await getClient().query({ 
+      query: GetAllEventsDocument,
+      context: {
+        headers: {
+          ...(token ? { token } : {}),
+        },
+      },
+    });
     eventList = (eventsResponse.data.readEvents ?? []) as EventPreview[];
   }
 

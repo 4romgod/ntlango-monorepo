@@ -25,7 +25,7 @@ import {
 } from '@mui/icons-material';
 import { auth } from '@/auth';
 import { differenceInYears, format } from 'date-fns';
-import { GetAllEventsDocument, GetUserByUsernameDocument } from '@/data/graphql/types/graphql';
+import { GetAllEventsDocument, GetUserByUsernameDocument, GetSavedEventsDocument } from '@/data/graphql/types/graphql';
 import { getClient } from '@/data/graphql';
 import EventsCarousel from '@/components/events/carousel';
 import EventCategoryChip from '@/components/events/category/chip';
@@ -33,8 +33,9 @@ import { EventPreview } from '@/data/graphql/query/Event/types';
 import { ROUTES } from '@/lib/constants';
 import { omit } from 'lodash';
 import Link from 'next/link';
-import UserFollowStats from '@/components/users/user-follow-stats';
+import UserProfileStats from '@/components/users/user-profile-stats';
 import UserProfileActions from '@/components/users/user-profile-actions';
+import { logger } from '@/lib/utils/logger';
 
 interface Props {
   params: Promise<{ username: string }>;
@@ -51,10 +52,28 @@ export default async function UserPage(props: Props) {
   const user = omit(userRetrieved.readUserByUsername, ['__typename']);
 
   const isOwnProfile = session?.user?.username === user.username;
+  const token = session?.user?.token;
 
   const { data: events } = await getClient().query({
     query: GetAllEventsDocument,
   });
+
+  // Fetch saved events only for own profile
+  let savedEvents: EventPreview[] = [];
+  if (isOwnProfile && token) {
+    try {
+      const { data: savedEventsData } = await getClient().query({
+        query: GetSavedEventsDocument,
+        context: { headers: { token } },
+      });
+      savedEvents = (savedEventsData?.readSavedEvents ?? [])
+        .map(follow => follow.targetEvent)
+        .filter((event): event is NonNullable<typeof event> => event !== null && event !== undefined) as EventPreview[];
+    } catch (error) {
+      logger.debug('Failed to fetch saved events:', error);
+    }
+  }
+
   const allEvents = (events.readEvents ?? []) as EventPreview[];
   const rsvpdEvents = allEvents.filter(event => event.participants?.some(p => p.userId === user.userId));
   const organizedEvents = allEvents.filter(event =>
@@ -208,13 +227,16 @@ export default async function UserPage(props: Props) {
               </Box>
 
               {/* Stats */}
-              <UserFollowStats
+              <UserProfileStats
                 userId={user.userId}
                 displayName={`${user.given_name} ${user.family_name}`.trim()}
                 initialFollowersCount={user.followersCount ?? 0}
+                initialFollowingCount={0}
                 organizedEventsCount={organizedEvents.length}
                 rsvpdEventsCount={rsvpdEvents.length}
+                savedEventsCount={savedEvents.length}
                 interestsCount={interests.length}
+                isOwnProfile={isOwnProfile}
               />
             </Box>
           </Paper>

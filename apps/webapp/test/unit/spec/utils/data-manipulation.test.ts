@@ -21,6 +21,9 @@ const createMockEvent = (overrides: Partial<EventPreview> = {}): EventPreview =>
       country: 'UK',
     },
   },
+  savedByCount: 0,
+  isSavedByMe: false,
+  rsvpCount: 0,
   ...overrides,
 });
 

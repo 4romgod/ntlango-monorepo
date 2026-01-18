@@ -4,3 +4,5 @@ export { useFilteredEvents } from './useFilteredEvents';
 export { useNetworkActivity, installNetworkInterceptor, subscribeToNetworkActivity } from './useNetworkActivity';
 export * from './useFollow';
 export * from './useBlock';
+export * from './useSaveEvent';
+export * from './useRsvp';

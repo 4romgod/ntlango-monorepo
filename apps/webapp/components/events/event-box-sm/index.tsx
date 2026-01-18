@@ -2,15 +2,31 @@
 
 import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
-import { Avatar, AvatarGroup, CardContent, Typography, Tooltip } from '@mui/material';
+import { Avatar, AvatarGroup, CardContent, Typography, Tooltip, Stack } from '@mui/material';
 import { EventParticipantPreview, EventPreview } from '@/data/graphql/query/Event/types';
 import { Box } from '@mui/material';
 import { CalendarToday, LocationOn, CheckBoxRounded } from '@mui/icons-material';
 import { RRule } from 'rrule';
 import Link from 'next/link';
+import { SaveEventButton, RsvpButton } from '@/components/events';
+import { useState, useEffect } from 'react';
+import { ParticipantStatus } from '@/data/graphql/types/graphql';
 
 export default function EventBoxSm({ event, href }: { event: EventPreview; href?: string }) {
   const { recurrenceRule, participants, location, media, heroImage } = event;
+
+  // Local state for optimistic UI updates
+  const [isSaved, setIsSaved] = useState(event.isSavedByMe ?? false);
+  const [rsvpStatus, setRsvpStatus] = useState<ParticipantStatus | null>(event.myRsvp?.status ?? null);
+
+  // Sync state when props change (e.g., after refetch)
+  useEffect(() => {
+    setIsSaved(event.isSavedByMe ?? false);
+  }, [event.isSavedByMe]);
+
+  useEffect(() => {
+    setRsvpStatus(event.myRsvp?.status ?? null);
+  }, [event.myRsvp?.status]);
 
   const recurrenceText = (() => {
     if (!recurrenceRule) {
@@ -123,7 +139,7 @@ export default function EventBoxSm({ event, href }: { event: EventPreview; href?
             </Typography>
           </Box>
 
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
             <CheckBoxRounded fontSize="inherit" sx={{ color: 'text.secondary', mr: 0.75, fontSize: '0.78rem' }} />
             <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.78rem' }}>
               {participantCount} RSVP&lsquo;s
@@ -147,6 +163,23 @@ export default function EventBoxSm({ event, href }: { event: EventPreview; href?
               ))}
             </AvatarGroup>
           </Box>
+
+          {/* Action buttons */}
+          <Stack direction="row" spacing={0.5} sx={{ mt: 'auto' }}>
+            <RsvpButton
+              eventId={event.eventId}
+              currentStatus={rsvpStatus}
+              size="small"
+              onRsvpChange={setRsvpStatus}
+            />
+            <SaveEventButton
+              eventId={event.eventId}
+              isSaved={isSaved}
+              size="small"
+              showTooltip
+              onSaveChange={setIsSaved}
+            />
+          </Stack>
         </CardContent>
       </Card>
     </Link>

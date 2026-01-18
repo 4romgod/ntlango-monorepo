@@ -4,10 +4,12 @@ import {index, modelOptions, prop, Severity} from '@typegoose/typegoose';
 import {SOCIAL_DESCRIPTIONS} from '../constants';
 import {User} from './user';
 import {Organization} from './organization';
+import {Event} from './event';
 
 export enum FollowTargetType {
     User = 'User',
     Organization = 'Organization',
+    Event = 'Event',
 }
 
 export enum FollowApprovalStatus {
@@ -52,6 +54,9 @@ export class Follow {
 
     @Field(() => Organization, {nullable: true, description: 'The target organization if targetType is Organization. Resolved via FieldResolver.'})
     targetOrganization?: Organization;
+
+    @Field(() => Event, {nullable: true, description: 'The target event if targetType is Event (saved event). Resolved via FieldResolver.'})
+    targetEvent?: Event;
 
     @prop({required: true, type: () => String})
     @Field(() => ID, {description: SOCIAL_DESCRIPTIONS.FOLLOW.TARGET_ID})

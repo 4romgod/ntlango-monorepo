@@ -23,14 +23,16 @@ import {
   CheckCircle as RSVPIcon,
   Badge as BadgeIcon,
   CalendarMonth,
+  Bookmark as BookmarkIcon,
 } from '@mui/icons-material';
 import { auth } from '@/auth';
 import { differenceInYears, format } from 'date-fns';
-import { GetAllEventsDocument } from '@/data/graphql/types/graphql';
+import { GetAllEventsDocument, GetUserByUsernameDocument, GetSavedEventsDocument } from '@/data/graphql/types/graphql';
 import { getClient } from '@/data/graphql';
 import EventsCarousel from '@/components/events/carousel';
 import EventCategoryChip from '@/components/events/category/chip';
 import { EventPreview } from '@/data/graphql/query/Event/types';
+import UserProfileStats from '@/components/users/user-profile-stats';
 import {
   ROUTES,
   CARD_STYLES,
@@ -42,21 +44,65 @@ import {
 } from '@/lib/constants';
 import { omit } from 'lodash';
 import Link from 'next/link';
-import { getAvatarSrc } from '@/lib/utils';
+import { getAvatarSrc, logger, isApolloAuthError } from '@/lib/utils';
+import { redirect } from 'next/navigation';
 
 export default async function UserPublicProfile() {
   const session = await auth();
   if (!session) return;
-  const user = omit(session.user, ['token', '__typename']);
+  const sessionUser = omit(session.user, ['token', '__typename']);
+  const token = session.user.token;
+  logger.debug('[Profile] Token present:', !!token, 'Username:', sessionUser.username);
 
+  // Query user to get followersCount and other data
+  const { data: userData } = await getClient().query({
+    query: GetUserByUsernameDocument,
+    variables: { username: sessionUser.username },
+  });
+  const user = userData.readUserByUsername;
+  if (!user) return;
+
+  // Query events (public) and saved events (requires auth)
   const { data: events } = await getClient().query({
     query: GetAllEventsDocument,
   });
+
+  // Saved events query requires auth - handle token expiry gracefully
+  let savedEventsData;
+  try {
+    const result = await getClient().query({
+      query: GetSavedEventsDocument,
+      context: { headers: { ...(token ? { token } : {}) } },
+      fetchPolicy: 'no-cache',
+    });
+    savedEventsData = result.data;
+    logger.debug('[Profile] Saved events fetched:', savedEventsData?.readSavedEvents?.length ?? 0);
+  } catch (error: unknown) {
+    logger.error('[Profile] Error fetching saved events:', error);
+    
+    const isAuthError = isApolloAuthError(error);
+    logger.debug('[Profile] Is auth error:', isAuthError);
+    
+    if (isAuthError) {
+      logger.info('[Profile] Token expired - redirecting to login');
+      // Redirect to login when token is expired
+      redirect(ROUTES.AUTH.LOGIN);
+    }
+    // For other errors, just continue with empty saved events
+    savedEventsData = null;
+  }
+
   const allEvents = (events.readEvents ?? []) as EventPreview[];
   const rsvpdEvents = allEvents.filter(event => event.participants?.some(p => p.userId === user.userId));
   const organizedEvents = allEvents.filter(event =>
     event.organizers.some(organizer => organizer.user.userId === user.userId),
   );
+  
+  // Extract saved events from follow records
+  const savedEvents = (savedEventsData?.readSavedEvents ?? [])
+    .map(follow => follow.targetEvent)
+    .filter((event): event is NonNullable<typeof event> => event !== null && event !== undefined) as EventPreview[];
+
   const interests = user.interests ? user.interests : [];
   const age = differenceInYears(new Date(), new Date(user.birthdate));
   const formattedDOB = format(new Date(user.birthdate), 'dd MMMM yyyy');
@@ -200,42 +246,18 @@ export default async function UserPublicProfile() {
                 )}
               </Box>
 
-              {/* Stats */}
-              <Stack
-                direction="row"
-                spacing={4}
-                sx={{
-                  mt: 3,
-                  pt: 3,
-                  borderTop: 1,
-                  borderColor: 'divider',
-                }}
-              >
-                <Box>
-                  <Typography variant="h4" fontWeight={800} color="primary.main">
-                    {organizedEvents.length}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600, mt: 0.5 }}>
-                    Events Created
-                  </Typography>
-                </Box>
-                <Box>
-                  <Typography variant="h4" fontWeight={800} color="primary.main">
-                    {rsvpdEvents.length}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600, mt: 0.5 }}>
-                    Events Attending
-                  </Typography>
-                </Box>
-                <Box>
-                  <Typography variant="h4" fontWeight={800} color="primary.main">
-                    {interests.length}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600, mt: 0.5 }}>
-                    Interests
-                  </Typography>
-                </Box>
-              </Stack>
+              {/* Stats - clickable stats with scroll-to-section behavior */}
+              <UserProfileStats
+                userId={user.userId}
+                displayName={`${user.given_name} ${user.family_name}`.trim()}
+                initialFollowersCount={user.followersCount ?? 0}
+                initialFollowingCount={0}
+                organizedEventsCount={organizedEvents.length}
+                rsvpdEventsCount={rsvpdEvents.length}
+                savedEventsCount={savedEvents.length}
+                interestsCount={interests.length}
+                isOwnProfile={true}
+              />
             </CardContent>
           </Card>
 
@@ -285,7 +307,7 @@ export default async function UserPublicProfile() {
             </Grid>
 
             {/* Interests */}
-            <Grid size={{ xs: 12, md: 6 }}>
+            <Grid id="interests" size={{ xs: 12, md: 6 }}>
               <Card
                 elevation={0}
                 sx={{
@@ -319,7 +341,7 @@ export default async function UserPublicProfile() {
           </Grid>
 
           {/* Events Created */}
-          <Box>
+          <Box id="events-created">
             <Box sx={{ mb: 3 }}>
               <Typography
                 variant="overline"
@@ -378,7 +400,7 @@ export default async function UserPublicProfile() {
           </Box>
 
           {/* Events Attending */}
-          <Box>
+          <Box id="events-attending">
             <Box sx={{ mb: 3 }}>
               <Typography
                 variant="overline"
@@ -421,6 +443,65 @@ export default async function UserPublicProfile() {
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 400 }}>
                     Browse events and RSVP to ones you're interested in
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    component={Link}
+                    href={ROUTES.EVENTS.ROOT}
+                    sx={{ ...BUTTON_STYLES, mt: 2 }}
+                  >
+                    Explore Events
+                  </Button>
+                </Box>
+              </Card>
+            )}
+          </Box>
+
+          {/* Saved Events */}
+          <Box id="saved-events">
+            <Box sx={{ mb: 3 }}>
+              <Typography
+                variant="overline"
+                sx={{
+                  color: 'primary.main',
+                  fontWeight: 700,
+                  fontSize: '0.875rem',
+                  letterSpacing: '0.1em',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1,
+                  mb: 1,
+                }}
+              >
+                <BookmarkIcon sx={{ fontSize: 20 }} />
+                SAVED
+              </Typography>
+              <Typography variant="h5" sx={{ ...SECTION_TITLE_STYLES, fontSize: { xs: '1.5rem', md: '1.75rem' } }}>
+                Saved Events
+              </Typography>
+            </Box>
+            {savedEvents.length > 0 ? (
+              <EventsCarousel
+                events={savedEvents}
+                title=""
+                autoplay={true}
+                autoplayInterval={6000}
+                itemWidth={350}
+                showIndicators={true}
+                viewAllEventsButton={false}
+              />
+            ) : (
+              <Card elevation={0} sx={CARD_STYLES}>
+                <Box sx={EMPTY_STATE_STYLES}>
+                  <Box sx={EMPTY_STATE_ICON_STYLES}>
+                    <BookmarkIcon sx={{ fontSize: 48, color: 'text.secondary' }} />
+                  </Box>
+                  <Typography variant="h6" sx={SECTION_TITLE_STYLES}>
+                    No saved events yet
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 400 }}>
+                    Save events you're interested in to view them later
                   </Typography>
                   <Button
                     variant="contained"

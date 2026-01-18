@@ -2,9 +2,8 @@ import {GraphQLError} from 'graphql';
 import type {
   Follow as FollowEntity,
   CreateFollowInput,
-  FollowTargetType,
 } from '@ntlango/commons/types';
-import {FollowApprovalStatus} from '@ntlango/commons/types';
+import {FollowApprovalStatus, FollowTargetType} from '@ntlango/commons/types';
 import {Follow as FollowModel} from '@/mongodb/models';
 import {CustomError, ErrorTypes, KnownCommonError} from '@/utils';
 import {logger} from '@/utils/logger';
@@ -217,6 +216,70 @@ class FollowDAO {
       if (error instanceof GraphQLError) {
         throw error;
       }
+      throw KnownCommonError(error);
+    }
+  }
+
+  // ============================================================================
+  // SAVED EVENTS METHODS (Event as targetType)
+  // ============================================================================
+
+  /**
+   * Get all saved events for a user.
+   * @param userId - The user who saved the events
+   * @returns Array of Follow entities where targetType is Event
+   */
+  static async readSavedEventsForUser(userId: string): Promise<FollowEntity[]> {
+    try {
+      const follows = await FollowModel.find({
+        followerUserId: userId,
+        targetType: FollowTargetType.Event,
+        approvalStatus: FollowApprovalStatus.Accepted,
+      })
+        .sort({createdAt: -1})
+        .exec();
+      return follows.map((f) => f.toObject());
+    } catch (error) {
+      logger.error('Error reading saved events for user', error);
+      throw KnownCommonError(error);
+    }
+  }
+
+  /**
+   * Count how many users have saved a specific event.
+   * @param eventId - The event to count saves for
+   * @returns Number of users who saved this event
+   */
+  static async countSavesForEvent(eventId: string): Promise<number> {
+    try {
+      return await FollowModel.countDocuments({
+        targetType: FollowTargetType.Event,
+        targetId: eventId,
+        approvalStatus: FollowApprovalStatus.Accepted,
+      }).exec();
+    } catch (error) {
+      logger.error('Error counting saves for event', error);
+      throw KnownCommonError(error);
+    }
+  }
+
+  /**
+   * Check if a user has saved a specific event.
+   * @param eventId - The event to check
+   * @param userId - The user to check
+   * @returns true if the user has saved the event
+   */
+  static async isEventSavedByUser(eventId: string, userId: string): Promise<boolean> {
+    try {
+      const follow = await FollowModel.findOne({
+        followerUserId: userId,
+        targetType: FollowTargetType.Event,
+        targetId: eventId,
+        approvalStatus: FollowApprovalStatus.Accepted,
+      }).exec();
+      return follow !== null;
+    } catch (error) {
+      logger.error('Error checking if event is saved', error);
       throw KnownCommonError(error);
     }
   }

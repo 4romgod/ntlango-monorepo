@@ -11,6 +11,9 @@ jest.mock('@/mongodb/dao', () => ({
     upsert: jest.fn(),
     cancel: jest.fn(),
     readByEvent: jest.fn(),
+    readByUser: jest.fn(),
+    readByEventAndUser: jest.fn(),
+    countByEvent: jest.fn(),
   },
   UserDAO: {
     readUserById: jest.fn(),
@@ -242,6 +245,114 @@ describe('EventParticipantResolver', () => {
       const result = await resolver.user(participantWithEmptyUserId, mockContext);
 
       expect(result).toBeNull();
+    });
+  });
+
+  describe('myRsvpStatus', () => {
+    const eventId = '507f1f77bcf86cd799439011';
+    const userId = '507f1f77bcf86cd799439012';
+
+    const mockParticipant: EventParticipant = {
+      participantId: 'participant123',
+      eventId,
+      userId,
+      status: ParticipantStatus.Going,
+      quantity: 1,
+      rsvpAt: new Date(),
+    };
+
+    it('should return user RSVP status for an event', async () => {
+      const mockContext = createMockContext({user: {userId} as User});
+      (EventParticipantDAO.readByEventAndUser as jest.Mock).mockResolvedValue(mockParticipant);
+
+      const result = await resolver.myRsvpStatus(eventId, mockContext);
+
+      expect(validation.validateMongodbId).toHaveBeenCalledWith(eventId);
+      expect(EventParticipantDAO.readByEventAndUser).toHaveBeenCalledWith(eventId, userId);
+      expect(result).toEqual(mockParticipant);
+    });
+
+    it('should return null when user has not RSVPd', async () => {
+      const mockContext = createMockContext({user: {userId} as User});
+      (EventParticipantDAO.readByEventAndUser as jest.Mock).mockResolvedValue(null);
+
+      const result = await resolver.myRsvpStatus(eventId, mockContext);
+
+      expect(EventParticipantDAO.readByEventAndUser).toHaveBeenCalledWith(eventId, userId);
+      expect(result).toBeNull();
+    });
+
+    it('should return null when user is not authenticated', async () => {
+      const mockContext = createMockContext({user: undefined});
+
+      const result = await resolver.myRsvpStatus(eventId, mockContext);
+
+      expect(result).toBeNull();
+      expect(EventParticipantDAO.readByEventAndUser).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('myRsvps', () => {
+    const userId = '507f1f77bcf86cd799439012';
+
+    const mockRsvps: EventParticipant[] = [
+      {
+        participantId: 'participant1',
+        eventId: '507f1f77bcf86cd799439011',
+        userId,
+        status: ParticipantStatus.Going,
+        quantity: 1,
+        rsvpAt: new Date(),
+      },
+      {
+        participantId: 'participant2',
+        eventId: '507f1f77bcf86cd799439013',
+        userId,
+        status: ParticipantStatus.Interested,
+        quantity: 1,
+        rsvpAt: new Date(),
+      },
+    ];
+
+    it('should return all RSVPs for current user (excluding cancelled)', async () => {
+      const mockContext = createMockContext({user: {userId} as User});
+      (EventParticipantDAO.readByUser as jest.Mock).mockResolvedValue(mockRsvps);
+
+      const result = await resolver.myRsvps(false, mockContext);
+
+      expect(EventParticipantDAO.readByUser).toHaveBeenCalledWith(userId, true);
+      expect(result).toEqual(mockRsvps);
+    });
+
+    it('should include cancelled RSVPs when requested', async () => {
+      const mockContext = createMockContext({user: {userId} as User});
+      const rsvpsWithCancelled = [
+        ...mockRsvps,
+        {
+          participantId: 'participant3',
+          eventId: '507f1f77bcf86cd799439014',
+          userId,
+          status: ParticipantStatus.Cancelled,
+          quantity: 1,
+          rsvpAt: new Date(),
+          cancelledAt: new Date(),
+        },
+      ];
+      (EventParticipantDAO.readByUser as jest.Mock).mockResolvedValue(rsvpsWithCancelled);
+
+      const result = await resolver.myRsvps(true, mockContext);
+
+      expect(EventParticipantDAO.readByUser).toHaveBeenCalledWith(userId, false);
+      expect(result).toEqual(rsvpsWithCancelled);
+    });
+
+    it('should return empty array when user is not authenticated', async () => {
+      const mockContext = createMockContext({user: undefined});
+
+      const result = await resolver.myRsvps(false, mockContext);
+
+      expect(result).toEqual([]);
+      expect(EventParticipantDAO.readByUser).not.toHaveBeenCalled();
     });
   });
 });
