@@ -69,7 +69,7 @@ export default function EventSettingsPage({ user }: { user: User }) {
         },
       });
     }
-  }, [session?.user?.preferences]);
+  }, [session?.user]);
 
   useEffect(() => {
     if (formState.apiError) {
