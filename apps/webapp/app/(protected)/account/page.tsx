@@ -101,7 +101,7 @@ export default async function SettingsPage() {
         />,
         description: 'Change your password',
       },
-      // TODO We will  bring this back when we have the functionality to connect to social media
+      // TODO We will bring this back when we have the functionality to connect to social media
       // {
       //   name: 'Social Media',
       //   content: <SocialMediaSettingsPage />,
