@@ -51,9 +51,10 @@ export const startExpressApolloServer = async (listenOptions: ListenOptions = {p
         if (tokenValue) {
           try {
             user = await verifyToken(tokenValue);
-          } catch {
+          } catch (error) {
             // Token invalid or expired - user remains undefined
             // This is fine for public endpoints, @Authorized will throw if needed
+            logger.debug('Token verification failed', { error });
           }
         }
         
