@@ -1,0 +1,210 @@
+'use client';
+
+import { IconButton, Tooltip, CircularProgress, Menu, MenuItem } from '@mui/material';
+import { EventAvailable, EventAvailableOutlined, Star, Check, Cancel } from '@mui/icons-material';
+import { useRsvp } from '@/hooks';
+import { ParticipantStatus } from '@/data/graphql/types/graphql';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { ROUTES } from '@/lib/constants';
+import { useAppContext } from '@/hooks/useAppContext';
+import { logger } from '@/lib/utils';
+import NProgress from 'nprogress';
+import { useState, useRef } from 'react';
+
+interface RsvpButtonProps {
+  eventId: string;
+  currentStatus: ParticipantStatus | null;
+  size?: 'small' | 'medium' | 'large';
+  showTooltip?: boolean;
+  onRsvpChange?: (status: ParticipantStatus | null) => void;
+}
+
+/**
+ * Icon button to RSVP to an event.
+ * Click opens menu to select Going, Interested, or Cancel.
+ */
+export default function RsvpButton({
+  eventId,
+  currentStatus,
+  size = 'medium',
+  showTooltip = true,
+  onRsvpChange,
+}: RsvpButtonProps) {
+  const { data: session } = useSession();
+  const router = useRouter();
+  const { setToastProps } = useAppContext();
+  const { goingToEvent, interestedInEvent, cancelRsvp, isLoading } = useRsvp();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const anchorRef = useRef<HTMLButtonElement>(null);
+
+  const isGoing = currentStatus === ParticipantStatus.Going;
+  const isInterested = currentStatus === ParticipantStatus.Interested;
+  const hasRsvpd = isGoing || isInterested;
+
+  const handleButtonClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+
+    if (!session?.user?.token) {
+      NProgress.start();
+      router.push(ROUTES.AUTH.LOGIN);
+      return;
+    }
+
+    setMenuOpen(true);
+  };
+
+  const handleMenuClose = (e?: React.MouseEvent | object) => {
+    if (e && 'stopPropagation' in e) {
+      (e as React.MouseEvent).stopPropagation();
+      (e as React.MouseEvent).preventDefault();
+    }
+    setMenuOpen(false);
+  };
+
+  const handleRsvp = async (status: ParticipantStatus | 'cancel', e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setMenuOpen(false);
+
+    try {
+      if (status === 'cancel') {
+        await cancelRsvp(eventId);
+        onRsvpChange?.(null);
+        setToastProps({
+          open: true,
+          message: 'RSVP cancelled',
+          severity: 'info',
+          anchorOrigin: { vertical: 'bottom', horizontal: 'center' },
+          autoHideDuration: 2000,
+        });
+      } else if (status === ParticipantStatus.Going) {
+        await goingToEvent(eventId);
+        onRsvpChange?.(ParticipantStatus.Going);
+        setToastProps({
+          open: true,
+          message: "You're going! 🎉",
+          severity: 'success',
+          anchorOrigin: { vertical: 'bottom', horizontal: 'center' },
+          autoHideDuration: 2000,
+        });
+      } else if (status === ParticipantStatus.Interested) {
+        await interestedInEvent(eventId);
+        onRsvpChange?.(ParticipantStatus.Interested);
+        setToastProps({
+          open: true,
+          message: 'Marked as interested',
+          severity: 'success',
+          anchorOrigin: { vertical: 'bottom', horizontal: 'center' },
+          autoHideDuration: 2000,
+        });
+      }
+    } catch (error: unknown) {
+      logger.error('Error updating RSVP:', error);
+
+      const apolloError = error as {
+        graphQLErrors?: Array<{ message: string }>;
+        networkError?: { result?: { errors?: Array<{ message: string }> } };
+        message?: string;
+      };
+
+      let errorMessage: string;
+      if (apolloError?.graphQLErrors?.[0]) {
+        errorMessage = apolloError.graphQLErrors[0].message;
+      } else if (apolloError?.networkError?.result?.errors?.[0]) {
+        errorMessage = apolloError.networkError.result.errors[0].message;
+      } else if (apolloError?.message) {
+        errorMessage = apolloError.message;
+      } else {
+        errorMessage = 'Failed to update RSVP. Please try again.';
+      }
+
+      setToastProps({
+        open: true,
+        message: errorMessage,
+        severity: 'error',
+        anchorOrigin: { vertical: 'top', horizontal: 'right' },
+        autoHideDuration: 4000,
+      });
+    }
+  };
+
+  const tooltipText = hasRsvpd
+    ? isGoing ? 'Going' : 'Interested'
+    : 'RSVP to this event';
+
+  const button = (
+    <IconButton
+      ref={anchorRef}
+      onClick={handleButtonClick}
+      disabled={isLoading}
+      size={size}
+      sx={{
+        color: hasRsvpd ? 'success.main' : 'text.secondary',
+        bgcolor: hasRsvpd ? 'success.lighter' : 'transparent',
+        '&:hover': {
+          color: hasRsvpd ? 'success.dark' : 'success.main',
+          bgcolor: hasRsvpd ? 'success.light' : 'action.hover',
+        },
+      }}
+      aria-label={tooltipText}
+    >
+      {isLoading ? (
+        <CircularProgress size={size === 'small' ? 16 : size === 'large' ? 28 : 22} />
+      ) : hasRsvpd ? (
+        <EventAvailable />
+      ) : (
+        <EventAvailableOutlined />
+      )}
+    </IconButton>
+  );
+
+  return (
+    <>
+      {showTooltip ? (
+        <Tooltip title={tooltipText} arrow>
+          {button}
+        </Tooltip>
+      ) : (
+        button
+      )}
+      <Menu
+        anchorEl={anchorRef.current}
+        open={menuOpen}
+        onClose={handleMenuClose}
+        onClick={(e) => { e.stopPropagation(); e.preventDefault(); }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        slotProps={{
+          paper: {
+            sx: { minWidth: 140 }
+          }
+        }}
+      >
+        <MenuItem
+          onClick={(e) => handleRsvp(ParticipantStatus.Going, e)}
+          selected={isGoing}
+        >
+          <EventAvailable sx={{ mr: 1, fontSize: 18 }} />
+          Going
+          {isGoing && <Check sx={{ ml: 'auto', fontSize: 18 }} color="success" />}
+        </MenuItem>
+        <MenuItem
+          onClick={(e) => handleRsvp(ParticipantStatus.Interested, e)}
+          selected={isInterested}
+        >
+          <Star sx={{ mr: 1, fontSize: 18 }} />
+          Interested
+          {isInterested && <Check sx={{ ml: 'auto', fontSize: 18 }} color="success" />}
+        </MenuItem>
+        {hasRsvpd && (
+          <MenuItem onClick={(e) => handleRsvp('cancel', e)}>
+            <Cancel sx={{ mr: 1, fontSize: 18 }} />
+            Cancel RSVP
+          </MenuItem>
+        )}
+      </Menu>
+    </>
+  );
+}

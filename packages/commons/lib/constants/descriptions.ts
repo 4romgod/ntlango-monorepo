@@ -95,12 +95,12 @@ export const USER_DESCRIPTIONS = {
 
 export const SOCIAL_DESCRIPTIONS = {
     FOLLOW: {
-        TYPE: 'Represents a follow relationship between a user and a user or organization.',
-        CREATE_INPUT: 'Input type for following another user or organization.',
+        TYPE: 'Represents a follow relationship between a user and a user, organization, or event (saved event).',
+        CREATE_INPUT: 'Input type for following another user, organization, or saving an event.',
         ID: 'Unique identifier for the follow relationship.',
         FOLLOWER_USER_ID: 'User who is doing the following.',
-        TARGET_TYPE: 'Specifies whether the follow target is a User or an Organization.',
-        TARGET_ID: 'ID of the user or organization being followed.',
+        TARGET_TYPE: 'Specifies whether the follow target is a User, Organization, or Event (saved event).',
+        TARGET_ID: 'ID of the user, organization, or event being followed/saved.',
         NOTIFICATION_PREFERENCES: "Nested object containing the follower's notification and feed preferences.",
         NOTIFICATION_PREFERENCES_INPUT: 'Input type for updating notification preferences.',
         CONTENT_VISIBILITY: "Controls whether content from this follow appears in the follower's feed (Active) or is hidden (Muted).",

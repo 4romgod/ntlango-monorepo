@@ -19,11 +19,20 @@ export default function EventTileGrid({ events, loading = false, skeletonCount =
     return <EventTileSkeletonGrid count={skeletonCount} />;
   }
 
+  const handleLinkClick = (e: React.MouseEvent) => {
+    // Prevent Link navigation if clicking on an interactive element (buttons, menus, etc.)
+    const target = e.target as HTMLElement;
+    const isInteractive = target.closest('button, [role="button"], [role="menuitem"]');
+    if (isInteractive) {
+      e.preventDefault();
+    }
+  };
+
   return (
     <Box component="div" display="flex" flexDirection="column" gap={2}>
       {events.map(event => (
         <Box component="div" key={`EventTileGrid.${event.eventId}`}>
-          <Link href={ROUTES.EVENTS.EVENT(event.slug)}>
+          <Link href={ROUTES.EVENTS.EVENT(event.slug)} onClick={handleLinkClick}>
             <EventBox event={event} />
           </Link>
         </Box>

@@ -5,6 +5,8 @@ import {getConfigValue, MongoDbClient} from '@/clients';
 import {SECRET_KEYS} from '@/constants';
 import {logger} from '@/utils/logger';
 import {createUserLoader, createEventCategoryLoader, createEventLoader, createOrganizationLoader} from '@/graphql/loaders';
+import {verifyToken} from '@/utils/auth';
+import { User } from '@ntlango/commons';
 
 // TODO Consider restricting the allowed origins to specific domains or implementing dynamic origin validation based on environment configuration.
 const CORS_HEADERS = {
@@ -42,8 +44,22 @@ async function initializeResources() {
     cachedLambdaHandler = startServerAndCreateLambdaHandler(cachedServer, handlers.createAPIGatewayProxyEventRequestHandler(), {
       context: async ({event, context}) => {
         const token = event.headers.token;
+        
+        // Try to verify token and populate user for all requests (not just @Authorized ones)
+        // This enables field resolvers like isSavedByMe to access the current user
+        let user: User | undefined;
+        if (token) {
+          try {
+            user = await verifyToken(token);
+          } catch {
+            // Token invalid or expired - user remains undefined
+            // This is fine for public endpoints, @Authorized will throw if needed
+          }
+        }
+        
         return {
-          token: Array.isArray(token) ? token[0] : token,
+          token,
+          user,
           lambdaEvent: event,
           lambdaContext: context,
           loaders: {

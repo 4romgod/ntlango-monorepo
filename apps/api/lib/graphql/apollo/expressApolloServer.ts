@@ -10,6 +10,8 @@ import {expressMiddleware} from '@apollo/server/express4';
 import {createUserLoader, createEventCategoryLoader, createEventLoader, createOrganizationLoader} from '@/graphql/loaders';
 import type {Server} from 'http';
 import {logger} from '@/utils/logger';
+import {verifyToken} from '@/utils/auth';
+import { User } from '@ntlango/commons';
 
 const DEV_URL = `http://localhost:9000${GRAPHQL_API_PATH}`;
 
@@ -41,8 +43,23 @@ export const startExpressApolloServer = async (listenOptions: ListenOptions = {p
     expressMiddleware(apolloServer, {
       context: async ({req, res}) => {
         const token = req.headers.token;
+        const tokenValue = Array.isArray(token) ? token[0] : token;
+        
+        // Try to verify token and populate user for all requests (not just @Authorized ones)
+        // This enables field resolvers like isSavedByMe to access the current user
+        let user: User | undefined;
+        if (tokenValue) {
+          try {
+            user = await verifyToken(tokenValue);
+          } catch {
+            // Token invalid or expired - user remains undefined
+            // This is fine for public endpoints, @Authorized will throw if needed
+          }
+        }
+        
         return {
-          token: Array.isArray(token) ? token[0] : token,
+          token: tokenValue,
+          user,
           req,
           res,
           loaders: {

@@ -95,3 +95,59 @@ export const GetFollowRequestsDocument = graphql(`
     }
   }
 `);
+
+export const GetSavedEventsDocument = graphql(`
+  query GetSavedEvents {
+    readSavedEvents {
+      followId
+      followerUserId
+      targetType
+      targetId
+      targetEvent {
+        eventId
+        slug
+        title
+        summary
+        description
+        recurrenceRule
+        primarySchedule {
+          startAt
+          endAt
+          timezone
+        }
+        location {
+          locationType
+          address {
+            street
+            city
+            state
+            country
+          }
+          details
+        }
+        heroImage
+        media {
+          featuredImageUrl
+        }
+        status
+        eventCategories {
+          eventCategoryId
+          slug
+          name
+          iconName
+          color
+        }
+        savedByCount
+        isSavedByMe
+        rsvpCount
+      }
+      createdAt
+    }
+  }
+`);
+
+export const IsEventSavedDocument = graphql(`
+  query IsEventSaved($eventId: ID!) {
+    isEventSaved(eventId: $eventId)
+  }
+`);

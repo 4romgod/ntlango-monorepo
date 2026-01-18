@@ -3,12 +3,15 @@ import { auth } from '@/auth';
 import { apiAuthPrefix, authRoutes, DEFAULT_LOGIN_REDIRECT, isPublicDynamicRoute, publicRoutes } from '@/routes';
 import { ROUTES } from '@/lib/constants';
 import { NextResponse } from 'next/server';
-import { isAuthenticated } from './lib/utils';
+import { isAuthenticated, logger } from './lib/utils';
 
 export default auth(async req => {
   const { nextUrl } = req;
 
-  const isLoggedIn = Boolean(req.auth) && (await isAuthenticated(req.auth?.user?.token));
+  // Check if there's a valid auth session with a valid token
+  const token = req.auth?.user?.token;
+  const isLoggedIn = Boolean(req.auth?.user) && Boolean(token) && (await isAuthenticated(token));
+  
   const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
   const isPublicRoute = publicRoutes.includes(nextUrl.pathname) || isPublicDynamicRoute(nextUrl.pathname);
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
@@ -28,6 +31,7 @@ export default auth(async req => {
 
   // 3. Deny all NON public routes for unauthenticated users
   if (!isLoggedIn && !isPublicRoute) {
+    logger.warn('[Middleware] Redirecting to login - token invalid or expired');
     return NextResponse.redirect(new URL(ROUTES.AUTH.LOGIN, nextUrl));
   }
 

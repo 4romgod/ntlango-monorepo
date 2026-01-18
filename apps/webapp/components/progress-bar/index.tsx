@@ -29,6 +29,13 @@ export default function TopProgressBar() {
     const handleAnchorClick = (event: MouseEvent) => {
       const target = event.currentTarget as HTMLAnchorElement;
       const href = target.getAttribute('href');
+      const clickTarget = event.target as HTMLElement;
+
+      // Skip if clicking on an interactive element inside the link (buttons, menus, etc.)
+      const isInteractiveElement = clickTarget.closest('button, [role="button"], [role="menuitem"]');
+      if (isInteractiveElement) {
+        return;
+      }
 
       // Only track internal navigation
       if (

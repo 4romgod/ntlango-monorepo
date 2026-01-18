@@ -101,7 +101,14 @@ export default async function HomePage() {
   // (user with location preferences should see no events rather than irrelevant global ones)
   const shouldFetchAllEvents = !isAuth || !userLocation || !personalizedFetchSucceeded;
   if (shouldFetchAllEvents) {
-    const eventsResponse = await getClient().query({ query: GetAllEventsDocument });
+    const eventsResponse = await getClient().query({ 
+      query: GetAllEventsDocument,
+      context: {
+        headers: {
+          ...(token ? { token } : {}),
+        },
+      },
+    });
     eventList = (eventsResponse.data.readEvents ?? []) as EventPreview[];
   }
 

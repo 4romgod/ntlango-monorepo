@@ -30,6 +30,33 @@ export class EventParticipantResolver {
     return EventParticipantDAO.readByEvent(eventId);
   }
 
+  /**
+   * Get the current user's RSVP status for a specific event.
+   * Returns null if the user has not RSVP'd to the event.
+   */
+  @Authorized([UserRole.Admin, UserRole.Host, UserRole.User])
+  @Query(() => EventParticipant, {nullable: true, description: "Get the current user's RSVP for a specific event"})
+  async myRsvpStatus(@Arg('eventId', () => String) eventId: string, @Ctx() context: ServerContext): Promise<EventParticipant | null> {
+    validateMongodbId(eventId);
+    if (!context.user?.userId) {
+      return null;
+    }
+    return EventParticipantDAO.readByEventAndUser(eventId, context.user.userId);
+  }
+
+  /**
+   * Get all events the current user has RSVP'd to.
+   * Returns active RSVPs by default (excludes cancelled).
+   */
+  @Authorized([UserRole.Admin, UserRole.Host, UserRole.User])
+  @Query(() => [EventParticipant], {description: "Get all events the current user has RSVP'd to"})
+  async myRsvps(@Arg('includeCancelled', () => Boolean, {nullable: true, defaultValue: false}) includeCancelled: boolean, @Ctx() context: ServerContext): Promise<EventParticipant[]> {
+    if (!context.user?.userId) {
+      return [];
+    }
+    return EventParticipantDAO.readByUser(context.user.userId, !includeCancelled);
+  }
+
   @FieldResolver(() => User, {nullable: true})
   async user(@Root() participant: EventParticipant, @Ctx() context: ServerContext): Promise<User | null> {
     if (!participant.userId) {

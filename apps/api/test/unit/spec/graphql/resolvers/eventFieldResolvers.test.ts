@@ -1,7 +1,20 @@
 import {EventResolver} from '@/graphql/resolvers/event';
-import type {Event, EventCategory, User} from '@ntlango/commons/types';
+import {FollowDAO, EventParticipantDAO} from '@/mongodb/dao';
+import type {Event, EventCategory, User, EventParticipant} from '@ntlango/commons/types';
+import {ParticipantStatus} from '@ntlango/commons/types';
 import type {ServerContext} from '@/graphql';
 import DataLoader from 'dataloader';
+
+jest.mock('@/mongodb/dao', () => ({
+  FollowDAO: {
+    countSavesForEvent: jest.fn(),
+    isEventSavedByUser: jest.fn(),
+  },
+  EventParticipantDAO: {
+    countByEvent: jest.fn(),
+    readByEventAndUser: jest.fn(),
+  },
+}));
 
 describe('EventResolver Field Resolvers', () => {
   let resolver: EventResolver;
@@ -172,6 +185,143 @@ describe('EventResolver Field Resolvers', () => {
 
       expect(result).toHaveLength(2);
       expect(result.every((o) => o.user !== null)).toBe(true);
+    });
+  });
+
+  describe('savedByCount field resolver', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should return the count of users who saved the event', async () => {
+      const event = {eventId: 'event1'} as Event;
+      (FollowDAO.countSavesForEvent as jest.Mock).mockResolvedValue(42);
+
+      const result = await resolver.savedByCount(event);
+
+      expect(FollowDAO.countSavesForEvent).toHaveBeenCalledWith('event1');
+      expect(result).toBe(42);
+    });
+
+    it('should return 0 when no users have saved the event', async () => {
+      const event = {eventId: 'event1'} as Event;
+      (FollowDAO.countSavesForEvent as jest.Mock).mockResolvedValue(0);
+
+      const result = await resolver.savedByCount(event);
+
+      expect(FollowDAO.countSavesForEvent).toHaveBeenCalledWith('event1');
+      expect(result).toBe(0);
+    });
+  });
+
+  describe('isSavedByMe field resolver', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should return true when user has saved the event', async () => {
+      const event = {eventId: 'event1'} as Event;
+      const contextWithUser = {...mockContext, user: {userId: 'user1'} as User};
+      (FollowDAO.isEventSavedByUser as jest.Mock).mockResolvedValue(true);
+
+      const result = await resolver.isSavedByMe(event, contextWithUser);
+
+      expect(FollowDAO.isEventSavedByUser).toHaveBeenCalledWith('event1', 'user1');
+      expect(result).toBe(true);
+    });
+
+    it('should return false when user has not saved the event', async () => {
+      const event = {eventId: 'event1'} as Event;
+      const contextWithUser = {...mockContext, user: {userId: 'user1'} as User};
+      (FollowDAO.isEventSavedByUser as jest.Mock).mockResolvedValue(false);
+
+      const result = await resolver.isSavedByMe(event, contextWithUser);
+
+      expect(FollowDAO.isEventSavedByUser).toHaveBeenCalledWith('event1', 'user1');
+      expect(result).toBe(false);
+    });
+
+    it('should return false when user is not authenticated', async () => {
+      const event = {eventId: 'event1'} as Event;
+      const contextWithoutUser = {...mockContext, user: undefined};
+
+      const result = await resolver.isSavedByMe(event, contextWithoutUser);
+
+      expect(FollowDAO.isEventSavedByUser).not.toHaveBeenCalled();
+      expect(result).toBe(false);
+    });
+  });
+
+  describe('rsvpCount field resolver', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should return the count of RSVPs for the event', async () => {
+      const event = {eventId: 'event1'} as Event;
+      (EventParticipantDAO.countByEvent as jest.Mock).mockResolvedValue(25);
+
+      const result = await resolver.rsvpCount(event);
+
+      expect(EventParticipantDAO.countByEvent).toHaveBeenCalledWith('event1', [ParticipantStatus.Going, ParticipantStatus.Interested]);
+      expect(result).toBe(25);
+    });
+
+    it('should return 0 when no RSVPs exist', async () => {
+      const event = {eventId: 'event1'} as Event;
+      (EventParticipantDAO.countByEvent as jest.Mock).mockResolvedValue(0);
+
+      const result = await resolver.rsvpCount(event);
+
+      expect(EventParticipantDAO.countByEvent).toHaveBeenCalledWith('event1', [ParticipantStatus.Going, ParticipantStatus.Interested]);
+      expect(result).toBe(0);
+    });
+  });
+
+  describe('myRsvp field resolver', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    const mockRsvp: EventParticipant = {
+      participantId: 'participant1',
+      eventId: 'event1',
+      userId: 'user1',
+      status: ParticipantStatus.Going,
+      quantity: 1,
+      rsvpAt: new Date(),
+    };
+
+    it('should return the user RSVP when it exists', async () => {
+      const event = {eventId: 'event1'} as Event;
+      const contextWithUser = {...mockContext, user: {userId: 'user1'} as User};
+      (EventParticipantDAO.readByEventAndUser as jest.Mock).mockResolvedValue(mockRsvp);
+
+      const result = await resolver.myRsvp(event, contextWithUser);
+
+      expect(EventParticipantDAO.readByEventAndUser).toHaveBeenCalledWith('event1', 'user1');
+      expect(result).toEqual(mockRsvp);
+    });
+
+    it('should return null when user has not RSVPd', async () => {
+      const event = {eventId: 'event1'} as Event;
+      const contextWithUser = {...mockContext, user: {userId: 'user1'} as User};
+      (EventParticipantDAO.readByEventAndUser as jest.Mock).mockResolvedValue(null);
+
+      const result = await resolver.myRsvp(event, contextWithUser);
+
+      expect(EventParticipantDAO.readByEventAndUser).toHaveBeenCalledWith('event1', 'user1');
+      expect(result).toBeNull();
+    });
+
+    it('should return null when user is not authenticated', async () => {
+      const event = {eventId: 'event1'} as Event;
+      const contextWithoutUser = {...mockContext, user: undefined};
+
+      const result = await resolver.myRsvp(event, contextWithoutUser);
+
+      expect(EventParticipantDAO.readByEventAndUser).not.toHaveBeenCalled();
+      expect(result).toBeNull();
     });
   });
 });

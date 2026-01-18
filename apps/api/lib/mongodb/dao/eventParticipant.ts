@@ -73,6 +73,58 @@ class EventParticipantDAO {
       throw KnownCommonError(error);
     }
   }
+
+  /**
+   * Read all RSVPs for a specific user across all events.
+   * Useful for "My Events" page showing events user has RSVP'd to.
+   */
+  static async readByUser(userId: string, activeOnly = true): Promise<EventParticipantEntity[]> {
+    try {
+      const query: Record<string, unknown> = {userId};
+      if (activeOnly) {
+        query.status = {$ne: ParticipantStatus.Cancelled};
+      }
+      const participants = await EventParticipant.find(query).exec();
+      return participants.map((p) => p.toObject());
+    } catch (error) {
+      logger.error('Error reading user RSVPs', error);
+      throw KnownCommonError(error);
+    }
+  }
+
+  /**
+   * Get a specific user's RSVP for a specific event.
+   * Returns null if user has not RSVP'd.
+   */
+  static async readByEventAndUser(eventId: string, userId: string): Promise<EventParticipantEntity | null> {
+    try {
+      const participant = await EventParticipant.findOne({eventId, userId}).exec();
+      return participant ? participant.toObject() : null;
+    } catch (error) {
+      logger.error('Error reading user RSVP for event', error);
+      throw KnownCommonError(error);
+    }
+  }
+
+  /**
+   * Count participants for an event, optionally filtered by status.
+   * Useful for showing "X people going" on event cards.
+   */
+  static async countByEvent(eventId: string, statuses?: ParticipantStatus[]): Promise<number> {
+    try {
+      const query: Record<string, unknown> = {eventId};
+      if (statuses && statuses.length > 0) {
+        query.status = {$in: statuses};
+      } else {
+        // By default, exclude cancelled
+        query.status = {$ne: ParticipantStatus.Cancelled};
+      }
+      return EventParticipant.countDocuments(query).exec();
+    } catch (error) {
+      logger.error('Error counting event participants', error);
+      throw KnownCommonError(error);
+    }
+  }
 }
 
 export default EventParticipantDAO;

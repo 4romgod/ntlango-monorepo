@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import {FollowResolver} from '@/graphql/resolvers/follow';
-import {FollowDAO, UserDAO} from '@/mongodb/dao';
-import type {CreateFollowInput, Follow, User} from '@ntlango/commons/types';
+import {FollowDAO, UserDAO, EventDAO} from '@/mongodb/dao';
+import type {CreateFollowInput, Follow, User, Event} from '@ntlango/commons/types';
 import {FollowTargetType, FollowApprovalStatus, UserRole, FollowPolicy, SocialVisibility} from '@ntlango/commons/types';
 import {Types} from 'mongoose';
 import type {ServerContext} from '@/graphql';
@@ -16,9 +16,14 @@ jest.mock('@/mongodb/dao', () => ({
     readPendingFollows: jest.fn(),
     removeFollower: jest.fn(),
     isFollowing: jest.fn(),
+    readSavedEventsForUser: jest.fn(),
+    isEventSavedByUser: jest.fn(),
   },
   UserDAO: {
     readUserById: jest.fn(),
+  },
+  EventDAO: {
+    readEventById: jest.fn(),
   },
 }));
 
@@ -266,6 +271,104 @@ describe('FollowResolver', () => {
         .mockResolvedValueOnce(currentUser); // Second call for follower user
 
       await expect(resolver.follow(mockInput, contextWithBlock as ServerContext)).rejects.toThrow('You cannot follow a blocked user');
+    });
+  });
+
+  describe('Save Events (follow Event)', () => {
+    const mockEvent: Partial<Event> = {
+      eventId: new Types.ObjectId().toString(),
+      title: 'Test Event',
+      slug: 'test-event',
+    };
+
+    it('saves an event by following it', async () => {
+      const mockInput: CreateFollowInput = {
+        targetType: FollowTargetType.Event,
+        targetId: mockEvent.eventId!,
+      };
+      const mockFollow: Follow = {
+        followId: 'follow-event-1',
+        followerUserId: mockUser.userId,
+        targetType: FollowTargetType.Event,
+        targetId: mockEvent.eventId!,
+        approvalStatus: FollowApprovalStatus.Accepted,
+        createdAt: new Date(),
+      };
+
+      (EventDAO.readEventById as jest.Mock).mockResolvedValue(mockEvent);
+      (FollowDAO.upsert as jest.Mock).mockResolvedValue(mockFollow);
+
+      const result = await resolver.follow(mockInput, mockContext as ServerContext);
+
+      expect(EventDAO.readEventById).toHaveBeenCalledWith(mockInput.targetId);
+      expect(FollowDAO.upsert).toHaveBeenCalledWith({
+        ...mockInput,
+        followerUserId: mockUser.userId,
+        approvalStatus: FollowApprovalStatus.Accepted,
+      });
+      expect(result).toEqual(mockFollow);
+    });
+
+    it('throws error when saving non-existent event', async () => {
+      const nonExistentEventId = new Types.ObjectId().toString();
+      const mockInput: CreateFollowInput = {
+        targetType: FollowTargetType.Event,
+        targetId: nonExistentEventId,
+      };
+
+      (EventDAO.readEventById as jest.Mock).mockRejectedValue(new Error(`Event with eventId ${nonExistentEventId} not found`));
+
+      await expect(resolver.follow(mockInput, mockContext as ServerContext)).rejects.toThrow(`Event with eventId ${nonExistentEventId} not found`);
+    });
+
+    it('unsaves an event by unfollowing it', async () => {
+      (FollowDAO.remove as jest.Mock).mockResolvedValue(true);
+
+      const result = await resolver.unfollow(FollowTargetType.Event, mockEvent.eventId!, mockContext as ServerContext);
+
+      expect(FollowDAO.remove).toHaveBeenCalledWith({
+        followerUserId: mockUser.userId,
+        targetType: FollowTargetType.Event,
+        targetId: mockEvent.eventId,
+      });
+      expect(result).toBe(true);
+    });
+
+    it('reads saved events for current user', async () => {
+      const mockSavedEvents: Follow[] = [
+        {
+          followId: 'follow-1',
+          followerUserId: mockUser.userId,
+          targetType: FollowTargetType.Event,
+          targetId: mockEvent.eventId!,
+          approvalStatus: FollowApprovalStatus.Accepted,
+          createdAt: new Date(),
+        },
+      ];
+      (FollowDAO.readSavedEventsForUser as jest.Mock).mockResolvedValue(mockSavedEvents);
+
+      const result = await resolver.readSavedEvents(mockContext as ServerContext);
+
+      expect(FollowDAO.readSavedEventsForUser).toHaveBeenCalledWith(mockUser.userId);
+      expect(result).toEqual(mockSavedEvents);
+    });
+
+    it('checks if event is saved by current user', async () => {
+      (FollowDAO.isEventSavedByUser as jest.Mock).mockResolvedValue(true);
+
+      const result = await resolver.isEventSaved(mockEvent.eventId!, mockContext as ServerContext);
+
+      expect(FollowDAO.isEventSavedByUser).toHaveBeenCalledWith(mockEvent.eventId, mockUser.userId);
+      expect(result).toBe(true);
+    });
+
+    it('returns false when event is not saved', async () => {
+      (FollowDAO.isEventSavedByUser as jest.Mock).mockResolvedValue(false);
+
+      const result = await resolver.isEventSaved(mockEvent.eventId!, mockContext as ServerContext);
+
+      expect(FollowDAO.isEventSavedByUser).toHaveBeenCalledWith(mockEvent.eventId, mockUser.userId);
+      expect(result).toBe(false);
     });
   });
 });

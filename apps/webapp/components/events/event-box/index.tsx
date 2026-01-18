@@ -2,15 +2,33 @@
 
 import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
-import { Avatar, AvatarGroup, IconButton, Tooltip, Typography, Chip, Stack } from '@mui/material';
+import { Avatar, AvatarGroup, IconButton, Tooltip, Typography, Chip, Stack, useTheme, alpha } from '@mui/material';
 import { EventParticipantPreview, EventPreview } from '@/data/graphql/query/Event/types';
 import { Box } from '@mui/material';
 import { CalendarIcon, MapPinIcon, TicketIcon } from '@heroicons/react/24/outline';
-import { ShareRounded, BookmarkBorderOutlined, PeopleOutline } from '@mui/icons-material';
+import { ShareRounded, PeopleOutline } from '@mui/icons-material';
 import { RRule } from 'rrule';
+import { SaveEventButton, RsvpButton } from '@/components/events';
+import { useState, useEffect } from 'react';
+import { ParticipantStatus } from '@/data/graphql/types/graphql';
 
 export default function EventBox({ event }: { event: EventPreview }) {
+  const theme = useTheme();
   const { title, slug, recurrenceRule, participants, media, heroImage, location, status } = event;
+  
+  // Local state for optimistic UI updates
+  const [isSaved, setIsSaved] = useState(event.isSavedByMe ?? false);
+  const [rsvpStatus, setRsvpStatus] = useState<ParticipantStatus | null>(event.myRsvp?.status ?? null);
+  
+  // Sync state when props change (e.g., after refetch)
+  useEffect(() => {
+    setIsSaved(event.isSavedByMe ?? false);
+  }, [event.isSavedByMe]);
+  
+  useEffect(() => {
+    setRsvpStatus(event.myRsvp?.status ?? null);
+  }, [event.myRsvp?.status]);
+  
   const recurrenceText = RRule.fromString(recurrenceRule).toText();
   // TODO This placeholder image is just for development purposes
   const imageUrl =
@@ -41,36 +59,37 @@ export default function EventBox({ event }: { event: EventPreview }) {
       sx={{
         p: 0,
         display: 'grid',
-        gridTemplateColumns: { xs: '1fr', sm: '200px 1fr' },
+        gridTemplateColumns: { xs: '1fr', sm: '180px 1fr' },
+        gridTemplateRows: { xs: 'auto auto', sm: '180px' },
         gap: 0,
-          backgroundColor: 'background.paper',
-          border: '1px solid',
-          borderColor: 'divider',
-          borderRadius: 3,
-          boxShadow: 'none',
-          position: 'relative',
-          overflow: 'hidden',
-          cursor: 'pointer',
-          transition: 'all 0.3s ease',
-          '&:hover': {
-            borderColor: 'primary.main',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-            transform: 'translateY(-2px)',
-            '& .event-image': {
-              transform: 'scale(1.05)',
-            },
-            '& .event-overlay': {
-              backgroundColor: 'rgba(0,0,0,0.35)',
-            },
+        height: { xs: 'auto', sm: 180 },
+        backgroundColor: 'background.paper',
+        border: '1px solid',
+        borderColor: 'divider',
+        borderRadius: 3,
+        boxShadow: 'none',
+        position: 'relative',
+        overflow: 'hidden',
+        cursor: 'pointer',
+        transition: 'all 0.3s ease',
+        '&:hover': {
+          borderColor: 'primary.main',
+          boxShadow: theme.shadows[4],
+          transform: 'translateY(-2px)',
+          '& .event-image': {
+            transform: 'scale(1.05)',
           },
-        }}
-      >
+          '& .event-overlay': {
+            backgroundColor: alpha(theme.palette.common.black, 0.35),
+          },
+        },
+      }}
+    >
       <Box
         sx={{
           position: 'relative',
-          height: { xs: 160, sm: '100%' },
+          height: { xs: 140, sm: 180 },
           width: '100%',
-          minHeight: 200,
           overflow: 'hidden',
         }}
       >
@@ -91,7 +110,7 @@ export default function EventBox({ event }: { event: EventPreview }) {
           sx={{
             position: 'absolute',
             inset: 0,
-            background: 'linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.5) 100%)',
+            background: `linear-gradient(180deg, ${alpha(theme.palette.common.black, 0.1)} 0%, ${alpha(theme.palette.common.black, 0.5)} 100%)`,
             transition: 'background-color 0.3s ease',
           }}
         />
@@ -110,70 +129,82 @@ export default function EventBox({ event }: { event: EventPreview }) {
           />
         )}
       </Box>
-      <Box component="div" sx={{ display: 'flex', flexDirection: 'column', p: 2.5, gap: 2 }}>
-        <Box>
-          <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
+      <Box 
+        component="div" 
+        sx={{ 
+          display: 'flex', 
+          flexDirection: 'column', 
+          p: 1.5, 
+          gap: 1,
+          overflow: 'hidden',
+          height: { xs: 'auto', sm: '100%' },
+        }}
+      >
+        <Box sx={{ flex: '1 1 auto', overflow: 'hidden' }}>
+          <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 0.5 }}>
             {participantCount > 0 && (
               <Chip
-                icon={<PeopleOutline sx={{ fontSize: 16 }} />}
+                icon={<PeopleOutline sx={{ fontSize: 14 }} />}
                 label={`${participantCount} going`}
                 size="small"
                 variant="outlined"
-                sx={{ height: 20, fontSize: '0.7rem' }}
+                sx={{ height: 18, fontSize: '0.65rem' }}
               />
             )}
           </Stack>
 
           <Typography 
-            variant="h6" 
+            variant="body2" 
             color="text.primary" 
             sx={{ 
               fontWeight: 700,
               lineHeight: 1.3,
-              mb: 2,
+              mb: 0.5,
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               display: '-webkit-box',
               WebkitLineClamp: 2,
               WebkitBoxOrient: 'vertical',
+              fontSize: '0.9rem',
             }}
           >
             {title}
           </Typography>
 
-          <Stack spacing={1.5}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-              <CalendarIcon height={18} width={18} style={{ color: 'inherit', opacity: 0.7 }} />
-              <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
+          <Stack spacing={0.5}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+              <CalendarIcon height={14} width={14} style={{ color: 'inherit', opacity: 0.7, flexShrink: 0 }} />
+              <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {recurrenceText}
               </Typography>
             </Box>
 
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-              <MapPinIcon height={18} width={18} style={{ color: 'inherit', opacity: 0.7 }} />
-              <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+              <MapPinIcon height={14} width={14} style={{ color: 'inherit', opacity: 0.7, flexShrink: 0 }} />
+              <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {locationText}
               </Typography>
             </Box>
 
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-              <TicketIcon height={18} width={18} style={{ color: 'inherit', opacity: 0.7 }} />
-              <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+              <TicketIcon height={14} width={14} style={{ color: 'inherit', opacity: 0.7, flexShrink: 0 }} />
+              <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
                 Free
               </Typography>
             </Box>
           </Stack>
         </Box>
 
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 'auto', pt: 1 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0 }}>
           {participantCount > 0 && (
             <AvatarGroup
               max={3}
               sx={{
+                display: { xs: 'flex', sm: 'none', lg: 'flex' },
                 '& .MuiAvatar-root': { 
-                  width: 32, 
-                  height: 32, 
-                  fontSize: '0.875rem',
+                  width: 24, 
+                  height: 24, 
+                  fontSize: '0.7rem',
                   border: '2px solid',
                   borderColor: 'background.paper',
                 },
@@ -193,26 +224,20 @@ export default function EventBox({ event }: { event: EventPreview }) {
             </AvatarGroup>
           )}
 
-          <Stack direction="row" spacing={1} sx={{ ml: 'auto' }}>
-            <IconButton
+          <Stack direction="row" spacing={0.5} sx={{ ml: 'auto' }}>
+            <RsvpButton
+              eventId={event.eventId}
+              currentStatus={rsvpStatus}
               size="small"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-              }}
-              aria-label={`Bookmark ${title}`}
-              sx={{
-                border: '1px solid',
-                borderColor: 'divider',
-                '&:hover': {
-                  borderColor: 'primary.main',
-                  color: 'primary.main',
-                  backgroundColor: 'primary.lighter',
-                },
-              }}
-            >
-              <BookmarkBorderOutlined sx={{ fontSize: 18 }} />
-            </IconButton>
+              onRsvpChange={setRsvpStatus}
+            />
+            <SaveEventButton
+              eventId={event.eventId}
+              isSaved={isSaved}
+              size="small"
+              showTooltip
+              onSaveChange={setIsSaved}
+            />
             <IconButton
               size="small"
               onClick={(e) => {
@@ -221,6 +246,8 @@ export default function EventBox({ event }: { event: EventPreview }) {
               }}
               aria-label={`Share ${title}`}
               sx={{
+                width: 28,
+                height: 28,
                 border: '1px solid',
                 borderColor: 'divider',
                 '&:hover': {
@@ -230,7 +257,7 @@ export default function EventBox({ event }: { event: EventPreview }) {
                 },
               }}
             >
-              <ShareRounded sx={{ fontSize: 18 }} />
+              <ShareRounded sx={{ fontSize: 16 }} />
             </IconButton>
           </Stack>
         </Box>

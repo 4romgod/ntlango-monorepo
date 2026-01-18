@@ -6,6 +6,7 @@ import { GetAllEventCategoriesDocument, GetAllEventsDocument, GetPopularOrganiza
 import { EventPreview } from '@/data/graphql/query/Event/types';
 import { PopularOrganization } from '@/components/events/popular-organizer-box';
 import EventsClientWrapper from '@/components/events/events-client-wrapper';
+import { auth } from '@/auth';
 
 export const metadata: Metadata = {
   title: {
@@ -22,9 +23,17 @@ export const metadata: Metadata = {
 export const revalidate = 60;
 
 export default async function Events() {
+  const session = await auth();
+  const token = session?.user?.token;
+
   const [{ data: events }, { data: eventCategories }, { data: organizations }] = await Promise.all([
     getClient().query({
       query: GetAllEventsDocument,
+      context: {
+        headers: {
+          ...(token ? { token } : {}),
+        },
+      },
     }),
     getClient().query({
       query: GetAllEventCategoriesDocument,

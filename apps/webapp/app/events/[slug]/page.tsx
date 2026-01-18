@@ -33,6 +33,8 @@ import {
 } from '@mui/icons-material';
 import type { Metadata } from 'next';
 import CopyLinkButton from '@/components/events/copy-link-button';
+import EventDetailActions from '@/components/events/EventDetailActions';
+import { auth } from '@/auth';
 
 export const metadata: Metadata = {
   title: {
@@ -53,10 +55,17 @@ interface Props {
 export default async function Page(props: Props) {
   const params = await props.params;
   const eventUrl = await getFullUrl(`/events/${params.slug}`);
+  const session = await auth();
+  const token = session?.user?.token;
 
   const { data: eventRetrieved } = await getClient().query({
     query: GetEventBySlugDocument,
     variables: { slug: params.slug },
+    context: {
+      headers: {
+        ...(token ? { token } : {}),
+      },
+    },
   });
   const { title, organizers, description, media, recurrenceRule, location, eventCategories, comments, participants } = eventRetrieved.readEventBySlug;
 
@@ -254,60 +263,12 @@ export default async function Page(props: Props) {
               }}
             >
               <CardContent sx={{ p: 3 }}>
-                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-                  <Button
-                    variant="contained"
-                    size="large"
-                    startIcon={<ConfirmationNumber />}
-                    fullWidth
-                    sx={{
-                      py: 1.5,
-                      fontSize: '1rem',
-                      fontWeight: 700,
-                      textTransform: 'none',
-                      borderRadius: 2,
-                      boxShadow: '0 4px 14px rgba(0,0,0,0.1)',
-                    }}
-                  >
-                    Get Tickets
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    size="large"
-                    startIcon={<BookmarkBorder />}
-                    sx={{
-                      py: 1.5,
-                      fontSize: '1rem',
-                      fontWeight: 600,
-                      textTransform: 'none',
-                      borderRadius: 2,
-                      borderWidth: 2,
-                      '&:hover': {
-                        borderWidth: 2,
-                      },
-                    }}
-                  >
-                    Save
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    size="large"
-                    startIcon={<Share />}
-                    sx={{
-                      py: 1.5,
-                      fontSize: '1rem',
-                      fontWeight: 600,
-                      textTransform: 'none',
-                      borderRadius: 2,
-                      borderWidth: 2,
-                      '&:hover': {
-                        borderWidth: 2,
-                      },
-                    }}
-                  >
-                    Share
-                  </Button>
-                </Stack>
+                <EventDetailActions
+                  eventId={eventRetrieved.readEventBySlug.eventId}
+                  eventUrl={eventUrl}
+                  isSavedByMe={eventRetrieved.readEventBySlug.isSavedByMe ?? false}
+                  myRsvpStatus={eventRetrieved.readEventBySlug.myRsvp?.status ?? null}
+                />
               </CardContent>
             </Card>
 

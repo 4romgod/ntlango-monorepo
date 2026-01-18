@@ -1,12 +1,14 @@
 'use client';
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { Divider, ListItemIcon, ListItemText } from '@mui/material';
 import { AccountCircle, Logout, Settings } from '@mui/icons-material';
 import { ROUTES } from '@/lib/constants';
 import { logoutUserAction } from '@/data/actions/server/auth/logout';
+import NProgress from 'nprogress';
 
 type ProfilesMenuProps = {
   ProfilesMenuAnchorEl: HTMLElement | null;
@@ -21,6 +23,16 @@ export default function ProfilesMenu({
   handleProfilesMenuClose,
   isProfilesMenuOpen,
 }: ProfilesMenuProps) {
+  const pathname = usePathname();
+
+  const handleNavClick = (targetPath: string) => {
+    // Only start progress bar if navigating to a different page
+    if (pathname !== targetPath) {
+      NProgress.start();
+    }
+    handleProfilesMenuClose();
+  };
+
   return (
     <Menu
       anchorEl={ProfilesMenuAnchorEl}
@@ -45,7 +57,7 @@ export default function ProfilesMenu({
         },
       }}
     >
-      <Link href={ROUTES.ACCOUNT.PROFILE} onClick={handleProfilesMenuClose}>
+      <Link href={ROUTES.ACCOUNT.PROFILE} onClick={() => handleNavClick(ROUTES.ACCOUNT.PROFILE)}>
         <MenuItem>
           <ListItemIcon>
             <AccountCircle fontSize="medium" />
@@ -59,7 +71,7 @@ export default function ProfilesMenu({
           </ListItemText>
         </MenuItem>
       </Link>
-      <Link href={ROUTES.ACCOUNT.ROOT} onClick={handleProfilesMenuClose}>
+      <Link href={ROUTES.ACCOUNT.ROOT} onClick={() => handleNavClick(ROUTES.ACCOUNT.ROOT)}>
         <MenuItem>
           <ListItemIcon>
             <Settings fontSize="medium" />

@@ -75,6 +75,14 @@ export const GetAllEventsDocument = graphql(`
           profile_picture
         }
       }
+      savedByCount
+      isSavedByMe
+      rsvpCount
+      myRsvp {
+        participantId
+        status
+        quantity
+      }
     }
   }
 `);
@@ -153,6 +161,14 @@ export const GetEventBySlugDocument = graphql(`
           family_name
           profile_picture
         }
+      }
+      savedByCount
+      isSavedByMe
+      rsvpCount
+      myRsvp {
+        participantId
+        status
+        quantity
       }
     }
   }

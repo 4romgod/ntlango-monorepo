@@ -10,12 +10,13 @@ import {
   FollowPolicy,
   Organization,
   SocialVisibility,
+  Event,
 } from '@ntlango/commons/types';
 import {
   CreateFollowInputSchema,
 } from '@/validation/zod';
 import {validateInput} from '@/validation';
-import {FollowDAO, UserDAO, OrganizationDAO} from '@/mongodb/dao';
+import {FollowDAO, UserDAO, OrganizationDAO, EventDAO} from '@/mongodb/dao';
 import type {ServerContext} from '@/graphql';
 import {RESOLVER_DESCRIPTIONS} from '@/constants';
 import {getAuthenticatedUser, CustomError, ErrorTypes} from '@/utils';
@@ -45,6 +46,14 @@ export class FollowResolver {
       return null;
     }
     return context.loaders.organization.load(follow.targetId);
+  }
+
+  @FieldResolver(() => Event, {nullable: true})
+  async targetEvent(@Root() follow: Follow, @Ctx() context: ServerContext): Promise<Event | null> {
+    if (follow.targetType !== FollowTargetType.Event) {
+      return null;
+    }
+    return context.loaders.event.load(follow.targetId);
   }
 
   @Authorized([UserRole.Admin, UserRole.Host, UserRole.User])
@@ -77,6 +86,10 @@ export class FollowResolver {
       approvalStatus = targetOrg.followPolicy === FollowPolicy.Public
         ? FollowApprovalStatus.Accepted
         : FollowApprovalStatus.Pending;
+    } else if (input.targetType === FollowTargetType.Event) {
+      await EventDAO.readEventById(input.targetId);
+      // Events are always publicly saveable - no approval needed
+      approvalStatus = FollowApprovalStatus.Accepted;
     }
 
     return FollowDAO.upsert({...input, followerUserId: user.userId, approvalStatus});
@@ -191,5 +204,26 @@ export class FollowResolver {
     }
     
     return FollowDAO.readFollowers(targetType, targetId);
+  }
+
+  // ============================================================================
+  // SAVED EVENTS QUERIES
+  // ============================================================================
+
+  @Authorized([UserRole.Admin, UserRole.Host, UserRole.User])
+  @Query(() => [Follow], {description: 'Get all saved events for the authenticated user'})
+  async readSavedEvents(@Ctx() context: ServerContext): Promise<Follow[]> {
+    const user = getAuthenticatedUser(context);
+    return FollowDAO.readSavedEventsForUser(user.userId);
+  }
+
+  @Authorized([UserRole.Admin, UserRole.Host, UserRole.User])
+  @Query(() => Boolean, {description: 'Check if the authenticated user has saved a specific event'})
+  async isEventSaved(
+    @Arg('eventId', () => ID) eventId: string,
+    @Ctx() context: ServerContext,
+  ): Promise<boolean> {
+    const user = getAuthenticatedUser(context);
+    return FollowDAO.isEventSavedByUser(eventId, user.userId);
   }
 }
