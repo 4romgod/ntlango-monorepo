@@ -9,6 +9,7 @@ import {
 } from '@/data/graphql/query';
 import { FollowTargetType } from '@/data/graphql/types/graphql';
 import { useSession } from 'next-auth/react';
+import { getAuthHeader } from '@/lib/utils';
 
 /**
  * Hook to save/unsave events (bookmark functionality).
@@ -20,17 +21,13 @@ export function useSaveEvent() {
 
   const [saveMutation, { loading: saveLoading }] = useMutation(FollowDocument, {
     context: {
-      headers: {
-        ...(token ? { token } : {}),
-      },
+      headers: getAuthHeader(token),
     },
   });
 
   const [unsaveMutation, { loading: unsaveLoading }] = useMutation(UnfollowDocument, {
     context: {
-      headers: {
-        ...(token ? { token } : {}),
-      },
+      headers: getAuthHeader(token),
     },
   });
 
@@ -92,9 +89,7 @@ export function useSavedEvents() {
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     context: {
-      headers: {
-        ...(token ? { token } : {}),
-      },
+      headers: getAuthHeader(token),
     },
   });
 
@@ -118,9 +113,7 @@ export function useIsEventSaved(eventId: string) {
     skip: !token || !eventId,
     fetchPolicy: 'cache-and-network',
     context: {
-      headers: {
-        ...(token ? { token } : {}),
-      },
+      headers: getAuthHeader(token),
     },
   });
 

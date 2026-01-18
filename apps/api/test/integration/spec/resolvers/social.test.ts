@@ -8,6 +8,7 @@ import {
   CreateUserInput,
   SocialVisibility,
   FollowTargetType,
+  FollowPolicy,
   ActivityVerb,
   ActivityObjectType,
   ActivityVisibility,
@@ -63,6 +64,7 @@ describe('Social resolver integration', () => {
       ...usersMockData[1],
       email: 'social-target@example.com',
       username: 'socialTarget',
+      followPolicy: FollowPolicy.Public,
     });
 
     category = await EventCategoryDAO.create({
@@ -102,20 +104,20 @@ describe('Social resolver integration', () => {
   it('creates and cleans up follows', async () => {
     const followResponse = await request(url)
       .post('')
-      .set('token', actorUser.token)
+      .set('Authorization', 'Bearer ' + actorUser.token)
       .send(getFollowMutation({targetType: FollowTargetType.User, targetId: targetUser.userId}));
 
     expect(followResponse.status).toBe(200);
     expect(followResponse.body.data.follow.targetId).toBe(targetUser.userId);
 
-    const followingResponse = await request(url).post('').set('token', actorUser.token).send(getReadFollowingQuery());
+    const followingResponse = await request(url).post('').set('Authorization', 'Bearer ' + actorUser.token).send(getReadFollowingQuery());
 
     expect(followingResponse.status).toBe(200);
     expect(followingResponse.body.data.readFollowing.length).toBeGreaterThan(0);
 
     const followerResponse = await request(url)
       .post('')
-      .set('token', actorUser.token)
+      .set('Authorization', 'Bearer ' + actorUser.token)
       .send(getReadFollowersQuery(FollowTargetType.User, targetUser.userId));
 
     expect(followerResponse.status).toBe(200);
@@ -123,7 +125,7 @@ describe('Social resolver integration', () => {
 
     const unfollowResponse = await request(url)
       .post('')
-      .set('token', actorUser.token)
+      .set('Authorization', 'Bearer ' + actorUser.token)
       .send(getUnfollowMutation(FollowTargetType.User, targetUser.userId));
 
     if (unfollowResponse.status !== 200) {
@@ -136,7 +138,7 @@ describe('Social resolver integration', () => {
   it('records intents and surfaces them by user/event', async () => {
     const intentResponse = await request(url)
       .post('')
-      .set('token', actorUser.token)
+      .set('Authorization', 'Bearer ' + actorUser.token)
       .send(
         getUpsertIntentMutation({
           eventId,
@@ -149,12 +151,12 @@ describe('Social resolver integration', () => {
     expect(intentResponse.status).toBe(200);
     expect(intentResponse.body.data.upsertIntent.eventId).toBe(eventId);
 
-    const userIntentsResponse = await request(url).post('').set('token', actorUser.token).send(getReadIntentsByUserQuery());
+    const userIntentsResponse = await request(url).post('').set('Authorization', 'Bearer ' + actorUser.token).send(getReadIntentsByUserQuery());
 
     expect(userIntentsResponse.status).toBe(200);
     expect(userIntentsResponse.body.data.readIntentsByUser.length).toBeGreaterThan(0);
 
-    const eventIntentsResponse = await request(url).post('').set('token', actorUser.token).send(getReadIntentsByEventQuery(eventId));
+    const eventIntentsResponse = await request(url).post('').set('Authorization', 'Bearer ' + actorUser.token).send(getReadIntentsByEventQuery(eventId));
 
     expect(eventIntentsResponse.status).toBe(200);
     expect(eventIntentsResponse.body.data.readIntentsByEvent.length).toBeGreaterThan(0);
@@ -163,7 +165,7 @@ describe('Social resolver integration', () => {
   it('logs activities and serves feed items', async () => {
     const logResponse = await request(url)
       .post('')
-      .set('token', actorUser.token)
+      .set('Authorization', 'Bearer ' + actorUser.token)
       .send(
         getLogActivityMutation({
           verb: ActivityVerb.RSVPd,
@@ -176,12 +178,12 @@ describe('Social resolver integration', () => {
     expect(logResponse.status).toBe(200);
     expect(logResponse.body.data.logActivity.actorId).toBe(actorUser.userId);
 
-    const actorFeedResponse = await request(url).post('').set('token', actorUser.token).send(getReadActivitiesByActorQuery(actorUser.userId));
+    const actorFeedResponse = await request(url).post('').set('Authorization', 'Bearer ' + actorUser.token).send(getReadActivitiesByActorQuery(actorUser.userId));
 
     expect(actorFeedResponse.status).toBe(200);
     expect(actorFeedResponse.body.data.readActivitiesByActor.length).toBeGreaterThan(0);
 
-    const feedResponse = await request(url).post('').set('token', actorUser.token).send(getReadFeedQuery(5));
+    const feedResponse = await request(url).post('').set('Authorization', 'Bearer ' + actorUser.token).send(getReadFeedQuery(5));
 
     expect(feedResponse.status).toBe(200);
     expect(feedResponse.body.data.readFeed.length).toBeGreaterThan(0);
@@ -190,26 +192,26 @@ describe('Social resolver integration', () => {
   it('handles duplicate follows gracefully', async () => {
     const firstFollow = await request(url)
       .post('')
-      .set('token', actorUser.token)
+      .set('Authorization', 'Bearer ' + actorUser.token)
       .send(getFollowMutation({targetType: FollowTargetType.User, targetId: targetUser.userId}));
 
     expect(firstFollow.status).toBe(200);
 
     const duplicateFollow = await request(url)
       .post('')
-      .set('token', actorUser.token)
+      .set('Authorization', 'Bearer ' + actorUser.token)
       .send(getFollowMutation({targetType: FollowTargetType.User, targetId: targetUser.userId}));
 
     // The API may return 200 (idempotent) or 409 (conflict)
     expect([200, 409]).toContain(duplicateFollow.status);
 
-    await request(url).post('').set('token', actorUser.token).send(getUnfollowMutation(FollowTargetType.User, targetUser.userId));
+    await request(url).post('').set('Authorization', 'Bearer ' + actorUser.token).send(getUnfollowMutation(FollowTargetType.User, targetUser.userId));
   });
 
   it('handles intent status updates', async () => {
     const initialIntent = await request(url)
       .post('')
-      .set('token', actorUser.token)
+      .set('Authorization', 'Bearer ' + actorUser.token)
       .send(
         getUpsertIntentMutation({
           eventId,
@@ -224,7 +226,7 @@ describe('Social resolver integration', () => {
 
     const updatedIntent = await request(url)
       .post('')
-      .set('token', actorUser.token)
+      .set('Authorization', 'Bearer ' + actorUser.token)
       .send(
         getUpsertIntentMutation({
           eventId,
@@ -285,7 +287,7 @@ describe('Social resolver integration', () => {
   it('returns validation error for invalid follow target type', async () => {
     const response = await request(url)
       .post('')
-      .set('token', actorUser.token)
+      .set('Authorization', 'Bearer ' + actorUser.token)
       .send(getFollowMutation({targetType: 'InvalidType', targetId: targetUser.userId}));
 
     expect(response.status).toBe(400);
@@ -300,14 +302,14 @@ describe('Social resolver integration', () => {
     });
     const followResponse = await request(url)
       .post('')
-      .set('token', actorUser.token)
+      .set('Authorization', 'Bearer ' + actorUser.token)
       .send(getFollowMutation({targetType: FollowTargetType.Organization, targetId: org.orgId}));
 
     expect(followResponse.status).toBe(200);
     expect(followResponse.body.data.follow.targetType).toBe(FollowTargetType.Organization);
     expect(followResponse.body.data.follow.targetId).toBe(org.orgId);
 
-    await request(url).post('').set('token', actorUser.token).send(getUnfollowMutation(FollowTargetType.Organization, org.orgId));
+    await request(url).post('').set('Authorization', 'Bearer ' + actorUser.token).send(getUnfollowMutation(FollowTargetType.Organization, org.orgId));
 
     await OrganizationDAO.deleteOrganizationById(org.orgId).catch(() => {});
   });
@@ -315,7 +317,7 @@ describe('Social resolver integration', () => {
   it('records activities with different visibility levels', async () => {
     const privateActivity = await request(url)
       .post('')
-      .set('token', actorUser.token)
+      .set('Authorization', 'Bearer ' + actorUser.token)
       .send(
         getLogActivityMutation({
           verb: ActivityVerb.Commented,
@@ -330,7 +332,7 @@ describe('Social resolver integration', () => {
 
     const followersActivity = await request(url)
       .post('')
-      .set('token', actorUser.token)
+      .set('Authorization', 'Bearer ' + actorUser.token)
       .send(
         getLogActivityMutation({
           verb: ActivityVerb.CheckedIn,

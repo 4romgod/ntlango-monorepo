@@ -10,6 +10,7 @@ import {
 } from '@/data/graphql/types/graphql';
 import { EventPreview } from '@/data/graphql/query/Event/types';
 import { HeroSection, FeaturedEvents, CategoryExplorer, SocialFeed } from '@/components/home';
+import { getAuthHeader } from '@/lib/utils';
 
 export const metadata: Metadata = {
   title: {
@@ -68,7 +69,7 @@ export default async function HomePage() {
               pagination: { limit: 20 },
             },
           },
-          context: { headers: { token } },
+          context: { headers: getAuthHeader(token) },
         });
         eventList = (eventsResponse.data.readEvents ?? []) as EventPreview[];
       }
@@ -83,7 +84,7 @@ export default async function HomePage() {
               pagination: { limit: 20 },
             },
           },
-          context: { headers: { token } },
+          context: { headers: getAuthHeader(token) },
         });
         eventList = (eventsResponse.data.readEvents ?? []) as EventPreview[];
       }
@@ -103,9 +104,7 @@ export default async function HomePage() {
     const eventsResponse = await getClient().query({ 
       query: GetAllEventsDocument,
       context: {
-        headers: {
-          ...(token ? { token } : {}),
-        },
+        headers: getAuthHeader(token),
       },
     });
     eventList = (eventsResponse.data.readEvents ?? []) as EventPreview[];
@@ -129,9 +128,7 @@ export default async function HomePage() {
         query: GetSocialFeedDocument,
         variables: { limit: SOCIAL_FEED_LIMIT },
         context: {
-          headers: {
-            token: token,
-          },
+          headers: getAuthHeader(token),
         },
       });
       socialFeed = feedResponse.data.readFeed ?? [];

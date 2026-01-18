@@ -27,7 +27,7 @@ describe('OrganizationMembership Resolver', () => {
   const createOrganization = async (name: string) => {
     const response = await request(url)
       .post('')
-      .set('token', adminUser.token)
+      .set('Authorization', 'Bearer ' + adminUser.token)
       .send(
         getCreateOrganizationMutation({
           name,
@@ -44,7 +44,7 @@ describe('OrganizationMembership Resolver', () => {
   const createMembership = async (orgId: string, userId: string) => {
     const response = await request(url)
       .post('')
-      .set('token', adminUser.token)
+      .set('Authorization', 'Bearer ' + adminUser.token)
       .send(
         getCreateOrganizationMembershipMutation({
           orgId,
@@ -82,7 +82,7 @@ describe('OrganizationMembership Resolver', () => {
       createdMembershipIds.map((membershipId) =>
         request(url)
           .post('')
-          .set('token', adminUser.token)
+          .set('Authorization', 'Bearer ' + adminUser.token)
           .send(getDeleteOrganizationMembershipMutation({membershipId}))
           .catch(() => {}),
       ),
@@ -107,7 +107,7 @@ describe('OrganizationMembership Resolver', () => {
 
       const response = await request(url)
         .post('')
-        .set('token', adminUser.token)
+        .set('Authorization', 'Bearer ' + adminUser.token)
         .send(
           getUpdateOrganizationMembershipMutation({
             membershipId: membership.membershipId,
@@ -140,7 +140,7 @@ describe('OrganizationMembership Resolver', () => {
 
       const response = await request(url)
         .post('')
-        .set('token', adminUser.token)
+        .set('Authorization', 'Bearer ' + adminUser.token)
         .send(getDeleteOrganizationMembershipMutation({membershipId: membership.membershipId}));
 
       expect(response.status).toBe(200);
@@ -169,7 +169,7 @@ describe('OrganizationMembership Resolver', () => {
     it('returns 404 when membership id does not exist', async () => {
       const response = await request(url)
         .post('')
-        .set('token', adminUser.token)
+        .set('Authorization', 'Bearer ' + adminUser.token)
         .send(
           getUpdateOrganizationMembershipMutation({
             membershipId: new Types.ObjectId().toString(),

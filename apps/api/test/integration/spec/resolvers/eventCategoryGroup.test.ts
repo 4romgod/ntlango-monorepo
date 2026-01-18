@@ -69,7 +69,7 @@ describe('EventCategoryGroup Resolver', () => {
   const createGroup = async (name: string) => {
     const response = await request(url)
       .post('')
-      .set('token', adminUser.token)
+      .set('Authorization', 'Bearer ' + adminUser.token)
       .send(
         getCreateEventCategoryGroupMutation({
           name,
@@ -133,7 +133,7 @@ describe('EventCategoryGroup Resolver', () => {
       await EventCategoryGroupDAO.deleteEventCategoryGroupBySlug('updated-group').catch(() => {});
       const updateResponse = await request(url)
         .post('')
-        .set('token', adminUser.token)
+        .set('Authorization', 'Bearer ' + adminUser.token)
         .send(
           getUpdateEventCategoryGroupMutation({
             eventCategoryGroupId: createdGroup.eventCategoryGroupId,

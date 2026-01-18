@@ -13,9 +13,11 @@ import {logger} from '@/utils/logger';
 import {verifyToken} from '@/utils/auth';
 import { User } from '@ntlango/commons';
 
-const DEV_URL = `http://localhost:9000${GRAPHQL_API_PATH}`;
+const DEV_PORT = 9000;
 
-export const startExpressApolloServer = async (listenOptions: ListenOptions = {port: 9000}) => {
+export const startExpressApolloServer = async (listenOptions: ListenOptions = {port: DEV_PORT}) => {
+  const actualPort = listenOptions.port ?? DEV_PORT;
+  const actualUrl = `http://localhost:${actualPort}${GRAPHQL_API_PATH}`;
   const startTime = Date.now();
   logger.info('='.repeat(30));
   logger.info('Starting Apollo Express Server...');
@@ -42,8 +44,8 @@ export const startExpressApolloServer = async (listenOptions: ListenOptions = {p
     express.json(),
     expressMiddleware(apolloServer, {
       context: async ({req, res}) => {
-        const token = req.headers.token;
-        const tokenValue = Array.isArray(token) ? token[0] : token;
+        const authHeader = req.headers.authorization;
+        const tokenValue = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : undefined;
         
         // Try to verify token and populate user for all requests (not just @Authorized ones)
         // This enables field resolvers like isSavedByMe to access the current user
@@ -95,11 +97,11 @@ export const startExpressApolloServer = async (listenOptions: ListenOptions = {p
       const httpServer = expressApp.listen(listenOptions.port);
       httpServer
         .once('listening', () => {
-          logger.info(`⚡️[server]: Server is running at ${DEV_URL}`);
+          logger.info(`⚡️[server]: Server is running at ${actualUrl}`);
           return resolve(httpServer);
         })
         .once('close', () => {
-          logger.info(`Server running on ${DEV_URL} is CLOSED!`);
+          logger.info(`Server running on ${actualUrl} is CLOSED!`);
           resolve(httpServer);
         })
         .once('error', (error) => {
@@ -112,5 +114,5 @@ export const startExpressApolloServer = async (listenOptions: ListenOptions = {p
   const httpServer = await listenForConnections();
   const elapsed = Date.now() - startTime;
   logger.info(`Server started after ${elapsed}ms`);
-  return {url: DEV_URL, expressApp, apolloServer, httpServer};
+  return {url: actualUrl, expressApp, apolloServer, httpServer};
 };

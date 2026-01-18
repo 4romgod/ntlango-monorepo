@@ -60,7 +60,7 @@ describe('EventCategory Resolver', () => {
       });
 
       it('should create a new event category when input is valid', async () => {
-        const response = await request(url).post('').set('token', adminUser.token).send(getCreateEventCategoryMutation(createEventCategoryInput));
+        const response = await request(url).post('').set('Authorization', 'Bearer ' + adminUser.token).send(getCreateEventCategoryMutation(createEventCategoryInput));
 
         expect(response.status).toBe(200);
         expect(response.error).toBeFalsy();
@@ -79,7 +79,7 @@ describe('EventCategory Resolver', () => {
         const createdCategory = await EventCategoryDAO.create(createEventCategoryInput);
         const response = await request(url)
           .post('')
-          .set('token', adminUser.token)
+          .set('Authorization', 'Bearer ' + adminUser.token)
           .send(
             getUpdateEventCategoryMutation({
               eventCategoryId: createdCategory.eventCategoryId,
@@ -172,11 +172,11 @@ describe('EventCategory Resolver', () => {
       });
 
       it('should return conflict for duplicate category name', async () => {
-        await request(url).post('').set('token', adminUser.token).send(getCreateEventCategoryMutation(createEventCategoryInput));
+        await request(url).post('').set('Authorization', 'Bearer ' + adminUser.token).send(getCreateEventCategoryMutation(createEventCategoryInput));
 
         const duplicateResponse = await request(url)
           .post('')
-          .set('token', adminUser.token)
+          .set('Authorization', 'Bearer ' + adminUser.token)
           .send(getCreateEventCategoryMutation(createEventCategoryInput));
 
         expect(duplicateResponse.status).toBe(409);
@@ -187,7 +187,7 @@ describe('EventCategory Resolver', () => {
       it('should return validation error for missing name', async () => {
         const response = await request(url)
           .post('')
-          .set('token', adminUser.token)
+          .set('Authorization', 'Bearer ' + adminUser.token)
           .send(
             getCreateEventCategoryMutation({
               ...createEventCategoryInput,
@@ -201,7 +201,7 @@ describe('EventCategory Resolver', () => {
       it('should return validation error for missing icon name', async () => {
         const response = await request(url)
           .post('')
-          .set('token', adminUser.token)
+          .set('Authorization', 'Bearer ' + adminUser.token)
           .send(
             getCreateEventCategoryMutation({
               ...createEventCategoryInput,
@@ -217,7 +217,7 @@ describe('EventCategory Resolver', () => {
       it('should return not found for non-existent category', async () => {
         const response = await request(url)
           .post('')
-          .set('token', adminUser.token)
+          .set('Authorization', 'Bearer ' + adminUser.token)
           .send(
             getUpdateEventCategoryMutation({
               eventCategoryId: new Types.ObjectId().toString(),

@@ -10,6 +10,7 @@ import {
 } from '@/data/graphql/query';
 import { ParticipantStatus, ParticipantVisibility } from '@/data/graphql/types/graphql';
 import { useSession } from 'next-auth/react';
+import { getAuthHeader } from '@/lib/utils';
 
 export interface RsvpOptions {
   status?: ParticipantStatus;
@@ -27,17 +28,13 @@ export function useRsvp() {
 
   const [rsvpMutation, { loading: rsvpLoading }] = useMutation(UpsertEventParticipantDocument, {
     context: {
-      headers: {
-        ...(token ? { token } : {}),
-      },
+      headers: getAuthHeader(token),
     },
   });
 
   const [cancelMutation, { loading: cancelLoading }] = useMutation(CancelEventParticipantDocument, {
     context: {
-      headers: {
-        ...(token ? { token } : {}),
-      },
+      headers: getAuthHeader(token),
     },
   });
 
@@ -121,9 +118,7 @@ export function useMyRsvpStatus(eventId: string) {
     skip: !token || !eventId,
     fetchPolicy: 'cache-and-network',
     context: {
-      headers: {
-        ...(token ? { token } : {}),
-      },
+      headers: getAuthHeader(token),
     },
   });
 
@@ -149,9 +144,7 @@ export function useMyRsvps(includeCancelled = false) {
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     context: {
-      headers: {
-        ...(token ? { token } : {}),
-      },
+      headers: getAuthHeader(token),
     },
   });
 
@@ -175,9 +168,7 @@ export function useEventParticipants(eventId: string) {
     skip: !eventId,
     fetchPolicy: 'cache-and-network',
     context: {
-      headers: {
-        ...(token ? { token } : {}),
-      },
+      headers: getAuthHeader(token),
     },
   });
 

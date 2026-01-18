@@ -44,7 +44,7 @@ import {
 } from '@/lib/constants';
 import { omit } from 'lodash';
 import Link from 'next/link';
-import { getAvatarSrc, logger, isApolloAuthError } from '@/lib/utils';
+import { getAvatarSrc, logger, isApolloAuthError, getAuthHeader } from '@/lib/utils';
 import { redirect } from 'next/navigation';
 
 export default async function UserPublicProfile() {
@@ -72,7 +72,7 @@ export default async function UserPublicProfile() {
   try {
     const result = await getClient().query({
       query: GetSavedEventsDocument,
-      context: { headers: { ...(token ? { token } : {}) } },
+      context: { headers: getAuthHeader(token) },
       fetchPolicy: 'no-cache',
     });
     savedEventsData = result.data;

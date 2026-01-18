@@ -12,7 +12,7 @@ import { User } from '@ntlango/commons';
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization, token',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
   'Access-Control-Max-Age': '86400',
 };
 
@@ -43,9 +43,10 @@ async function initializeResources() {
     logger.info('Creating Lambda handler...');
     cachedLambdaHandler = startServerAndCreateLambdaHandler(cachedServer, handlers.createAPIGatewayProxyEventRequestHandler(), {
       context: async ({event, context}) => {
-        const token = event.headers.token;
+        // API Gateway may lowercase headers, so check both
+        const authHeader = event.headers.Authorization || event.headers.authorization;
+        const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : undefined;
         
-        // Try to verify token and populate user for all requests (not just @Authorized ones)
         // This enables field resolvers like isSavedByMe to access the current user
         let user: User | undefined;
         if (token) {
