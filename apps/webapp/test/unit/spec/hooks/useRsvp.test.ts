@@ -3,7 +3,13 @@
  * Tests cover RSVP functionality including success cases, error handling, and loading states.
  */
 
-import { renderHook, act, waitFor } from '@testing-library/react';
+// Mock @/lib/utils before imports to avoid ESM issues with jose
+jest.mock('@/lib/utils', () => ({
+  getAuthHeader: (token: string | undefined | null) =>
+    token ? { Authorization: `Bearer ${token}` } : {},
+}));
+
+import { renderHook, act } from '@testing-library/react';
 import { ParticipantStatus, ParticipantVisibility } from '@/data/graphql/types/graphql';
 
 // Mock data
@@ -335,24 +341,24 @@ describe('useRsvp Hook', () => {
     });
   });
 
-  describe('token context header', () => {
-    it('should configure mutations with token header when authenticated', () => {
+  describe('Authorization header', () => {
+    it('should configure mutations with Authorization header when authenticated', () => {
       renderHook(() => useRsvp());
 
-      // Check that useMutation was called with context containing token
+      // Check that useMutation was called with context containing Authorization header
       expect(useMutation).toHaveBeenCalledWith(
         expect.anything(),
         expect.objectContaining({
           context: {
             headers: {
-              token: mockToken,
+              Authorization: 'Bearer ' + mockToken,
             },
           },
         })
       );
     });
 
-    it('should configure mutations without token header when not authenticated', () => {
+    it('should configure mutations without Authorization header when not authenticated', () => {
       (useSession as jest.Mock).mockReturnValue({ data: null, status: 'unauthenticated' });
       
       renderHook(() => useRsvp());
@@ -394,7 +400,7 @@ describe('useMyRsvpStatus Hook', () => {
         fetchPolicy: 'cache-and-network',
         context: {
           headers: {
-            token: mockToken,
+            Authorization: 'Bearer ' + mockToken,
           },
         },
       })
@@ -512,7 +518,7 @@ describe('useMyRsvps Hook', () => {
         nextFetchPolicy: 'cache-first',
         context: {
           headers: {
-            token: mockToken,
+            Authorization: 'Bearer ' + mockToken,
           },
         },
       })
@@ -658,7 +664,7 @@ describe('useEventParticipants Hook', () => {
         fetchPolicy: 'cache-and-network',
         context: {
           headers: {
-            token: mockToken,
+            Authorization: 'Bearer ' + mockToken,
           },
         },
       })

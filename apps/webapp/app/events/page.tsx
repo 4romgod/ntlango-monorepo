@@ -7,6 +7,7 @@ import { EventPreview } from '@/data/graphql/query/Event/types';
 import { PopularOrganization } from '@/components/events/popular-organizer-box';
 import EventsClientWrapper from '@/components/events/events-client-wrapper';
 import { auth } from '@/auth';
+import { getAuthHeader } from '@/lib/utils';
 
 export const metadata: Metadata = {
   title: {
@@ -30,9 +31,7 @@ export default async function Events() {
     getClient().query({
       query: GetAllEventsDocument,
       context: {
-        headers: {
-          ...(token ? { token } : {}),
-        },
+        headers: getAuthHeader(token),
       },
     }),
     getClient().query({

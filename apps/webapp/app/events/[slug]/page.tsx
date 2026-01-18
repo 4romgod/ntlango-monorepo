@@ -35,6 +35,7 @@ import type { Metadata } from 'next';
 import CopyLinkButton from '@/components/events/copy-link-button';
 import EventDetailActions from '@/components/events/EventDetailActions';
 import { auth } from '@/auth';
+import { getAuthHeader } from '@/lib/utils';
 
 export const metadata: Metadata = {
   title: {
@@ -62,9 +63,7 @@ export default async function Page(props: Props) {
     query: GetEventBySlugDocument,
     variables: { slug: params.slug },
     context: {
-      headers: {
-        ...(token ? { token } : {}),
-      },
+      headers: getAuthHeader(token),
     },
   });
   const { title, organizers, description, media, recurrenceRule, location, eventCategories, comments, participants } = eventRetrieved.readEventBySlug;

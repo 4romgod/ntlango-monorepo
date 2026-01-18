@@ -61,7 +61,7 @@ describe('EventParticipant Resolver', () => {
   it('upserts a participant', async () => {
     const response = await request(url)
       .post('')
-      .set('token', participantUser.token)
+      .set('Authorization', 'Bearer ' + participantUser.token)
       .send(
         getUpsertEventParticipantMutation({
           eventId,
@@ -76,7 +76,7 @@ describe('EventParticipant Resolver', () => {
   it('reads participants for an event', async () => {
     await request(url)
       .post('')
-      .set('token', participantUser.token)
+      .set('Authorization', 'Bearer ' + participantUser.token)
       .send(
         getUpsertEventParticipantMutation({
           eventId,
@@ -84,7 +84,7 @@ describe('EventParticipant Resolver', () => {
           status: ParticipantStatus.Going,
         }),
       );
-    const response = await request(url).post('').set('token', participantUser.token).send(getReadEventParticipantsQuery(eventId));
+    const response = await request(url).post('').set('Authorization', 'Bearer ' + participantUser.token).send(getReadEventParticipantsQuery(eventId));
     expect(response.status).toBe(200);
     expect(response.body.data.readEventParticipants.length).toBeGreaterThan(0);
   });
@@ -92,7 +92,7 @@ describe('EventParticipant Resolver', () => {
   it('cancels a participant', async () => {
     await request(url)
       .post('')
-      .set('token', participantUser.token)
+      .set('Authorization', 'Bearer ' + participantUser.token)
       .send(
         getUpsertEventParticipantMutation({
           eventId,
@@ -101,7 +101,7 @@ describe('EventParticipant Resolver', () => {
       );
     const response = await request(url)
       .post('')
-      .set('token', participantUser.token)
+      .set('Authorization', 'Bearer ' + participantUser.token)
       .send(getCancelEventParticipantMutation({eventId, userId: participantUser.userId}));
     expect(response.status).toBe(200);
     expect(response.body.data.cancelEventParticipant.status).toBe(ParticipantStatus.Cancelled);
@@ -110,7 +110,7 @@ describe('EventParticipant Resolver', () => {
   it('updates participant status from Going to Interested', async () => {
     await request(url)
       .post('')
-      .set('token', participantUser.token)
+      .set('Authorization', 'Bearer ' + participantUser.token)
       .send(
         getUpsertEventParticipantMutation({
           eventId,
@@ -121,7 +121,7 @@ describe('EventParticipant Resolver', () => {
 
     const updateResponse = await request(url)
       .post('')
-      .set('token', participantUser.token)
+      .set('Authorization', 'Bearer ' + participantUser.token)
       .send(
         getUpsertEventParticipantMutation({
           eventId,
@@ -150,7 +150,7 @@ describe('EventParticipant Resolver', () => {
 
     await request(url)
       .post('')
-      .set('token', participantUser.token)
+      .set('Authorization', 'Bearer ' + participantUser.token)
       .send(
         getUpsertEventParticipantMutation({
           eventId,
@@ -161,7 +161,7 @@ describe('EventParticipant Resolver', () => {
 
     await request(url)
       .post('')
-      .set('token', participant2.token)
+      .set('Authorization', 'Bearer ' + participant2.token)
       .send(
         getUpsertEventParticipantMutation({
           eventId,
@@ -170,7 +170,7 @@ describe('EventParticipant Resolver', () => {
         }),
       );
 
-    const response = await request(url).post('').set('token', participantUser.token).send(getReadEventParticipantsQuery(eventId));
+    const response = await request(url).post('').set('Authorization', 'Bearer ' + participantUser.token).send(getReadEventParticipantsQuery(eventId));
 
     expect(response.status).toBe(200);
     expect(response.body.data.readEventParticipants.length).toBeGreaterThanOrEqual(2);
@@ -181,7 +181,7 @@ describe('EventParticipant Resolver', () => {
   it('returns error when event ID is invalid', async () => {
     const response = await request(url)
       .post('')
-      .set('token', participantUser.token)
+      .set('Authorization', 'Bearer ' + participantUser.token)
       .send(
         getUpsertEventParticipantMutation({
           eventId: 'invalid-id',
@@ -196,7 +196,7 @@ describe('EventParticipant Resolver', () => {
   it('returns error when cancelling non-existent participant', async () => {
     const response = await request(url)
       .post('')
-      .set('token', participantUser.token)
+      .set('Authorization', 'Bearer ' + participantUser.token)
       .send(
         getCancelEventParticipantMutation({
           eventId,

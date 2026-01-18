@@ -110,7 +110,7 @@ describe('User Resolver', () => {
       it('should update a user when valid input is provided', async () => {
         const response = await request(url)
           .post('')
-          .set('token', createdUser.token)
+          .set('Authorization', 'Bearer ' + createdUser.token)
           .send(
             getUpdateUserMutation({
               userId: createdUser.userId,
@@ -135,21 +135,21 @@ describe('User Resolver', () => {
       });
 
       it('should delete a user by userId', async () => {
-        const response = await request(url).post('').set('token', createdUser.token).send(getDeleteUserByIdMutation(createdUser.userId));
+        const response = await request(url).post('').set('Authorization', 'Bearer ' + createdUser.token).send(getDeleteUserByIdMutation(createdUser.userId));
         expect(response.status).toBe(200);
         expect(response.error).toBeFalsy();
         expect(response.body.data.deleteUserById.email).toBe(testUserEmail);
       });
 
       it('should delete a user by email', async () => {
-        const response = await request(url).post('').set('token', createdUser.token).send(getDeleteUserByEmailMutation(createdUser.email));
+        const response = await request(url).post('').set('Authorization', 'Bearer ' + createdUser.token).send(getDeleteUserByEmailMutation(createdUser.email));
         expect(response.status).toBe(200);
         expect(response.error).toBeFalsy();
         expect(response.body.data.deleteUserByEmail.email).toBe(testUserEmail);
       });
 
       it('should delete a user by username', async () => {
-        const response = await request(url).post('').set('token', createdUser.token).send(getDeleteUserByUsernameMutation(createdUser.username));
+        const response = await request(url).post('').set('Authorization', 'Bearer ' + createdUser.token).send(getDeleteUserByUsernameMutation(createdUser.username));
         expect(response.status).toBe(200);
         expect(response.error).toBeFalsy();
         expect(response.body.data.deleteUserByUsername.email).toBe(testUserEmail);
@@ -292,7 +292,7 @@ describe('User Resolver', () => {
         });
         const response = await request(url)
           .post('')
-          .set('token', createdUser.token)
+          .set('Authorization', 'Bearer ' + createdUser.token)
           .send(getUpdateUserMutation({userId: createdUser.userId, username: duplicateUsername}));
         expect(response.status).toBe(409);
       });
@@ -300,7 +300,7 @@ describe('User Resolver', () => {
       it('returns bad input when invalid phone number is provided', async () => {
         const response = await request(url)
           .post('')
-          .set('token', createdUser.token)
+          .set('Authorization', 'Bearer ' + createdUser.token)
           .send(getUpdateUserMutation({userId: createdUser.userId, phone_number: 'invalid'}));
         expect(response.status).toBe(400);
         expect(response.body.errors[0].message).toBe(ERROR_MESSAGES.INVALID_PHONE_NUMBER);
@@ -309,7 +309,7 @@ describe('User Resolver', () => {
       it('returns unauthorized when updating another user', async () => {
         const response = await request(url)
           .post('')
-          .set('token', createdUser.token)
+          .set('Authorization', 'Bearer ' + createdUser.token)
           .send(getUpdateUserMutation({userId: new Types.ObjectId().toString(), given_name: 'nope'}));
         expect(response.status).toBe(403);
       });
@@ -326,12 +326,12 @@ describe('User Resolver', () => {
       });
 
       it('returns unauthenticated for invalid token', async () => {
-        const response = await request(url).post('').set('token', 'bad').send(getDeleteUserByIdMutation(createdUser.userId));
+        const response = await request(url).post('').set('Authorization', 'Bearer ' + 'bad').send(getDeleteUserByIdMutation(createdUser.userId));
         expect(response.status).toBe(401);
       });
 
       it('returns unauthorized when deleting another user', async () => {
-        const response = await request(url).post('').set('token', createdUser.token).send(getDeleteUserByIdMutation(new Types.ObjectId().toString()));
+        const response = await request(url).post('').set('Authorization', 'Bearer ' + createdUser.token).send(getDeleteUserByIdMutation(new Types.ObjectId().toString()));
         expect(response.status).toBe(403);
       });
     });
@@ -347,12 +347,12 @@ describe('User Resolver', () => {
       });
 
       it('returns unauthenticated for invalid token', async () => {
-        const response = await request(url).post('').set('token', 'bad').send(getDeleteUserByEmailMutation(createdUser.email));
+        const response = await request(url).post('').set('Authorization', 'Bearer ' + 'bad').send(getDeleteUserByEmailMutation(createdUser.email));
         expect(response.status).toBe(401);
       });
 
       it('returns unauthorized when token does not belong to owner', async () => {
-        const response = await request(url).post('').set('token', createdUser.token).send(getDeleteUserByEmailMutation('another@example.com'));
+        const response = await request(url).post('').set('Authorization', 'Bearer ' + createdUser.token).send(getDeleteUserByEmailMutation('another@example.com'));
         expect(response.status).toBe(403);
       });
     });
@@ -368,12 +368,12 @@ describe('User Resolver', () => {
       });
 
       it('returns unauthenticated for invalid token', async () => {
-        const response = await request(url).post('').set('token', 'bad').send(getDeleteUserByUsernameMutation(createdUser.username));
+        const response = await request(url).post('').set('Authorization', 'Bearer ' + 'bad').send(getDeleteUserByUsernameMutation(createdUser.username));
         expect(response.status).toBe(401);
       });
 
       it('returns unauthorized when token does not belong to owner', async () => {
-        const response = await request(url).post('').set('token', createdUser.token).send(getDeleteUserByUsernameMutation('someoneElse'));
+        const response = await request(url).post('').set('Authorization', 'Bearer ' + createdUser.token).send(getDeleteUserByUsernameMutation('someoneElse'));
         expect(response.status).toBe(403);
       });
     });

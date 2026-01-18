@@ -3,6 +3,7 @@
 import { useMutation, useQuery } from '@apollo/client';
 import { BlockUserDocument, UnblockUserDocument, GetBlockedUsersDocument } from '@/data/graphql/query';
 import { useSession } from 'next-auth/react';
+import { getAuthHeader } from '@/lib/utils';
 
 export function useBlock() {
   const { data: session } = useSession();
@@ -12,9 +13,7 @@ export function useBlock() {
     refetchQueries: ['GetBlockedUsers', 'GetFollowing', 'GetFollowers'],
     awaitRefetchQueries: true,
     context: {
-      headers: {
-        ...(token ? { token } : {}),
-      },
+      headers: getAuthHeader(token),
     },
   });
 
@@ -22,9 +21,7 @@ export function useBlock() {
     refetchQueries: ['GetBlockedUsers'],
     awaitRefetchQueries: true,
     context: {
-      headers: {
-        ...(token ? { token } : {}),
-      },
+      headers: getAuthHeader(token),
     },
   });
 
@@ -62,9 +59,7 @@ export function useBlockedUsers() {
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     context: {
-      headers: {
-        ...(token ? { token } : {}),
-      },
+      headers: getAuthHeader(token),
     },
   });
 

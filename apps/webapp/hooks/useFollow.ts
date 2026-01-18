@@ -19,6 +19,7 @@ import {
 } from '@/data/graphql/query';
 import type { FollowTargetType } from '@/data/graphql/types/graphql';
 import { useSession } from 'next-auth/react';
+import { getAuthHeader } from '@/lib/utils';
 
 export function useFollow() {
   const { data: session } = useSession();
@@ -28,9 +29,7 @@ export function useFollow() {
     refetchQueries: ['GetFollowing', 'GetFollowRequests'],
     awaitRefetchQueries: true,
     context: {
-      headers: {
-        ...(token ? { token } : {}),
-      },
+      headers: getAuthHeader(token),
     },
   });
 
@@ -38,9 +37,7 @@ export function useFollow() {
     refetchQueries: ['GetFollowing', 'GetFollowRequests'],
     awaitRefetchQueries: true,
     context: {
-      headers: {
-        ...(token ? { token } : {}),
-      },
+      headers: getAuthHeader(token),
     },
   });
 
@@ -82,9 +79,7 @@ export function useFollowing() {
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-first',
     context: {
-      headers: {
-        ...(token ? { token } : {}),
-      },
+      headers: getAuthHeader(token),
     },
   });
 
@@ -107,9 +102,7 @@ export function useFollowers(targetType: FollowTargetType, targetId: string) {
     },
     skip: !targetId,
     context: {
-      headers: {
-        ...(token ? { token } : {}),
-      },
+      headers: getAuthHeader(token),
     },
   });
 
@@ -136,27 +129,21 @@ export function useFollowRequests(targetType: FollowTargetType) {
     variables: { targetType },
     skip: !token,
     context: {
-      headers: {
-        ...(token ? { token } : {}),
-      },
+      headers: getAuthHeader(token),
     },
   });
 
   const [acceptRequest, { loading: acceptLoading }] = useMutation(AcceptFollowRequestDocument, {
     refetchQueries: ['GetFollowRequests', 'GetFollowers'],
     context: {
-      headers: {
-        ...(token ? { token } : {}),
-      },
+      headers: getAuthHeader(token),
     },
   });
 
   const [rejectRequest, { loading: rejectLoading }] = useMutation(RejectFollowRequestDocument, {
     refetchQueries: ['GetFollowRequests'],
     context: {
-      headers: {
-        ...(token ? { token } : {}),
-      },
+      headers: getAuthHeader(token),
     },
   });
 
@@ -196,18 +183,14 @@ export function useMuteUser() {
   const [muteMutation, { loading: muteLoading }] = useMutation(MuteUserDocument, {
     refetchQueries: ['GetMutedUsers'],
     context: {
-      headers: {
-        ...(token ? { token } : {}),
-      },
+      headers: getAuthHeader(token),
     },
   });
 
   const [unmuteMutation, { loading: unmuteLoading }] = useMutation(UnmuteUserDocument, {
     refetchQueries: ['GetMutedUsers'],
     context: {
-      headers: {
-        ...(token ? { token } : {}),
-      },
+      headers: getAuthHeader(token),
     },
   });
 
@@ -240,9 +223,7 @@ export function useMutedUsers() {
   const { data, loading, error, refetch } = useQuery(GetMutedUsersDocument, {
     skip: !token,
     context: {
-      headers: {
-        ...(token ? { token } : {}),
-      },
+      headers: getAuthHeader(token),
     },
   });
 
@@ -265,18 +246,14 @@ export function useMuteOrganization() {
   const [muteMutation, { loading: muteLoading }] = useMutation(MuteOrganizationDocument, {
     refetchQueries: ['GetMutedOrganizationIds'],
     context: {
-      headers: {
-        ...(token ? { token } : {}),
-      },
+      headers: getAuthHeader(token),
     },
   });
 
   const [unmuteMutation, { loading: unmuteLoading }] = useMutation(UnmuteOrganizationDocument, {
     refetchQueries: ['GetMutedOrganizationIds'],
     context: {
-      headers: {
-        ...(token ? { token } : {}),
-      },
+      headers: getAuthHeader(token),
     },
   });
 
@@ -309,9 +286,7 @@ export function useMutedOrganizations() {
   const { data, loading, error, refetch } = useQuery(GetMutedOrganizationIdsDocument, {
     skip: !token,
     context: {
-      headers: {
-        ...(token ? { token } : {}),
-      },
+      headers: getAuthHeader(token),
     },
   });
 
@@ -331,9 +306,7 @@ export function useRemoveFollower() {
     refetchQueries: ['GetFollowers'],
     awaitRefetchQueries: true,
     context: {
-      headers: {
-        ...(token ? { token } : {}),
-      },
+      headers: getAuthHeader(token),
     },
   });
 

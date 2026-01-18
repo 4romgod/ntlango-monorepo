@@ -33,7 +33,7 @@ describe('Organization Resolver', () => {
   const createOrganizationOnServer = async () => {
     const response = await request(url)
       .post('')
-      .set('token', adminUser.token)
+      .set('Authorization', 'Bearer ' + adminUser.token)
       .send(getCreateOrganizationMutation(buildOrganizationInput('integration-org')));
 
     const createdOrganization = response.body.data.createOrganization;
@@ -72,7 +72,7 @@ describe('Organization Resolver', () => {
     it('creates a new organization with valid input', async () => {
       const response = await request(url)
         .post('')
-        .set('token', adminUser.token)
+        .set('Authorization', 'Bearer ' + adminUser.token)
         .send(getCreateOrganizationMutation(buildOrganizationInput('create-org')));
 
       expect(response.status).toBe(200);
@@ -99,7 +99,7 @@ describe('Organization Resolver', () => {
 
       const response = await request(url)
         .post('')
-        .set('token', adminUser.token)
+        .set('Authorization', 'Bearer ' + adminUser.token)
         .send(
           getUpdateOrganizationMutation({
             orgId: createdOrganization.orgId,
@@ -132,7 +132,7 @@ describe('Organization Resolver', () => {
       await createOrganizationOnServer();
       const response2 = await request(url)
         .post('')
-        .set('token', adminUser.token)
+        .set('Authorization', 'Bearer ' + adminUser.token)
         .send(getCreateOrganizationMutation(buildOrganizationInput('org-two')));
       const org2 = response2.body.data.createOrganization;
       createdOrgIds.push(org2.orgId);
@@ -177,7 +177,7 @@ describe('Organization Resolver', () => {
 
       const response = await request(url)
         .post('')
-        .set('token', adminUser.token)
+        .set('Authorization', 'Bearer ' + adminUser.token)
         .send(
           getUpdateOrganizationMutation({
             orgId: createdOrganization.orgId,
@@ -193,7 +193,7 @@ describe('Organization Resolver', () => {
       const testName = 'Test Organization Name';
       const response = await request(url)
         .post('')
-        .set('token', adminUser.token)
+        .set('Authorization', 'Bearer ' + adminUser.token)
         .send(getCreateOrganizationMutation(buildOrganizationInput(testName)));
 
       expect(response.status).toBe(200);
@@ -214,7 +214,7 @@ describe('Organization Resolver', () => {
     it('returns validation error for missing organization name', async () => {
       const response = await request(url)
         .post('')
-        .set('token', adminUser.token)
+        .set('Authorization', 'Bearer ' + adminUser.token)
         .send(
           getCreateOrganizationMutation({
             name: '',
@@ -229,7 +229,7 @@ describe('Organization Resolver', () => {
     it('returns validation error for invalid ownerId', async () => {
       const response = await request(url)
         .post('')
-        .set('token', adminUser.token)
+        .set('Authorization', 'Bearer ' + adminUser.token)
         .send(
           getCreateOrganizationMutation({
             name: 'Invalid Owner',
@@ -245,12 +245,12 @@ describe('Organization Resolver', () => {
       const orgName = 'Duplicate Org';
       await request(url)
         .post('')
-        .set('token', adminUser.token)
+        .set('Authorization', 'Bearer ' + adminUser.token)
         .send(getCreateOrganizationMutation(buildOrganizationInput(orgName)));
 
       const duplicateResponse = await request(url)
         .post('')
-        .set('token', adminUser.token)
+        .set('Authorization', 'Bearer ' + adminUser.token)
         .send(getCreateOrganizationMutation(buildOrganizationInput(orgName)));
 
       expect(duplicateResponse.status).toBe(409);
@@ -259,7 +259,7 @@ describe('Organization Resolver', () => {
     it('returns 404 when updating non-existent organization', async () => {
       const response = await request(url)
         .post('')
-        .set('token', adminUser.token)
+        .set('Authorization', 'Bearer ' + adminUser.token)
         .send(
           getUpdateOrganizationMutation({
             orgId: new Types.ObjectId().toString(),

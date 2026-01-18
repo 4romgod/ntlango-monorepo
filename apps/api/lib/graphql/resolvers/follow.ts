@@ -78,12 +78,12 @@ export class FollowResolver {
         throw CustomError('You cannot follow a blocked user', ErrorTypes.UNAUTHORIZED);
       }
       
-      approvalStatus = targetUser.followPolicy === FollowPolicy.Public
+      approvalStatus = (targetUser.followPolicy ?? FollowPolicy.Public) === FollowPolicy.Public
         ? FollowApprovalStatus.Accepted
         : FollowApprovalStatus.Pending;
     } else if (input.targetType === FollowTargetType.Organization) {
       const targetOrg = await OrganizationDAO.readOrganizationById(input.targetId);
-      approvalStatus = targetOrg.followPolicy === FollowPolicy.Public
+      approvalStatus = (targetOrg.followPolicy ?? FollowPolicy.Public) === FollowPolicy.Public
         ? FollowApprovalStatus.Accepted
         : FollowApprovalStatus.Pending;
     } else if (input.targetType === FollowTargetType.Event) {

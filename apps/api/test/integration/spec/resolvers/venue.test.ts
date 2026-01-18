@@ -28,7 +28,7 @@ describe('Venue Resolver', () => {
   const createOrganization = async (name: string) => {
     const response = await request(url)
       .post('')
-      .set('token', adminUser.token)
+      .set('Authorization', 'Bearer ' + adminUser.token)
       .send(
         getCreateOrganizationMutation({
           name,
@@ -45,7 +45,7 @@ describe('Venue Resolver', () => {
   const createVenue = async (orgId: string) => {
     const response = await request(url)
       .post('')
-      .set('token', adminUser.token)
+      .set('Authorization', 'Bearer ' + adminUser.token)
       .send(
         getCreateVenueMutation({
           orgId,
@@ -87,7 +87,7 @@ describe('Venue Resolver', () => {
       createdVenueIds.map((venueId) =>
         request(url)
           .post('')
-          .set('token', adminUser.token)
+          .set('Authorization', 'Bearer ' + adminUser.token)
           .send(getDeleteVenueByIdMutation(venueId))
           .catch(() => {}),
       ),
@@ -103,7 +103,7 @@ describe('Venue Resolver', () => {
 
       const response = await request(url)
         .post('')
-        .set('token', adminUser.token)
+        .set('Authorization', 'Bearer ' + adminUser.token)
         .send(
           getCreateVenueMutation({
             orgId: organization.orgId,
@@ -123,7 +123,7 @@ describe('Venue Resolver', () => {
 
       const response = await request(url)
         .post('')
-        .set('token', adminUser.token)
+        .set('Authorization', 'Bearer ' + adminUser.token)
         .send(getUpdateVenueMutation({venueId: venue.venueId, name: 'Updated Venue'}));
 
       expect(response.status).toBe(200);
@@ -154,7 +154,7 @@ describe('Venue Resolver', () => {
 
       const physicalVenue = await request(url)
         .post('')
-        .set('token', adminUser.token)
+        .set('Authorization', 'Bearer ' + adminUser.token)
         .send(
           getCreateVenueMutation({
             orgId: organization.orgId,
@@ -170,7 +170,7 @@ describe('Venue Resolver', () => {
 
       const hybridVenue = await request(url)
         .post('')
-        .set('token', adminUser.token)
+        .set('Authorization', 'Bearer ' + adminUser.token)
         .send(
           getCreateVenueMutation({
             orgId: organization.orgId,
@@ -205,7 +205,7 @@ describe('Venue Resolver', () => {
 
       const response = await request(url)
         .post('')
-        .set('token', adminUser.token)
+        .set('Authorization', 'Bearer ' + adminUser.token)
         .send(
           getUpdateVenueMutation({
             venueId: venue.venueId,
@@ -225,7 +225,7 @@ describe('Venue Resolver', () => {
 
       const response = await request(url)
         .post('')
-        .set('token', adminUser.token)
+        .set('Authorization', 'Bearer ' + adminUser.token)
         .send(
           getUpdateVenueMutation({
             venueId: venue.venueId,
@@ -246,7 +246,7 @@ describe('Venue Resolver', () => {
       const organization = await createOrganization('Venue Org Delete');
       const venue = await createVenue(organization.orgId);
 
-      const response = await request(url).post('').set('token', adminUser.token).send(getDeleteVenueByIdMutation(venue.venueId));
+      const response = await request(url).post('').set('Authorization', 'Bearer ' + adminUser.token).send(getDeleteVenueByIdMutation(venue.venueId));
 
       expect(response.status).toBe(200);
       expect(response.body.data.deleteVenueById.venueId).toBe(venue.venueId);
@@ -277,7 +277,7 @@ describe('Venue Resolver', () => {
 
       const response = await request(url)
         .post('')
-        .set('token', adminUser.token)
+        .set('Authorization', 'Bearer ' + adminUser.token)
         .send(
           getCreateVenueMutation({
             orgId: organization.orgId,
@@ -292,7 +292,7 @@ describe('Venue Resolver', () => {
     it('returns validation error for invalid organization id', async () => {
       const response = await request(url)
         .post('')
-        .set('token', adminUser.token)
+        .set('Authorization', 'Bearer ' + adminUser.token)
         .send(
           getCreateVenueMutation({
             orgId: 'invalid-org-id',
@@ -312,7 +312,7 @@ describe('Venue Resolver', () => {
     it('returns error when updating non-existent venue', async () => {
       const response = await request(url)
         .post('')
-        .set('token', adminUser.token)
+        .set('Authorization', 'Bearer ' + adminUser.token)
         .send(
           getUpdateVenueMutation({
             venueId: new Types.ObjectId().toString(),
@@ -324,7 +324,7 @@ describe('Venue Resolver', () => {
     });
 
     it('returns 404 when deleting non-existent venue', async () => {
-      const response = await request(url).post('').set('token', adminUser.token).send(getDeleteVenueByIdMutation(new Types.ObjectId().toString()));
+      const response = await request(url).post('').set('Authorization', 'Bearer ' + adminUser.token).send(getDeleteVenueByIdMutation(new Types.ObjectId().toString()));
 
       expect(response.status).toBe(404);
     });

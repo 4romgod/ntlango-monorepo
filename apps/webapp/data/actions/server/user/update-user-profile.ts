@@ -9,6 +9,7 @@ import { ApolloError } from '@apollo/client';
 import { getApolloErrorMessage } from '@/data/actions/types';
 import { safeJsonParse } from '@/lib/utils/json-parse';
 import { logger } from '@/lib/utils/logger';
+import { getAuthHeader } from '@/lib/utils/auth';
 import type { ActionState } from '@/data/actions/types';
 
 // Zod schemas for validating JSON-parsed fields (matches UserLocationInput GraphQL type)
@@ -91,9 +92,7 @@ export async function updateUserProfileAction(prevState: ActionState, formData: 
         input: inputData,
       },
       context: {
-        headers: {
-          token: token,
-        },
+        headers: getAuthHeader(token),
       },
     });
 
