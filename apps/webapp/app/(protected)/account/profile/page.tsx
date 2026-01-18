@@ -44,7 +44,7 @@ import {
 } from '@/lib/constants';
 import { omit } from 'lodash';
 import Link from 'next/link';
-import { getAvatarSrc, logger } from '@/lib/utils';
+import { getAvatarSrc, logger, isApolloAuthError } from '@/lib/utils';
 import { redirect } from 'next/navigation';
 
 export default async function UserPublicProfile() {
@@ -72,25 +72,16 @@ export default async function UserPublicProfile() {
   try {
     const result = await getClient().query({
       query: GetSavedEventsDocument,
-      context: { headers: { token: token ?? '' } },
+      context: { headers: { ...(token ? { token } : {}) } },
       fetchPolicy: 'no-cache',
     });
     savedEventsData = result.data;
     logger.debug('[Profile] Saved events fetched:', savedEventsData?.readSavedEvents?.length ?? 0);
   } catch (error: unknown) {
     logger.error('[Profile] Error fetching saved events:', error);
-    // Check if this is an authentication error (token expired)
-    // Apollo errors have graphQLErrors array
-    const apolloError = error as { 
-      graphQLErrors?: Array<{ extensions?: { code?: string }; message?: string }>;
-      message?: string;
-    };
     
-    const isAuthError = apolloError?.graphQLErrors?.some(
-      e => e.extensions?.code === 'UNAUTHENTICATED' || e.message?.includes('logged in')
-    );
-    
-    logger.debug('[Profile] Is auth error:', isAuthError, 'GraphQL errors:', apolloError?.graphQLErrors);
+    const isAuthError = isApolloAuthError(error);
+    logger.debug('[Profile] Is auth error:', isAuthError);
     
     if (isAuthError) {
       logger.info('[Profile] Token expired - redirecting to login');

@@ -8,7 +8,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { ROUTES } from '@/lib/constants';
 import { useAppContext } from '@/hooks/useAppContext';
-import { logger } from '@/lib/utils';
+import { logger, extractApolloErrorMessage } from '@/lib/utils';
 import NProgress from 'nprogress';
 import { useState, useRef } from 'react';
 
@@ -103,22 +103,7 @@ export default function RsvpButton({
     } catch (error: unknown) {
       logger.error('Error updating RSVP:', error);
 
-      const apolloError = error as {
-        graphQLErrors?: Array<{ message: string }>;
-        networkError?: { result?: { errors?: Array<{ message: string }> } };
-        message?: string;
-      };
-
-      let errorMessage: string;
-      if (apolloError?.graphQLErrors?.[0]) {
-        errorMessage = apolloError.graphQLErrors[0].message;
-      } else if (apolloError?.networkError?.result?.errors?.[0]) {
-        errorMessage = apolloError.networkError.result.errors[0].message;
-      } else if (apolloError?.message) {
-        errorMessage = apolloError.message;
-      } else {
-        errorMessage = 'Failed to update RSVP. Please try again.';
-      }
+      const errorMessage = extractApolloErrorMessage(error, 'Failed to update RSVP. Please try again.');
 
       setToastProps({
         open: true,

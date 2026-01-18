@@ -18,7 +18,12 @@ jest.mock('@/mongodb/models', () => ({
     findOneAndDelete: jest.fn(),
     findOneAndUpdate: jest.fn(),
   },
+  Organization: {
+    findById: jest.fn(),
+  },
 }));
+
+import {Organization} from '@/mongodb/models';
 
 jest.mock('bcryptjs', () => ({
   hash: jest.fn(),
@@ -686,6 +691,30 @@ describe('UserDAO', () => {
         CustomError(ERROR_MESSAGES.NOT_FOUND('User', 'ID', 'nonExistingId'), ErrorTypes.NOT_FOUND),
       );
     });
+
+    it('should throw BAD_USER_INPUT when trying to block yourself', async () => {
+      await expect(UserDAO.blockUser('userId', 'userId')).rejects.toThrow(
+        CustomError('You cannot block yourself', ErrorTypes.BAD_USER_INPUT),
+      );
+    });
+
+    it('should throw NOT_FOUND when blocked user does not exist', async () => {
+      const mockUser = {userId: 'userId', blockedUserIds: []};
+      (User.findById as jest.Mock)
+        .mockReturnValueOnce(createMockSuccessMongooseQuery(mockUser))
+        .mockReturnValueOnce(createMockSuccessMongooseQuery(null));
+
+      await expect(UserDAO.blockUser('userId', 'nonExistingBlockedUser')).rejects.toThrow(
+        CustomError(ERROR_MESSAGES.NOT_FOUND('User', 'ID', 'nonExistingBlockedUser'), ErrorTypes.NOT_FOUND),
+      );
+    });
+
+    it('should handle errors gracefully', async () => {
+      const mockError = new Error('Mongodb Error');
+      (User.findById as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(mockError));
+
+      await expect(UserDAO.blockUser('userId', 'blockedUserId')).rejects.toThrow(KnownCommonError(mockError));
+    });
   });
 
   describe('unblockUser', () => {
@@ -722,6 +751,13 @@ describe('UserDAO', () => {
       await expect(UserDAO.unblockUser('nonExistingId', 'userToUnblock')).rejects.toThrow(
         CustomError(ERROR_MESSAGES.NOT_FOUND('User', 'ID', 'nonExistingId'), ErrorTypes.NOT_FOUND),
       );
+    });
+
+    it('should handle errors gracefully', async () => {
+      const mockError = new Error('Mongodb Error');
+      (User.findById as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(mockError));
+
+      await expect(UserDAO.unblockUser('userId', 'blockedUserId')).rejects.toThrow(KnownCommonError(mockError));
     });
   });
 
@@ -778,6 +814,385 @@ describe('UserDAO', () => {
       await expect(UserDAO.readBlockedUsers('nonExistingId')).rejects.toThrow(
         CustomError(ERROR_MESSAGES.NOT_FOUND('User', 'ID', 'nonExistingId'), ErrorTypes.NOT_FOUND),
       );
+    });
+
+    it('should handle errors gracefully', async () => {
+      const mockError = new Error('Mongodb Error');
+      (User.findById as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(mockError));
+
+      await expect(UserDAO.readBlockedUsers('userId')).rejects.toThrow(KnownCommonError(mockError));
+    });
+  });
+
+  // ============ MUTE USER METHODS ============
+
+  describe('muteUser', () => {
+    it('should add a user to muted list and return updated user', async () => {
+      const userId = 'mockUserId';
+      const mutedUserId = 'userToMute';
+      const mockUser = {
+        userId,
+        mutedUserIds: [],
+        save: jest.fn().mockResolvedValue(undefined),
+        toObject: jest.fn().mockReturnValue({
+          userId,
+          mutedUserIds: [mutedUserId],
+        }),
+      };
+
+      (User.findById as jest.Mock).mockReturnValue(
+        createMockSuccessMongooseQuery(mockUser),
+      );
+
+      const result = await UserDAO.muteUser(userId, mutedUserId);
+
+      expect(User.findById).toHaveBeenCalledWith(userId);
+      expect(mockUser.save).toHaveBeenCalled();
+      expect(result).toEqual({
+        userId,
+        mutedUserIds: [mutedUserId],
+      });
+    });
+
+    it('should throw BAD_USER_INPUT when trying to mute yourself', async () => {
+      await expect(UserDAO.muteUser('userId', 'userId')).rejects.toThrow(
+        CustomError('You cannot mute yourself', ErrorTypes.BAD_USER_INPUT),
+      );
+    });
+
+    it('should return existing user if already muted', async () => {
+      const userId = 'mockUserId';
+      const mutedUserId = 'userToMute';
+      const mockUser = {
+        userId,
+        mutedUserIds: [mutedUserId],
+        save: jest.fn().mockResolvedValue(undefined),
+        toObject: jest.fn().mockReturnValue({
+          userId,
+          mutedUserIds: [mutedUserId],
+        }),
+      };
+
+      (User.findById as jest.Mock).mockReturnValue(
+        createMockSuccessMongooseQuery(mockUser),
+      );
+
+      const result = await UserDAO.muteUser(userId, mutedUserId);
+
+      expect(mockUser.save).not.toHaveBeenCalled();
+      expect(result).toEqual({
+        userId,
+        mutedUserIds: [mutedUserId],
+      });
+    });
+
+    it('should throw NOT_FOUND when user does not exist', async () => {
+      (User.findById as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(null));
+
+      await expect(UserDAO.muteUser('nonExistingId', 'userToMute')).rejects.toThrow(
+        CustomError(ERROR_MESSAGES.NOT_FOUND('User', 'ID', 'nonExistingId'), ErrorTypes.NOT_FOUND),
+      );
+    });
+
+    it('should handle errors gracefully', async () => {
+      const mockError = new Error('Mongodb Error');
+      (User.findById as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(mockError));
+
+      await expect(UserDAO.muteUser('userId', 'mutedUserId')).rejects.toThrow(KnownCommonError(mockError));
+    });
+  });
+
+  describe('unmuteUser', () => {
+    it('should remove a user from muted list and return updated user', async () => {
+      const userId = 'mockUserId';
+      const mutedUserId = 'userToUnmute';
+      const mockUser = {
+        userId,
+        mutedUserIds: [mutedUserId],
+        save: jest.fn().mockResolvedValue(undefined),
+        toObject: jest.fn().mockReturnValue({
+          userId,
+          mutedUserIds: [],
+        }),
+      };
+
+      (User.findById as jest.Mock).mockReturnValue(
+        createMockSuccessMongooseQuery(mockUser),
+      );
+
+      const result = await UserDAO.unmuteUser(userId, mutedUserId);
+
+      expect(User.findById).toHaveBeenCalledWith(userId);
+      expect(mockUser.save).toHaveBeenCalled();
+      expect(result).toEqual({
+        userId,
+        mutedUserIds: [],
+      });
+    });
+
+    it('should throw NOT_FOUND when user does not exist', async () => {
+      (User.findById as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(null));
+
+      await expect(UserDAO.unmuteUser('nonExistingId', 'userToUnmute')).rejects.toThrow(
+        CustomError(ERROR_MESSAGES.NOT_FOUND('User', 'ID', 'nonExistingId'), ErrorTypes.NOT_FOUND),
+      );
+    });
+
+    it('should handle errors gracefully', async () => {
+      const mockError = new Error('Mongodb Error');
+      (User.findById as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(mockError));
+
+      await expect(UserDAO.unmuteUser('userId', 'mutedUserId')).rejects.toThrow(KnownCommonError(mockError));
+    });
+  });
+
+  describe('readMutedUsers', () => {
+    it('should return list of muted users', async () => {
+      const userId = 'mockUserId';
+      const mutedUserIds = ['muted1', 'muted2'];
+      const mockUser = {
+        userId,
+        mutedUserIds,
+      };
+      const mutedUserDocs = [
+        {userId: 'muted1', username: 'user1', toObject: jest.fn().mockReturnValue({userId: 'muted1', username: 'user1'})},
+        {userId: 'muted2', username: 'user2', toObject: jest.fn().mockReturnValue({userId: 'muted2', username: 'user2'})},
+      ];
+
+      (User.findById as jest.Mock).mockReturnValue(
+        createMockSuccessMongooseQuery(mockUser),
+      );
+      (User.find as jest.Mock).mockReturnValue(
+        createMockSuccessMongooseQuery(mutedUserDocs),
+      );
+
+      const result = await UserDAO.readMutedUsers(userId);
+
+      expect(User.findById).toHaveBeenCalledWith(userId);
+      expect(User.find).toHaveBeenCalledWith({userId: {$in: mutedUserIds}});
+      expect(result).toEqual([
+        {userId: 'muted1', username: 'user1'},
+        {userId: 'muted2', username: 'user2'},
+      ]);
+    });
+
+    it('should return empty array when user has no muted users', async () => {
+      const userId = 'mockUserId';
+      const mockUser = {
+        userId,
+        mutedUserIds: [],
+      };
+
+      (User.findById as jest.Mock).mockReturnValue(
+        createMockSuccessMongooseQuery(mockUser),
+      );
+
+      const result = await UserDAO.readMutedUsers(userId);
+
+      expect(result).toEqual([]);
+      expect(User.find).not.toHaveBeenCalled();
+    });
+
+    it('should throw NOT_FOUND when user does not exist', async () => {
+      (User.findById as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(null));
+
+      await expect(UserDAO.readMutedUsers('nonExistingId')).rejects.toThrow(
+        CustomError(ERROR_MESSAGES.NOT_FOUND('User', 'ID', 'nonExistingId'), ErrorTypes.NOT_FOUND),
+      );
+    });
+
+    it('should handle errors gracefully', async () => {
+      const mockError = new Error('Mongodb Error');
+      (User.findById as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(mockError));
+
+      await expect(UserDAO.readMutedUsers('userId')).rejects.toThrow(KnownCommonError(mockError));
+    });
+  });
+
+  // ============ MUTE ORGANIZATION METHODS ============
+
+  describe('muteOrganization', () => {
+    it('should add an organization to muted list and return updated user', async () => {
+      const userId = 'mockUserId';
+      const orgId = 'orgToMute';
+      const mockUser = {
+        userId,
+        mutedOrgIds: [],
+        save: jest.fn().mockResolvedValue(undefined),
+        toObject: jest.fn().mockReturnValue({
+          userId,
+          mutedOrgIds: [orgId],
+        }),
+      };
+      const mockOrganization = {organizationId: orgId};
+
+      (User.findById as jest.Mock).mockReturnValue(
+        createMockSuccessMongooseQuery(mockUser),
+      );
+      (Organization.findById as jest.Mock).mockReturnValue(
+        createMockSuccessMongooseQuery(mockOrganization),
+      );
+
+      const result = await UserDAO.muteOrganization(userId, orgId);
+
+      expect(User.findById).toHaveBeenCalledWith(userId);
+      expect(Organization.findById).toHaveBeenCalledWith(orgId);
+      expect(mockUser.save).toHaveBeenCalled();
+      expect(result).toEqual({
+        userId,
+        mutedOrgIds: [orgId],
+      });
+    });
+
+    it('should return existing user if organization already muted', async () => {
+      const userId = 'mockUserId';
+      const orgId = 'orgToMute';
+      const mockUser = {
+        userId,
+        mutedOrgIds: [orgId],
+        save: jest.fn().mockResolvedValue(undefined),
+        toObject: jest.fn().mockReturnValue({
+          userId,
+          mutedOrgIds: [orgId],
+        }),
+      };
+      const mockOrganization = {organizationId: orgId};
+
+      (User.findById as jest.Mock).mockReturnValue(
+        createMockSuccessMongooseQuery(mockUser),
+      );
+      (Organization.findById as jest.Mock).mockReturnValue(
+        createMockSuccessMongooseQuery(mockOrganization),
+      );
+
+      const result = await UserDAO.muteOrganization(userId, orgId);
+
+      expect(mockUser.save).not.toHaveBeenCalled();
+      expect(result).toEqual({
+        userId,
+        mutedOrgIds: [orgId],
+      });
+    });
+
+    it('should throw NOT_FOUND when user does not exist', async () => {
+      (User.findById as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(null));
+      (Organization.findById as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery({organizationId: 'org1'}));
+
+      await expect(UserDAO.muteOrganization('nonExistingId', 'orgId')).rejects.toThrow(
+        CustomError(ERROR_MESSAGES.NOT_FOUND('User', 'ID', 'nonExistingId'), ErrorTypes.NOT_FOUND),
+      );
+    });
+
+    it('should throw NOT_FOUND when organization does not exist', async () => {
+      const mockUser = {userId: 'userId', mutedOrgIds: []};
+      (User.findById as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(mockUser));
+      (Organization.findById as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(null));
+
+      await expect(UserDAO.muteOrganization('userId', 'nonExistingOrgId')).rejects.toThrow(
+        CustomError(ERROR_MESSAGES.NOT_FOUND('Organization', 'ID', 'nonExistingOrgId'), ErrorTypes.NOT_FOUND),
+      );
+    });
+
+    it('should handle errors gracefully', async () => {
+      const mockError = new Error('Mongodb Error');
+      (User.findById as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(mockError));
+
+      await expect(UserDAO.muteOrganization('userId', 'orgId')).rejects.toThrow(KnownCommonError(mockError));
+    });
+  });
+
+  describe('unmuteOrganization', () => {
+    it('should remove an organization from muted list and return updated user', async () => {
+      const userId = 'mockUserId';
+      const orgId = 'orgToUnmute';
+      const mockUser = {
+        userId,
+        mutedOrgIds: [orgId],
+        save: jest.fn().mockResolvedValue(undefined),
+        toObject: jest.fn().mockReturnValue({
+          userId,
+          mutedOrgIds: [],
+        }),
+      };
+
+      (User.findById as jest.Mock).mockReturnValue(
+        createMockSuccessMongooseQuery(mockUser),
+      );
+
+      const result = await UserDAO.unmuteOrganization(userId, orgId);
+
+      expect(User.findById).toHaveBeenCalledWith(userId);
+      expect(mockUser.save).toHaveBeenCalled();
+      expect(result).toEqual({
+        userId,
+        mutedOrgIds: [],
+      });
+    });
+
+    it('should throw NOT_FOUND when user does not exist', async () => {
+      (User.findById as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(null));
+
+      await expect(UserDAO.unmuteOrganization('nonExistingId', 'orgId')).rejects.toThrow(
+        CustomError(ERROR_MESSAGES.NOT_FOUND('User', 'ID', 'nonExistingId'), ErrorTypes.NOT_FOUND),
+      );
+    });
+
+    it('should handle errors gracefully', async () => {
+      const mockError = new Error('Mongodb Error');
+      (User.findById as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(mockError));
+
+      await expect(UserDAO.unmuteOrganization('userId', 'orgId')).rejects.toThrow(KnownCommonError(mockError));
+    });
+  });
+
+  describe('readMutedOrganizationIds', () => {
+    it('should return list of muted organization IDs', async () => {
+      const userId = 'mockUserId';
+      const mutedOrgIds = ['org1', 'org2', 'org3'];
+      const mockUser = {
+        userId,
+        mutedOrgIds,
+      };
+
+      (User.findById as jest.Mock).mockReturnValue(
+        createMockSuccessMongooseQuery(mockUser),
+      );
+
+      const result = await UserDAO.readMutedOrganizationIds(userId);
+
+      expect(User.findById).toHaveBeenCalledWith(userId);
+      expect(result).toEqual(['org1', 'org2', 'org3']);
+    });
+
+    it('should return empty array when user has no muted organizations', async () => {
+      const userId = 'mockUserId';
+      const mockUser = {
+        userId,
+        mutedOrgIds: undefined,
+      };
+
+      (User.findById as jest.Mock).mockReturnValue(
+        createMockSuccessMongooseQuery(mockUser),
+      );
+
+      const result = await UserDAO.readMutedOrganizationIds(userId);
+
+      expect(result).toEqual([]);
+    });
+
+    it('should throw NOT_FOUND when user does not exist', async () => {
+      (User.findById as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(null));
+
+      await expect(UserDAO.readMutedOrganizationIds('nonExistingId')).rejects.toThrow(
+        CustomError(ERROR_MESSAGES.NOT_FOUND('User', 'ID', 'nonExistingId'), ErrorTypes.NOT_FOUND),
+      );
+    });
+
+    it('should handle errors gracefully', async () => {
+      const mockError = new Error('Mongodb Error');
+      (User.findById as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(mockError));
+
+      await expect(UserDAO.readMutedOrganizationIds('userId')).rejects.toThrow(KnownCommonError(mockError));
     });
   });
 });

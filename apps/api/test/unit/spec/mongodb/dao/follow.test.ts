@@ -13,6 +13,7 @@ jest.mock('@/mongodb/models', () => ({
     findOne: jest.fn(),
     find: jest.fn(),
     findOneAndDelete: jest.fn(),
+    countDocuments: jest.fn(),
   },
 }));
 
@@ -256,6 +257,60 @@ describe('FollowDAO', () => {
         CustomError('Not authorized to modify this follow request', ErrorTypes.UNAUTHORIZED),
       );
     });
+
+    it('rethrows GraphQLError', async () => {
+      const graphQLError = new GraphQLError('GraphQL Error');
+      (FollowModel.findOne as jest.Mock).mockReturnValue({
+        exec: jest.fn().mockRejectedValue(graphQLError),
+      });
+
+      await expect(FollowDAO.updateApprovalStatus('follow-1', 'user-2', FollowApprovalStatus.Accepted)).rejects.toThrow(graphQLError);
+    });
+
+    it('wraps unknown errors', async () => {
+      (FollowModel.findOne as jest.Mock).mockReturnValue({
+        exec: jest.fn().mockRejectedValue(new MockMongoError(0)),
+      });
+
+      await expect(FollowDAO.updateApprovalStatus('follow-1', 'user-2', FollowApprovalStatus.Accepted)).rejects.toThrow(
+        CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR),
+      );
+    });
+  });
+
+  describe('readFollowRequests', () => {
+    it('reads follow requests for a user', async () => {
+      (FollowModel.find as jest.Mock).mockReturnValue(
+        createMockSuccessMongooseQuery([
+          {toObject: () => mockFollow},
+          {toObject: () => ({...mockFollow, followId: 'follow-2', followerUserId: 'user-3'})},
+        ]),
+      );
+
+      const result = await FollowDAO.readFollowRequests('user-2', FollowTargetType.User);
+
+      expect(FollowModel.find).toHaveBeenCalledWith({
+        targetId: 'user-2',
+        targetType: FollowTargetType.User,
+      });
+      expect(result).toHaveLength(2);
+    });
+
+    it('returns empty array when no requests', async () => {
+      (FollowModel.find as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery([]));
+
+      const result = await FollowDAO.readFollowRequests('user-2', FollowTargetType.User);
+
+      expect(result).toEqual([]);
+    });
+
+    it('wraps errors', async () => {
+      (FollowModel.find as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(new MockMongoError(0)));
+
+      await expect(FollowDAO.readFollowRequests('user-2', FollowTargetType.User)).rejects.toThrow(
+        CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR),
+      );
+    });
   });
 
   describe('readPendingFollows', () => {
@@ -286,6 +341,239 @@ describe('FollowDAO', () => {
       (FollowModel.find as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(new MockMongoError(0)));
 
       await expect(FollowDAO.readPendingFollows('user-2', FollowTargetType.User)).rejects.toThrow(
+        CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR),
+      );
+    });
+  });
+
+  describe('countFollowers', () => {
+    it('counts accepted followers for a target', async () => {
+      (FollowModel.countDocuments as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(10));
+
+      const result = await FollowDAO.countFollowers(FollowTargetType.User, 'user-2');
+
+      expect(FollowModel.countDocuments).toHaveBeenCalledWith({
+        targetType: FollowTargetType.User,
+        targetId: 'user-2',
+        approvalStatus: FollowApprovalStatus.Accepted,
+      });
+      expect(result).toBe(10);
+    });
+
+    it('returns 0 when no followers', async () => {
+      (FollowModel.countDocuments as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(0));
+
+      const result = await FollowDAO.countFollowers(FollowTargetType.Organization, 'org-1');
+
+      expect(result).toBe(0);
+    });
+
+    it('wraps errors', async () => {
+      (FollowModel.countDocuments as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(new MockMongoError(0)));
+
+      await expect(FollowDAO.countFollowers(FollowTargetType.User, 'user-2')).rejects.toThrow(
+        CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR),
+      );
+    });
+  });
+
+  describe('isFollowing', () => {
+    it('returns true when user is following', async () => {
+      (FollowModel.findOne as jest.Mock).mockReturnValue(
+        createMockSuccessMongooseQuery({
+          toObject: () => mockFollow,
+        }),
+      );
+
+      const result = await FollowDAO.isFollowing('user-1', FollowTargetType.User, 'user-2');
+
+      expect(FollowModel.findOne).toHaveBeenCalledWith({
+        followerUserId: 'user-1',
+        targetType: FollowTargetType.User,
+        targetId: 'user-2',
+        approvalStatus: FollowApprovalStatus.Accepted,
+      });
+      expect(result).toBe(true);
+    });
+
+    it('returns false when user is not following', async () => {
+      (FollowModel.findOne as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(null));
+
+      const result = await FollowDAO.isFollowing('user-1', FollowTargetType.User, 'user-3');
+
+      expect(result).toBe(false);
+    });
+
+    it('wraps errors', async () => {
+      (FollowModel.findOne as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(new MockMongoError(0)));
+
+      await expect(FollowDAO.isFollowing('user-1', FollowTargetType.User, 'user-2')).rejects.toThrow(
+        CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR),
+      );
+    });
+  });
+
+  describe('removeFollower', () => {
+    it('removes an accepted follower', async () => {
+      (FollowModel.findOneAndDelete as jest.Mock).mockReturnValue(
+        createMockSuccessMongooseQuery({
+          toObject: () => mockFollow,
+        }),
+      );
+
+      const result = await FollowDAO.removeFollower('user-2', 'user-1', FollowTargetType.User);
+
+      expect(FollowModel.findOneAndDelete).toHaveBeenCalledWith({
+        followerUserId: 'user-1',
+        targetType: FollowTargetType.User,
+        targetId: 'user-2',
+        approvalStatus: FollowApprovalStatus.Accepted,
+      });
+      expect(result).toBe(true);
+    });
+
+    it('throws NOT_FOUND when follower not found', async () => {
+      (FollowModel.findOneAndDelete as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(null));
+
+      await expect(FollowDAO.removeFollower('user-2', 'user-1', FollowTargetType.User)).rejects.toThrow(
+        CustomError('Follower not found or not authorized', ErrorTypes.NOT_FOUND),
+      );
+    });
+
+    it('rethrows GraphQLError', async () => {
+      const graphQLError = new GraphQLError('GraphQL Error');
+      (FollowModel.findOneAndDelete as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(graphQLError));
+
+      await expect(FollowDAO.removeFollower('user-2', 'user-1', FollowTargetType.User)).rejects.toThrow(graphQLError);
+    });
+
+    it('wraps unknown errors', async () => {
+      (FollowModel.findOneAndDelete as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(new MockMongoError(0)));
+
+      await expect(FollowDAO.removeFollower('user-2', 'user-1', FollowTargetType.User)).rejects.toThrow(
+        CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR),
+      );
+    });
+  });
+
+  // ============================================================================
+  // SAVED EVENTS METHODS (Event as targetType)
+  // ============================================================================
+
+  describe('readSavedEventsForUser', () => {
+    const mockEventFollow: Follow = {
+      followId: 'follow-event-1',
+      followerUserId: 'user-1',
+      targetType: FollowTargetType.Event,
+      targetId: 'event-1',
+      approvalStatus: FollowApprovalStatus.Accepted,
+      createdAt: new Date('2024-01-01T00:00:00Z'),
+    };
+
+    it('reads saved events for a user', async () => {
+      (FollowModel.find as jest.Mock).mockReturnValue(
+        createMockSuccessMongooseQuery([
+          {toObject: () => mockEventFollow},
+          {toObject: () => ({...mockEventFollow, followId: 'follow-event-2', targetId: 'event-2'})},
+        ]),
+      );
+
+      const result = await FollowDAO.readSavedEventsForUser('user-1');
+
+      expect(FollowModel.find).toHaveBeenCalledWith({
+        followerUserId: 'user-1',
+        targetType: FollowTargetType.Event,
+        approvalStatus: FollowApprovalStatus.Accepted,
+      });
+      expect(result).toHaveLength(2);
+      expect(result[0].targetId).toBe('event-1');
+    });
+
+    it('returns empty array when user has no saved events', async () => {
+      (FollowModel.find as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery([]));
+
+      const result = await FollowDAO.readSavedEventsForUser('user-1');
+
+      expect(result).toEqual([]);
+    });
+
+    it('wraps errors', async () => {
+      (FollowModel.find as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(new MockMongoError(0)));
+
+      await expect(FollowDAO.readSavedEventsForUser('user-1')).rejects.toThrow(
+        CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR),
+      );
+    });
+  });
+
+  describe('countSavesForEvent', () => {
+    it('counts saves for an event', async () => {
+      (FollowModel.countDocuments as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(25));
+
+      const result = await FollowDAO.countSavesForEvent('event-1');
+
+      expect(FollowModel.countDocuments).toHaveBeenCalledWith({
+        targetType: FollowTargetType.Event,
+        targetId: 'event-1',
+        approvalStatus: FollowApprovalStatus.Accepted,
+      });
+      expect(result).toBe(25);
+    });
+
+    it('returns 0 when event has no saves', async () => {
+      (FollowModel.countDocuments as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(0));
+
+      const result = await FollowDAO.countSavesForEvent('event-new');
+
+      expect(result).toBe(0);
+    });
+
+    it('wraps errors', async () => {
+      (FollowModel.countDocuments as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(new MockMongoError(0)));
+
+      await expect(FollowDAO.countSavesForEvent('event-1')).rejects.toThrow(
+        CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR),
+      );
+    });
+  });
+
+  describe('isEventSavedByUser', () => {
+    it('returns true when event is saved by user', async () => {
+      (FollowModel.findOne as jest.Mock).mockReturnValue(
+        createMockSuccessMongooseQuery({
+          toObject: () => ({
+            followId: 'follow-1',
+            followerUserId: 'user-1',
+            targetType: FollowTargetType.Event,
+            targetId: 'event-1',
+            approvalStatus: FollowApprovalStatus.Accepted,
+          }),
+        }),
+      );
+
+      const result = await FollowDAO.isEventSavedByUser('event-1', 'user-1');
+
+      expect(FollowModel.findOne).toHaveBeenCalledWith({
+        followerUserId: 'user-1',
+        targetType: FollowTargetType.Event,
+        targetId: 'event-1',
+        approvalStatus: FollowApprovalStatus.Accepted,
+      });
+      expect(result).toBe(true);
+    });
+
+    it('returns false when event is not saved by user', async () => {
+      (FollowModel.findOne as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(null));
+
+      const result = await FollowDAO.isEventSavedByUser('event-1', 'user-2');
+
+      expect(result).toBe(false);
+    });
+
+    it('wraps errors', async () => {
+      (FollowModel.findOne as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(new MockMongoError(0)));
+
+      await expect(FollowDAO.isEventSavedByUser('event-1', 'user-1')).rejects.toThrow(
         CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR),
       );
     });

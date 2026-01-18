@@ -119,7 +119,7 @@ class EventParticipantDAO {
         // By default, exclude cancelled
         query.status = {$ne: ParticipantStatus.Cancelled};
       }
-      return EventParticipant.countDocuments(query).exec();
+      return await EventParticipant.countDocuments(query).exec();
     } catch (error) {
       logger.error('Error counting event participants', error);
       throw KnownCommonError(error);

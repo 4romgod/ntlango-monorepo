@@ -35,6 +35,7 @@ import { omit } from 'lodash';
 import Link from 'next/link';
 import UserProfileStats from '@/components/users/user-profile-stats';
 import UserProfileActions from '@/components/users/user-profile-actions';
+import { logger } from '@/lib/utils/logger';
 
 interface Props {
   params: Promise<{ username: string }>;
@@ -68,8 +69,8 @@ export default async function UserPage(props: Props) {
       savedEvents = (savedEventsData?.readSavedEvents ?? [])
         .map(follow => follow.targetEvent)
         .filter((event): event is NonNullable<typeof event> => event !== null && event !== undefined) as EventPreview[];
-    } catch {
-      // Silently fail - just show 0 saved events
+    } catch (error) {
+      logger.debug('Failed to fetch saved events:', error);
     }
   }
 

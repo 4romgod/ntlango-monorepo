@@ -7,7 +7,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { ROUTES } from '@/lib/constants';
 import { useAppContext } from '@/hooks/useAppContext';
-import { logger } from '@/lib/utils';
+import { logger, extractApolloErrorMessage } from '@/lib/utils';
 import NProgress from 'nprogress';
 
 interface SaveEventButtonProps {
@@ -58,25 +58,10 @@ export default function SaveEventButton({
     } catch (error: unknown) {
       logger.error('Error toggling save status:', error);
 
-      // Extract error message
-      let errorMessage: string;
-      const apolloError = error as {
-        graphQLErrors?: Array<{ message: string }>;
-        networkError?: { result?: { errors?: Array<{ message: string }> } };
-        message?: string;
-      };
-      
-      if (apolloError?.graphQLErrors?.[0]) {
-        errorMessage = apolloError.graphQLErrors[0].message;
-      } else if (apolloError?.networkError?.result?.errors?.[0]) {
-        errorMessage = apolloError.networkError.result.errors[0].message;
-      } else if (apolloError?.message) {
-        errorMessage = apolloError.message;
-      } else {
-        errorMessage = isSaved
-          ? 'Failed to unsave event. Please try again.'
-          : 'Failed to save event. Please try again.';
-      }
+      const defaultMessage = isSaved
+        ? 'Failed to unsave event. Please try again.'
+        : 'Failed to save event. Please try again.';
+      const errorMessage = extractApolloErrorMessage(error, defaultMessage);
 
       setToastProps({
         open: true,
