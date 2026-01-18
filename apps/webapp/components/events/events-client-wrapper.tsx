@@ -13,7 +13,7 @@ import { useEventFilters } from '@/hooks/useEventFilters';
 import EventsHeader from '@/components/events/filters/events-header';
 import FilterButtons from '@/components/events/filters/filter-buttons';
 import ActiveFiltersPills from '@/components/events/filters/active-filters-pills';
-import { CategoryMenu, StatusMenu, DateMenu } from '@/components/events/filters/filter-menus';
+import { CategoryMenu, StatusMenu, DateMenu, LocationMenu } from '@/components/events/filters/filter-menus';
 import EventsList from '@/components/events/filters/events-list';
 import EventsSidebar, { PlatformStats } from '@/components/events/events-sidebar';
 import { PopularOrganization } from '@/components/events/popular-organizer-box';
@@ -33,15 +33,35 @@ interface EventsClientWrapperProps {
 }
 
 function EventsContent({ categories, initialEvents, popularOrganization, stats }: EventsContentProps) {
-  const { filters, setSearchQuery, resetFilters, hasActiveFilters, removeCategory, removeStatus, setCategories, setStatuses, setDateRange } = useEventFilters();
+  const { filters, setSearchQuery, resetFilters, hasActiveFilters, removeCategory, removeStatus, setCategories, setStatuses, setDateRange, setLocation, clearLocation } = useEventFilters();
   const { events: serverEvents, loading, error } = useFilteredEvents(filters, initialEvents);
 
   const [categoryAnchor, setCategoryAnchor] = useState<null | HTMLElement>(null);
   const [statusAnchor, setStatusAnchor] = useState<null | HTMLElement>(null);
   const [dateAnchor, setDateAnchor] = useState<null | HTMLElement>(null);
+  const [locationAnchor, setLocationAnchor] = useState<null | HTMLElement>(null);
   const [selectedDateOption, setSelectedDateOption] = useState<string | null>(null);
   const [customDateAnchor, setCustomDateAnchor] = useState<null | HTMLElement>(null);
   const [customDateValue, setCustomDateValue] = useState<Date | null>(null);
+
+  // Compute location label from filter state
+  const locationLabel = useMemo(() => {
+    const { location } = filters;
+    if (!location) return null;
+    
+    // If using geolocation (lat/lng), show "Near me" with radius
+    if (location.latitude && location.longitude) {
+      return `Near me (${location.radiusKm || 50}km)`;
+    }
+    
+    // Build label from city/state/country
+    const parts: string[] = [];
+    if (location.city) parts.push(location.city);
+    if (location.state) parts.push(location.state);
+    if (location.country) parts.push(location.country);
+    
+    return parts.length > 0 ? parts.join(', ') : null;
+  }, [filters.location]);
 
   // Sync selectedDateOption with filter state - clear when filters are reset
   useEffect(() => {
@@ -79,7 +99,7 @@ function EventsContent({ categories, initialEvents, popularOrganization, stats }
   };
 
   const handleDateSelect = (option: string, event?: React.MouseEvent<HTMLElement>) => {
-    if (option === 'custom') {
+    if (option === DATE_FILTER_OPTIONS.CUSTOM) {
       // Keep menu open and show date picker anchored to the menu
       setCustomDateAnchor(dateAnchor);
       // Don't set selectedDateOption yet - wait for actual date selection
@@ -101,6 +121,16 @@ function EventsContent({ categories, initialEvents, popularOrganization, stats }
     setDateAnchor(null);
   };
 
+  const handleLocationApply = (location: { city?: string; state?: string; country?: string; latitude?: number; longitude?: number; radiusKm?: number }) => {
+    setLocation(location);
+    setLocationAnchor(null);
+  };
+
+  const handleLocationClear = () => {
+    clearLocation();
+    setLocationAnchor(null);
+  };
+
   const handleCustomDateChange = (date: any) => {
     if (date) {
       const jsDate = date.toDate();
@@ -113,8 +143,8 @@ function EventsContent({ categories, initialEvents, popularOrganization, stats }
       });
       setSelectedDateOption(formattedDate);
       // Apply custom date filter - store the actual date
-      // Use 'custom' as filterOption internally to distinguish from predefined options
-      setDateRange(date, date, 'custom');
+      // Use CUSTOM as filterOption internally to distinguish from predefined options
+      setDateRange(date, date, DATE_FILTER_OPTIONS.CUSTOM);
     }
     handleCustomDateClose();
   };
@@ -140,10 +170,12 @@ function EventsContent({ categories, initialEvents, popularOrganization, stats }
               categoryCount={filters.categories.length}
               statusCount={filters.statuses.length}
               selectedDateOption={selectedDateOption}
+              locationLabel={locationLabel}
               hasActiveFilters={hasActiveFilters}
               onCategoryClick={(e) => setCategoryAnchor(e.currentTarget)}
               onStatusClick={(e) => setStatusAnchor(e.currentTarget)}
               onDateClick={(e) => setDateAnchor(e.currentTarget)}
+              onLocationClick={(e) => setLocationAnchor(e.currentTarget)}
               onClearAll={resetFilters}
             />
 
@@ -181,6 +213,14 @@ function EventsContent({ categories, initialEvents, popularOrganization, stats }
               onSelect={handleDateSelect}
               onCustomDateChange={handleCustomDateChange}
               onCustomDateClose={handleCustomDateClose}
+            />
+
+            <LocationMenu
+              anchorEl={locationAnchor}
+              currentLocation={filters.location || undefined}
+              onClose={() => setLocationAnchor(null)}
+              onApply={handleLocationApply}
+              onClear={handleLocationClear}
             />
 
             <EventsList

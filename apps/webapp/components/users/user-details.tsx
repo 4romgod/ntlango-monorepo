@@ -129,11 +129,11 @@ export default function UserDetails({ user, isOwnProfile = false }: UserDetailsP
           {showPhone && user.phone_number && (
             <InfoItem icon={<Phone fontSize="small" />} label="Phone" value={user.phone_number} />
           )}
-          {user.address && (
+          {user.location && (
             <InfoItem
               icon={<LocationIcon fontSize="small" />}
               label="Location"
-              value={`${user.address.city}, ${user.address.country}`}
+              value={`${user.location.city}, ${user.location.country}`}
             />
           )}
           {formattedDOB && (

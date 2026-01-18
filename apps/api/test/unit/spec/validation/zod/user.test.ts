@@ -17,9 +17,10 @@ describe('User', () => {
 
   const getValidUserInput = () => ({
     userId: mockID,
-    address: {
-      country: 'South Africa',
+    location: {
       city: 'Sandton',
+      state: 'Gauteng',
+      country: 'South Africa',
     },
     birthdate: validDate,
     email: 'user@example.com',

@@ -7,7 +7,6 @@ export const GetAllUsersDocument = graphql(`
       email
       username
       bio
-      address
       birthdate
       family_name
       gender
@@ -16,6 +15,15 @@ export const GetAllUsersDocument = graphql(`
       profile_picture
       userRole
       followersCount
+      location {
+        city
+        state
+        country
+        coordinates {
+          latitude
+          longitude
+        }
+      }
       interests {
         eventCategoryId
         slug
@@ -35,7 +43,6 @@ export const GetUserByUsernameDocument = graphql(`
       email
       username
       bio
-      address
       birthdate
       family_name
       gender
@@ -44,6 +51,15 @@ export const GetUserByUsernameDocument = graphql(`
       profile_picture
       userRole
       followersCount
+      location {
+        city
+        state
+        country
+        coordinates {
+          latitude
+          longitude
+        }
+      }
       interests {
         eventCategoryId
         slug
@@ -63,7 +79,6 @@ export const GetUserByIdDocument = graphql(`
       email
       username
       bio
-      address
       birthdate
       family_name
       gender
@@ -71,6 +86,15 @@ export const GetUserByIdDocument = graphql(`
       phone_number
       profile_picture
       userRole
+      location {
+        city
+        state
+        country
+        coordinates {
+          latitude
+          longitude
+        }
+      }
       interests {
         eventCategoryId
         slug

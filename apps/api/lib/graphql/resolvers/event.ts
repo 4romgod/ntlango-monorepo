@@ -1,11 +1,12 @@
 import 'reflect-metadata';
 import {Arg, Mutation, Resolver, Query, Authorized, FieldResolver, Root, Ctx} from 'type-graphql';
-import {CreateEventInput, Event, UpdateEventInput, UserRole, QueryOptionsInput, EventCategory, EventOrganizer, User} from '@ntlango/commons/types';
+import {CreateEventInput, Event, UpdateEventInput, UserRole, EventsQueryOptionsInput, EventCategory, EventOrganizer, User} from '@ntlango/commons/types';
 import {ERROR_MESSAGES, validateInput, validateMongodbId} from '@/validation';
 import {CreateEventInputSchema, UpdateEventInputSchema} from '@/validation/zod';
 import {RESOLVER_DESCRIPTIONS} from '@/constants';
 import {EventDAO} from '@/mongodb/dao';
 import type {ServerContext} from '@/graphql';
+import {logger} from '@/utils/logger';
 
 @Resolver(() => Event)
 export class EventResolver {
@@ -48,7 +49,8 @@ export class EventResolver {
   }
 
   @Query(() => [Event], {description: RESOLVER_DESCRIPTIONS.EVENT.readEvents})
-  async readEvents(@Arg('options', () => QueryOptionsInput, {nullable: true}) options?: QueryOptionsInput): Promise<Event[]> {
+  async readEvents(@Arg('options', () => EventsQueryOptionsInput, {nullable: true}) options?: EventsQueryOptionsInput): Promise<Event[]> {
+    logger.debug('[readEvents] GraphQL query options:', JSON.stringify(options, null, 2));
     return EventDAO.readEvents(options);
   }
 

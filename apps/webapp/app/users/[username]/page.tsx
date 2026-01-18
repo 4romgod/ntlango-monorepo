@@ -249,8 +249,8 @@ export default async function UserPage(props: Props) {
                     )}
                     <InfoItem
                       icon={<LocationIcon fontSize="small" />}
-                      label="Address"
-                      value={user.address ? `${user.address.city}, ${user.address.country}` : 'Not provided'}
+                      label="Location"
+                      value={user.location ? `${user.location.city}, ${user.location.country}` : 'Not provided'}
                     />
                     {formattedDOB && (
                       <InfoItem

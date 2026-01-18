@@ -285,6 +285,7 @@ export class CreateEventInput {
     @Field(() => GraphQLJSON, {nullable: true, description: 'Primary schedule'})
     primarySchedule?: Record<string, any>;
 
+    // TODO Should the type be like this (or be location type)
     @Field((type) => GraphQLJSON, {description: EVENT_DESCRIPTIONS.EVENT.LOCATION})
     location: Record<string, any>;
 
@@ -375,6 +376,7 @@ export class UpdateEventInput {
     @Field(() => GraphQLJSON, {nullable: true, description: 'Primary schedule'})
     primarySchedule?: Record<string, any>;
 
+    // TODO Should the type be like this (or be location type)
     @Field((type) => GraphQLJSON, {nullable: true, description: EVENT_DESCRIPTIONS.EVENT.LOCATION})
     location?: Record<string, any>;
 

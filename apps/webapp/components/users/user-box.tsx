@@ -18,8 +18,8 @@ export default function UserBox({ user }: UserBoxProps) {
   const displayName = getDisplayName(user) !== 'Account' ? getDisplayName(user) : user.username;
   const isOwnProfile = session?.user?.userId === user.userId;
   
-  // Extract location from address if available
-  const location = user.address?.address?.city || user.address?.address?.country;
+  // Extract location from user
+  const location = user.location?.city || user.location?.country;
   
   // Get interests (limit to 3 for display)
   const interests = user.interests?.slice(0, 3) || [];

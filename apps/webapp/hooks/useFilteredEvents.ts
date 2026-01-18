@@ -6,9 +6,10 @@ import {
   GetAllEventsDocument,
   GetAllEventsQuery,
   GetAllEventsQueryVariables,
+  LocationFilterInput,
 } from '@/data/graphql/types/graphql';
 import { EventPreview } from '@/data/graphql/query/Event/types';
-import { EventFilters } from '@/components/events/filters/event-filter-context';
+import { EventFilters, LocationFilter } from '@/components/events/filters/event-filter-context';
 import { DATE_FILTER_OPTIONS } from '@/lib/constants/date-filters';
 
 const buildFilterInputs = (filters: EventFilters): FilterInput[] => {
@@ -51,11 +52,28 @@ const buildDateFilterParams = (filters: EventFilters): { dateFilterOption?: stri
   };
 };
 
+const buildLocationFilter = (location: LocationFilter): LocationFilterInput | undefined => {
+  const hasLocation = !!(location.city || location.state || location.country || location.latitude);
+  if (!hasLocation) {
+    return undefined;
+  }
+  
+  return {
+    city: location.city,
+    state: location.state,
+    country: location.country,
+    latitude: location.latitude,
+    longitude: location.longitude,
+    radiusKm: location.radiusKm,
+  };
+};
+
 export const useFilteredEvents = (filters: EventFilters, initialEvents: EventPreview[]) => {
   const [events, setEvents] = useState<EventPreview[]>(initialEvents);
   const [error, setError] = useState<string | null>(null);
   const filterInputs = useMemo(() => buildFilterInputs(filters), [filters.categories, filters.statuses]);
   const dateFilterParams = useMemo(() => buildDateFilterParams(filters), [filters.dateRange]);
+  const locationFilter = useMemo(() => buildLocationFilter(filters.location), [filters.location]);
   const [loadEvents, { loading }] = useLazyQuery<GetAllEventsQuery, GetAllEventsQueryVariables>(GetAllEventsDocument);
 
   useEffect(() => {
@@ -64,7 +82,8 @@ export const useFilteredEvents = (filters: EventFilters, initialEvents: EventPre
 
   useEffect(() => {
     const hasDateFilter = !!dateFilterParams.dateFilterOption || !!dateFilterParams.customDate;
-    if (filterInputs.length === 0 && !hasDateFilter) {
+    const hasLocationFilter = !!locationFilter;
+    if (filterInputs.length === 0 && !hasDateFilter && !hasLocationFilter) {
       setEvents(initialEvents);
       setError(null);
       return;
@@ -82,6 +101,7 @@ export const useFilteredEvents = (filters: EventFilters, initialEvents: EventPre
           filters: filterInputs.length > 0 ? filterInputs : undefined,
           dateFilterOption: dateFilterParams.dateFilterOption as any,
           customDate: dateFilterParams.customDate, // GraphQL DateTimeISO scalar accepts ISO 8601 string
+          location: locationFilter,
         },
       },
       fetchPolicy: 'network-only',
@@ -113,12 +133,12 @@ export const useFilteredEvents = (filters: EventFilters, initialEvents: EventPre
       isCurrent = false;
       abortController.abort();
     };
-  }, [filterInputs, dateFilterParams, initialEvents, loadEvents]);
+  }, [filterInputs, dateFilterParams, locationFilter, initialEvents, loadEvents]);
 
   return {
     events,
     loading,
     error,
-    hasFilterInputs: filterInputs.length > 0 || !!dateFilterParams.dateFilterOption || !!dateFilterParams.customDate,
+    hasFilterInputs: filterInputs.length > 0 || !!dateFilterParams.dateFilterOption || !!dateFilterParams.customDate || !!locationFilter,
   };
 };

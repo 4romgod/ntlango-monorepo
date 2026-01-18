@@ -18,7 +18,19 @@ export const UserSchema = z.object({
 
   given_name: z.string().min(1, {message: `First name ${ERROR_MESSAGES.REQUIRED}`}),
 
-  address: z.record(z.any()).optional(),
+  location: z
+    .object({
+      city: z.string().optional(),
+      state: z.string().optional(),
+      country: z.string().optional(),
+      coordinates: z
+        .object({
+          latitude: z.number(),
+          longitude: z.number(),
+        })
+        .optional(),
+    })
+    .optional(),
 
   gender: z.nativeEnum(Gender, {message: ERROR_MESSAGES.INVALID_GENDER}).optional(),
 

@@ -85,6 +85,60 @@ export class UserPreferences {
     notificationPrefs?: Record<string, any>;
 }
 
+@ObjectType('UserLocationCoordinates', {description: 'Geographic coordinates for user location'})
+export class UserLocationCoordinates {
+    @prop({type: () => Number})
+    @Field(() => Number, {description: 'Latitude coordinate'})
+    latitude: number;
+
+    @prop({type: () => Number})
+    @Field(() => Number, {description: 'Longitude coordinate'})
+    longitude: number;
+}
+
+@ObjectType('UserLocation', {description: 'User location for personalized content'})
+export class UserLocation {
+    @prop({type: () => String})
+    @Field(() => String, {description: 'City name'})
+    city: string;
+
+    @prop({type: () => String})
+    @Field(() => String, {nullable: true, description: 'State or region'})
+    state?: string;
+
+    @prop({type: () => String})
+    @Field(() => String, {description: 'Country name'})
+    country: string;
+
+    @prop({type: () => UserLocationCoordinates})
+    @Field(() => UserLocationCoordinates, {nullable: true, description: 'Geographic coordinates for proximity-based filtering'})
+    coordinates?: UserLocationCoordinates;
+}
+
+@InputType('UserLocationCoordinatesInput', {description: 'Geographic coordinates input'})
+export class UserLocationCoordinatesInput {
+    @Field(() => Number, {description: 'Latitude coordinate'})
+    latitude: number;
+
+    @Field(() => Number, {description: 'Longitude coordinate'})
+    longitude: number;
+}
+
+@InputType('UserLocationInput', {description: 'User location input for personalized content'})
+export class UserLocationInput {
+    @Field(() => String, {description: 'City name'})
+    city: string;
+
+    @Field(() => String, {nullable: true, description: 'State or region'})
+    state?: string;
+
+    @Field(() => String, {description: 'Country name'})
+    country: string;
+
+    @Field(() => UserLocationCoordinatesInput, {nullable: true, description: 'Geographic coordinates for proximity-based filtering'})
+    coordinates?: UserLocationCoordinatesInput;
+}
+
 @ObjectType('User', {description: USER_DESCRIPTIONS.TYPE})
 @modelOptions({schemaOptions: {timestamps: true}, options: {allowMixed: Severity.ALLOW}})
 export class User {
@@ -100,9 +154,9 @@ export class User {
     @Field((type) => String, {description: USER_DESCRIPTIONS.USERNAME})
     username: string;
 
-    @prop({type: () => Object, default: {}})
-    @Field((type) => GraphQLJSON, {nullable: true, description: USER_DESCRIPTIONS.ADDRESS})
-    address?: Record<string, any>;
+    @prop({type: () => UserLocation})
+    @Field(() => UserLocation, {nullable: true, description: 'User location for personalized event recommendations'})
+    location?: UserLocation;
 
     @prop({required: true, type: () => String})
     @Field((type) => String, {description: USER_DESCRIPTIONS.BIRTHDATE})
@@ -214,8 +268,8 @@ export class CreateUserInput {
     @Field((type) => String, {nullable: true, description: USER_DESCRIPTIONS.USERNAME})
     username?: string;
 
-    @Field((type) => GraphQLJSON, {nullable: true, description: USER_DESCRIPTIONS.ADDRESS})
-    address?: Record<string, any>;
+    @Field(() => UserLocationInput, {nullable: true, description: 'User location for personalized event recommendations'})
+    location?: UserLocationInput;
 
     @Field((type) => String, {description: USER_DESCRIPTIONS.BIRTHDATE})
     birthdate: string;
@@ -298,8 +352,8 @@ export class UpdateUserInput {
     @Field((type) => String, {nullable: true, description: USER_DESCRIPTIONS.USERNAME})
     username?: string;
 
-    @Field((type) => GraphQLJSON, {nullable: true, description: USER_DESCRIPTIONS.ADDRESS})
-    address?: Record<string, any>;
+    @Field(() => UserLocationInput, {nullable: true, description: 'User location for personalized event recommendations'})
+    location?: UserLocationInput;
 
     @Field((type) => String, {nullable: true, description: USER_DESCRIPTIONS.BIRTHDATE})
     birthdate?: string;

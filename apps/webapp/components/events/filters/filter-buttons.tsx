@@ -5,15 +5,18 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import TuneIcon from '@mui/icons-material/Tune';
 import ClearIcon from '@mui/icons-material/Clear';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
 
 interface FilterButtonsProps {
   categoryCount: number;
   statusCount: number;
   selectedDateOption: string | null;
+  locationLabel: string | null;
   hasActiveFilters: boolean;
   onCategoryClick: (event: React.MouseEvent<HTMLElement>) => void;
   onStatusClick: (event: React.MouseEvent<HTMLElement>) => void;
   onDateClick: (event: React.MouseEvent<HTMLElement>) => void;
+  onLocationClick: (event: React.MouseEvent<HTMLElement>) => void;
   onClearAll: () => void;
 }
 
@@ -21,10 +24,12 @@ export default function FilterButtons({
   categoryCount,
   statusCount,
   selectedDateOption,
+  locationLabel,
   hasActiveFilters,
   onCategoryClick,
   onStatusClick,
   onDateClick,
+  onLocationClick,
   onClearAll,
 }: FilterButtonsProps) {
   return (
@@ -135,6 +140,37 @@ export default function FilterButtons({
         }}
       >
         {selectedDateOption || 'Date'}
+      </Button>
+
+      {/* Location Filter Button */}
+      <Button
+        variant="outlined"
+        onClick={onLocationClick}
+        endIcon={<KeyboardArrowDownIcon sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }} />}
+        startIcon={<LocationOnIcon sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }} />}
+        className="glass-button"
+        sx={{
+          borderRadius: '50px',
+          px: { xs: 1.5, sm: 2, md: 2.5 },
+          py: { xs: 0.75, sm: 1, md: 1.15 },
+          textTransform: 'none',
+          fontWeight: 600,
+          fontSize: { xs: '0.75rem', sm: '0.8125rem', md: '0.875rem' },
+          borderWidth: locationLabel ? 2 : 1,
+          borderColor: locationLabel ? 'success.main' : 'divider',
+          bgcolor: locationLabel ? 'action.selected' : 'background.paper',
+          color: 'text.primary',
+          whiteSpace: 'nowrap',
+          minWidth: 'auto',
+          '&:hover': {
+            bgcolor: 'action.hover',
+            borderColor: 'success.light',
+            transform: 'translateY(-1px)',
+          },
+          transition: 'all 0.2s ease',
+        }}
+      >
+        {locationLabel || 'Location'}
       </Button>
 
       {/* Clear All Button */}

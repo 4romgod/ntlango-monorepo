@@ -7,7 +7,6 @@ export const RegisterUserDocument = graphql(`
       email
       username
       bio
-      address
       birthdate
       given_name
       family_name
@@ -35,7 +34,6 @@ export const LoginUserDocument = graphql(`
       email
       username
       bio
-      address
       birthdate
       given_name
       family_name
@@ -44,6 +42,15 @@ export const LoginUserDocument = graphql(`
       profile_picture
       userRole
       token
+      location {
+        city
+        state
+        country
+        coordinates {
+          latitude
+          longitude
+        }
+      }
       interests {
         eventCategoryId
         slug
@@ -63,7 +70,6 @@ export const UpdateUserDocument = graphql(`
       email
       username
       bio
-      address
       birthdate
       given_name
       family_name
@@ -90,7 +96,6 @@ export const DeleteUserByIdDocument = graphql(`
       email
       username
       bio
-      address
       birthdate
       given_name
       family_name

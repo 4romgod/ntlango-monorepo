@@ -1,7 +1,7 @@
 import { graphql } from '@/data/graphql/types';
 
 export const GetAllEventsDocument = graphql(`
-  query GetAllEvents($options: QueryOptionsInput) {
+  query GetAllEvents($options: EventsQueryOptionsInput) {
     readEvents(options: $options) {
       eventId
       slug

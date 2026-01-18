@@ -25,14 +25,10 @@ describe('Auth Utilities', () => {
     email: 'user@example.com',
     username: 'username',
     password: 'password',
-    address: {
-      locationType: 'venue',
-      address: {
-        country: 'South Africa',
-        city: 'Durban',
-        state: 'KZN',
-        zipCode: '0900',
-      },
+    location: {
+      city: 'Durban',
+      state: 'KZN',
+      country: 'South Africa',
     },
     birthdate: '2000-01-01',
     given_name: 'First',
