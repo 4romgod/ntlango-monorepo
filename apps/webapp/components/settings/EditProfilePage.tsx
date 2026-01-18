@@ -53,7 +53,7 @@ export default function EditProfilePage({ user }: { user: User }) {
         location: session.user.location,
       });
     }
-  }, [session?.user]);
+  }, [session]);
 
   useEffect(() => {
     setLoading(false);
