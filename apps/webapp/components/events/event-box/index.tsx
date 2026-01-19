@@ -14,7 +14,7 @@ import { ParticipantStatus } from '@/data/graphql/types/graphql';
 
 export default function EventBox({ event }: { event: EventPreview }) {
   const theme = useTheme();
-  const { title, slug, recurrenceRule, participants, media, heroImage, location, status } = event;
+  const { title, recurrenceRule, participants, media, heroImage, location, status } = event;
   
   // Local state for optimistic UI updates
   const [isSaved, setIsSaved] = useState(event.isSavedByMe ?? false);

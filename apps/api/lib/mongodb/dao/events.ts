@@ -1,7 +1,7 @@
 import {GraphQLError} from 'graphql';
 import {Event as EventModel} from '@/mongodb/models';
 import type {Event as EventEntity, UpdateEventInput, CreateEventInput, EventsQueryOptionsInput, RsvpInput, CancelRsvpInput} from '@ntlango/commons/types';
-import {CustomError, ErrorTypes, KnownCommonError, extractValidationErrorMessage, transformEventOptionsToPipeline, validateUserIdentifiers, enrichLocationWithCoordinates} from '@/utils';
+import {CustomError, ErrorTypes, KnownCommonError, extractValidationErrorMessage, transformEventOptionsToPipeline, validateUserIdentifiers, enrichLocationWithCoordinates, createEventLookupStages} from '@/utils';
 import {ERROR_MESSAGES} from '@/validation';
 import {EventParticipantDAO} from '@/mongodb/dao';
 import {ParticipantStatus, DATE_FILTER_OPTIONS} from '@ntlango/commons';
@@ -32,12 +32,15 @@ class EventDAO {
 
   static async readEventById(eventId: string): Promise<EventEntity> {
     try {
-      const query = EventModel.findById(eventId);
-      const event = await query.exec();
-      if (!event) {
+      const pipeline = [
+        {$match: {eventId: eventId}},
+        ...createEventLookupStages(),
+      ];
+      const events = await EventModel.aggregate<EventEntity>(pipeline).exec();
+      if (!events || events.length === 0) {
         throw CustomError(`Event with eventId ${eventId} not found`, ErrorTypes.NOT_FOUND);
       }
-      return event.toObject();
+      return events[0];
     } catch (error) {
       logger.error('Error reading event by id', error);
       if (error instanceof GraphQLError) {
@@ -49,12 +52,16 @@ class EventDAO {
 
   static async readEventBySlug(slug: string): Promise<EventEntity> {
     try {
-      const query = EventModel.findOne({slug: slug});
-      const event = await query.exec();
-      if (!event) {
+      // Use aggregation pipeline to include participants lookup
+      const pipeline = [
+        {$match: {slug: slug}},
+        ...createEventLookupStages(),
+      ];
+      const events = await EventModel.aggregate<EventEntity>(pipeline).exec();
+      if (!events || events.length === 0) {
         throw CustomError(`Event with slug ${slug} not found`, ErrorTypes.NOT_FOUND);
       }
-      return event.toObject();
+      return events[0];
     } catch (error) {
       logger.error('Error reading event by slug:', error);
       if (error instanceof GraphQLError) {

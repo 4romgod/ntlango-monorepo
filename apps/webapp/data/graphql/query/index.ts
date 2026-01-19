@@ -10,6 +10,8 @@ export * from './Venue/query';
 export * from './Activity/query';
 export * from './Follow/query';
 export * from './Follow/types';
+export * from './Notification/query';
+export * from './Notification/types';
 export * from '../mutation/Follow/mutation';
 export * from '../mutation/EventParticipant/mutation';
 export * from '../mutation/User/block';

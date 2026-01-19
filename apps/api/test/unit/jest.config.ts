@@ -14,6 +14,7 @@ const config: Config = {
     '^@ntlango/commons$': '<rootDir>/../../packages/commons/lib/index.ts',
     '^@ntlango/commons/(.*)$': '<rootDir>/../../packages/commons/lib/$1',
   },
+  setupFiles: ['<rootDir>/test/unit/setupEnv.ts'],
   globalSetup: '<rootDir>/test/unit/setup.ts',
   globalTeardown: '<rootDir>/test/unit/teardown.ts',
   collectCoverage: true,

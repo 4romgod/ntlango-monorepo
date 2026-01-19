@@ -22,6 +22,7 @@ import {
   FollowResolver,
   IntentResolver,
   ActivityResolver,
+  NotificationResolver,
 } from '@/graphql/resolvers';
 import { authChecker } from '@/utils/auth';
 
@@ -41,6 +42,7 @@ const emitSchema = () => {
       OrganizationResolver,
       OrganizationMembershipResolver,
       VenueResolver,
+      NotificationResolver,
     ],
     validate: true,
     emitSchemaFile: false,

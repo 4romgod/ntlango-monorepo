@@ -3,7 +3,6 @@ import { GetEventBySlugDocument, GetEventBySlugQuery, Location, ParticipantStatu
 import { getClient } from '@/data/graphql';
 import { 
   Avatar,
-  AvatarGroup,
   Box,
   Button,
   Card,
@@ -25,7 +24,6 @@ import {
   CalendarMonth, 
   LocationOn, 
   Share, 
-  BookmarkBorder,
   ConfirmationNumber,
   Groups,
   Language,
@@ -35,7 +33,7 @@ import type { Metadata } from 'next';
 import CopyLinkButton from '@/components/events/copy-link-button';
 import EventDetailActions from '@/components/events/EventDetailActions';
 import { auth } from '@/auth';
-import { getAuthHeader } from '@/lib/utils';
+import { getAuthHeader, logger } from '@/lib/utils';
 
 export const metadata: Metadata = {
   title: {
@@ -48,6 +46,9 @@ export const metadata: Metadata = {
     apple: '/logo-img.png',
   },
 };
+
+// Force dynamic rendering to ensure fresh participant data
+export const dynamic = 'force-dynamic';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -65,12 +66,19 @@ export default async function Page(props: Props) {
     context: {
       headers: getAuthHeader(token),
     },
+    fetchPolicy: 'no-cache',
   });
-  const { title, organizers, description, media, recurrenceRule, location, eventCategories, comments, participants } = eventRetrieved.readEventBySlug;
+  const { title, organizers, description, media, recurrenceRule, location, eventCategories, participants } = eventRetrieved.readEventBySlug;
+  logger.debug('logging to see', eventRetrieved.readEventBySlug);
 
   type EventDetailParticipant = NonNullable<NonNullable<GetEventBySlugQuery['readEventBySlug']>['participants']>[number];
 
   const participantList = (participants ?? []) as EventDetailParticipant[];
+
+  // Count participants by status
+  const goingCount = participantList.filter(p => p.status === ParticipantStatus.Going || p.status === ParticipantStatus.CheckedIn).length;
+  const interestedCount = participantList.filter(p => p.status === ParticipantStatus.Interested).length;
+  const waitlistedCount = participantList.filter(p => p.status === ParticipantStatus.Waitlisted).length;
 
   const getParticipantDisplayName = (participant: EventDetailParticipant) => {
     const nameParts = [participant.user?.given_name, participant.user?.family_name].filter(Boolean);
@@ -184,65 +192,6 @@ export default async function Page(props: Props) {
             Back to Events
           </Button>
         </Box>
-
-        {/* Event Title Overlay */}
-        <Container
-          maxWidth="lg"
-          sx={{
-            position: 'absolute',
-            bottom: { xs: 16, md: 20 },
-            left: 0,
-            right: 0,
-            zIndex: 2,
-          }}
-        >
-          <Stack spacing={1.25}>
-            <Typography
-              variant="h2"
-              sx={{
-                color: 'common.white',
-                fontWeight: 800,
-                fontSize: { xs: '1.625rem', sm: '2rem', md: '2.5rem' },
-                textShadow: '0 2px 20px rgba(0,0,0,0.5)',
-                lineHeight: 1.2,
-              }}
-            >
-              {title}
-            </Typography>
-            <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap">
-              <Stack direction="row" spacing={1} alignItems="center">
-                <Groups sx={{ color: 'common.white', fontSize: 20 }} />
-                <Typography variant="body1" sx={{ color: 'common.white', fontWeight: 600 }}>
-                  {participantList.length} attending
-                </Typography>
-              </Stack>
-              {participantList.length > 0 && (
-                <AvatarGroup 
-                  max={5} 
-                  sx={{ 
-                    '& .MuiAvatar-root': { 
-                      width: 32, 
-                      height: 32, 
-                      fontSize: '0.875rem',
-                      border: '2px solid',
-                      borderColor: 'common.white',
-                    } 
-                  }}
-                >
-                  {participantList.slice(0, 5).map(participant => (
-                    <Avatar
-                      key={participant.participantId}
-                      src={participant.user?.profile_picture || undefined}
-                      alt={getParticipantDisplayName(participant)}
-                    >
-                      {getParticipantInitial(participant)}
-                    </Avatar>
-                  ))}
-                </AvatarGroup>
-              )}
-            </Stack>
-          </Stack>
-        </Container>
       </Box>
 
       {/* Main Content */}
@@ -250,7 +199,7 @@ export default async function Page(props: Props) {
         <Grid container spacing={4}>
           {/* Left Column - Main Content */}
           <Grid size={{ xs: 12, md: 8 }}>
-            {/* Action Card */}
+            {/* Title & Action Card */}
             <Card
               elevation={0}
               sx={{
@@ -261,7 +210,19 @@ export default async function Page(props: Props) {
                 overflow: 'visible',
               }}
             >
-              <CardContent sx={{ p: 3 }}>
+              <CardContent sx={{ p: { xs: 3, md: 4 } }}>
+                <Typography
+                  variant="h3"
+                  component="h1"
+                  sx={{
+                    fontWeight: 800,
+                    fontSize: { xs: '1.5rem', sm: '1.875rem', md: '2.25rem' },
+                    lineHeight: 1.2,
+                    mb: 3,
+                  }}
+                >
+                  {title}
+                </Typography>
                 <EventDetailActions
                   eventId={eventRetrieved.readEventBySlug.eventId}
                   eventUrl={eventUrl}
@@ -395,9 +356,19 @@ export default async function Page(props: Props) {
               }}
             >
               <CardContent sx={{ p: 4 }}>
-                <Typography variant="h5" fontWeight={700} gutterBottom sx={{ mb: 3 }}>
-                  Who's Going
-                </Typography>
+                <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 3 }}>
+                  <Typography variant="h5" fontWeight={700}>
+                    Who&apos;s Attending
+                  </Typography>
+                  {participantList.length > 0 && (
+                    <Chip
+                      label={participantList.length}
+                      size="small"
+                      color="primary"
+                      sx={{ fontWeight: 700, minWidth: 32 }}
+                    />
+                  )}
+                </Stack>
                 
                 {participantList.length === 0 ? (
                   <Box
@@ -531,6 +502,44 @@ export default async function Page(props: Props) {
                           <Typography variant="body1" fontWeight={600} sx={{ mt: 0.5 }}>
                             Free
                           </Typography>
+                        </Box>
+                      </Stack>
+                    </Box>
+
+                    <Divider />
+
+                    <Box>
+                      <Stack direction="row" spacing={1.5} alignItems="flex-start">
+                        <Groups sx={{ fontSize: 24, color: 'primary.main', mt: 0.5 }} />
+                        <Box sx={{ flex: 1 }}>
+                          <Typography variant="overline" color="text.secondary" fontWeight={600} sx={{ letterSpacing: 1 }}>
+                            Attendance
+                          </Typography>
+                          <Stack spacing={0.5} sx={{ mt: 0.5 }}>
+                            {goingCount > 0 && (
+                              <Stack direction="row" justifyContent="space-between" alignItems="center">
+                                <Typography variant="body2" color="text.secondary">Going</Typography>
+                                <Typography variant="body2" fontWeight={700} color="primary.main">{goingCount}</Typography>
+                              </Stack>
+                            )}
+                            {interestedCount > 0 && (
+                              <Stack direction="row" justifyContent="space-between" alignItems="center">
+                                <Typography variant="body2" color="text.secondary">Interested</Typography>
+                                <Typography variant="body2" fontWeight={700} color="info.main">{interestedCount}</Typography>
+                              </Stack>
+                            )}
+                            {waitlistedCount > 0 && (
+                              <Stack direction="row" justifyContent="space-between" alignItems="center">
+                                <Typography variant="body2" color="text.secondary">Waitlisted</Typography>
+                                <Typography variant="body2" fontWeight={700} color="warning.main">{waitlistedCount}</Typography>
+                              </Stack>
+                            )}
+                            {participantList.length === 0 && (
+                              <Typography variant="body2" color="text.secondary" fontStyle="italic">
+                                No RSVPs yet
+                              </Typography>
+                            )}
+                          </Stack>
                         </Box>
                       </Stack>
                     </Box>

@@ -110,67 +110,69 @@ describe('EventDAO', () => {
 
   describe('readEventById', () => {
     it('should read an event by ID and return the populated event object', async () => {
-      (EventModel.findById as jest.Mock).mockReturnValue(
-        createMockSuccessMongooseQuery({
-          toObject: () => expectedEvent,
-        }),
+      (EventModel.aggregate as jest.Mock).mockReturnValue(
+        createMockSuccessMongooseQuery([expectedEvent]),
       );
 
       const eventId = 'mockEventId';
       const readEvent = await EventDAO.readEventById(eventId);
       expect(readEvent).toEqual(expectedEvent);
-      expect(EventModel.findById).toHaveBeenCalledWith(eventId);
+      expect(EventModel.aggregate).toHaveBeenCalled();
+      // Verify the pipeline starts with a $match for eventId
+      const pipeline = (EventModel.aggregate as jest.Mock).mock.calls[0][0];
+      expect(pipeline[0]).toEqual({$match: {eventId: eventId}});
     });
 
     it('should throw NOT_FOUND GraphQLError when event is not found by ID', async () => {
-      (EventModel.findById as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(null));
+      (EventModel.aggregate as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery([]));
       const eventId = 'mockEventId';
 
       await expect(EventDAO.readEventById(eventId)).rejects.toThrow(CustomError(`Event with eventId ${eventId} not found`, ErrorTypes.NOT_FOUND));
-      expect(EventModel.findById).toHaveBeenCalledWith(eventId);
+      expect(EventModel.aggregate).toHaveBeenCalled();
     });
 
-    it('should throw INTERNAL_SERVER_ERROR GraphQLError when EventModel.findById throws an UNKNOWN error', async () => {
-      (EventModel.findById as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(new MockMongoError(0)));
+    it('should throw INTERNAL_SERVER_ERROR GraphQLError when EventModel.aggregate throws an UNKNOWN error', async () => {
+      (EventModel.aggregate as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(new MockMongoError(0)));
       const eventId = 'mockEventId';
 
       await expect(EventDAO.readEventById(eventId)).rejects.toThrow(
         CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR),
       );
-      expect(EventModel.findById).toHaveBeenCalledWith(eventId);
+      expect(EventModel.aggregate).toHaveBeenCalled();
     });
   });
 
   describe('readEventBySlug', () => {
     it('should read an event by slug and return the populated event object', async () => {
-      (EventModel.findOne as jest.Mock).mockReturnValue(
-        createMockSuccessMongooseQuery({
-          toObject: () => expectedEvent,
-        }),
+      (EventModel.aggregate as jest.Mock).mockReturnValue(
+        createMockSuccessMongooseQuery([expectedEvent]),
       );
 
       const slug = 'sample-event';
 
       const readEvent = await EventDAO.readEventBySlug(slug);
       expect(readEvent).toEqual(expectedEvent);
-      expect(EventModel.findOne).toHaveBeenCalledWith({slug});
+      expect(EventModel.aggregate).toHaveBeenCalled();
+      // Verify the pipeline starts with a $match for slug
+      const pipeline = (EventModel.aggregate as jest.Mock).mock.calls[0][0];
+      expect(pipeline[0]).toEqual({$match: {slug: slug}});
     });
 
     it('should throw NOT_FOUND GraphQLError when event is not found by slug', async () => {
-      (EventModel.findOne as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(null));
+      (EventModel.aggregate as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery([]));
       const slug = 'nonexistent-event';
 
       await expect(EventDAO.readEventBySlug(slug)).rejects.toThrow(CustomError(`Event with slug ${slug} not found`, ErrorTypes.NOT_FOUND));
-      expect(EventModel.findOne).toHaveBeenCalledWith({slug});
+      expect(EventModel.aggregate).toHaveBeenCalled();
     });
 
-    it('should throw INTERNAL_SERVER_ERROR GraphQLError when EventModel.findOne throws an UNKNOWN error', async () => {
-      (EventModel.findOne as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(new MockMongoError(0)));
+    it('should throw INTERNAL_SERVER_ERROR GraphQLError when EventModel.aggregate throws an UNKNOWN error', async () => {
+      (EventModel.aggregate as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(new MockMongoError(0)));
       const mockGraphqlError = new GraphQLError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR);
       const slug = 'sample-event';
 
       await expect(EventDAO.readEventBySlug(slug)).rejects.toThrow(mockGraphqlError);
-      expect(EventModel.findOne).toHaveBeenCalledWith({slug});
+      expect(EventModel.aggregate).toHaveBeenCalled();
     });
   });
 

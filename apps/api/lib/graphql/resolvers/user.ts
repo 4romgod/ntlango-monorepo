@@ -7,6 +7,7 @@ import {ERROR_MESSAGES, validateEmail, validateInput, validateMongodbId, validat
 import {RESOLVER_DESCRIPTIONS, USER_DESCRIPTIONS} from '@/constants';
 import {getAuthenticatedUser} from '@/utils';
 import type {ServerContext} from '@/graphql';
+import {UserService} from '@/services';
 
 @Resolver(() => User)
 export class UserResolver {
@@ -105,16 +106,7 @@ export class UserResolver {
   async blockUser(@Arg('blockedUserId', () => ID) blockedUserId: string, @Ctx() context: ServerContext): Promise<User> {
     const user = getAuthenticatedUser(context);
     validateMongodbId(blockedUserId, ERROR_MESSAGES.NOT_FOUND('User', 'ID', blockedUserId));
-    
-    // Remove any follow relationships in both directions (ignore if they don't exist)
-    await FollowDAO.remove({followerUserId: user.userId, targetType: FollowTargetType.User, targetId: blockedUserId}).catch(() => {
-      /* Ignore error if follow relationship doesn't exist */
-    });
-    await FollowDAO.remove({followerUserId: blockedUserId, targetType: FollowTargetType.User, targetId: user.userId}).catch(() => {
-      /* Ignore error if follow relationship doesn't exist */
-    });
-
-    return UserDAO.blockUser(user.userId, blockedUserId);
+    return UserService.blockUser(user.userId, blockedUserId);
   }
 
   @Authorized([UserRole.Admin, UserRole.Host, UserRole.User])
@@ -122,7 +114,7 @@ export class UserResolver {
   async unblockUser(@Arg('blockedUserId', () => ID) blockedUserId: string, @Ctx() context: ServerContext): Promise<User> {
     const user = getAuthenticatedUser(context);
     validateMongodbId(blockedUserId, ERROR_MESSAGES.NOT_FOUND('User', 'ID', blockedUserId));
-    return UserDAO.unblockUser(user.userId, blockedUserId);
+    return UserService.unblockUser(user.userId, blockedUserId);
   }
 
   @Authorized([UserRole.Admin, UserRole.Host, UserRole.User])
@@ -139,7 +131,7 @@ export class UserResolver {
   async muteUser(@Arg('mutedUserId', () => ID) mutedUserId: string, @Ctx() context: ServerContext): Promise<User> {
     const user = getAuthenticatedUser(context);
     validateMongodbId(mutedUserId, ERROR_MESSAGES.NOT_FOUND('User', 'ID', mutedUserId));
-    return UserDAO.muteUser(user.userId, mutedUserId);
+    return UserService.muteUser(user.userId, mutedUserId);
   }
 
   @Authorized([UserRole.Admin, UserRole.Host, UserRole.User])
@@ -147,7 +139,7 @@ export class UserResolver {
   async unmuteUser(@Arg('mutedUserId', () => ID) mutedUserId: string, @Ctx() context: ServerContext): Promise<User> {
     const user = getAuthenticatedUser(context);
     validateMongodbId(mutedUserId, ERROR_MESSAGES.NOT_FOUND('User', 'ID', mutedUserId));
-    return UserDAO.unmuteUser(user.userId, mutedUserId);
+    return UserService.unmuteUser(user.userId, mutedUserId);
   }
 
   @Authorized([UserRole.Admin, UserRole.Host, UserRole.User])
@@ -164,7 +156,7 @@ export class UserResolver {
   async muteOrganization(@Arg('organizationId', () => ID) organizationId: string, @Ctx() context: ServerContext): Promise<User> {
     const user = getAuthenticatedUser(context);
     validateMongodbId(organizationId, ERROR_MESSAGES.NOT_FOUND('Organization', 'ID', organizationId));
-    return UserDAO.muteOrganization(user.userId, organizationId);
+    return UserService.muteOrganization(user.userId, organizationId);
   }
 
   @Authorized([UserRole.Admin, UserRole.Host, UserRole.User])
@@ -172,7 +164,7 @@ export class UserResolver {
   async unmuteOrganization(@Arg('organizationId', () => ID) organizationId: string, @Ctx() context: ServerContext): Promise<User> {
     const user = getAuthenticatedUser(context);
     validateMongodbId(organizationId, ERROR_MESSAGES.NOT_FOUND('Organization', 'ID', organizationId));
-    return UserDAO.unmuteOrganization(user.userId, organizationId);
+    return UserService.unmuteOrganization(user.userId, organizationId);
   }
 
   @Authorized([UserRole.Admin, UserRole.Host, UserRole.User])

@@ -132,7 +132,36 @@ export const SOCIAL_DESCRIPTIONS = {
         EVENT_AT: 'Timestamp when the activity occurred.',
         METADATA: 'Additional metadata that enriches the activity.',
     },
+    NOTIFICATION: {
+        TYPE: 'Represents a notification sent to a user about an action or event in the system.',
+        TYPE_ENUM: 'Enum of all notification types (follows, events, comments, security, etc.).',
+        CREATE_INPUT: 'Input type for creating a new notification.',
+        ID: 'Unique identifier for the notification.',
+        RECIPIENT_USER_ID: 'ID of the user who receives the notification.',
+        NOTIFICATION_TYPE: 'The type/category of the notification.',
+        TITLE: 'Short title summarizing the notification.',
+        MESSAGE: 'Detailed message body of the notification.',
+        ACTOR_USER_ID: 'ID of the user who triggered the notification (if applicable).',
+        TARGET_TYPE: 'Type of the entity the notification references (User, Event, Organization, Comment).',
+        TARGET_ID: 'ID of the target entity the notification references.',
+        IS_READ: 'Whether the notification has been read by the recipient.',
+        READ_AT: 'Timestamp when the notification was marked as read.',
+        EMAIL_SENT: 'Whether an email notification was sent.',
+        PUSH_SENT: 'Whether a push notification was sent.',
+        ACTION_URL: 'Deep link URL for the notification action.',
+        QUERIES: {
+            notifications: 'Fetch paginated notifications for the authenticated user.',
+            unreadNotificationCount: 'Get the count of unread notifications for the authenticated user.',
+        },
+        MUTATIONS: {
+            markNotificationRead: 'Mark a single notification as read.',
+            markAllNotificationsRead: 'Mark all notifications as read for the authenticated user.',
+            deleteNotification: 'Delete a notification.',
+        },
+    },
 };
+
+export const NOTIFICATION_DESCRIPTIONS = SOCIAL_DESCRIPTIONS.NOTIFICATION;
 
 export const ORGANIZATION_LINK_DESCRIPTIONS = {
     TYPE: 'Represents a short link for an organization, including a label and target URL.',

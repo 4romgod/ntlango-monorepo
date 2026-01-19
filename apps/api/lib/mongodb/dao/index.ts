@@ -9,3 +9,4 @@ export {default as VenueDAO} from '@/mongodb/dao/venue';
 export {default as FollowDAO} from '@/mongodb/dao/follow';
 export {default as IntentDAO} from '@/mongodb/dao/intent';
 export {default as ActivityDAO} from '@/mongodb/dao/activity';
+export {default as NotificationDAO} from '@/mongodb/dao/notification';
