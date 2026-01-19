@@ -1,11 +1,11 @@
-import {GraphQLError} from 'graphql';
-import {VenueDAO} from '@/mongodb/dao';
-import {Venue as VenueModel} from '@/mongodb/models';
-import type {CreateVenueInput, QueryOptionsInput, UpdateVenueInput, Venue} from '@ntlango/commons/types';
-import {VenueType} from '@ntlango/commons/types';
-import {CustomError, ErrorTypes, transformOptionsToQuery} from '@/utils';
-import {MockMongoError} from '@/test/utils';
-import {ERROR_MESSAGES} from '@/validation';
+import { GraphQLError } from 'graphql';
+import { VenueDAO } from '@/mongodb/dao';
+import { Venue as VenueModel } from '@/mongodb/models';
+import type { CreateVenueInput, QueryOptionsInput, UpdateVenueInput, Venue } from '@ntlango/commons/types';
+import { VenueType } from '@ntlango/commons/types';
+import { CustomError, ErrorTypes, transformOptionsToQuery } from '@/utils';
+import { MockMongoError } from '@/test/utils';
+import { ERROR_MESSAGES } from '@/validation';
 
 jest.mock('@/mongodb/models', () => ({
   Venue: {
@@ -103,14 +103,16 @@ describe('VenueDAO', () => {
 
       const result = await VenueDAO.readVenueById('venue-1');
 
-      expect(VenueModel.findOne).toHaveBeenCalledWith({venueId: 'venue-1'});
+      expect(VenueModel.findOne).toHaveBeenCalledWith({ venueId: 'venue-1' });
       expect(result).toEqual(mockVenue);
     });
 
     it('throws not found error', async () => {
       (VenueModel.findOne as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(null));
 
-      await expect(VenueDAO.readVenueById('missing')).rejects.toThrow(CustomError('Venue with id missing not found', ErrorTypes.NOT_FOUND));
+      await expect(VenueDAO.readVenueById('missing')).rejects.toThrow(
+        CustomError('Venue with id missing not found', ErrorTypes.NOT_FOUND),
+      );
     });
 
     it('rethrows GraphQLError', async () => {
@@ -138,7 +140,7 @@ describe('VenueDAO', () => {
       ]);
       (transformOptionsToQuery as jest.Mock).mockReturnValue(queryResult);
 
-      const options: QueryOptionsInput = {pagination: {limit: 10, skip: 0}};
+      const options: QueryOptionsInput = { pagination: { limit: 10, skip: 0 } };
       const result = await VenueDAO.readVenues(options);
 
       expect(transformOptionsToQuery).toHaveBeenCalledWith(VenueModel, options);
@@ -148,7 +150,9 @@ describe('VenueDAO', () => {
     it('wraps errors', async () => {
       (VenueModel.find as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(new MockMongoError(0)));
 
-      await expect(VenueDAO.readVenues()).rejects.toThrow(CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR));
+      await expect(VenueDAO.readVenues()).rejects.toThrow(
+        CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR),
+      );
     });
   });
 
@@ -164,7 +168,7 @@ describe('VenueDAO', () => {
 
       const result = await VenueDAO.readVenuesByOrgId('org-1');
 
-      expect(VenueModel.find).toHaveBeenCalledWith({orgId: 'org-1'});
+      expect(VenueModel.find).toHaveBeenCalledWith({ orgId: 'org-1' });
       expect(result).toEqual([mockVenue]);
     });
 
@@ -179,7 +183,7 @@ describe('VenueDAO', () => {
 
   describe('update', () => {
     it('updates venue', async () => {
-      const mockSave = jest.fn().mockResolvedValue({toObject: () => mockVenue});
+      const mockSave = jest.fn().mockResolvedValue({ toObject: () => mockVenue });
       (VenueModel.findOne as jest.Mock).mockReturnValue(
         createMockSuccessMongooseQuery({
           ...mockVenue,
@@ -195,7 +199,7 @@ describe('VenueDAO', () => {
 
       const result = await VenueDAO.update(input);
 
-      expect(VenueModel.findOne).toHaveBeenCalledWith({venueId: 'venue-1'});
+      expect(VenueModel.findOne).toHaveBeenCalledWith({ venueId: 'venue-1' });
       expect(mockSave).toHaveBeenCalled();
       expect(result).toEqual(mockVenue);
     });
@@ -203,13 +207,15 @@ describe('VenueDAO', () => {
     it('throws not found error', async () => {
       (VenueModel.findOne as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(null));
 
-      await expect(VenueDAO.update({venueId: 'missing'})).rejects.toThrow(CustomError('Venue with id missing not found', ErrorTypes.NOT_FOUND));
+      await expect(VenueDAO.update({ venueId: 'missing' })).rejects.toThrow(
+        CustomError('Venue with id missing not found', ErrorTypes.NOT_FOUND),
+      );
     });
 
     it('wraps unknown errors', async () => {
       (VenueModel.findOne as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(new MockMongoError(0)));
 
-      await expect(VenueDAO.update({venueId: 'venue-1'})).rejects.toThrow(
+      await expect(VenueDAO.update({ venueId: 'venue-1' })).rejects.toThrow(
         CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR),
       );
     });
@@ -225,14 +231,16 @@ describe('VenueDAO', () => {
 
       const result = await VenueDAO.delete('venue-1');
 
-      expect(VenueModel.findOneAndDelete).toHaveBeenCalledWith({venueId: 'venue-1'});
+      expect(VenueModel.findOneAndDelete).toHaveBeenCalledWith({ venueId: 'venue-1' });
       expect(result).toEqual(mockVenue);
     });
 
     it('throws not found error', async () => {
       (VenueModel.findOneAndDelete as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(null));
 
-      await expect(VenueDAO.delete('missing')).rejects.toThrow(CustomError('Venue with id missing not found', ErrorTypes.NOT_FOUND));
+      await expect(VenueDAO.delete('missing')).rejects.toThrow(
+        CustomError('Venue with id missing not found', ErrorTypes.NOT_FOUND),
+      );
     });
 
     it('wraps unknown errors', async () => {

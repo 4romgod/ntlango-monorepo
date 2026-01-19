@@ -1,16 +1,17 @@
-import type {NextFn, ResolverData} from 'type-graphql';
-import {HTTP_METHOD_COLOR_MAP, RESOLVE_TIME_COLOR_MAP, GRAPHQL_API_PATH, ANSI_COLOR_CODES} from '@/constants';
-import {getStatusCodeColor} from '@/utils';
-import type {ServerContext} from '@/graphql';
-import {logger} from '@/utils/logger';
+import type { NextFn, ResolverData } from 'type-graphql';
+import { HTTP_METHOD_COLOR_MAP, RESOLVE_TIME_COLOR_MAP, GRAPHQL_API_PATH, ANSI_COLOR_CODES } from '@/constants';
+import { getStatusCodeColor } from '@/utils';
+import type { ServerContext } from '@/graphql';
+import { logger } from '@/utils/logger';
 
 // TODO make it work with AWS Lambda
-export const ResolveTime = async ({context, info}: ResolverData<ServerContext>, next: NextFn) => {
+export const ResolveTime = async ({ context, info }: ResolverData<ServerContext>, next: NextFn) => {
   const start = Date.now();
   await next();
   const resolveTime = Date.now() - start;
 
-  const resolveTimeColor = RESOLVE_TIME_COLOR_MAP.find((color) => resolveTime <= color.threshold)?.color ?? ANSI_COLOR_CODES.GREEN;
+  const resolveTimeColor =
+    RESOLVE_TIME_COLOR_MAP.find((color) => resolveTime <= color.threshold)?.color ?? ANSI_COLOR_CODES.GREEN;
 
   const httpMethod = context.req?.method ?? 'UNKNOWN HTTP METHOD';
   const httpMethodColor = HTTP_METHOD_COLOR_MAP[httpMethod] ?? ANSI_COLOR_CODES.GREEN;

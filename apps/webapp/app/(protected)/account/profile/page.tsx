@@ -79,10 +79,10 @@ export default async function UserPublicProfile() {
     logger.debug('[Profile] Saved events fetched:', savedEventsData?.readSavedEvents?.length ?? 0);
   } catch (error: unknown) {
     logger.error('[Profile] Error fetching saved events:', error);
-    
+
     const isAuthError = isApolloAuthError(error);
     logger.debug('[Profile] Is auth error:', isAuthError);
-    
+
     if (isAuthError) {
       logger.info('[Profile] Token expired - redirecting to login');
       // Redirect to login when token is expired
@@ -93,14 +93,14 @@ export default async function UserPublicProfile() {
   }
 
   const allEvents = (events.readEvents ?? []) as EventPreview[];
-  const rsvpdEvents = allEvents.filter(event => event.participants?.some(p => p.userId === user.userId));
-  const organizedEvents = allEvents.filter(event =>
-    event.organizers.some(organizer => organizer.user.userId === user.userId),
+  const rsvpdEvents = allEvents.filter((event) => event.participants?.some((p) => p.userId === user.userId));
+  const organizedEvents = allEvents.filter((event) =>
+    event.organizers.some((organizer) => organizer.user.userId === user.userId),
   );
-  
+
   // Extract saved events from follow records
   const savedEvents = (savedEventsData?.readSavedEvents ?? [])
-    .map(follow => follow.targetEvent)
+    .map((follow) => follow.targetEvent)
     .filter((event): event is NonNullable<typeof event> => event !== null && event !== undefined) as EventPreview[];
 
   const interests = user.interests ? user.interests : [];

@@ -22,12 +22,12 @@ import { useEventFilters } from '@/hooks/useEventFilters';
 export default function CategoryFilter({ categoryList, sxProps, onChange }: CategoryFilterProps) {
   const contextFilters = onChange ? null : useEventFilters();
   const [localCategories, setLocalCategories] = useState<string[]>([]);
-  
-  const selectedCategories = onChange ? localCategories : (contextFilters?.filters.categories || []);
+
+  const selectedCategories = onChange ? localCategories : contextFilters?.filters.categories || [];
 
   const handleCategoryChange = (event: SelectChangeEvent<string[]>) => {
     const selected = event.target.value as string[];
-    
+
     if (onChange) {
       setLocalCategories(selected);
       onChange(selected);
@@ -62,7 +62,7 @@ export default function CategoryFilter({ categoryList, sxProps, onChange }: Cate
           multiple
           value={selectedCategories}
           onChange={handleCategoryChange}
-          renderValue={selected => (
+          renderValue={(selected) => (
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
               {selected.map((value: string) => (
                 <Chip
@@ -84,7 +84,7 @@ export default function CategoryFilter({ categoryList, sxProps, onChange }: Cate
             },
           }}
         >
-          {categoryList.map(category => {
+          {categoryList.map((category) => {
             const IconComponent = getEventCategoryIcon(category.iconName);
             const isSelected = selectedCategories.includes(category.name);
             return (

@@ -44,61 +44,37 @@ export default async function SettingsPage() {
       {
         name: 'Profile',
         content: <EditProfilePage user={user} />,
-        icon: <PersonOutlined
-          sx={{ marginRight: 1 }}
-          key="profile-icon"
-          fontSize="small"
-        />,
+        icon: <PersonOutlined sx={{ marginRight: 1 }} key="profile-icon" fontSize="small" />,
         description: 'Customize your public profile',
       },
       {
         name: 'Personal',
         content: <PersonalSettingsPage user={user} />,
-        icon: <Person
-          key="personal-icon"
-          fontSize="small"
-          sx={{ marginRight: 1 }}
-        />,
+        icon: <Person key="personal-icon" fontSize="small" sx={{ marginRight: 1 }} />,
         description: 'Personal details and privacy',
       },
       {
         name: 'Interests',
         content: <InterestsSettingsPage user={user} eventCategoryGroups={groups.readEventCategoryGroups} />,
-        icon: <Interests
-          key="interests-icon"
-          fontSize="small"
-          sx={{ marginRight: 1 }}
-        />,
+        icon: <Interests key="interests-icon" fontSize="small" sx={{ marginRight: 1 }} />,
         description: 'Manage your event interests',
       },
       {
         name: 'Events',
         content: <EventSettingsPage user={user} />,
-        icon: <Event
-          key="events-icon"
-          fontSize="small"
-          sx={{ marginRight: 1 }}
-        />,
+        icon: <Event key="events-icon" fontSize="small" sx={{ marginRight: 1 }} />,
         description: 'Event preferences and notifications',
       },
       {
         name: 'Account',
         content: <AccountSettingsPage user={user} />,
-        icon: <ManageAccounts
-          key="account-icon"
-          fontSize="small"
-          sx={{ marginRight: 1 }}
-        />,
+        icon: <ManageAccounts key="account-icon" fontSize="small" sx={{ marginRight: 1 }} />,
         description: 'Account security and settings',
       },
       {
         name: 'Password',
         content: <PasswordSettingsPage />,
-        icon: <Password
-          key="password-icon"
-          fontSize="small"
-          sx={{ marginRight: 1 }}
-        />,
+        icon: <Password key="password-icon" fontSize="small" sx={{ marginRight: 1 }} />,
         description: 'Change your password',
       },
       // TODO We will bring this back when we have the functionality to connect to social media

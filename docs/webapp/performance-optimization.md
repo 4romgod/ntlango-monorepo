@@ -1,7 +1,9 @@
 # Performance Optimization Guide
 
 ## Overview
-This document outlines the performance optimizations implemented in the Ntlango webapp to achieve faster page loads and better user experience.
+
+This document outlines the performance optimizations implemented in the Ntlango webapp to achieve faster page loads and
+better user experience.
 
 ## Implemented Optimizations
 
@@ -12,6 +14,7 @@ This document outlines the performance optimizations implemented in the Ntlango 
 **Solution**: Used `Promise.all()` to execute independent queries in parallel.
 
 #### Before (Sequential - SLOW)
+
 ```tsx
 // Each query waits for the previous one to complete
 const { data: events } = await getClient().query({ query: GetAllEventsDocument });
@@ -22,6 +25,7 @@ const venues = await getClient().query({ query: GET_VENUES });
 ```
 
 #### After (Parallel - FAST)
+
 ```tsx
 // All queries execute simultaneously
 const [{ data: events }, { data: categories }, orgs, venues] = await Promise.all([
@@ -36,6 +40,7 @@ const [{ data: events }, { data: categories }, orgs, venues] = await Promise.all
 **Impact**: 50-75% reduction in Time To First Byte (TTFB)
 
 **Pages optimized**:
+
 - [Homepage](../../apps/webapp/app/page.tsx) - 4 parallel queries
 - [Events page](../../apps/webapp/app/events/page.tsx) - 2 parallel queries
 - Organizations page - single query (no change needed)
@@ -50,13 +55,14 @@ const [{ data: events }, { data: categories }, orgs, venues] = await Promise.all
 **Solution**: Added explicit type policies to Apollo Client cache configuration.
 
 #### Implementation
+
 ```typescript
 // apps/webapp/data/graphql/apollo-client.ts
 new InMemoryCache({
   typePolicies: {
     Query: {
       fields: {
-        readEvents: { merge: false },           // Replace instead of merge
+        readEvents: { merge: false }, // Replace instead of merge
         readEventCategories: { merge: false },
         readOrganizations: { merge: false },
         readVenues: { merge: false },
@@ -64,10 +70,11 @@ new InMemoryCache({
       },
     },
   },
-})
+});
 ```
 
 **Benefits**:
+
 - Prevents unnecessary array merging operations
 - Ensures fresh data on each query
 - Reduces memory overhead from accumulated cache entries
@@ -81,6 +88,7 @@ new InMemoryCache({
 **Solution**: Added `revalidate` export to enable Next.js ISR with CDN-level caching.
 
 #### Implementation
+
 ```typescript
 // Frequently updated content (events, homepage)
 export const revalidate = 60; // Revalidate every 60 seconds
@@ -90,14 +98,16 @@ export const revalidate = 120; // Revalidate every 2 minutes
 ```
 
 **Benefits**:
+
 - **First load after revalidation**: Fresh data from API
 - **Subsequent loads within window**: Instant response from CDN cache
 - **Reduces API load**: Fewer database queries
 - **Better UX**: Near-instant page loads for cached content
 
 **Pages configured**:
+
 - Homepage: 60s revalidation
-- Events page: 60s revalidation  
+- Events page: 60s revalidation
 - Organizations page: 120s revalidation
 - Venues page: 120s revalidation
 
@@ -113,9 +123,7 @@ Utilities for measuring query and operation times:
 import { measureAsync, measureParallel } from '@/lib/utils/performance';
 
 // Measure single async operation
-const result = await measureAsync('Load events', () => 
-  getClient().query({ query: GetAllEventsDocument })
-);
+const result = await measureAsync('Load events', () => getClient().query({ query: GetAllEventsDocument }));
 
 // Measure parallel operations with individual timing
 const [events, categories] = await measureParallel([
@@ -125,6 +133,7 @@ const [events, categories] = await measureParallel([
 ```
 
 **Output example**:
+
 ```
 [Performance] Starting 4 parallel operations...
   ✓ Events: 245.32ms
@@ -140,16 +149,17 @@ const [events, categories] = await measureParallel([
 
 ### Expected Improvements
 
-| Metric | Before | After | Improvement |
-|--------|--------|-------|-------------|
-| Homepage TTFB | 2000-4000ms | 500-1000ms | **60-75%** |
-| Events Page TTFB | 800-1500ms | 250-500ms | **60-70%** |
-| Cache Hit Response | N/A | <50ms | **New capability** |
-| API Query Load | 100% | 30-40% | **60-70% reduction** |
+| Metric             | Before      | After      | Improvement          |
+| ------------------ | ----------- | ---------- | -------------------- |
+| Homepage TTFB      | 2000-4000ms | 500-1000ms | **60-75%**           |
+| Events Page TTFB   | 800-1500ms  | 250-500ms  | **60-70%**           |
+| Cache Hit Response | N/A         | <50ms      | **New capability**   |
+| API Query Load     | 100%        | 30-40%     | **60-70% reduction** |
 
 ### Measurement
 
 Use browser DevTools or Lighthouse to measure:
+
 1. **TTFB (Time To First Byte)**: Network tab → First document request
 2. **LCP (Largest Contentful Paint)**: Performance tab → Core Web Vitals
 3. **FCP (First Contentful Paint)**: Shows when content starts rendering
@@ -162,16 +172,18 @@ Use browser DevTools or Lighthouse to measure:
 ### When Adding New Pages
 
 1. **Always parallelize independent queries**:
+
    ```tsx
    // ❌ DON'T
    const data1 = await query1();
    const data2 = await query2();
-   
+
    // ✅ DO
    const [data1, data2] = await Promise.all([query1(), query2()]);
    ```
 
 2. **Add ISR revalidation based on data freshness**:
+
    ```tsx
    // Real-time data (user feed, notifications): No revalidation
    // Dynamic data (events, posts): 60s revalidation
@@ -205,9 +217,11 @@ Use browser DevTools or Lighthouse to measure:
 ## Debugging Performance Issues
 
 ### Check Server Logs
+
 Server-side rendering logs can be viewed in the terminal running `npm run dev:web`
 
 ### Use Performance Monitoring
+
 ```tsx
 import { measureParallel } from '@/lib/utils/performance';
 
@@ -218,17 +232,20 @@ const queries = await measureParallel([
 ```
 
 ### Verify ISR is Working
+
 1. Load page → Check response headers for `x-nextjs-cache`
 2. First load: `MISS` or `STALE`
 3. Subsequent loads within revalidation window: `HIT`
 
 ### Profile with Next.js Speed Insights
+
 ```bash
 # Install Vercel Speed Insights
 npm install @vercel/speed-insights
 ```
 
 Add to root layout:
+
 ```tsx
 import { SpeedInsights } from '@vercel/speed-insights/next';
 

@@ -1,13 +1,23 @@
 import 'reflect-metadata';
-import {Arg, Mutation, Resolver, Query, Authorized, FieldResolver, Root, Ctx, ID} from 'type-graphql';
-import {FollowDAO, UserDAO} from '@/mongodb/dao';
-import {User, CreateUserInput, UpdateUserInput, LoginUserInput, UserRole, UserWithToken, QueryOptionsInput, EventCategory, FollowTargetType} from '@ntlango/commons/types';
-import {CreateUserInputSchema, LoginUserInputSchema, UpdateUserInputSchema} from '@/validation/zod';
-import {ERROR_MESSAGES, validateEmail, validateInput, validateMongodbId, validateUsername} from '@/validation';
-import {RESOLVER_DESCRIPTIONS, USER_DESCRIPTIONS} from '@/constants';
-import {getAuthenticatedUser} from '@/utils';
-import type {ServerContext} from '@/graphql';
-import {UserService} from '@/services';
+import { Arg, Mutation, Resolver, Query, Authorized, FieldResolver, Root, Ctx, ID } from 'type-graphql';
+import { FollowDAO, UserDAO } from '@/mongodb/dao';
+import {
+  User,
+  CreateUserInput,
+  UpdateUserInput,
+  LoginUserInput,
+  UserRole,
+  UserWithToken,
+  QueryOptionsInput,
+  EventCategory,
+  FollowTargetType,
+} from '@ntlango/commons/types';
+import { CreateUserInputSchema, LoginUserInputSchema, UpdateUserInputSchema } from '@/validation/zod';
+import { ERROR_MESSAGES, validateEmail, validateInput, validateMongodbId, validateUsername } from '@/validation';
+import { RESOLVER_DESCRIPTIONS, USER_DESCRIPTIONS } from '@/constants';
+import { getAuthenticatedUser } from '@/utils';
+import type { ServerContext } from '@/graphql';
+import { UserService } from '@/services';
 
 @Resolver(() => User)
 export class UserResolver {
@@ -19,71 +29,73 @@ export class UserResolver {
     return FollowDAO.countFollowers(FollowTargetType.User, user.userId);
   }
 
-  @Mutation(() => UserWithToken, {description: RESOLVER_DESCRIPTIONS.USER.createUser})
+  @Mutation(() => UserWithToken, { description: RESOLVER_DESCRIPTIONS.USER.createUser })
   async createUser(
-    @Arg('input', () => CreateUserInput, {description: USER_DESCRIPTIONS.CREATE_INPUT}) input: CreateUserInput,
+    @Arg('input', () => CreateUserInput, { description: USER_DESCRIPTIONS.CREATE_INPUT }) input: CreateUserInput,
   ): Promise<UserWithToken> {
     validateInput<CreateUserInput>(CreateUserInputSchema, input);
     return UserDAO.create(input);
   }
 
   // TODO https://hygraph.com/learn/graphql/authentication-and-authorization
-  @Mutation(() => UserWithToken, {description: RESOLVER_DESCRIPTIONS.USER.loginUser})
+  @Mutation(() => UserWithToken, { description: RESOLVER_DESCRIPTIONS.USER.loginUser })
   async loginUser(@Arg('input', () => LoginUserInput) input: LoginUserInput): Promise<UserWithToken> {
     validateInput<LoginUserInput>(LoginUserInputSchema, input);
     return UserDAO.login(input);
   }
 
   @Authorized([UserRole.Admin, UserRole.User, UserRole.Host])
-  @Mutation(() => User, {description: RESOLVER_DESCRIPTIONS.USER.updateUser})
+  @Mutation(() => User, { description: RESOLVER_DESCRIPTIONS.USER.updateUser })
   async updateUser(@Arg('input', () => UpdateUserInput) input: UpdateUserInput): Promise<User> {
     validateInput<UpdateUserInput>(UpdateUserInputSchema, input);
     return UserDAO.updateUser(input);
   }
 
   @Authorized([UserRole.Admin, UserRole.User, UserRole.Host])
-  @Mutation(() => User, {description: RESOLVER_DESCRIPTIONS.USER.deleteUserById})
+  @Mutation(() => User, { description: RESOLVER_DESCRIPTIONS.USER.deleteUserById })
   async deleteUserById(@Arg('userId', () => String) userId: string): Promise<User> {
     validateMongodbId(userId, ERROR_MESSAGES.NOT_FOUND('User', 'ID', userId));
     return UserDAO.deleteUserById(userId);
   }
 
   @Authorized([UserRole.Admin, UserRole.User, UserRole.Host])
-  @Mutation(() => User, {description: RESOLVER_DESCRIPTIONS.USER.deleteUserByEmail})
+  @Mutation(() => User, { description: RESOLVER_DESCRIPTIONS.USER.deleteUserByEmail })
   async deleteUserByEmail(@Arg('email', () => String) email: string): Promise<User> {
     validateEmail(email);
     return UserDAO.deleteUserByEmail(email);
   }
 
   @Authorized([UserRole.Admin, UserRole.User, UserRole.Host])
-  @Mutation(() => User, {description: RESOLVER_DESCRIPTIONS.USER.deleteUserByUsername})
+  @Mutation(() => User, { description: RESOLVER_DESCRIPTIONS.USER.deleteUserByUsername })
   async deleteUserByUsername(@Arg('username', () => String) username: string): Promise<User> {
     validateUsername(username);
     return UserDAO.deleteUserByUsername(username);
   }
 
-  @Query(() => User, {description: RESOLVER_DESCRIPTIONS.USER.readUserById})
+  @Query(() => User, { description: RESOLVER_DESCRIPTIONS.USER.readUserById })
   async readUserById(@Arg('userId', () => String) userId: string): Promise<User | null> {
     validateMongodbId(userId, ERROR_MESSAGES.NOT_FOUND('User', 'ID', userId));
     return UserDAO.readUserById(userId);
   }
 
-  @Query(() => User, {description: RESOLVER_DESCRIPTIONS.USER.readUserByUsername})
+  @Query(() => User, { description: RESOLVER_DESCRIPTIONS.USER.readUserByUsername })
   async readUserByUsername(@Arg('username', () => String) username: string): Promise<User | null> {
     return UserDAO.readUserByUsername(username);
   }
 
-  @Query(() => User, {description: RESOLVER_DESCRIPTIONS.USER.readUserByEmail})
+  @Query(() => User, { description: RESOLVER_DESCRIPTIONS.USER.readUserByEmail })
   async readUserByEmail(@Arg('email', () => String) email: string): Promise<User | null> {
     return UserDAO.readUserByEmail(email);
   }
 
-  @Query(() => [User], {description: RESOLVER_DESCRIPTIONS.USER.readUsers})
-  async readUsers(@Arg('options', () => QueryOptionsInput, {nullable: true}) options?: QueryOptionsInput): Promise<User[]> {
+  @Query(() => [User], { description: RESOLVER_DESCRIPTIONS.USER.readUsers })
+  async readUsers(
+    @Arg('options', () => QueryOptionsInput, { nullable: true }) options?: QueryOptionsInput,
+  ): Promise<User[]> {
     return UserDAO.readUsers(options);
   }
 
-  @FieldResolver(() => [EventCategory], {nullable: true})
+  @FieldResolver(() => [EventCategory], { nullable: true })
   async interests(@Root() user: User, @Ctx() context: ServerContext): Promise<EventCategory[]> {
     if (!user.interests || user.interests.length === 0) {
       return [];
@@ -96,13 +108,15 @@ export class UserResolver {
     }
 
     // Batch-load via DataLoader
-    const categoryIds = user.interests.map((ref) => (typeof ref === 'string' ? ref : (ref as any)._id?.toString() || ref.toString()));
+    const categoryIds = user.interests.map((ref) =>
+      typeof ref === 'string' ? ref : (ref as any)._id?.toString() || ref.toString(),
+    );
     const categories = await Promise.all(categoryIds.map((id) => context.loaders.eventCategory.load(id)));
     return categories.filter((c): c is EventCategory => c !== null);
   }
 
   @Authorized([UserRole.Admin, UserRole.Host, UserRole.User])
-  @Mutation(() => User, {description: 'Block a user'})
+  @Mutation(() => User, { description: 'Block a user' })
   async blockUser(@Arg('blockedUserId', () => ID) blockedUserId: string, @Ctx() context: ServerContext): Promise<User> {
     const user = getAuthenticatedUser(context);
     validateMongodbId(blockedUserId, ERROR_MESSAGES.NOT_FOUND('User', 'ID', blockedUserId));
@@ -110,15 +124,18 @@ export class UserResolver {
   }
 
   @Authorized([UserRole.Admin, UserRole.Host, UserRole.User])
-  @Mutation(() => User, {description: 'Unblock a user'})
-  async unblockUser(@Arg('blockedUserId', () => ID) blockedUserId: string, @Ctx() context: ServerContext): Promise<User> {
+  @Mutation(() => User, { description: 'Unblock a user' })
+  async unblockUser(
+    @Arg('blockedUserId', () => ID) blockedUserId: string,
+    @Ctx() context: ServerContext,
+  ): Promise<User> {
     const user = getAuthenticatedUser(context);
     validateMongodbId(blockedUserId, ERROR_MESSAGES.NOT_FOUND('User', 'ID', blockedUserId));
     return UserService.unblockUser(user.userId, blockedUserId);
   }
 
   @Authorized([UserRole.Admin, UserRole.Host, UserRole.User])
-  @Query(() => [User], {description: 'Get blocked users'})
+  @Query(() => [User], { description: 'Get blocked users' })
   async readBlockedUsers(@Ctx() context: ServerContext): Promise<User[]> {
     const user = getAuthenticatedUser(context);
     return UserDAO.readBlockedUsers(user.userId);
@@ -127,7 +144,7 @@ export class UserResolver {
   // ============ MUTE USER MUTATIONS ============
 
   @Authorized([UserRole.Admin, UserRole.Host, UserRole.User])
-  @Mutation(() => User, {description: 'Mute a user to hide their content from your feed'})
+  @Mutation(() => User, { description: 'Mute a user to hide their content from your feed' })
   async muteUser(@Arg('mutedUserId', () => ID) mutedUserId: string, @Ctx() context: ServerContext): Promise<User> {
     const user = getAuthenticatedUser(context);
     validateMongodbId(mutedUserId, ERROR_MESSAGES.NOT_FOUND('User', 'ID', mutedUserId));
@@ -135,7 +152,7 @@ export class UserResolver {
   }
 
   @Authorized([UserRole.Admin, UserRole.Host, UserRole.User])
-  @Mutation(() => User, {description: 'Unmute a user to show their content in your feed again'})
+  @Mutation(() => User, { description: 'Unmute a user to show their content in your feed again' })
   async unmuteUser(@Arg('mutedUserId', () => ID) mutedUserId: string, @Ctx() context: ServerContext): Promise<User> {
     const user = getAuthenticatedUser(context);
     validateMongodbId(mutedUserId, ERROR_MESSAGES.NOT_FOUND('User', 'ID', mutedUserId));
@@ -143,7 +160,7 @@ export class UserResolver {
   }
 
   @Authorized([UserRole.Admin, UserRole.Host, UserRole.User])
-  @Query(() => [User], {description: 'Get muted users'})
+  @Query(() => [User], { description: 'Get muted users' })
   async readMutedUsers(@Ctx() context: ServerContext): Promise<User[]> {
     const user = getAuthenticatedUser(context);
     return UserDAO.readMutedUsers(user.userId);
@@ -152,23 +169,29 @@ export class UserResolver {
   // ============ MUTE ORGANIZATION MUTATIONS ============
 
   @Authorized([UserRole.Admin, UserRole.Host, UserRole.User])
-  @Mutation(() => User, {description: 'Mute an organization to hide their content from your feed'})
-  async muteOrganization(@Arg('organizationId', () => ID) organizationId: string, @Ctx() context: ServerContext): Promise<User> {
+  @Mutation(() => User, { description: 'Mute an organization to hide their content from your feed' })
+  async muteOrganization(
+    @Arg('organizationId', () => ID) organizationId: string,
+    @Ctx() context: ServerContext,
+  ): Promise<User> {
     const user = getAuthenticatedUser(context);
     validateMongodbId(organizationId, ERROR_MESSAGES.NOT_FOUND('Organization', 'ID', organizationId));
     return UserService.muteOrganization(user.userId, organizationId);
   }
 
   @Authorized([UserRole.Admin, UserRole.Host, UserRole.User])
-  @Mutation(() => User, {description: 'Unmute an organization to show their content in your feed again'})
-  async unmuteOrganization(@Arg('organizationId', () => ID) organizationId: string, @Ctx() context: ServerContext): Promise<User> {
+  @Mutation(() => User, { description: 'Unmute an organization to show their content in your feed again' })
+  async unmuteOrganization(
+    @Arg('organizationId', () => ID) organizationId: string,
+    @Ctx() context: ServerContext,
+  ): Promise<User> {
     const user = getAuthenticatedUser(context);
     validateMongodbId(organizationId, ERROR_MESSAGES.NOT_FOUND('Organization', 'ID', organizationId));
     return UserService.unmuteOrganization(user.userId, organizationId);
   }
 
   @Authorized([UserRole.Admin, UserRole.Host, UserRole.User])
-  @Query(() => [String], {description: 'Get muted organization IDs'})
+  @Query(() => [String], { description: 'Get muted organization IDs' })
   async readMutedOrganizationIds(@Ctx() context: ServerContext): Promise<string[]> {
     const user = getAuthenticatedUser(context);
     return UserDAO.readMutedOrganizationIds(user.userId);

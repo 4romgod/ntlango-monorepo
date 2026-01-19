@@ -2,12 +2,7 @@ import Link from 'next/link';
 import { DynamicFeed, People, PersonAdd, Event as EventIcon, Person, Business } from '@mui/icons-material';
 import { Avatar, Box, Button, Card, Chip, Grid, Stack, Typography } from '@mui/material';
 import CustomContainer from '@/components/custom-container';
-import { 
-  ROUTES, 
-  CARD_STYLES, 
-  BUTTON_PRIMARY_STYLES,
-  SECTION_TITLE_STYLES,
-} from '@/lib/constants';
+import { ROUTES, CARD_STYLES, BUTTON_PRIMARY_STYLES, SECTION_TITLE_STYLES } from '@/lib/constants';
 import { GetSocialFeedQuery } from '@/data/graphql/types/graphql';
 import { JSX } from 'react';
 
@@ -63,7 +58,7 @@ const formatActivityDate = (value?: string | Date | null): string | null => {
   if (diffMins < 60) return `${diffMins}m ago`;
   if (diffHours < 24) return `${diffHours}h ago`;
   if (diffDays < 7) return `${diffDays}d ago`;
-  
+
   return date.toLocaleDateString(undefined, {
     month: 'short',
     day: 'numeric',
@@ -148,11 +143,11 @@ export default function SocialFeed({ isAuthenticated, hasToken, socialFeed }: So
               Social layer
             </Typography>
             <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-              Follow hosts, friends, and organizations, share your intent with the right audience, and catch the
-              moments your circle is creating in one place.
+              Follow hosts, friends, and organizations, share your intent with the right audience, and catch the moments
+              your circle is creating in one place.
             </Typography>
             <Stack spacing={1}>
-              {socialHighlights.map(highlight => (
+              {socialHighlights.map((highlight) => (
                 <Card
                   key={highlight.title}
                   elevation={0}
@@ -209,14 +204,14 @@ export default function SocialFeed({ isAuthenticated, hasToken, socialFeed }: So
               </Typography>
               <Stack spacing={2} flexGrow={1}>
                 {isAuthenticated && socialFeed.length > 0 ? (
-                  socialFeed.map(activity => {
+                  socialFeed.map((activity) => {
                     const actorName = getActorDisplayName(activity);
                     const objectLabel = getObjectLabel(activity);
                     const objectLink = getObjectLink(activity);
                     const verbLabel = verbLabels[activity.verb] ?? activity.verb;
                     const timestampLabel = formatActivityDate(activity.createdAt ?? activity.eventAt);
                     const actorLink = activity.actor?.username ? ROUTES.USERS.USER(activity.actor.username) : null;
-                    
+
                     const getActivityIcon = () => {
                       if (activity.objectType === 'Event') return <EventIcon sx={{ fontSize: 14 }} />;
                       if (activity.objectType === 'User') return <Person sx={{ fontSize: 14 }} />;
@@ -274,7 +269,10 @@ export default function SocialFeed({ isAuthenticated, hasToken, socialFeed }: So
                           <Typography variant="body2" sx={{ lineHeight: 1.4 }}>
                             {actorLink ? (
                               <Link href={actorLink} style={{ textDecoration: 'none', color: 'inherit' }}>
-                                <Typography component="span" sx={{ fontWeight: 600, '&:hover': { color: 'primary.main' } }}>
+                                <Typography
+                                  component="span"
+                                  sx={{ fontWeight: 600, '&:hover': { color: 'primary.main' } }}
+                                >
                                   {actorName}
                                 </Typography>
                               </Link>
@@ -288,7 +286,10 @@ export default function SocialFeed({ isAuthenticated, hasToken, socialFeed }: So
                             </Typography>{' '}
                             {objectLink ? (
                               <Link href={objectLink} style={{ textDecoration: 'none', color: 'inherit' }}>
-                                <Typography component="span" sx={{ fontWeight: 600, '&:hover': { color: 'primary.main' } }}>
+                                <Typography
+                                  component="span"
+                                  sx={{ fontWeight: 600, '&:hover': { color: 'primary.main' } }}
+                                >
                                   {objectLabel}
                                 </Typography>
                               </Link>

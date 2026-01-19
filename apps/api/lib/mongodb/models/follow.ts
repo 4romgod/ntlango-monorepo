@@ -1,6 +1,6 @@
 import 'reflect-metadata';
-import {getModelForClass, pre} from '@typegoose/typegoose';
-import {Follow as FollowEntity} from '@ntlango/commons/types';
+import { getModelForClass, pre } from '@typegoose/typegoose';
+import { Follow as FollowEntity } from '@ntlango/commons/types';
 
 @pre<FollowModel>('validate', function (next) {
   try {
@@ -15,7 +15,7 @@ import {Follow as FollowEntity} from '@ntlango/commons/types';
 class FollowModel extends FollowEntity {}
 
 const Follow = getModelForClass(FollowModel, {
-  options: {customName: 'Follow'},
+  options: { customName: 'Follow' },
 });
 
 export default Follow;

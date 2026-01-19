@@ -1,6 +1,6 @@
-import {RRuleSet, rrulestr} from 'rrule';
-import {logger} from './logger';
-import {DATE_FILTER_OPTIONS, type DateFilterOption} from '@ntlango/commons';
+import { RRuleSet, rrulestr } from 'rrule';
+import { logger } from './logger';
+import { DATE_FILTER_OPTIONS, type DateFilterOption } from '@ntlango/commons';
 
 /**
  * Parse an RRULE string and return occurrences within a date range
@@ -9,19 +9,19 @@ export function getOccurrencesInRange(
   rruleString: string,
   startDate: Date,
   endDate: Date,
-  maxOccurrences: number = 100
+  maxOccurrences: number = 100,
 ): Date[] {
   try {
     // Parse the RRULE string
-    const rule = rrulestr(rruleString, {forceset: true}) as RRuleSet;
-    
+    const rule = rrulestr(rruleString, { forceset: true }) as RRuleSet;
+
     // Get occurrences between the date range
     const occurrences = rule.between(startDate, endDate, true);
-    
+
     // Limit the number of occurrences to prevent performance issues
     return occurrences.slice(0, maxOccurrences);
   } catch (error) {
-    logger.error('Error parsing RRULE string:', {rruleString, error});
+    logger.error('Error parsing RRULE string:', { rruleString, error });
     return [];
   }
 }
@@ -29,11 +29,7 @@ export function getOccurrencesInRange(
 /**
  * Check if an event (via its RRULE) has any occurrences within a date range
  */
-export function hasOccurrenceInRange(
-  rruleString: string,
-  startDate: Date,
-  endDate: Date
-): boolean {
+export function hasOccurrenceInRange(rruleString: string, startDate: Date, endDate: Date): boolean {
   const occurrences = getOccurrencesInRange(rruleString, startDate, endDate, 1);
   return occurrences.length > 0;
 }
@@ -43,11 +39,11 @@ export function hasOccurrenceInRange(
  */
 export function getNextOccurrence(rruleString: string, fromDate: Date = new Date()): Date | null {
   try {
-    const rule = rrulestr(rruleString, {forceset: true}) as RRuleSet;
+    const rule = rrulestr(rruleString, { forceset: true }) as RRuleSet;
     const nextOccurrence = rule.after(fromDate, true);
     return nextOccurrence;
   } catch (error) {
-    logger.error('Error getting next occurrence:', {rruleString, error});
+    logger.error('Error getting next occurrence:', { rruleString, error });
     return null;
   }
 }
@@ -57,8 +53,8 @@ export function getNextOccurrence(rruleString: string, fromDate: Date = new Date
  */
 export function getDateRangeForFilter(
   filterOption: DateFilterOption | typeof DATE_FILTER_OPTIONS.CUSTOM,
-  customDate?: Date
-): {startDate: Date; endDate: Date} {
+  customDate?: Date,
+): { startDate: Date; endDate: Date } {
   const now = new Date();
   now.setHours(0, 0, 0, 0); // Start of today
 
@@ -67,7 +63,7 @@ export function getDateRangeForFilter(
       const start = new Date(now);
       const end = new Date(now);
       end.setHours(23, 59, 59, 999);
-      return {startDate: start, endDate: end};
+      return { startDate: start, endDate: end };
     }
 
     case DATE_FILTER_OPTIONS.TOMORROW: {
@@ -75,7 +71,7 @@ export function getDateRangeForFilter(
       start.setDate(start.getDate() + 1);
       const end = new Date(start);
       end.setHours(23, 59, 59, 999);
-      return {startDate: start, endDate: end};
+      return { startDate: start, endDate: end };
     }
 
     case DATE_FILTER_OPTIONS.THIS_WEEK: {
@@ -83,17 +79,17 @@ export function getDateRangeForFilter(
       // Get to the start of the week (Sunday)
       const dayOfWeek = start.getDay();
       start.setDate(start.getDate() - dayOfWeek);
-      
+
       const end = new Date(start);
       end.setDate(end.getDate() + 6); // End of week (Saturday)
       end.setHours(23, 59, 59, 999);
-      return {startDate: start, endDate: end};
+      return { startDate: start, endDate: end };
     }
 
     case DATE_FILTER_OPTIONS.THIS_WEEKEND: {
       const start = new Date(now);
       const dayOfWeek = start.getDay();
-      
+
       if (dayOfWeek === 0) {
         // Sunday: go to next Saturday (6 days forward)
         start.setDate(start.getDate() + 6);
@@ -104,18 +100,18 @@ export function getDateRangeForFilter(
         // Monday-Friday: go to upcoming Saturday
         start.setDate(start.getDate() + (6 - dayOfWeek));
       }
-      
+
       const end = new Date(start);
       end.setDate(end.getDate() + 1); // Sunday
       end.setHours(23, 59, 59, 999);
-      return {startDate: start, endDate: end};
+      return { startDate: start, endDate: end };
     }
 
     case DATE_FILTER_OPTIONS.THIS_MONTH: {
       const start = new Date(now.getFullYear(), now.getMonth(), 1);
       const end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
       end.setHours(23, 59, 59, 999);
-      return {startDate: start, endDate: end};
+      return { startDate: start, endDate: end };
     }
 
     case DATE_FILTER_OPTIONS.CUSTOM: {
@@ -127,7 +123,7 @@ export function getDateRangeForFilter(
       start.setHours(0, 0, 0, 0);
       const end = new Date(customDate);
       end.setHours(23, 59, 59, 999);
-      return {startDate: start, endDate: end};
+      return { startDate: start, endDate: end };
     }
 
     default:

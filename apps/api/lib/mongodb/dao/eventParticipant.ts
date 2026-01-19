@@ -1,18 +1,21 @@
-import {GraphQLError} from 'graphql';
-import type {EventParticipant as EventParticipantEntity, UpsertEventParticipantInput, CancelEventParticipantInput} from '@ntlango/commons/types';
-import {ParticipantStatus} from '@ntlango/commons/types';
-import {EventParticipant} from '@/mongodb/models';
-import {CustomError, ErrorTypes, KnownCommonError} from '@/utils';
-import {logger} from '@/utils/logger';
-
+import { GraphQLError } from 'graphql';
+import type {
+  EventParticipant as EventParticipantEntity,
+  UpsertEventParticipantInput,
+  CancelEventParticipantInput,
+} from '@ntlango/commons/types';
+import { ParticipantStatus } from '@ntlango/commons/types';
+import { EventParticipant } from '@/mongodb/models';
+import { CustomError, ErrorTypes, KnownCommonError } from '@/utils';
+import { logger } from '@/utils/logger';
 
 class EventParticipantDAO {
   static async upsert(input: UpsertEventParticipantInput): Promise<EventParticipantEntity> {
     try {
-      const {eventId, userId, status = ParticipantStatus.Going, quantity, invitedBy, sharedVisibility} = input;
+      const { eventId, userId, status = ParticipantStatus.Going, quantity, invitedBy, sharedVisibility } = input;
 
-      let participant = await EventParticipant.findOne({eventId, userId}).exec();
-      
+      let participant = await EventParticipant.findOne({ eventId, userId }).exec();
+
       if (participant) {
         participant.status = status;
         if (quantity !== undefined) participant.quantity = quantity;
@@ -43,13 +46,13 @@ class EventParticipantDAO {
 
   static async cancel(input: CancelEventParticipantInput): Promise<EventParticipantEntity> {
     try {
-      const {eventId, userId} = input;
-      const participant = await EventParticipant.findOne({eventId, userId}).exec();
+      const { eventId, userId } = input;
+      const participant = await EventParticipant.findOne({ eventId, userId }).exec();
 
       if (!participant) {
         throw CustomError(`Participant not found for event ${eventId}`, ErrorTypes.NOT_FOUND);
       }
-      
+
       participant.status = ParticipantStatus.Cancelled;
       participant.cancelledAt = new Date();
       await participant.save();
@@ -66,7 +69,7 @@ class EventParticipantDAO {
 
   static async readByEvent(eventId: string): Promise<EventParticipantEntity[]> {
     try {
-      const participants = await EventParticipant.find({eventId}).exec();
+      const participants = await EventParticipant.find({ eventId }).exec();
       return participants.map((p) => p.toObject());
     } catch (error) {
       logger.error('Error reading participants', error);
@@ -80,9 +83,9 @@ class EventParticipantDAO {
    */
   static async readByUser(userId: string, activeOnly = true): Promise<EventParticipantEntity[]> {
     try {
-      const query: Record<string, unknown> = {userId};
+      const query: Record<string, unknown> = { userId };
       if (activeOnly) {
-        query.status = {$ne: ParticipantStatus.Cancelled};
+        query.status = { $ne: ParticipantStatus.Cancelled };
       }
       const participants = await EventParticipant.find(query).exec();
       return participants.map((p) => p.toObject());
@@ -98,7 +101,7 @@ class EventParticipantDAO {
    */
   static async readByEventAndUser(eventId: string, userId: string): Promise<EventParticipantEntity | null> {
     try {
-      const participant = await EventParticipant.findOne({eventId, userId}).exec();
+      const participant = await EventParticipant.findOne({ eventId, userId }).exec();
       return participant ? participant.toObject() : null;
     } catch (error) {
       logger.error('Error reading user RSVP for event', error);
@@ -112,12 +115,12 @@ class EventParticipantDAO {
    */
   static async countByEvent(eventId: string, statuses?: ParticipantStatus[]): Promise<number> {
     try {
-      const query: Record<string, unknown> = {eventId};
+      const query: Record<string, unknown> = { eventId };
       if (statuses && statuses.length > 0) {
-        query.status = {$in: statuses};
+        query.status = { $in: statuses };
       } else {
         // By default, exclude cancelled
-        query.status = {$ne: ParticipantStatus.Cancelled};
+        query.status = { $ne: ParticipantStatus.Cancelled };
       }
       return await EventParticipant.countDocuments(query).exec();
     } catch (error) {

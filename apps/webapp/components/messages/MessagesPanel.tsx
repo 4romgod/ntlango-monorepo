@@ -85,7 +85,7 @@ const mockThreads = [
 export default function MessagesPage() {
   const [selectedThreadId, setSelectedThreadId] = useState<number>(mockThreads[0].id);
 
-  const selectedThread = mockThreads.find(t => t.id === selectedThreadId);
+  const selectedThread = mockThreads.find((t) => t.id === selectedThreadId);
 
   return (
     <Box sx={{ py: 6 }}>
@@ -149,7 +149,7 @@ export default function MessagesPage() {
                   <Divider sx={{ mb: 2 }} />
 
                   <Box display="flex" flexDirection="column" gap={2}>
-                    {selectedThread.messages.map(msg => (
+                    {selectedThread.messages.map((msg) => (
                       <Box
                         key={msg.id}
                         sx={{

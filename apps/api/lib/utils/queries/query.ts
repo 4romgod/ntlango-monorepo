@@ -1,5 +1,5 @@
-import type {FilterInput, PaginationInput, QueryOptionsInput, SortInput} from '@ntlango/commons/types';
-import type {Model, Query} from 'mongoose';
+import type { FilterInput, PaginationInput, QueryOptionsInput, SortInput } from '@ntlango/commons/types';
+import type { Model, Query } from 'mongoose';
 
 export const addSortToQuery = <ResultType, DocType>(query: Query<ResultType, DocType>, sortInput: SortInput[]) => {
   const sortOptions: Record<string, 1 | -1> = {};
@@ -9,7 +9,10 @@ export const addSortToQuery = <ResultType, DocType>(query: Query<ResultType, Doc
   query.sort(sortOptions);
 };
 
-export const addPaginationToQuery = <ResultType, DocType>(query: Query<ResultType, DocType>, paginationInput: PaginationInput) => {
+export const addPaginationToQuery = <ResultType, DocType>(
+  query: Query<ResultType, DocType>,
+  paginationInput: PaginationInput,
+) => {
   if (paginationInput.skip) {
     query.skip(paginationInput.skip);
   }
@@ -20,7 +23,7 @@ export const addPaginationToQuery = <ResultType, DocType>(query: Query<ResultTyp
 
 // TODO fix this and make it filter for nested fields, filter event based on gender of organizers
 export const addFiltersToQuery = <ResultType, DocType>(query: Query<ResultType, DocType>, filters: FilterInput[]) => {
-  filters.forEach(({field, value, operator}) => {
+  filters.forEach(({ field, value, operator }) => {
     const fieldParts = field.split('.');
     if (fieldParts.length === 1) {
       switch (operator) {
@@ -53,7 +56,7 @@ export const addFiltersToQuery = <ResultType, DocType>(query: Query<ResultType, 
 export const transformOptionsToQuery = <T>(model: Model<T>, options: QueryOptionsInput) => {
   const query = model.find();
 
-  const {filters, sort, pagination} = options;
+  const { filters, sort, pagination } = options;
 
   if (filters) {
     addFiltersToQuery(query, filters);

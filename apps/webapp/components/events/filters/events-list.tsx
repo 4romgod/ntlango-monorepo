@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { Box, Stack, Typography, Alert, Button } from '@mui/material';
 import ClearIcon from '@mui/icons-material/Clear';
@@ -18,11 +18,7 @@ export default function EventsList({ events, loading, error, hasActiveFilters, o
 
   if (error) {
     return (
-      <Alert 
-        severity="error" 
-        onClose={() => window.location.reload()}
-        sx={{ mb: 2 }}
-      >
+      <Alert severity="error" onClose={() => window.location.reload()} sx={{ mb: 2 }}>
         {error}
       </Alert>
     );
@@ -60,14 +56,8 @@ export default function EventsList({ events, loading, error, hasActiveFilters, o
   return (
     <Box>
       <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3}>
-        <Typography 
-          variant="h6" 
-          fontWeight={600}
-          sx={{ color: 'text.primary', marginTop: 5 }}
-        >
-          {showSkeletons
-            ? 'Loading events…'
-            : `${events.length} Event${events.length !== 1 ? 's' : ''} Found`}
+        <Typography variant="h6" fontWeight={600} sx={{ color: 'text.primary', marginTop: 5 }}>
+          {showSkeletons ? 'Loading events…' : `${events.length} Event${events.length !== 1 ? 's' : ''} Found`}
         </Typography>
       </Stack>
       <EventTileGrid events={events} loading={showSkeletons} />

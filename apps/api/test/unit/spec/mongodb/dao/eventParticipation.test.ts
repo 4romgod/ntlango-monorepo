@@ -1,11 +1,15 @@
-import {EventParticipantDAO} from '@/mongodb/dao';
-import {EventParticipant as EventParticipantModel} from '@/mongodb/models';
-import type {EventParticipant, UpsertEventParticipantInput, CancelEventParticipantInput} from '@ntlango/commons/types';
-import {ParticipantStatus, ParticipantVisibility} from '@ntlango/commons/types';
-import {CustomError, ErrorTypes} from '@/utils';
-import {GraphQLError} from 'graphql';
-import {MockMongoError} from '@/test/utils';
-import {Types} from 'mongoose';
+import { EventParticipantDAO } from '@/mongodb/dao';
+import { EventParticipant as EventParticipantModel } from '@/mongodb/models';
+import type {
+  EventParticipant,
+  UpsertEventParticipantInput,
+  CancelEventParticipantInput,
+} from '@ntlango/commons/types';
+import { ParticipantStatus, ParticipantVisibility } from '@ntlango/commons/types';
+import { CustomError, ErrorTypes } from '@/utils';
+import { GraphQLError } from 'graphql';
+import { MockMongoError } from '@/test/utils';
+import { Types } from 'mongoose';
 
 jest.mock('@/mongodb/models', () => ({
   EventParticipant: {
@@ -63,8 +67,8 @@ describe('EventParticipantDAO', () => {
       const existingParticipant = {
         ...mockEventParticipant,
         status: ParticipantStatus.Interested,
-        save: jest.fn().mockResolvedValue({...mockEventParticipant, quantity: 2, status: ParticipantStatus.Going}),
-        toObject: jest.fn().mockReturnValue({...mockEventParticipant, quantity: 2, status: ParticipantStatus.Going}),
+        save: jest.fn().mockResolvedValue({ ...mockEventParticipant, quantity: 2, status: ParticipantStatus.Going }),
+        toObject: jest.fn().mockReturnValue({ ...mockEventParticipant, quantity: 2, status: ParticipantStatus.Going }),
       };
 
       (EventParticipantModel.findOne as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(existingParticipant));
@@ -73,7 +77,7 @@ describe('EventParticipantDAO', () => {
 
       expect(result.status).toBe(ParticipantStatus.Going);
       expect(result.quantity).toBe(2);
-      expect(EventParticipantModel.findOne).toHaveBeenCalledWith({eventId: mockEventId, userId: mockUserId});
+      expect(EventParticipantModel.findOne).toHaveBeenCalledWith({ eventId: mockEventId, userId: mockUserId });
       expect(existingParticipant.save).toHaveBeenCalled();
     });
 
@@ -81,7 +85,7 @@ describe('EventParticipantDAO', () => {
       const newParticipant = {
         ...mockEventParticipant,
         quantity: 2,
-        toObject: jest.fn().mockReturnValue({...mockEventParticipant, quantity: 2}),
+        toObject: jest.fn().mockReturnValue({ ...mockEventParticipant, quantity: 2 }),
       };
 
       (EventParticipantModel.findOne as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(null));
@@ -90,12 +94,14 @@ describe('EventParticipantDAO', () => {
       const result = await EventParticipantDAO.upsert(mockUpsertInput);
 
       expect(result.quantity).toBe(2);
-      expect(EventParticipantModel.create).toHaveBeenCalledWith(expect.objectContaining({
-        eventId: mockEventId,
-        userId: mockUserId,
-        status: ParticipantStatus.Going,
-        quantity: 2,
-      }));
+      expect(EventParticipantModel.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          eventId: mockEventId,
+          userId: mockUserId,
+          status: ParticipantStatus.Going,
+          quantity: 2,
+        }),
+      );
     });
 
     it('should handle errors gracefully', async () => {
@@ -121,7 +127,7 @@ describe('EventParticipantDAO', () => {
       const newParticipant = {
         ...mockEventParticipant,
         status: ParticipantStatus.Going,
-        toObject: jest.fn().mockReturnValue({...mockEventParticipant, status: ParticipantStatus.Going}),
+        toObject: jest.fn().mockReturnValue({ ...mockEventParticipant, status: ParticipantStatus.Going }),
       };
 
       (EventParticipantModel.findOne as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(null));
@@ -142,7 +148,7 @@ describe('EventParticipantDAO', () => {
     it('should cancel a participant and return the updated participant object', async () => {
       const existingParticipant = {
         ...mockEventParticipant,
-        save: jest.fn().mockResolvedValue({...mockEventParticipant, status: ParticipantStatus.Cancelled}),
+        save: jest.fn().mockResolvedValue({ ...mockEventParticipant, status: ParticipantStatus.Cancelled }),
         toObject: jest.fn().mockReturnValue({
           ...mockEventParticipant,
           status: ParticipantStatus.Cancelled,
@@ -155,7 +161,7 @@ describe('EventParticipantDAO', () => {
       const result = await EventParticipantDAO.cancel(mockCancelInput);
 
       expect(result.status).toBe(ParticipantStatus.Cancelled);
-      expect(EventParticipantModel.findOne).toHaveBeenCalledWith({eventId: mockEventId, userId: mockUserId});
+      expect(EventParticipantModel.findOne).toHaveBeenCalledWith({ eventId: mockEventId, userId: mockUserId });
       expect(existingParticipant.save).toHaveBeenCalled();
     });
 
@@ -188,12 +194,12 @@ describe('EventParticipantDAO', () => {
         {
           ...mockEventParticipant,
           userId: 'user1',
-          toObject: jest.fn().mockReturnValue({...mockEventParticipant, userId: 'user1'}),
+          toObject: jest.fn().mockReturnValue({ ...mockEventParticipant, userId: 'user1' }),
         },
         {
           ...mockEventParticipant,
           userId: 'user2',
-          toObject: jest.fn().mockReturnValue({...mockEventParticipant, userId: 'user2'}),
+          toObject: jest.fn().mockReturnValue({ ...mockEventParticipant, userId: 'user2' }),
         },
       ];
 
@@ -204,7 +210,7 @@ describe('EventParticipantDAO', () => {
       expect(result).toHaveLength(2);
       expect(result[0].userId).toBe('user1');
       expect(result[1].userId).toBe('user2');
-      expect(EventParticipantModel.find).toHaveBeenCalledWith({eventId: mockEventId});
+      expect(EventParticipantModel.find).toHaveBeenCalledWith({ eventId: mockEventId });
     });
 
     it('should return an empty array when no participants are found for an event', async () => {
@@ -213,7 +219,7 @@ describe('EventParticipantDAO', () => {
       const result = await EventParticipantDAO.readByEvent(mockEventId);
 
       expect(result).toEqual([]);
-      expect(EventParticipantModel.find).toHaveBeenCalledWith({eventId: mockEventId});
+      expect(EventParticipantModel.find).toHaveBeenCalledWith({ eventId: mockEventId });
     });
 
     it('should throw INTERNAL_SERVER_ERROR GraphQLError when find throws an unknown error', async () => {
@@ -229,19 +235,25 @@ describe('EventParticipantDAO', () => {
           ...mockEventParticipant,
           userId: 'user1',
           status: ParticipantStatus.Going,
-          toObject: jest.fn().mockReturnValue({...mockEventParticipant, userId: 'user1', status: ParticipantStatus.Going}),
+          toObject: jest
+            .fn()
+            .mockReturnValue({ ...mockEventParticipant, userId: 'user1', status: ParticipantStatus.Going }),
         },
         {
           ...mockEventParticipant,
           userId: 'user2',
           status: ParticipantStatus.Interested,
-          toObject: jest.fn().mockReturnValue({...mockEventParticipant, userId: 'user2', status: ParticipantStatus.Interested}),
+          toObject: jest
+            .fn()
+            .mockReturnValue({ ...mockEventParticipant, userId: 'user2', status: ParticipantStatus.Interested }),
         },
         {
           ...mockEventParticipant,
           userId: 'user3',
           status: ParticipantStatus.Cancelled,
-          toObject: jest.fn().mockReturnValue({...mockEventParticipant, userId: 'user3', status: ParticipantStatus.Cancelled}),
+          toObject: jest
+            .fn()
+            .mockReturnValue({ ...mockEventParticipant, userId: 'user3', status: ParticipantStatus.Cancelled }),
         },
       ];
 
@@ -262,12 +274,12 @@ describe('EventParticipantDAO', () => {
         {
           ...mockEventParticipant,
           eventId: 'event1',
-          toObject: jest.fn().mockReturnValue({...mockEventParticipant, eventId: 'event1'}),
+          toObject: jest.fn().mockReturnValue({ ...mockEventParticipant, eventId: 'event1' }),
         },
         {
           ...mockEventParticipant,
           eventId: 'event2',
-          toObject: jest.fn().mockReturnValue({...mockEventParticipant, eventId: 'event2'}),
+          toObject: jest.fn().mockReturnValue({ ...mockEventParticipant, eventId: 'event2' }),
         },
       ];
 
@@ -278,7 +290,7 @@ describe('EventParticipantDAO', () => {
       expect(result).toHaveLength(2);
       expect(EventParticipantModel.find).toHaveBeenCalledWith({
         userId: mockUserId,
-        status: {$ne: ParticipantStatus.Cancelled},
+        status: { $ne: ParticipantStatus.Cancelled },
       });
     });
 
@@ -287,7 +299,7 @@ describe('EventParticipantDAO', () => {
         {
           ...mockEventParticipant,
           status: ParticipantStatus.Cancelled,
-          toObject: jest.fn().mockReturnValue({...mockEventParticipant, status: ParticipantStatus.Cancelled}),
+          toObject: jest.fn().mockReturnValue({ ...mockEventParticipant, status: ParticipantStatus.Cancelled }),
         },
       ];
 
@@ -296,7 +308,7 @@ describe('EventParticipantDAO', () => {
       const result = await EventParticipantDAO.readByUser(mockUserId, false);
 
       expect(result).toHaveLength(1);
-      expect(EventParticipantModel.find).toHaveBeenCalledWith({userId: mockUserId});
+      expect(EventParticipantModel.find).toHaveBeenCalledWith({ userId: mockUserId });
     });
 
     it('should return empty array when user has no RSVPs', async () => {
@@ -327,7 +339,7 @@ describe('EventParticipantDAO', () => {
       const result = await EventParticipantDAO.readByEventAndUser(mockEventId, mockUserId);
 
       expect(result).toEqual(mockEventParticipant);
-      expect(EventParticipantModel.findOne).toHaveBeenCalledWith({eventId: mockEventId, userId: mockUserId});
+      expect(EventParticipantModel.findOne).toHaveBeenCalledWith({ eventId: mockEventId, userId: mockUserId });
     });
 
     it('should return null when participant is not found', async () => {
@@ -355,7 +367,7 @@ describe('EventParticipantDAO', () => {
       expect(result).toBe(5);
       expect(EventParticipantModel.countDocuments).toHaveBeenCalledWith({
         eventId: mockEventId,
-        status: {$ne: ParticipantStatus.Cancelled},
+        status: { $ne: ParticipantStatus.Cancelled },
       });
     });
 
@@ -367,19 +379,22 @@ describe('EventParticipantDAO', () => {
       expect(result).toBe(3);
       expect(EventParticipantModel.countDocuments).toHaveBeenCalledWith({
         eventId: mockEventId,
-        status: {$in: [ParticipantStatus.Going]},
+        status: { $in: [ParticipantStatus.Going] },
       });
     });
 
     it('should count participants with multiple statuses', async () => {
       (EventParticipantModel.countDocuments as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(7));
 
-      const result = await EventParticipantDAO.countByEvent(mockEventId, [ParticipantStatus.Going, ParticipantStatus.Interested]);
+      const result = await EventParticipantDAO.countByEvent(mockEventId, [
+        ParticipantStatus.Going,
+        ParticipantStatus.Interested,
+      ]);
 
       expect(result).toBe(7);
       expect(EventParticipantModel.countDocuments).toHaveBeenCalledWith({
         eventId: mockEventId,
-        status: {$in: [ParticipantStatus.Going, ParticipantStatus.Interested]},
+        status: { $in: [ParticipantStatus.Going, ParticipantStatus.Interested] },
       });
     });
 

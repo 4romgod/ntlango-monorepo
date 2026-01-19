@@ -44,11 +44,7 @@ export default function CustomTabs({ tabsProps }: { tabsProps: CustomTabsProps }
   const tabPanels = useMemo(
     () =>
       tabs.map(({ content }, index) => (
-        <CustomTabPanel
-          key={`${id}-panel-content-${index}`}
-          value={value} index={index}
-          id={id}
-        >
+        <CustomTabPanel key={`${id}-panel-content-${index}`} value={value} index={index} id={id}>
           {content}
         </CustomTabPanel>
       )),
@@ -94,11 +90,7 @@ export default function CustomTabs({ tabsProps }: { tabsProps: CustomTabsProps }
       >
         {tabsTitle && !isSmallScreen && (
           <Box sx={{ p: 3 }}>
-            <Typography
-              variant="h5"
-              component="h2"
-              sx={{ fontWeight: 800, mt: 0.5 }}
-            >
+            <Typography variant="h5" component="h2" sx={{ fontWeight: 800, mt: 0.5 }}>
               {tabsTitle}
             </Typography>
           </Box>
@@ -115,9 +107,10 @@ export default function CustomTabs({ tabsProps }: { tabsProps: CustomTabsProps }
           allowScrollButtonsMobile
           slotProps={{
             indicator: {
-              style: effectiveOrientation === 'vertical' 
-                ? { left: 0, width: 3, borderRadius: 4, backgroundColor: theme.palette.primary.main } 
-                : { height: 0, display: 'none' },
+              style:
+                effectiveOrientation === 'vertical'
+                  ? { left: 0, width: 3, borderRadius: 4, backgroundColor: theme.palette.primary.main }
+                  : { height: 0, display: 'none' },
             },
           }}
           sx={{
@@ -213,9 +206,7 @@ export default function CustomTabs({ tabsProps }: { tabsProps: CustomTabsProps }
           minHeight: '100vh',
         }}
       >
-        <Box sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
-          {tabPanels}
-        </Box>
+        <Box sx={{ p: { xs: 2, sm: 3, md: 4 } }}>{tabPanels}</Box>
       </Card>
     </Box>
   );

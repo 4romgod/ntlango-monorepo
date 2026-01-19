@@ -13,7 +13,7 @@ export default function NavLinksList({ variant = 'toolbar' }: Props) {
   if (variant === 'toolbar') {
     return (
       <>
-        {NAV_LINKS.map(link => (
+        {NAV_LINKS.map((link) => (
           <Button
             key={link.label}
             component={Link}
@@ -35,7 +35,7 @@ export default function NavLinksList({ variant = 'toolbar' }: Props) {
 
   return (
     <List>
-      {NAV_LINKS.map(link => (
+      {NAV_LINKS.map((link) => (
         <Link key={link.label} href={link.href}>
           <ListItem disablePadding>
             <ListItemButton>

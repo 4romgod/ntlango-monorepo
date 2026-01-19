@@ -1,6 +1,6 @@
 import 'reflect-metadata';
-import {Media, Event, CreateEventInput, UpdateEventInput, RsvpInput, CancelRsvpInput} from '@ntlango/commons/types';
-import {EventPrivacySetting, EventStatus} from '@ntlango/commons/types/event';
+import { Media, Event, CreateEventInput, UpdateEventInput, RsvpInput, CancelRsvpInput } from '@ntlango/commons/types';
+import { EventPrivacySetting, EventStatus } from '@ntlango/commons/types/event';
 
 describe('Enums', () => {
   it('should ensure that EventPrivacySetting enum have the correct values', () => {

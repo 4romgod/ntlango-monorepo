@@ -1,6 +1,6 @@
-import {EventCategoryGroupResolver} from '@/graphql/resolvers/eventCategoryGroup';
-import type {EventCategoryGroup, EventCategory, User} from '@ntlango/commons/types';
-import type {ServerContext} from '@/graphql';
+import { EventCategoryGroupResolver } from '@/graphql/resolvers/eventCategoryGroup';
+import type { EventCategoryGroup, EventCategory, User } from '@ntlango/commons/types';
+import type { ServerContext } from '@/graphql';
 import DataLoader from 'dataloader';
 
 describe('EventCategoryGroupResolver Field Resolvers', () => {
@@ -13,8 +13,8 @@ describe('EventCategoryGroupResolver Field Resolvers', () => {
 
     mockEventCategoryLoader = new DataLoader(async (ids) => {
       return ids.map((id) => {
-        if (id === 'cat1') return {eventCategoryId: 'cat1', name: 'Sports'} as EventCategory;
-        if (id === 'cat2') return {eventCategoryId: 'cat2', name: 'Music'} as EventCategory;
+        if (id === 'cat1') return { eventCategoryId: 'cat1', name: 'Sports' } as EventCategory;
+        if (id === 'cat2') return { eventCategoryId: 'cat2', name: 'Music' } as EventCategory;
         return null;
       });
     });
@@ -29,21 +29,26 @@ describe('EventCategoryGroupResolver Field Resolvers', () => {
 
   describe('eventCategories field resolver', () => {
     it('should return empty array when eventCategories is undefined', async () => {
-      const group = {eventCategoryGroupId: 'group1', name: 'Group 1', slug: 'group-1'} as EventCategoryGroup;
+      const group = { eventCategoryGroupId: 'group1', name: 'Group 1', slug: 'group-1' } as EventCategoryGroup;
       const result = await resolver.eventCategories(group, mockContext);
       expect(result).toEqual([]);
     });
 
     it('should return empty array when eventCategories is empty', async () => {
-      const group = {eventCategoryGroupId: 'group1', name: 'Group 1', slug: 'group-1', eventCategories: []} as EventCategoryGroup;
+      const group = {
+        eventCategoryGroupId: 'group1',
+        name: 'Group 1',
+        slug: 'group-1',
+        eventCategories: [],
+      } as EventCategoryGroup;
       const result = await resolver.eventCategories(group, mockContext);
       expect(result).toEqual([]);
     });
 
     it('should return already populated categories without calling DataLoader', async () => {
       const populatedCategories = [
-        {eventCategoryId: 'cat1', name: 'Sports', slug: 'sports'} as EventCategory,
-        {eventCategoryId: 'cat2', name: 'Music', slug: 'music'} as EventCategory,
+        { eventCategoryId: 'cat1', name: 'Sports', slug: 'sports' } as EventCategory,
+        { eventCategoryId: 'cat2', name: 'Music', slug: 'music' } as EventCategory,
       ];
 
       const group = {

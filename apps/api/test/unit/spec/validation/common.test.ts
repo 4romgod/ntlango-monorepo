@@ -1,11 +1,18 @@
-import type {ZodSchema} from 'zod';
-import {z} from 'zod';
-import {validateMongodbId, validateInput, validateDate, ERROR_MESSAGES, validateEmail, validateUsername} from '@/validation';
-import {EventStatus} from '@ntlango/commons/types/event';
+import type { ZodSchema } from 'zod';
+import { z } from 'zod';
+import {
+  validateMongodbId,
+  validateInput,
+  validateDate,
+  ERROR_MESSAGES,
+  validateEmail,
+  validateUsername,
+} from '@/validation';
+import { EventStatus } from '@ntlango/commons/types/event';
 import mongoose from 'mongoose';
 
 jest.mock('@/utils/exceptions', () => ({
-  CustomError: jest.fn((message, type, extra) => ({message, type, extra})),
+  CustomError: jest.fn((message, type, extra) => ({ message, type, extra })),
   ErrorTypes: {
     NOT_FOUND: 'NotFound',
     BAD_USER_INPUT: 'BadUserInput',
@@ -90,12 +97,12 @@ describe('Validation functions', () => {
     });
 
     it('should validate correct input', () => {
-      const input = {name: 'John', age: 30};
+      const input = { name: 'John', age: 30 };
       expect(() => validateInput(schema, input)).not.toThrow();
     });
 
     it('should throw an error for invalid input', () => {
-      const input = {name: 'John', age: 'invalid'};
+      const input = { name: 'John', age: 'invalid' };
       expect(() => validateInput(schema, input)).toThrow({
         message: 'Expected number, received string',
         name: 'BadUserInput',

@@ -1,10 +1,16 @@
 import 'reflect-metadata';
-import {FollowResolver} from '@/graphql/resolvers/follow';
-import {FollowDAO, UserDAO, EventDAO} from '@/mongodb/dao';
-import type {CreateFollowInput, Follow, User, Event} from '@ntlango/commons/types';
-import {FollowTargetType, FollowApprovalStatus, UserRole, FollowPolicy, SocialVisibility} from '@ntlango/commons/types';
-import {Types} from 'mongoose';
-import type {ServerContext} from '@/graphql';
+import { FollowResolver } from '@/graphql/resolvers/follow';
+import { FollowDAO, UserDAO, EventDAO } from '@/mongodb/dao';
+import type { CreateFollowInput, Follow, User, Event } from '@ntlango/commons/types';
+import {
+  FollowTargetType,
+  FollowApprovalStatus,
+  UserRole,
+  FollowPolicy,
+  SocialVisibility,
+} from '@ntlango/commons/types';
+import { Types } from 'mongoose';
+import type { ServerContext } from '@/graphql';
 
 jest.mock('@/mongodb/dao', () => ({
   FollowDAO: {
@@ -63,13 +69,17 @@ describe('FollowResolver', () => {
       createdAt: new Date(),
     };
 
-    (UserDAO.readUserById as jest.Mock).mockResolvedValue({...mockUser, followPolicy: FollowPolicy.Public});
+    (UserDAO.readUserById as jest.Mock).mockResolvedValue({ ...mockUser, followPolicy: FollowPolicy.Public });
     (FollowDAO.upsert as jest.Mock).mockResolvedValue(mockFollow);
 
     const result = await resolver.follow(mockInput, mockContext as ServerContext);
 
     expect(UserDAO.readUserById).toHaveBeenCalledWith(mockInput.targetId);
-    expect(FollowDAO.upsert).toHaveBeenCalledWith({...mockInput, followerUserId: mockUser.userId, approvalStatus: FollowApprovalStatus.Accepted});
+    expect(FollowDAO.upsert).toHaveBeenCalledWith({
+      ...mockInput,
+      followerUserId: mockUser.userId,
+      approvalStatus: FollowApprovalStatus.Accepted,
+    });
     expect(result).toEqual(mockFollow);
   });
 
@@ -99,8 +109,8 @@ describe('FollowResolver', () => {
   it('reads followers', async () => {
     const mockList: Follow[] = [];
     const targetUserId = 'target-1';
-    const mockTargetUser = {userId: targetUserId, followersListVisibility: 'Public'};
-    
+    const mockTargetUser = { userId: targetUserId, followersListVisibility: 'Public' };
+
     (UserDAO.readUserById as jest.Mock).mockResolvedValue(mockTargetUser);
     (FollowDAO.readFollowers as jest.Mock).mockResolvedValue(mockList);
 
@@ -126,7 +136,11 @@ describe('FollowResolver', () => {
 
     const result = await resolver.acceptFollowRequest(followId, mockContext as ServerContext);
 
-    expect(FollowDAO.updateApprovalStatus).toHaveBeenCalledWith(followId, mockUser.userId, FollowApprovalStatus.Accepted);
+    expect(FollowDAO.updateApprovalStatus).toHaveBeenCalledWith(
+      followId,
+      mockUser.userId,
+      FollowApprovalStatus.Accepted,
+    );
     expect(result).toEqual(mockFollow);
   });
 
@@ -145,7 +159,11 @@ describe('FollowResolver', () => {
 
     const result = await resolver.rejectFollowRequest(followId, mockContext as ServerContext);
 
-    expect(FollowDAO.updateApprovalStatus).toHaveBeenCalledWith(followId, mockUser.userId, FollowApprovalStatus.Rejected);
+    expect(FollowDAO.updateApprovalStatus).toHaveBeenCalledWith(
+      followId,
+      mockUser.userId,
+      FollowApprovalStatus.Rejected,
+    );
     expect(result).toBe(true);
   });
 
@@ -177,7 +195,7 @@ describe('FollowResolver', () => {
 
     it('returns followers when visibility is Private and viewer is the owner', async () => {
       const mockList: Follow[] = [{} as Follow];
-      const ownerContext = {user: {...mockUser, userId: targetUserId}};
+      const ownerContext = { user: { ...mockUser, userId: targetUserId } };
       const mockTargetUser = {
         userId: targetUserId,
         followersListVisibility: SocialVisibility.Private,
@@ -231,11 +249,7 @@ describe('FollowResolver', () => {
 
       const result = await resolver.removeFollower(followerUserId, FollowTargetType.User, mockContext as ServerContext);
 
-      expect(FollowDAO.removeFollower).toHaveBeenCalledWith(
-        mockUser.userId,
-        followerUserId,
-        FollowTargetType.User,
-      );
+      expect(FollowDAO.removeFollower).toHaveBeenCalledWith(mockUser.userId, followerUserId, FollowTargetType.User);
       expect(result).toBe(true);
     });
   });
@@ -254,7 +268,9 @@ describe('FollowResolver', () => {
       };
       (UserDAO.readUserById as jest.Mock).mockResolvedValue(blockerUser);
 
-      await expect(resolver.follow(mockInput, mockContext as ServerContext)).rejects.toThrow('You cannot follow this user');
+      await expect(resolver.follow(mockInput, mockContext as ServerContext)).rejects.toThrow(
+        'You cannot follow this user',
+      );
     });
 
     it('prevents following a user that the current user has blocked', async () => {
@@ -263,14 +279,16 @@ describe('FollowResolver', () => {
         targetType: FollowTargetType.User,
         targetId: targetUserId,
       };
-      const targetUser = {userId: targetUserId, followPolicy: FollowPolicy.Public, blockedUserIds: []};
-      const currentUser = {...mockUser, blockedUserIds: [targetUserId]};
-      const contextWithBlock = {user: currentUser};
+      const targetUser = { userId: targetUserId, followPolicy: FollowPolicy.Public, blockedUserIds: [] };
+      const currentUser = { ...mockUser, blockedUserIds: [targetUserId] };
+      const contextWithBlock = { user: currentUser };
       (UserDAO.readUserById as jest.Mock)
         .mockResolvedValueOnce(targetUser) // First call for target user
         .mockResolvedValueOnce(currentUser); // Second call for follower user
 
-      await expect(resolver.follow(mockInput, contextWithBlock as ServerContext)).rejects.toThrow('You cannot follow a blocked user');
+      await expect(resolver.follow(mockInput, contextWithBlock as ServerContext)).rejects.toThrow(
+        'You cannot follow a blocked user',
+      );
     });
   });
 
@@ -316,9 +334,13 @@ describe('FollowResolver', () => {
         targetId: nonExistentEventId,
       };
 
-      (EventDAO.readEventById as jest.Mock).mockRejectedValue(new Error(`Event with eventId ${nonExistentEventId} not found`));
+      (EventDAO.readEventById as jest.Mock).mockRejectedValue(
+        new Error(`Event with eventId ${nonExistentEventId} not found`),
+      );
 
-      await expect(resolver.follow(mockInput, mockContext as ServerContext)).rejects.toThrow(`Event with eventId ${nonExistentEventId} not found`);
+      await expect(resolver.follow(mockInput, mockContext as ServerContext)).rejects.toThrow(
+        `Event with eventId ${nonExistentEventId} not found`,
+      );
     });
 
     it('unsaves an event by unfollowing it', async () => {

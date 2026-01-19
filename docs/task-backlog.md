@@ -1,67 +1,72 @@
 # Task Backlog
 
-This backlog captures known missing work discovered from TODO/FIXME markers and gaps in the current backend/frontend implementation. It is meant as a living list for quick task picking. Entries reference concrete code locations so they are easy to locate.
+This backlog captures known missing work discovered from TODO/FIXME markers and gaps in the current backend/frontend
+implementation. It is meant as a living list for quick task picking. Entries reference concrete code locations so they
+are easy to locate.
 
 ## How to use
+
 - **Status:** `Backlog` → `Ready` → `In Progress` → `Done`.
 - **Priority:** P0 (blocker) → P3 (nice-to-have).
 - Prefer creating GitHub Issues from these entries, then link the issue back here.
 
 ## API (priority focus)
 
-| ID | Title | Priority | Status | Location | Notes |
-| --- | --- | --- | --- | --- | --- |
-| API-001 | Add location validation to event Zod schema | P1 | Backlog | `apps/api/lib/validation/zod/event.ts` | Implement validation for `location` and `primarySchedule` structure. |
-| API-002 | Implement Activity resolver logic | P1 | Backlog | `apps/api/lib/graphql/resolvers/activity.ts` | Resolver file has TODO placeholder; wire DAO usage + CRUD/queries. |
-| API-003 | Review/upgrade auth guidance for user resolver | P2 | Backlog | `apps/api/lib/graphql/resolvers/user.ts` | TODO references auth strategy; align with JWT/role checks. |
-| API-004 | Ensure user model select behavior matches commons | P2 | Backlog | `apps/api/lib/mongodb/models/user.ts` | Align model `select` defaults with `packages/commons/lib/types/user.ts`. |
-| API-005 | Confirm user DAO interest population works | P2 | Backlog | `apps/api/lib/mongodb/dao/user.ts` | Verify `.populate('interests')` is correct and returns expected shape. |
-| API-006 | Make resolveTime middleware Lambda compatible | P2 | Backlog | `apps/api/lib/utils/middleware/resolveTime.ts` | Adapt for Lambda runtime or guard for missing HTTP response. |
-| API-007 | Support nested query filters | P1 | Backlog | `apps/api/lib/utils/queries/query.ts` | TODO for nested fields and organizer-gender filter. |
-| API-008 | Implement RootQuery selector operators | P1 | Backlog | `apps/api/lib/utils/queries/aggregate/filter.ts` | Add `$and`, `$or`, `$text`, etc. |
-| API-013 | Filter using related/resolved fields | P2 | Done | `apps/api/lib/utils/queries/aggregate/filter.ts` | ~~Add support for organizers.user.*, participants.*, and other resolver-backed data.~~ Both organizers and participants now use lookup/populate for nested filtering via aggregation pipeline. |
-| API-009 | Consider middleware for known Mongoose errors | P3 | Backlog | `apps/api/lib/utils/exceptions.ts` | TODO suggests middleware-based translation of errors. |
-| API-010 | Enforce birthdate validation rules | P2 | Backlog | `packages/commons/lib/validation/auth.ts` | Ensure birthdate is not in the future. |
-| API-011 | Decide whether to persist participant IDs on Event | P2 | Backlog | `packages/commons/lib/types/event.ts` | Document/implement final decision. |
-| API-012 | Fix CI/CD STAGE env wiring for GraphQL lambda | P1 | Backlog | `infra/lib/stack/graphql-lambda-stack.ts` | Ensure pipeline passes STAGE reliably. |
-| API-014 | Implement DataLoader batching for User and EventCategory | P1 | Backlog | `apps/api/lib/graphql/apollo/expressApolloServer.ts`, `apps/api/lib/graphql/loaders/` | Add per-request DataLoaders to eliminate N+1 DB queries when resolving nested users (organizers, participants) and event categories. Install `dataloader` package, create loader factory functions, wire into Apollo context, update resolvers to use `context.loaders.user.load(id)` instead of direct DAO calls. Expected latency reduction: ~70-90% for multi-event queries. |
+| ID      | Title                                                    | Priority | Status  | Location                                                                              | Notes                                                                                                                                                                                                                                                                                                                                                                           |
+| ------- | -------------------------------------------------------- | -------- | ------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| API-001 | Add location validation to event Zod schema              | P1       | Backlog | `apps/api/lib/validation/zod/event.ts`                                                | Implement validation for `location` and `primarySchedule` structure.                                                                                                                                                                                                                                                                                                            |
+| API-002 | Implement Activity resolver logic                        | P1       | Backlog | `apps/api/lib/graphql/resolvers/activity.ts`                                          | Resolver file has TODO placeholder; wire DAO usage + CRUD/queries.                                                                                                                                                                                                                                                                                                              |
+| API-003 | Review/upgrade auth guidance for user resolver           | P2       | Backlog | `apps/api/lib/graphql/resolvers/user.ts`                                              | TODO references auth strategy; align with JWT/role checks.                                                                                                                                                                                                                                                                                                                      |
+| API-004 | Ensure user model select behavior matches commons        | P2       | Backlog | `apps/api/lib/mongodb/models/user.ts`                                                 | Align model `select` defaults with `packages/commons/lib/types/user.ts`.                                                                                                                                                                                                                                                                                                        |
+| API-005 | Confirm user DAO interest population works               | P2       | Backlog | `apps/api/lib/mongodb/dao/user.ts`                                                    | Verify `.populate('interests')` is correct and returns expected shape.                                                                                                                                                                                                                                                                                                          |
+| API-006 | Make resolveTime middleware Lambda compatible            | P2       | Backlog | `apps/api/lib/utils/middleware/resolveTime.ts`                                        | Adapt for Lambda runtime or guard for missing HTTP response.                                                                                                                                                                                                                                                                                                                    |
+| API-007 | Support nested query filters                             | P1       | Backlog | `apps/api/lib/utils/queries/query.ts`                                                 | TODO for nested fields and organizer-gender filter.                                                                                                                                                                                                                                                                                                                             |
+| API-008 | Implement RootQuery selector operators                   | P1       | Backlog | `apps/api/lib/utils/queries/aggregate/filter.ts`                                      | Add `$and`, `$or`, `$text`, etc.                                                                                                                                                                                                                                                                                                                                                |
+| API-013 | Filter using related/resolved fields                     | P2       | Done    | `apps/api/lib/utils/queries/aggregate/filter.ts`                                      | ~~Add support for organizers.user._, participants._, and other resolver-backed data.~~ Both organizers and participants now use lookup/populate for nested filtering via aggregation pipeline.                                                                                                                                                                                  |
+| API-009 | Consider middleware for known Mongoose errors            | P3       | Backlog | `apps/api/lib/utils/exceptions.ts`                                                    | TODO suggests middleware-based translation of errors.                                                                                                                                                                                                                                                                                                                           |
+| API-010 | Enforce birthdate validation rules                       | P2       | Backlog | `packages/commons/lib/validation/auth.ts`                                             | Ensure birthdate is not in the future.                                                                                                                                                                                                                                                                                                                                          |
+| API-011 | Decide whether to persist participant IDs on Event       | P2       | Backlog | `packages/commons/lib/types/event.ts`                                                 | Document/implement final decision.                                                                                                                                                                                                                                                                                                                                              |
+| API-012 | Fix CI/CD STAGE env wiring for GraphQL lambda            | P1       | Backlog | `infra/lib/stack/graphql-lambda-stack.ts`                                             | Ensure pipeline passes STAGE reliably.                                                                                                                                                                                                                                                                                                                                          |
+| API-014 | Implement DataLoader batching for User and EventCategory | P1       | Backlog | `apps/api/lib/graphql/apollo/expressApolloServer.ts`, `apps/api/lib/graphql/loaders/` | Add per-request DataLoaders to eliminate N+1 DB queries when resolving nested users (organizers, participants) and event categories. Install `dataloader` package, create loader factory functions, wire into Apollo context, update resolvers to use `context.loaders.user.load(id)` instead of direct DAO calls. Expected latency reduction: ~70-90% for multi-event queries. |
 
 ### Planned API expansions (from product scope)
+
 - Add TicketType, Invitation, WaitlistEntry collections + DAOs + resolvers.
 - Replace `Event.comments` JSON with `Comment` + `Reaction` collections.
 - Add audit trail storage and read APIs.
 
 ## Webapp
 
-| ID | Title | Priority | Status | Location | Notes |
-| --- | --- | --- | --- | --- | --- |
-| WEB-001 | Replace date-fns auth validation TODO | P3 | Backlog | `apps/webapp/data/validation/auth.ts` | Decide on date lib; standardize client validation. |
-| WEB-002 | Wire forgot-password API call | P2 | Backlog | `apps/webapp/data/actions/server/auth/forgot-password.ts` | Implement API integration. |
-| WEB-003 | Wire reset-password API call | P2 | Backlog | `apps/webapp/data/actions/server/auth/reset-password.ts` | Implement API integration. |
-| WEB-004 | Validate profile location before JSON.parse | P2 | Backlog | `apps/webapp/data/actions/server/user/update-user-profile.ts` | Prevent runtime parse errors. |
-| WEB-005 | Sync user session after profile update | P2 | Backlog | `apps/webapp/data/actions/server/user/update-user-profile.ts` | Ensure session reflects updates. |
-| WEB-006 | Verify current password before update | P2 | Backlog | `apps/webapp/data/actions/server/user/update-user-password.ts` | Add API check + session refresh. |
-| WEB-007 | Log out after account deletion | P2 | Backlog | `apps/webapp/data/actions/server/user/delete-user-profile.ts` | Session cleanup after delete. |
-| WEB-008 | Restrict organizer-only event detail page | P2 | Backlog | `apps/webapp/app/(protected)/account/events/[slug]/page.tsx` | Enforce ownership in UI and server action. |
-| WEB-009 | Provide fallback event image | P3 | Backlog | `apps/webapp/app/events/[slug]/page.tsx` | Set default hero image. |
-| WEB-010 | Use registration data on user profile page | P3 | Backlog | `apps/webapp/app/users/[username]/page.tsx` | Replace placeholder. |
-| WEB-011 | Resolve auth config secret exposure | P1 | Backlog | `apps/webapp/auth.config.ts` | Address `NEXT_PUBLIC_JWT_SECRET` exposure risk. |
-| WEB-012 | Export GraphQL mutations for categories | P3 | Backlog | `apps/webapp/data/graphql/query/index.ts` | Uncomment mutation exports. |
-| WEB-013 | Clean up MessagesPanel selected state | P3 | Backlog | `apps/webapp/components/messages/MessagesPanel.tsx` | Implement selection state. |
-| WEB-014 | Fill footer routes or remove placeholders | P3 | Backlog | `apps/webapp/components/footer/navigation-items.tsx` | Ensure routes exist. |
-| WEB-015 | Ticket type support in PurchaseCard | P2 | Backlog | `apps/webapp/components/purchase-card.tsx` | Support multiple ticket types. |
-| WEB-016 | Replace hardcoded theme colors | P3 | Backlog | `apps/webapp/components/global.css` | Align with design system. |
-| WEB-017 | Add redirect logic on auth forms | P2 | Backlog | `apps/webapp/components/forms/auth/login.tsx`, `register.tsx` | Redirect after auth. |
-| WEB-018 | Add address input component | P3 | Backlog | `apps/webapp/components/forms/event-mutation/input-location.tsx` | Replace TODO placeholder. |
-| WEB-019 | Persist recurrence rule in event date input | P3 | Backlog | `apps/webapp/components/forms/event-mutation/input-event-date.tsx` | Use local storage or form state. |
-| WEB-020 | Link event organizer names to profiles | P3 | Backlog | `apps/webapp/components/events/event-box/index.tsx` | Add profile link. |
-| WEB-021 | Restore CategoryFilter onChange contract | P2 | Backlog | `apps/webapp/components/events/filters/category.tsx` | Fix potential API break. |
-| WEB-022 | Fix event filters not working | P2 | Backlog | `apps/webapp/components/events/filters/event-filter-context.tsx` | Implement filter behavior. |
-| WEB-023 | Implement settings save logic | P2 | Backlog | `apps/webapp/components/settings/*SettingsPage.tsx` | Wire API calls. |
-| WEB-024 | Post-delete redirect in Account settings | P2 | Backlog | `apps/webapp/components/settings/AccountSettingsPage.tsx` | Redirect after delete. |
+| ID      | Title                                       | Priority | Status  | Location                                                           | Notes                                              |
+| ------- | ------------------------------------------- | -------- | ------- | ------------------------------------------------------------------ | -------------------------------------------------- |
+| WEB-001 | Replace date-fns auth validation TODO       | P3       | Backlog | `apps/webapp/data/validation/auth.ts`                              | Decide on date lib; standardize client validation. |
+| WEB-002 | Wire forgot-password API call               | P2       | Backlog | `apps/webapp/data/actions/server/auth/forgot-password.ts`          | Implement API integration.                         |
+| WEB-003 | Wire reset-password API call                | P2       | Backlog | `apps/webapp/data/actions/server/auth/reset-password.ts`           | Implement API integration.                         |
+| WEB-004 | Validate profile location before JSON.parse | P2       | Backlog | `apps/webapp/data/actions/server/user/update-user-profile.ts`      | Prevent runtime parse errors.                      |
+| WEB-005 | Sync user session after profile update      | P2       | Backlog | `apps/webapp/data/actions/server/user/update-user-profile.ts`      | Ensure session reflects updates.                   |
+| WEB-006 | Verify current password before update       | P2       | Backlog | `apps/webapp/data/actions/server/user/update-user-password.ts`     | Add API check + session refresh.                   |
+| WEB-007 | Log out after account deletion              | P2       | Backlog | `apps/webapp/data/actions/server/user/delete-user-profile.ts`      | Session cleanup after delete.                      |
+| WEB-008 | Restrict organizer-only event detail page   | P2       | Backlog | `apps/webapp/app/(protected)/account/events/[slug]/page.tsx`       | Enforce ownership in UI and server action.         |
+| WEB-009 | Provide fallback event image                | P3       | Backlog | `apps/webapp/app/events/[slug]/page.tsx`                           | Set default hero image.                            |
+| WEB-010 | Use registration data on user profile page  | P3       | Backlog | `apps/webapp/app/users/[username]/page.tsx`                        | Replace placeholder.                               |
+| WEB-011 | Resolve auth config secret exposure         | P1       | Backlog | `apps/webapp/auth.config.ts`                                       | Address `NEXT_PUBLIC_JWT_SECRET` exposure risk.    |
+| WEB-012 | Export GraphQL mutations for categories     | P3       | Backlog | `apps/webapp/data/graphql/query/index.ts`                          | Uncomment mutation exports.                        |
+| WEB-013 | Clean up MessagesPanel selected state       | P3       | Backlog | `apps/webapp/components/messages/MessagesPanel.tsx`                | Implement selection state.                         |
+| WEB-014 | Fill footer routes or remove placeholders   | P3       | Backlog | `apps/webapp/components/footer/navigation-items.tsx`               | Ensure routes exist.                               |
+| WEB-015 | Ticket type support in PurchaseCard         | P2       | Backlog | `apps/webapp/components/purchase-card.tsx`                         | Support multiple ticket types.                     |
+| WEB-016 | Replace hardcoded theme colors              | P3       | Backlog | `apps/webapp/components/global.css`                                | Align with design system.                          |
+| WEB-017 | Add redirect logic on auth forms            | P2       | Backlog | `apps/webapp/components/forms/auth/login.tsx`, `register.tsx`      | Redirect after auth.                               |
+| WEB-018 | Add address input component                 | P3       | Backlog | `apps/webapp/components/forms/event-mutation/input-location.tsx`   | Replace TODO placeholder.                          |
+| WEB-019 | Persist recurrence rule in event date input | P3       | Backlog | `apps/webapp/components/forms/event-mutation/input-event-date.tsx` | Use local storage or form state.                   |
+| WEB-020 | Link event organizer names to profiles      | P3       | Backlog | `apps/webapp/components/events/event-box/index.tsx`                | Add profile link.                                  |
+| WEB-021 | Restore CategoryFilter onChange contract    | P2       | Backlog | `apps/webapp/components/events/filters/category.tsx`               | Fix potential API break.                           |
+| WEB-022 | Fix event filters not working               | P2       | Backlog | `apps/webapp/components/events/filters/event-filter-context.tsx`   | Implement filter behavior.                         |
+| WEB-023 | Implement settings save logic               | P2       | Backlog | `apps/webapp/components/settings/*SettingsPage.tsx`                | Wire API calls.                                    |
+| WEB-024 | Post-delete redirect in Account settings    | P2       | Backlog | `apps/webapp/components/settings/AccountSettingsPage.tsx`          | Redirect after delete.                             |
 
 ## Suggested next task picks (API)
-1) API-001 (event location validation)
-2) API-007 + API-008 (query filtering support)
-3) API-002 (Activity resolver implementation)
-4) API-012 (STAGE env in CDK/pipeline)
+
+1. API-001 (event location validation)
+2. API-007 + API-008 (query filtering support)
+3. API-002 (Activity resolver implementation)
+4. API-012 (STAGE env in CDK/pipeline)

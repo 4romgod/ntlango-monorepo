@@ -1,13 +1,13 @@
 import request from 'supertest';
-import {Types} from 'mongoose';
-import {kebabCase} from 'lodash';
-import type {IntegrationServer} from '@/test/integration/utils/server';
-import {startIntegrationServer, stopIntegrationServer} from '@/test/integration/utils/server';
-import {EventCategoryDAO} from '@/mongodb/dao';
-import {usersMockData} from '@/mongodb/mockData';
-import {generateToken} from '@/utils/auth';
-import type {CreateEventCategoryInput, QueryOptionsInput, User, UserWithToken} from '@ntlango/commons/types';
-import {UserRole, SortOrderInput} from '@ntlango/commons/types';
+import { Types } from 'mongoose';
+import { kebabCase } from 'lodash';
+import type { IntegrationServer } from '@/test/integration/utils/server';
+import { startIntegrationServer, stopIntegrationServer } from '@/test/integration/utils/server';
+import { EventCategoryDAO } from '@/mongodb/dao';
+import { usersMockData } from '@/mongodb/mockData';
+import { generateToken } from '@/utils/auth';
+import type { CreateEventCategoryInput, QueryOptionsInput, User, UserWithToken } from '@ntlango/commons/types';
+import { UserRole, SortOrderInput } from '@ntlango/commons/types';
 import {
   getCreateEventCategoryMutation,
   getReadEventCategoryByIdQuery,
@@ -32,7 +32,7 @@ describe('EventCategory Resolver', () => {
   };
 
   beforeAll(async () => {
-    server = await startIntegrationServer({port: TEST_PORT});
+    server = await startIntegrationServer({ port: TEST_PORT });
     url = server.url;
     const user = {
       ...usersMockData[0],
@@ -60,7 +60,10 @@ describe('EventCategory Resolver', () => {
       });
 
       it('should create a new event category when input is valid', async () => {
-        const response = await request(url).post('').set('Authorization', 'Bearer ' + adminUser.token).send(getCreateEventCategoryMutation(createEventCategoryInput));
+        const response = await request(url)
+          .post('')
+          .set('Authorization', 'Bearer ' + adminUser.token)
+          .send(getCreateEventCategoryMutation(createEventCategoryInput));
 
         expect(response.status).toBe(200);
         expect(response.error).toBeFalsy();
@@ -101,7 +104,9 @@ describe('EventCategory Resolver', () => {
 
       it('should read category by id', async () => {
         const createdCategory = await EventCategoryDAO.create(createEventCategoryInput);
-        const response = await request(url).post('').send(getReadEventCategoryByIdQuery(createdCategory.eventCategoryId));
+        const response = await request(url)
+          .post('')
+          .send(getReadEventCategoryByIdQuery(createdCategory.eventCategoryId));
 
         expect(response.status).toBe(200);
         expect(response.body.data.readEventCategoryById.slug).toBe(testEventCategorySlug);
@@ -119,7 +124,7 @@ describe('EventCategory Resolver', () => {
 
       it('should read categories list with options', async () => {
         await EventCategoryDAO.create(createEventCategoryInput);
-        const options: QueryOptionsInput = {filters: [{field: 'name', value: createEventCategoryInput.name}]};
+        const options: QueryOptionsInput = { filters: [{ field: 'name', value: createEventCategoryInput.name }] };
         const response = await request(url).post('').send(getReadEventCategoriesWithOptionsQuery(options));
 
         expect(response.status).toBe(200);
@@ -138,7 +143,7 @@ describe('EventCategory Resolver', () => {
 
       it('should read categories with pagination', async () => {
         await EventCategoryDAO.create(createEventCategoryInput);
-        const options: QueryOptionsInput = {pagination: {skip: 0, limit: 5}};
+        const options: QueryOptionsInput = { pagination: { skip: 0, limit: 5 } };
         const response = await request(url).post('').send(getReadEventCategoriesWithOptionsQuery(options));
 
         expect(response.status).toBe(200);
@@ -149,7 +154,7 @@ describe('EventCategory Resolver', () => {
       it('should read categories with sort', async () => {
         await EventCategoryDAO.create(createEventCategoryInput);
         const options: QueryOptionsInput = {
-          sort: [{field: 'name', order: SortOrderInput.asc}],
+          sort: [{ field: 'name', order: SortOrderInput.asc }],
         };
         const response = await request(url).post('').send(getReadEventCategoriesWithOptionsQuery(options));
 
@@ -172,7 +177,10 @@ describe('EventCategory Resolver', () => {
       });
 
       it('should return conflict for duplicate category name', async () => {
-        await request(url).post('').set('Authorization', 'Bearer ' + adminUser.token).send(getCreateEventCategoryMutation(createEventCategoryInput));
+        await request(url)
+          .post('')
+          .set('Authorization', 'Bearer ' + adminUser.token)
+          .send(getCreateEventCategoryMutation(createEventCategoryInput));
 
         const duplicateResponse = await request(url)
           .post('')
@@ -252,7 +260,9 @@ describe('EventCategory Resolver', () => {
       });
 
       it('should return not found for non-existent id', async () => {
-        const response = await request(url).post('').send(getReadEventCategoryByIdQuery(new Types.ObjectId().toString()));
+        const response = await request(url)
+          .post('')
+          .send(getReadEventCategoryByIdQuery(new Types.ObjectId().toString()));
 
         expect(response.status).toBe(404);
       });

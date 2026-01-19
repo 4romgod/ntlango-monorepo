@@ -1,12 +1,12 @@
 import request from 'supertest';
-import {kebabCase} from 'lodash';
-import type {IntegrationServer} from '@/test/integration/utils/server';
-import {startIntegrationServer, stopIntegrationServer} from '@/test/integration/utils/server';
-import {EventDAO, EventCategoryDAO, UserDAO} from '@/mongodb/dao';
-import {eventsMockData, usersMockData} from '@/mongodb/mockData';
-import type {CreateEventInput, UserWithToken, CreateUserInput} from '@ntlango/commons/types';
-import {SortOrderInput} from '@ntlango/commons/types';
-import {ERROR_MESSAGES} from '@/validation';
+import { kebabCase } from 'lodash';
+import type { IntegrationServer } from '@/test/integration/utils/server';
+import { startIntegrationServer, stopIntegrationServer } from '@/test/integration/utils/server';
+import { EventDAO, EventCategoryDAO, UserDAO } from '@/mongodb/dao';
+import { eventsMockData, usersMockData } from '@/mongodb/mockData';
+import type { CreateEventInput, UserWithToken, CreateUserInput } from '@ntlango/commons/types';
+import { SortOrderInput } from '@ntlango/commons/types';
+import { ERROR_MESSAGES } from '@/validation';
 import {
   getCreateEventMutation,
   getDeleteEventByIdMutation,
@@ -28,12 +28,15 @@ describe('Event Resolver', () => {
   const testEventDescription = 'Test Event Description';
 
   const baseEventData = (() => {
-    const {orgIndex, venueIndex, ...rest} = eventsMockData[0];
+    const { orgIndex, venueIndex, ...rest } = eventsMockData[0];
     return rest;
   })();
 
   const createEventOnServer = async () => {
-    const response = await request(url).post('').set('Authorization', 'Bearer ' + testUser.token).send(getCreateEventMutation(buildEventInput()));
+    const response = await request(url)
+      .post('')
+      .set('Authorization', 'Bearer ' + testUser.token)
+      .send(getCreateEventMutation(buildEventInput()));
     return response.body.data.createEvent;
   };
 
@@ -42,11 +45,11 @@ describe('Event Resolver', () => {
     title: testEventTitle,
     description: testEventDescription,
     eventCategories: [testEventCategory.eventCategoryId],
-    organizers: [{user: testUser.userId, role: 'Host'}],
+    organizers: [{ user: testUser.userId, role: 'Host' }],
   });
 
   beforeAll(async () => {
-    server = await startIntegrationServer({port: TEST_PORT});
+    server = await startIntegrationServer({ port: TEST_PORT });
     url = server.url;
     // Clean up any leftover event categories from failed test runs
     await EventCategoryDAO.deleteEventCategoryBySlug('integration-event-category').catch(() => {});
@@ -77,7 +80,10 @@ describe('Event Resolver', () => {
 
   describe('Positive', () => {
     it('creates a new event with valid input', async () => {
-      const response = await request(url).post('').set('Authorization', 'Bearer ' + testUser.token).send(getCreateEventMutation(buildEventInput()));
+      const response = await request(url)
+        .post('')
+        .set('Authorization', 'Bearer ' + testUser.token)
+        .send(getCreateEventMutation(buildEventInput()));
 
       expect(response.status).toBe(200);
       const createdEvent = response.body.data.createEvent;
@@ -86,7 +92,10 @@ describe('Event Resolver', () => {
     });
 
     it('reads the event by id and slug after creation', async () => {
-      const createResponse = await request(url).post('').set('Authorization', 'Bearer ' + testUser.token).send(getCreateEventMutation(buildEventInput()));
+      const createResponse = await request(url)
+        .post('')
+        .set('Authorization', 'Bearer ' + testUser.token)
+        .send(getCreateEventMutation(buildEventInput()));
 
       const createdEvent = createResponse.body.data.createEvent;
       const readById = await request(url).post('').send(getReadEventByIdQuery(createdEvent.eventId));
@@ -105,7 +114,7 @@ describe('Event Resolver', () => {
         const response = await request(url)
           .post('')
           .set('Authorization', 'Bearer ' + testUser.token)
-          .send(getUpdateEventMutation({eventId: createdEvent.eventId, title: updatedTitle}));
+          .send(getUpdateEventMutation({ eventId: createdEvent.eventId, title: updatedTitle }));
         expect(response.status).toBe(200);
         expect(response.body.data.updateEvent.title).toBe(updatedTitle);
       });
@@ -114,14 +123,20 @@ describe('Event Resolver', () => {
     describe('deleteEvent Mutations', () => {
       it('deletes an event by slug', async () => {
         await createEventOnServer();
-        const response = await request(url).post('').set('Authorization', 'Bearer ' + testUser.token).send(getDeleteEventBySlugMutation(testEventSlug));
+        const response = await request(url)
+          .post('')
+          .set('Authorization', 'Bearer ' + testUser.token)
+          .send(getDeleteEventBySlugMutation(testEventSlug));
         expect(response.status).toBe(200);
         expect(response.body.data.deleteEventBySlug.slug).toBe(testEventSlug);
       });
 
       it('deletes an event by id', async () => {
         const createdEvent = await createEventOnServer();
-        const response = await request(url).post('').set('Authorization', 'Bearer ' + testUser.token).send(getDeleteEventByIdMutation(createdEvent.eventId));
+        const response = await request(url)
+          .post('')
+          .set('Authorization', 'Bearer ' + testUser.token)
+          .send(getDeleteEventByIdMutation(createdEvent.eventId));
         expect(response.status).toBe(200);
         expect(response.body.data.deleteEventById.eventId).toBe(createdEvent.eventId);
       });
@@ -133,7 +148,10 @@ describe('Event Resolver', () => {
       const event1 = await createEventOnServer();
       const input2 = buildEventInput();
       input2.title = `Test Event Two ${Date.now()}`;
-      const response2 = await request(url).post('').set('Authorization', 'Bearer ' + testUser.token).send(getCreateEventMutation(input2));
+      const response2 = await request(url)
+        .post('')
+        .set('Authorization', 'Bearer ' + testUser.token)
+        .send(getCreateEventMutation(input2));
       const event2 = response2.body.data.createEvent;
 
       const readResponse = await request(url)
@@ -290,8 +308,14 @@ describe('Event Resolver', () => {
 
   describe('Negative', () => {
     it('returns conflict when duplicate event is created', async () => {
-      await request(url).post('').set('Authorization', 'Bearer ' + testUser.token).send(getCreateEventMutation(buildEventInput()));
-      const response = await request(url).post('').set('Authorization', 'Bearer ' + testUser.token).send(getCreateEventMutation(buildEventInput()));
+      await request(url)
+        .post('')
+        .set('Authorization', 'Bearer ' + testUser.token)
+        .send(getCreateEventMutation(buildEventInput()));
+      const response = await request(url)
+        .post('')
+        .set('Authorization', 'Bearer ' + testUser.token)
+        .send(getCreateEventMutation(buildEventInput()));
 
       expect(response.status).toBe(409);
       expect(response.body.errors).toBeDefined();
@@ -301,7 +325,10 @@ describe('Event Resolver', () => {
     it('returns validation error when organizers array is empty', async () => {
       const input = buildEventInput();
       input.organizers = [];
-      const response = await request(url).post('').set('Authorization', 'Bearer ' + testUser.token).send(getCreateEventMutation(input));
+      const response = await request(url)
+        .post('')
+        .set('Authorization', 'Bearer ' + testUser.token)
+        .send(getCreateEventMutation(input));
 
       expect(response.status).toBe(400);
       expect(response.error).toBeTruthy();
@@ -310,7 +337,10 @@ describe('Event Resolver', () => {
     it('returns error for invalid event category', async () => {
       const input = buildEventInput();
       input.eventCategories = ['invalid-category-id'];
-      const response = await request(url).post('').set('Authorization', 'Bearer ' + testUser.token).send(getCreateEventMutation(input));
+      const response = await request(url)
+        .post('')
+        .set('Authorization', 'Bearer ' + testUser.token)
+        .send(getCreateEventMutation(input));
 
       expect(response.status).toBe(400);
       expect(response.body.errors).toBeDefined();
@@ -329,7 +359,7 @@ describe('Event Resolver', () => {
       const createdEvent = await createEventOnServer();
       const response = await request(url)
         .post('')
-        .send(getUpdateEventMutation({eventId: createdEvent.eventId, title: 'No Token'}));
+        .send(getUpdateEventMutation({ eventId: createdEvent.eventId, title: 'No Token' }));
       expect(response.status).toBe(401);
       expect(response.body.errors).toBeDefined();
       expect(response.body.errors[0].extensions.code).toBe('UNAUTHENTICATED');
@@ -390,7 +420,7 @@ describe('Event Resolver', () => {
       const response = await request(url)
         .post('')
         .set('Authorization', 'Bearer ' + otherUser.token)
-        .send(getUpdateEventMutation({eventId: createdEvent.eventId, title: 'Unauthorized Update'}));
+        .send(getUpdateEventMutation({ eventId: createdEvent.eventId, title: 'Unauthorized Update' }));
 
       expect(response.status).toBe(403);
 
@@ -405,7 +435,10 @@ describe('Event Resolver', () => {
         username: 'otherUser2',
       });
 
-      const response = await request(url).post('').set('Authorization', 'Bearer ' + otherUser.token).send(getDeleteEventByIdMutation(createdEvent.eventId));
+      const response = await request(url)
+        .post('')
+        .set('Authorization', 'Bearer ' + otherUser.token)
+        .send(getDeleteEventByIdMutation(createdEvent.eventId));
 
       expect(response.status).toBe(403);
 

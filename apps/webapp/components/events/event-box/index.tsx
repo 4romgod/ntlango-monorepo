@@ -15,20 +15,20 @@ import { ParticipantStatus } from '@/data/graphql/types/graphql';
 export default function EventBox({ event }: { event: EventPreview }) {
   const theme = useTheme();
   const { title, recurrenceRule, participants, media, heroImage, location, status } = event;
-  
+
   // Local state for optimistic UI updates
   const [isSaved, setIsSaved] = useState(event.isSavedByMe ?? false);
   const [rsvpStatus, setRsvpStatus] = useState<ParticipantStatus | null>(event.myRsvp?.status ?? null);
-  
+
   // Sync state when props change (e.g., after refetch)
   useEffect(() => {
     setIsSaved(event.isSavedByMe ?? false);
   }, [event.isSavedByMe]);
-  
+
   useEffect(() => {
     setRsvpStatus(event.myRsvp?.status ?? null);
   }, [event.myRsvp?.status]);
-  
+
   const recurrenceText = RRule.fromString(recurrenceRule).toText();
   // TODO This placeholder image is just for development purposes
   const imageUrl =
@@ -129,12 +129,12 @@ export default function EventBox({ event }: { event: EventPreview }) {
           />
         )}
       </Box>
-      <Box 
-        component="div" 
-        sx={{ 
-          display: 'flex', 
-          flexDirection: 'column', 
-          p: 1.5, 
+      <Box
+        component="div"
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          p: 1.5,
           gap: 1,
           overflow: 'hidden',
           height: { xs: 'auto', sm: '100%' },
@@ -153,10 +153,10 @@ export default function EventBox({ event }: { event: EventPreview }) {
             )}
           </Stack>
 
-          <Typography 
-            variant="body2" 
-            color="text.primary" 
-            sx={{ 
+          <Typography
+            variant="body2"
+            color="text.primary"
+            sx={{
               fontWeight: 700,
               lineHeight: 1.3,
               mb: 0.5,
@@ -174,14 +174,22 @@ export default function EventBox({ event }: { event: EventPreview }) {
           <Stack spacing={0.5}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
               <CalendarIcon height={14} width={14} style={{ color: 'inherit', opacity: 0.7, flexShrink: 0 }} />
-              <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{ fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+              >
                 {recurrenceText}
               </Typography>
             </Box>
 
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
               <MapPinIcon height={14} width={14} style={{ color: 'inherit', opacity: 0.7, flexShrink: 0 }} />
-              <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{ fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+              >
                 {locationText}
               </Typography>
             </Box>
@@ -201,16 +209,16 @@ export default function EventBox({ event }: { event: EventPreview }) {
               max={3}
               sx={{
                 display: { xs: 'flex', sm: 'none', lg: 'flex' },
-                '& .MuiAvatar-root': { 
-                  width: 24, 
-                  height: 24, 
+                '& .MuiAvatar-root': {
+                  width: 24,
+                  height: 24,
                   fontSize: '0.7rem',
                   border: '2px solid',
                   borderColor: 'background.paper',
                 },
               }}
             >
-              {visibleParticipants.map(participant => (
+              {visibleParticipants.map((participant) => (
                 <Tooltip
                   key={participant.participantId}
                   title={`${getParticipantLabel(participant)} • ${participant.status}`}
@@ -225,12 +233,7 @@ export default function EventBox({ event }: { event: EventPreview }) {
           )}
 
           <Stack direction="row" spacing={0.5} sx={{ ml: 'auto' }}>
-            <RsvpButton
-              eventId={event.eventId}
-              currentStatus={rsvpStatus}
-              size="small"
-              onRsvpChange={setRsvpStatus}
-            />
+            <RsvpButton eventId={event.eventId} currentStatus={rsvpStatus} size="small" onRsvpChange={setRsvpStatus} />
             <SaveEventButton
               eventId={event.eventId}
               isSaved={isSaved}

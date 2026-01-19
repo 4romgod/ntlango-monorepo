@@ -59,11 +59,11 @@ export default function PurchaseCard() {
   const basePrice = 90; // TODO default this to price of the ticket
 
   const handleIncrement = () => {
-    setQuantity(prevQuantity => prevQuantity + 1);
+    setQuantity((prevQuantity) => prevQuantity + 1);
   };
 
   const handleDecrement = () => {
-    setQuantity(prevQuantity => Math.max(prevQuantity - 1, 1));
+    setQuantity((prevQuantity) => Math.max(prevQuantity - 1, 1));
   };
 
   const totalPrice = basePrice * quantity;

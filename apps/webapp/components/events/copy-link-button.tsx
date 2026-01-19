@@ -34,16 +34,16 @@ export default function CopyLinkButton({ url }: CopyLinkButtonProps) {
         size="small"
         startIcon={copied ? <Check /> : <ContentCopy />}
         onClick={handleCopy}
-        sx={{ 
-          mt: 2, 
-          fontWeight: 600, 
+        sx={{
+          mt: 2,
+          fontWeight: 600,
           textTransform: 'none',
           transition: 'all 0.2s ease',
         }}
       >
         {copied ? 'Copied!' : 'Copy Link'}
       </Button>
-      
+
       <Snackbar
         open={open}
         autoHideDuration={3000}

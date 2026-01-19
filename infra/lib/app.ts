@@ -1,6 +1,6 @@
-import {App} from 'aws-cdk-lib';
-import {BETA_ACCOUNT} from './constants';
-import {setupServiceAccount} from './utils';
+import { App } from 'aws-cdk-lib';
+import { BETA_ACCOUNT } from './constants';
+import { setupServiceAccount } from './utils';
 
 const app = new App();
 

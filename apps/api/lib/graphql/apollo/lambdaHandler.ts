@@ -1,11 +1,16 @@
-import type {APIGatewayProxyEvent, APIGatewayProxyResult, Callback, Context} from 'aws-lambda';
-import {startServerAndCreateLambdaHandler, handlers} from '@as-integrations/aws-lambda';
-import {createApolloServer} from '@/graphql';
-import {getConfigValue, MongoDbClient} from '@/clients';
-import {SECRET_KEYS} from '@/constants';
-import {logger} from '@/utils/logger';
-import {createUserLoader, createEventCategoryLoader, createEventLoader, createOrganizationLoader} from '@/graphql/loaders';
-import {verifyToken} from '@/utils/auth';
+import type { APIGatewayProxyEvent, APIGatewayProxyResult, Callback, Context } from 'aws-lambda';
+import { startServerAndCreateLambdaHandler, handlers } from '@as-integrations/aws-lambda';
+import { createApolloServer } from '@/graphql';
+import { getConfigValue, MongoDbClient } from '@/clients';
+import { SECRET_KEYS } from '@/constants';
+import { logger } from '@/utils/logger';
+import {
+  createUserLoader,
+  createEventCategoryLoader,
+  createEventLoader,
+  createOrganizationLoader,
+} from '@/graphql/loaders';
+import { verifyToken } from '@/utils/auth';
 import { User } from '@ntlango/commons';
 
 // TODO Consider restricting the allowed origins to specific domains or implementing dynamic origin validation based on environment configuration.
@@ -41,51 +46,59 @@ async function initializeResources() {
   // Initialize Lambda handler if not already created
   if (!cachedLambdaHandler) {
     logger.info('Creating Lambda handler...');
-    cachedLambdaHandler = startServerAndCreateLambdaHandler(cachedServer, handlers.createAPIGatewayProxyEventRequestHandler(), {
-      context: async ({event, context}) => {
-        // API Gateway may lowercase headers, so check both
-        const authHeader = event.headers.Authorization || event.headers.authorization;
-        const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : undefined;
-        
-        // This enables field resolvers like isSavedByMe to access the current user
-        let user: User | undefined;
-        if (token) {
-          try {
-            user = await verifyToken(token);
-          } catch {
-            // Token invalid or expired - user remains undefined
-            // This is fine for public endpoints, @Authorized will throw if needed
+    cachedLambdaHandler = startServerAndCreateLambdaHandler(
+      cachedServer,
+      handlers.createAPIGatewayProxyEventRequestHandler(),
+      {
+        context: async ({ event, context }) => {
+          // API Gateway may lowercase headers, so check both
+          const authHeader = event.headers.Authorization || event.headers.authorization;
+          const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : undefined;
+
+          // This enables field resolvers like isSavedByMe to access the current user
+          let user: User | undefined;
+          if (token) {
+            try {
+              user = await verifyToken(token);
+            } catch {
+              // Token invalid or expired - user remains undefined
+              // This is fine for public endpoints, @Authorized will throw if needed
+            }
           }
-        }
-        
-        return {
-          token,
-          user,
-          lambdaEvent: event,
-          lambdaContext: context,
-          loaders: {
-            user: createUserLoader(),
-            eventCategory: createEventCategoryLoader(),
-            event: createEventLoader(),
-            organization: createOrganizationLoader(),
-          },
-        };
+
+          return {
+            token,
+            user,
+            lambdaEvent: event,
+            lambdaContext: context,
+            loaders: {
+              user: createUserLoader(),
+              eventCategory: createEventCategoryLoader(),
+              event: createEventLoader(),
+              organization: createOrganizationLoader(),
+            },
+          };
+        },
       },
-    });
+    );
     logger.info('Lambda handler created');
   }
 
   return cachedLambdaHandler;
 }
 
-export const graphqlLambdaHandler = async (event: APIGatewayProxyEvent, context: Context, callback: Callback<APIGatewayProxyResult>) => {
+export const graphqlLambdaHandler = async (
+  event: APIGatewayProxyEvent,
+  context: Context,
+  callback: Callback<APIGatewayProxyResult>,
+) => {
   try {
     logger.info('Lambda handler invoked');
     logger.debug(`Request ID: ${context.awsRequestId}`);
     logger.debug(`Path: ${event.path}`);
     logger.debug(`HTTP Method: ${event.httpMethod}`);
     logger.debug(`Body: ${event.body ? event.body.substring(0, 200) : 'no body'}`);
-    
+
     // Handle CORS preflight OPTIONS request
     if (event.httpMethod === 'OPTIONS') {
       logger.info('Handling OPTIONS preflight request');
@@ -95,7 +108,7 @@ export const graphqlLambdaHandler = async (event: APIGatewayProxyEvent, context:
         headers: CORS_HEADERS,
       };
     }
-    
+
     logger.info('Initializing resources (reusing cached if available)...');
     const lambdaHandler = await initializeResources();
 
@@ -107,7 +120,7 @@ export const graphqlLambdaHandler = async (event: APIGatewayProxyEvent, context:
     logger.debug(`Result status: ${result?.statusCode}`);
     logger.debug(`Result body length: ${result?.body?.length || 0}`);
     logger.info('Returning result to API Gateway...');
-    
+
     // Handle case where result might be void
     if (!result) {
       return {
@@ -119,7 +132,7 @@ export const graphqlLambdaHandler = async (event: APIGatewayProxyEvent, context:
         },
       };
     }
-    
+
     // Add CORS headers to the response
     return {
       ...result,

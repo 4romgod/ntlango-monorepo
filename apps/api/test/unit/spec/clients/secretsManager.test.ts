@@ -1,10 +1,10 @@
-import {APPLICATION_STAGES} from '@ntlango/commons';
+import { APPLICATION_STAGES } from '@ntlango/commons';
 
 const sendMock = jest.fn();
 
 jest.mock('@aws-sdk/client-secrets-manager', () => ({
-  SecretsManagerClient: jest.fn().mockImplementation(() => ({send: sendMock})),
-  GetSecretValueCommand: jest.fn().mockImplementation((input) => ({input})),
+  SecretsManagerClient: jest.fn().mockImplementation(() => ({ send: sendMock })),
+  GetSecretValueCommand: jest.fn().mockImplementation((input) => ({ input })),
 }));
 
 const mockConstants = (overrides: Partial<Record<string, string>> = {}) =>
@@ -29,23 +29,23 @@ describe('getConfigValue', () => {
 
   it('returns local config when running in Dev', async () => {
     mockConstants();
-    const {getConfigValue} = await import('@/clients/AWS/secretsManager');
+    const { getConfigValue } = await import('@/clients/AWS/secretsManager');
 
     await expect(getConfigValue('JWT_SECRET')).resolves.toBe('local-jwt');
   });
 
   it('throws when local config is missing', async () => {
-    mockConstants({JWT_SECRET: undefined as unknown as string});
-    const {getConfigValue} = await import('@/clients/AWS/secretsManager');
+    mockConstants({ JWT_SECRET: undefined as unknown as string });
+    const { getConfigValue } = await import('@/clients/AWS/secretsManager');
 
     await expect(getConfigValue('JWT_SECRET')).rejects.toThrow('Missing configuration for key "JWT_SECRET"');
   });
 
   it('fetches secrets from AWS and caches results outside Dev', async () => {
-    mockConstants({STAGE: APPLICATION_STAGES.PROD});
-    sendMock.mockResolvedValue({SecretString: JSON.stringify({JWT_SECRET: 'remote-jwt'})});
+    mockConstants({ STAGE: APPLICATION_STAGES.PROD });
+    sendMock.mockResolvedValue({ SecretString: JSON.stringify({ JWT_SECRET: 'remote-jwt' }) });
 
-    const {getConfigValue} = await import('@/clients/AWS/secretsManager');
+    const { getConfigValue } = await import('@/clients/AWS/secretsManager');
 
     await expect(getConfigValue('JWT_SECRET')).resolves.toBe('remote-jwt');
     await expect(getConfigValue('JWT_SECRET')).resolves.toBe('remote-jwt');
@@ -54,27 +54,27 @@ describe('getConfigValue', () => {
   });
 
   it('throws when secret is missing in AWS response', async () => {
-    mockConstants({STAGE: APPLICATION_STAGES.PROD});
-    sendMock.mockResolvedValue({SecretString: JSON.stringify({MONGO_DB_URL: 'mongodb://remote'})});
+    mockConstants({ STAGE: APPLICATION_STAGES.PROD });
+    sendMock.mockResolvedValue({ SecretString: JSON.stringify({ MONGO_DB_URL: 'mongodb://remote' }) });
 
-    const {getConfigValue} = await import('@/clients/AWS/secretsManager');
+    const { getConfigValue } = await import('@/clients/AWS/secretsManager');
 
     await expect(getConfigValue('JWT_SECRET')).rejects.toThrow('Secret "JWT_SECRET" not found in Secrets Manager');
   });
 
   it('throws when AWS returns no SecretString', async () => {
-    mockConstants({STAGE: APPLICATION_STAGES.PROD});
+    mockConstants({ STAGE: APPLICATION_STAGES.PROD });
     sendMock.mockResolvedValue({});
 
-    const {getConfigValue} = await import('@/clients/AWS/secretsManager');
+    const { getConfigValue } = await import('@/clients/AWS/secretsManager');
 
     await expect(getConfigValue('JWT_SECRET')).rejects.toThrow('Secret "JWT_SECRET" not found in Secrets Manager');
   });
 
   it('throws when NTLANGO_SECRET_ARN is missing outside Dev', async () => {
-    mockConstants({STAGE: APPLICATION_STAGES.PROD, NTLANGO_SECRET_ARN: undefined as unknown as string});
+    mockConstants({ STAGE: APPLICATION_STAGES.PROD, NTLANGO_SECRET_ARN: undefined as unknown as string });
 
-    const {getConfigValue} = await import('@/clients/AWS/secretsManager');
+    const { getConfigValue } = await import('@/clients/AWS/secretsManager');
 
     await expect(getConfigValue('JWT_SECRET')).rejects.toThrow('NTLANGO_SECRET_ARN is required when STAGE is not Dev');
   });

@@ -16,11 +16,12 @@
 ## Testing
 
 Commands run (paste output snippets where useful):
+
 - [ ] `npm run lint`
 - [ ] `npm run typecheck`
 - [ ] `npm run test`
 - [ ] `npm run build`
-- [ ] Workspace-specific: 
+- [ ] Workspace-specific:
 
 Other notes (fixtures, env vars, data sources):
 

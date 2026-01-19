@@ -1,7 +1,7 @@
-import {createUserLoader} from '@/graphql/loaders';
-import {User as UserModel} from '@/mongodb/models';
-import type {User} from '@ntlango/commons/types';
-import {UserRole} from '@ntlango/commons/types';
+import { createUserLoader } from '@/graphql/loaders';
+import { User as UserModel } from '@/mongodb/models';
+import type { User } from '@ntlango/commons/types';
+import { UserRole } from '@ntlango/commons/types';
 
 jest.mock('@/mongodb/models', () => ({
   User: {
@@ -15,7 +15,7 @@ describe('UserLoader', () => {
   });
 
   it('should batch load users by ID', async () => {
-    const mockUsers: Array<Partial<User> & {_id: string}> = [
+    const mockUsers: Array<Partial<User> & { _id: string }> = [
       {
         _id: 'user1',
         userId: 'user1',
@@ -46,7 +46,7 @@ describe('UserLoader', () => {
 
     // Should make single batch query
     expect(UserModel.find).toHaveBeenCalledTimes(1);
-    expect(UserModel.find).toHaveBeenCalledWith({_id: {$in: ['user1', 'user2', 'user3']}});
+    expect(UserModel.find).toHaveBeenCalledWith({ _id: { $in: ['user1', 'user2', 'user3'] } });
 
     // Should return results in correct order
     expect(results[0]).toEqual(mockUsers[0]);
@@ -61,7 +61,7 @@ describe('UserLoader', () => {
   });
 
   it('should cache results within the same loader instance', async () => {
-    const mockUser: Partial<User> & {_id: string} = {
+    const mockUser: Partial<User> & { _id: string } = {
       _id: 'user1',
       userId: 'user1',
       username: 'testuser1',
@@ -87,10 +87,10 @@ describe('UserLoader', () => {
   });
 
   it('should maintain correct order when database returns results in different order', async () => {
-    const mockUsers: Array<Partial<User> & {_id: string}> = [
-      {_id: 'user2', userId: 'user2', username: 'user2', email: 'user2@test.com', userRole: UserRole.User},
-      {_id: 'user1', userId: 'user1', username: 'user1', email: 'user1@test.com', userRole: UserRole.User},
-      {_id: 'user3', userId: 'user3', username: 'user3', email: 'user3@test.com', userRole: UserRole.User},
+    const mockUsers: Array<Partial<User> & { _id: string }> = [
+      { _id: 'user2', userId: 'user2', username: 'user2', email: 'user2@test.com', userRole: UserRole.User },
+      { _id: 'user1', userId: 'user1', username: 'user1', email: 'user1@test.com', userRole: UserRole.User },
+      { _id: 'user3', userId: 'user3', username: 'user3', email: 'user3@test.com', userRole: UserRole.User },
     ];
 
     const mockQuery = {
@@ -106,9 +106,9 @@ describe('UserLoader', () => {
     const results = await Promise.all([loader.load('user1'), loader.load('user2'), loader.load('user3')]);
 
     // Results should match requested order, not database return order
-    expect((results[0] as Partial<User> & {_id: string})?._id).toBe('user1');
-    expect((results[1] as Partial<User> & {_id: string})?._id).toBe('user2');
-    expect((results[2] as Partial<User> & {_id: string})?._id).toBe('user3');
+    expect((results[0] as Partial<User> & { _id: string })?._id).toBe('user1');
+    expect((results[1] as Partial<User> & { _id: string })?._id).toBe('user2');
+    expect((results[2] as Partial<User> & { _id: string })?._id).toBe('user3');
   });
 
   it('should handle database errors gracefully', async () => {

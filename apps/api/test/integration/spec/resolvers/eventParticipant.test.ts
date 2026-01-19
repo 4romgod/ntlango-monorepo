@@ -1,14 +1,18 @@
 import request from 'supertest';
-import {Types} from 'mongoose';
-import type {IntegrationServer} from '@/test/integration/utils/server';
-import {startIntegrationServer, stopIntegrationServer} from '@/test/integration/utils/server';
-import {EventDAO, EventCategoryDAO, UserDAO} from '@/mongodb/dao';
-import {EventParticipant} from '@/mongodb/models';
-import {usersMockData, eventsMockData} from '@/mongodb/mockData';
-import {generateToken} from '@/utils/auth';
-import type {User, UserWithToken, CreateEventInput, EventCategory} from '@ntlango/commons/types';
-import {ParticipantStatus, UserRole} from '@ntlango/commons/types';
-import {getCancelEventParticipantMutation, getReadEventParticipantsQuery, getUpsertEventParticipantMutation} from '@/test/utils';
+import { Types } from 'mongoose';
+import type { IntegrationServer } from '@/test/integration/utils/server';
+import { startIntegrationServer, stopIntegrationServer } from '@/test/integration/utils/server';
+import { EventDAO, EventCategoryDAO, UserDAO } from '@/mongodb/dao';
+import { EventParticipant } from '@/mongodb/models';
+import { usersMockData, eventsMockData } from '@/mongodb/mockData';
+import { generateToken } from '@/utils/auth';
+import type { User, UserWithToken, CreateEventInput, EventCategory } from '@ntlango/commons/types';
+import { ParticipantStatus, UserRole } from '@ntlango/commons/types';
+import {
+  getCancelEventParticipantMutation,
+  getReadEventParticipantsQuery,
+  getUpsertEventParticipantMutation,
+} from '@/test/utils';
 
 const TEST_PORT = 5005;
 
@@ -20,7 +24,7 @@ describe('EventParticipant Resolver', () => {
   let category: EventCategory;
 
   beforeAll(async () => {
-    server = await startIntegrationServer({port: TEST_PORT});
+    server = await startIntegrationServer({ port: TEST_PORT });
     url = server.url;
     const user = {
       ...usersMockData[1],
@@ -44,14 +48,14 @@ describe('EventParticipant Resolver', () => {
       title: 'Participant Event',
       description: 'Testing participants',
       eventCategories: [category.eventCategoryId],
-      organizers: [{user: participantUser.userId, role: 'Host'}],
+      organizers: [{ user: participantUser.userId, role: 'Host' }],
     };
     const event = await EventDAO.create(eventInput);
     eventId = event.eventId;
   });
 
   afterAll(async () => {
-    await EventParticipant.deleteMany({eventId}).catch(() => {});
+    await EventParticipant.deleteMany({ eventId }).catch(() => {});
     await EventDAO.deleteEventById(eventId).catch(() => {});
     await EventCategoryDAO.deleteEventCategoryBySlug(category.slug).catch(() => {});
     await UserDAO.deleteUserByEmail(participantUser.email).catch(() => {});
@@ -84,7 +88,10 @@ describe('EventParticipant Resolver', () => {
           status: ParticipantStatus.Going,
         }),
       );
-    const response = await request(url).post('').set('Authorization', 'Bearer ' + participantUser.token).send(getReadEventParticipantsQuery(eventId));
+    const response = await request(url)
+      .post('')
+      .set('Authorization', 'Bearer ' + participantUser.token)
+      .send(getReadEventParticipantsQuery(eventId));
     expect(response.status).toBe(200);
     expect(response.body.data.readEventParticipants.length).toBeGreaterThan(0);
   });
@@ -102,7 +109,7 @@ describe('EventParticipant Resolver', () => {
     const response = await request(url)
       .post('')
       .set('Authorization', 'Bearer ' + participantUser.token)
-      .send(getCancelEventParticipantMutation({eventId, userId: participantUser.userId}));
+      .send(getCancelEventParticipantMutation({ eventId, userId: participantUser.userId }));
     expect(response.status).toBe(200);
     expect(response.body.data.cancelEventParticipant.status).toBe(ParticipantStatus.Cancelled);
   });
@@ -170,7 +177,10 @@ describe('EventParticipant Resolver', () => {
         }),
       );
 
-    const response = await request(url).post('').set('Authorization', 'Bearer ' + participantUser.token).send(getReadEventParticipantsQuery(eventId));
+    const response = await request(url)
+      .post('')
+      .set('Authorization', 'Bearer ' + participantUser.token)
+      .send(getReadEventParticipantsQuery(eventId));
 
     expect(response.status).toBe(200);
     expect(response.body.data.readEventParticipants.length).toBeGreaterThanOrEqual(2);

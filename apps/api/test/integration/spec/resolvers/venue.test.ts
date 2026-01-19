@@ -1,13 +1,13 @@
 import request from 'supertest';
-import {Types} from 'mongoose';
-import type {IntegrationServer} from '@/test/integration/utils/server';
-import {startIntegrationServer, stopIntegrationServer} from '@/test/integration/utils/server';
-import {generateToken} from '@/utils/auth';
-import {usersMockData} from '@/mongodb/mockData';
-import type {User, UserWithToken} from '@ntlango/commons/types';
-import {UserRole, VenueType, OrganizationTicketAccess} from '@ntlango/commons/types';
-import {OrganizationDAO} from '@/mongodb/dao';
-import {getCreateOrganizationMutation} from '@/test/utils';
+import { Types } from 'mongoose';
+import type { IntegrationServer } from '@/test/integration/utils/server';
+import { startIntegrationServer, stopIntegrationServer } from '@/test/integration/utils/server';
+import { generateToken } from '@/utils/auth';
+import { usersMockData } from '@/mongodb/mockData';
+import type { User, UserWithToken } from '@ntlango/commons/types';
+import { UserRole, VenueType, OrganizationTicketAccess } from '@ntlango/commons/types';
+import { OrganizationDAO } from '@/mongodb/dao';
+import { getCreateOrganizationMutation } from '@/test/utils';
 import {
   getCreateVenueMutation,
   getDeleteVenueByIdMutation,
@@ -64,7 +64,7 @@ describe('Venue Resolver', () => {
   };
 
   beforeAll(async () => {
-    server = await startIntegrationServer({port: TEST_PORT});
+    server = await startIntegrationServer({ port: TEST_PORT });
     url = server.url;
     const user: User = {
       ...usersMockData[0],
@@ -75,7 +75,7 @@ describe('Venue Resolver', () => {
       interests: undefined,
     } as User;
     const token = await generateToken(user);
-    adminUser = {...user, token};
+    adminUser = { ...user, token };
   });
 
   afterAll(async () => {
@@ -124,7 +124,7 @@ describe('Venue Resolver', () => {
       const response = await request(url)
         .post('')
         .set('Authorization', 'Bearer ' + adminUser.token)
-        .send(getUpdateVenueMutation({venueId: venue.venueId, name: 'Updated Venue'}));
+        .send(getUpdateVenueMutation({ venueId: venue.venueId, name: 'Updated Venue' }));
 
       expect(response.status).toBe(200);
       expect(response.body.data.updateVenue.name).toBe('Updated Venue');
@@ -141,7 +141,7 @@ describe('Venue Resolver', () => {
       const listResponse = await request(url).post('').send(getReadVenuesQuery());
       expect(listResponse.status).toBe(200);
       expect(listResponse.body.data.readVenues).toEqual(
-        expect.arrayContaining([{venueId: venue.venueId}].map((item) => expect.objectContaining(item))),
+        expect.arrayContaining([{ venueId: venue.venueId }].map((item) => expect.objectContaining(item))),
       );
 
       const byOrgResponse = await request(url).post('').send(getReadVenuesByOrgIdQuery(organization.orgId));
@@ -160,7 +160,7 @@ describe('Venue Resolver', () => {
             orgId: organization.orgId,
             type: VenueType.Physical,
             name: 'Physical Venue',
-            address: {city: 'Johannesburg', country: 'South Africa'},
+            address: { city: 'Johannesburg', country: 'South Africa' },
           }),
         );
 
@@ -176,7 +176,7 @@ describe('Venue Resolver', () => {
             orgId: organization.orgId,
             type: VenueType.Hybrid,
             name: 'Hybrid Venue',
-            address: {city: 'Pretoria', country: 'South Africa'},
+            address: { city: 'Pretoria', country: 'South Africa' },
           }),
         );
 
@@ -246,7 +246,10 @@ describe('Venue Resolver', () => {
       const organization = await createOrganization('Venue Org Delete');
       const venue = await createVenue(organization.orgId);
 
-      const response = await request(url).post('').set('Authorization', 'Bearer ' + adminUser.token).send(getDeleteVenueByIdMutation(venue.venueId));
+      const response = await request(url)
+        .post('')
+        .set('Authorization', 'Bearer ' + adminUser.token)
+        .send(getDeleteVenueByIdMutation(venue.venueId));
 
       expect(response.status).toBe(200);
       expect(response.body.data.deleteVenueById.venueId).toBe(venue.venueId);
@@ -324,7 +327,10 @@ describe('Venue Resolver', () => {
     });
 
     it('returns 404 when deleting non-existent venue', async () => {
-      const response = await request(url).post('').set('Authorization', 'Bearer ' + adminUser.token).send(getDeleteVenueByIdMutation(new Types.ObjectId().toString()));
+      const response = await request(url)
+        .post('')
+        .set('Authorization', 'Bearer ' + adminUser.token)
+        .send(getDeleteVenueByIdMutation(new Types.ObjectId().toString()));
 
       expect(response.status).toBe(404);
     });

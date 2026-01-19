@@ -79,12 +79,9 @@ export default async function VenuesPage() {
             >
               Discover event spaces
             </Typography>
-            <Typography
-              variant="body1"
-              color="text.secondary"
-              sx={{ mb: 4, fontSize: '1.125rem', lineHeight: 1.7 }}
-            >
-              Explore venues across the network. From intimate studios to grand concert halls, find the perfect space for your next event or discover where your favorite events happen.
+            <Typography variant="body1" color="text.secondary" sx={{ mb: 4, fontSize: '1.125rem', lineHeight: 1.7 }}>
+              Explore venues across the network. From intimate studios to grand concert halls, find the perfect space
+              for your next event or discover where your favorite events happen.
             </Typography>
             <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
               <Button
@@ -131,7 +128,7 @@ export default async function VenuesPage() {
       <Container sx={{ py: 6 }}>
         {venues.length > 0 ? (
           <Grid container spacing={3}>
-            {venues.map(venue => (
+            {venues.map((venue) => (
               <Grid size={{ xs: 12, sm: 6, md: 4 }} key={venue.venueId}>
                 <VenueCard {...venue} />
               </Grid>

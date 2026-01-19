@@ -45,7 +45,7 @@ export default function UserDetails({ user, isOwnProfile = false }: UserDetailsP
   const showContactInfo = isOwnProfile || user.socialVisibility === SocialVisibility.Public;
   const showEmail = isOwnProfile; // Email should only be visible to profile owner
   const showPhone = isOwnProfile; // Phone should only be visible to profile owner
-  
+
   const age = user.birthdate ? differenceInYears(new Date(), new Date(user.birthdate)) : null;
   const formattedDOB = user.birthdate ? format(new Date(user.birthdate), 'dd MMMM yyyy') : null;
 
@@ -123,9 +123,7 @@ export default function UserDetails({ user, isOwnProfile = false }: UserDetailsP
 
         {/* Personal Info */}
         <Stack spacing={0} sx={{ mb: 3 }}>
-          {showEmail && (
-            <InfoItem icon={<Email fontSize="small" />} label="Email" value={user.email} />
-          )}
+          {showEmail && <InfoItem icon={<Email fontSize="small" />} label="Email" value={user.email} />}
           {showPhone && user.phone_number && (
             <InfoItem icon={<Phone fontSize="small" />} label="Phone" value={user.phone_number} />
           )}
@@ -143,42 +141,43 @@ export default function UserDetails({ user, isOwnProfile = false }: UserDetailsP
               value={`${formattedDOB}${age ? ` (${age} years old)` : ''}`}
             />
           )}
-          {user.gender && (
-            <InfoItem icon={<Wc fontSize="small" />} label="Gender" value={user.gender} />
-          )}
+          {user.gender && <InfoItem icon={<Wc fontSize="small" />} label="Gender" value={user.gender} />}
           {user.primaryTimezone && (
             <InfoItem icon={<Public fontSize="small" />} label="Timezone" value={user.primaryTimezone} />
           )}
         </Stack>
 
         {/* Privacy Settings - only show to profile owner */}
-        {isOwnProfile && (user.socialVisibility || user.shareRSVPByDefault !== undefined || user.shareCheckinsByDefault !== undefined) && (
-          <Box sx={{ mb: 3, p: 2, bgcolor: 'action.hover', borderRadius: 2 }}>
-            <Typography variant="subtitle2" fontWeight={600} gutterBottom>
-              Privacy Settings
-            </Typography>
-            <Stack spacing={1}>
-              {user.socialVisibility && (
-                <Stack direction="row" spacing={1} alignItems="center">
-                  <Visibility fontSize="small" color="action" />
-                  <Typography variant="body2">Profile: {user.socialVisibility}</Typography>
-                </Stack>
-              )}
-              {user.shareRSVPByDefault && (
-                <Stack direction="row" spacing={1} alignItems="center">
-                  <Share fontSize="small" color="action" />
-                  <Typography variant="body2">Shares RSVPs by default</Typography>
-                </Stack>
-              )}
-              {user.shareCheckinsByDefault && (
-                <Stack direction="row" spacing={1} alignItems="center">
-                  <CheckCircle fontSize="small" color="action" />
-                  <Typography variant="body2">Shares check-ins by default</Typography>
-                </Stack>
-              )}
-            </Stack>
-          </Box>
-        )}
+        {isOwnProfile &&
+          (user.socialVisibility ||
+            user.shareRSVPByDefault !== undefined ||
+            user.shareCheckinsByDefault !== undefined) && (
+            <Box sx={{ mb: 3, p: 2, bgcolor: 'action.hover', borderRadius: 2 }}>
+              <Typography variant="subtitle2" fontWeight={600} gutterBottom>
+                Privacy Settings
+              </Typography>
+              <Stack spacing={1}>
+                {user.socialVisibility && (
+                  <Stack direction="row" spacing={1} alignItems="center">
+                    <Visibility fontSize="small" color="action" />
+                    <Typography variant="body2">Profile: {user.socialVisibility}</Typography>
+                  </Stack>
+                )}
+                {user.shareRSVPByDefault && (
+                  <Stack direction="row" spacing={1} alignItems="center">
+                    <Share fontSize="small" color="action" />
+                    <Typography variant="body2">Shares RSVPs by default</Typography>
+                  </Stack>
+                )}
+                {user.shareCheckinsByDefault && (
+                  <Stack direction="row" spacing={1} alignItems="center">
+                    <CheckCircle fontSize="small" color="action" />
+                    <Typography variant="body2">Shares check-ins by default</Typography>
+                  </Stack>
+                )}
+              </Stack>
+            </Box>
+          )}
 
         {/* Interests */}
         {user.interests && user.interests.length > 0 && (
@@ -197,12 +196,7 @@ export default function UserDetails({ user, isOwnProfile = false }: UserDetailsP
         {/* Edit Button for Own Profile */}
         {isOwnProfile && (
           <Box sx={{ mt: 3 }}>
-            <Button
-              component={Link}
-              href={ROUTES.ACCOUNT.ROOT}
-              variant="outlined"
-              fullWidth
-            >
+            <Button component={Link} href={ROUTES.ACCOUNT.ROOT} variant="outlined" fullWidth>
               Edit Profile
             </Button>
           </Box>

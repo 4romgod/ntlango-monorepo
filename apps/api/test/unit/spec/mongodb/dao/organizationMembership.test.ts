@@ -1,11 +1,15 @@
-import {GraphQLError} from 'graphql';
-import {OrganizationMembershipDAO} from '@/mongodb/dao';
-import {OrganizationMembership as OrganizationMembershipModel} from '@/mongodb/models';
-import type {CreateOrganizationMembershipInput, OrganizationMembership, UpdateOrganizationMembershipInput} from '@ntlango/commons/types';
-import {OrganizationRole} from '@ntlango/commons/types';
-import {CustomError, ErrorTypes} from '@/utils';
-import {MockMongoError} from '@/test/utils';
-import {ERROR_MESSAGES} from '@/validation';
+import { GraphQLError } from 'graphql';
+import { OrganizationMembershipDAO } from '@/mongodb/dao';
+import { OrganizationMembership as OrganizationMembershipModel } from '@/mongodb/models';
+import type {
+  CreateOrganizationMembershipInput,
+  OrganizationMembership,
+  UpdateOrganizationMembershipInput,
+} from '@ntlango/commons/types';
+import { OrganizationRole } from '@ntlango/commons/types';
+import { CustomError, ErrorTypes } from '@/utils';
+import { MockMongoError } from '@/test/utils';
+import { ERROR_MESSAGES } from '@/validation';
 
 jest.mock('@/mongodb/models', () => ({
   OrganizationMembership: {
@@ -60,10 +64,8 @@ describe('OrganizationMembershipDAO', () => {
       (OrganizationMembershipModel.create as jest.Mock).mockRejectedValue(new MockMongoError(0));
 
       await expect(
-        OrganizationMembershipDAO.create({orgId: 'org-1', userId: 'user-1', role: OrganizationRole.Admin}),
-      ).rejects.toThrow(
-        CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR),
-      );
+        OrganizationMembershipDAO.create({ orgId: 'org-1', userId: 'user-1', role: OrganizationRole.Admin }),
+      ).rejects.toThrow(CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR));
     });
   });
 
@@ -77,7 +79,7 @@ describe('OrganizationMembershipDAO', () => {
 
       const result = await OrganizationMembershipDAO.readMembershipById('membership-1');
 
-      expect(OrganizationMembershipModel.findOne).toHaveBeenCalledWith({membershipId: 'membership-1'});
+      expect(OrganizationMembershipModel.findOne).toHaveBeenCalledWith({ membershipId: 'membership-1' });
       expect(result).toEqual(mockMembership);
     });
 
@@ -97,7 +99,9 @@ describe('OrganizationMembershipDAO', () => {
     });
 
     it('wraps unknown errors', async () => {
-      (OrganizationMembershipModel.findOne as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(new MockMongoError(0)));
+      (OrganizationMembershipModel.findOne as jest.Mock).mockReturnValue(
+        createMockFailedMongooseQuery(new MockMongoError(0)),
+      );
 
       await expect(OrganizationMembershipDAO.readMembershipById('membership-1')).rejects.toThrow(
         CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR),
@@ -117,12 +121,14 @@ describe('OrganizationMembershipDAO', () => {
 
       const result = await OrganizationMembershipDAO.readMembershipsByOrgId('org-1');
 
-      expect(OrganizationMembershipModel.find).toHaveBeenCalledWith({orgId: 'org-1'});
+      expect(OrganizationMembershipModel.find).toHaveBeenCalledWith({ orgId: 'org-1' });
       expect(result).toEqual([mockMembership]);
     });
 
     it('wraps errors', async () => {
-      (OrganizationMembershipModel.find as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(new MockMongoError(0)));
+      (OrganizationMembershipModel.find as jest.Mock).mockReturnValue(
+        createMockFailedMongooseQuery(new MockMongoError(0)),
+      );
 
       await expect(OrganizationMembershipDAO.readMembershipsByOrgId('org-1')).rejects.toThrow(
         CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR),
@@ -132,7 +138,7 @@ describe('OrganizationMembershipDAO', () => {
 
   describe('update', () => {
     it('updates membership', async () => {
-      const mockSave = jest.fn().mockResolvedValue({toObject: () => mockMembership});
+      const mockSave = jest.fn().mockResolvedValue({ toObject: () => mockMembership });
       (OrganizationMembershipModel.findOne as jest.Mock).mockReturnValue(
         createMockSuccessMongooseQuery({
           ...mockMembership,
@@ -148,7 +154,7 @@ describe('OrganizationMembershipDAO', () => {
 
       const result = await OrganizationMembershipDAO.update(input);
 
-      expect(OrganizationMembershipModel.findOne).toHaveBeenCalledWith({membershipId: 'membership-1'});
+      expect(OrganizationMembershipModel.findOne).toHaveBeenCalledWith({ membershipId: 'membership-1' });
       expect(mockSave).toHaveBeenCalled();
       expect(result).toEqual(mockMembership);
     });
@@ -156,15 +162,17 @@ describe('OrganizationMembershipDAO', () => {
     it('throws not found error', async () => {
       (OrganizationMembershipModel.findOne as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(null));
 
-      await expect(OrganizationMembershipDAO.update({membershipId: 'missing'})).rejects.toThrow(
+      await expect(OrganizationMembershipDAO.update({ membershipId: 'missing' })).rejects.toThrow(
         CustomError('Organization membership missing not found', ErrorTypes.NOT_FOUND),
       );
     });
 
     it('wraps unknown errors', async () => {
-      (OrganizationMembershipModel.findOne as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(new MockMongoError(0)));
+      (OrganizationMembershipModel.findOne as jest.Mock).mockReturnValue(
+        createMockFailedMongooseQuery(new MockMongoError(0)),
+      );
 
-      await expect(OrganizationMembershipDAO.update({membershipId: 'membership-1'})).rejects.toThrow(
+      await expect(OrganizationMembershipDAO.update({ membershipId: 'membership-1' })).rejects.toThrow(
         CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR),
       );
     });
@@ -180,7 +188,7 @@ describe('OrganizationMembershipDAO', () => {
 
       const result = await OrganizationMembershipDAO.delete('membership-1');
 
-      expect(OrganizationMembershipModel.findOneAndDelete).toHaveBeenCalledWith({membershipId: 'membership-1'});
+      expect(OrganizationMembershipModel.findOneAndDelete).toHaveBeenCalledWith({ membershipId: 'membership-1' });
       expect(result).toEqual(mockMembership);
     });
 
@@ -193,7 +201,9 @@ describe('OrganizationMembershipDAO', () => {
     });
 
     it('wraps unknown errors', async () => {
-      (OrganizationMembershipModel.findOneAndDelete as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(new MockMongoError(0)));
+      (OrganizationMembershipModel.findOneAndDelete as jest.Mock).mockReturnValue(
+        createMockFailedMongooseQuery(new MockMongoError(0)),
+      );
 
       await expect(OrganizationMembershipDAO.delete('membership-1')).rejects.toThrow(
         CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR),

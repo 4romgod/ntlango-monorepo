@@ -1,15 +1,14 @@
-import {GraphQLError} from 'graphql';
-import {Types} from 'mongoose';
-import type {Activity as ActivityEntity, CreateActivityInput} from '@ntlango/commons/types';
-import {Activity as ActivityModel} from '@/mongodb/models';
-import {KnownCommonError} from '@/utils';
-import {logger} from '@/utils/logger';
-
+import { GraphQLError } from 'graphql';
+import { Types } from 'mongoose';
+import type { Activity as ActivityEntity, CreateActivityInput } from '@ntlango/commons/types';
+import { Activity as ActivityModel } from '@/mongodb/models';
+import { KnownCommonError } from '@/utils';
+import { logger } from '@/utils/logger';
 
 class ActivityDAO {
-  static async create(input: CreateActivityInput & {actorId: string}): Promise<ActivityEntity> {
+  static async create(input: CreateActivityInput & { actorId: string }): Promise<ActivityEntity> {
     try {
-      const {actorId, verb, objectType, objectId, targetType, targetId, visibility, eventAt, metadata} = input;
+      const { actorId, verb, objectType, objectId, targetType, targetId, visibility, eventAt, metadata } = input;
       const activity = await ActivityModel.create({
         activityId: new Types.ObjectId().toString(),
         actorId,
@@ -35,7 +34,10 @@ class ActivityDAO {
   static async readByActor(actorId: string, limit = 25): Promise<ActivityEntity[]> {
     try {
       const sanitizedLimit = Math.max(1, Math.min(limit, 100));
-      const activities = await ActivityModel.find({actorId}).sort({eventAt: -1, createdAt: -1}).limit(sanitizedLimit).exec();
+      const activities = await ActivityModel.find({ actorId })
+        .sort({ eventAt: -1, createdAt: -1 })
+        .limit(sanitizedLimit)
+        .exec();
       return activities.map((activity) => activity.toObject());
     } catch (error) {
       logger.error('Error reading activities by actor', error);
@@ -49,8 +51,8 @@ class ActivityDAO {
         return [];
       }
       const sanitizedLimit = Math.max(1, Math.min(limit, 100));
-      const activities = await ActivityModel.find({actorId: {$in: actorIds}})
-        .sort({eventAt: -1, createdAt: -1})
+      const activities = await ActivityModel.find({ actorId: { $in: actorIds } })
+        .sort({ eventAt: -1, createdAt: -1 })
         .limit(sanitizedLimit)
         .exec();
       return activities.map((activity) => activity.toObject());

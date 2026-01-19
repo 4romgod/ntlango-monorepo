@@ -1,2 +1,2 @@
-export {default as MongoDbClient} from './mongoDbClient';
+export { default as MongoDbClient } from './mongoDbClient';
 export * from './AWS/secretsManager';

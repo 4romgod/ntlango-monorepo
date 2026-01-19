@@ -25,9 +25,7 @@ export default function EventsSidebar({ popularOrganization, stats, trendingCate
   return (
     <Stack spacing={3}>
       {/* Popular Organizer Box */}
-      {popularOrganization && (
-        <PopularOrganizerBox organization={popularOrganization} />
-      )}
+      {popularOrganization && <PopularOrganizerBox organization={popularOrganization} />}
 
       {/* Quick Stats Box */}
       <Card

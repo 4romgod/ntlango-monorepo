@@ -40,7 +40,7 @@ export default async function Page(props: Props) {
     redirect(ROUTES.ACCOUNT.EVENTS.ROOT);
   }
 
-  const isOrganizer = event.organizers.some(organizer => organizer.user.userId === currentUserId);
+  const isOrganizer = event.organizers.some((organizer) => organizer.user.userId === currentUserId);
 
   if (!isOrganizer) {
     redirect(ROUTES.ACCOUNT.EVENTS.ROOT);

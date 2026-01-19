@@ -1,6 +1,6 @@
-import type {ValueNode} from 'graphql';
-import {graphql, GraphQLSchema, GraphQLObjectType, GraphQLString, Kind} from 'graphql';
-import {AnyType} from '@ntlango/commons/types';
+import type { ValueNode } from 'graphql';
+import { graphql, GraphQLSchema, GraphQLObjectType, GraphQLString, Kind } from 'graphql';
+import { AnyType } from '@ntlango/commons/types';
 
 describe('Custom Graphql Scalar Types', () => {
   describe('Any Type', () => {
@@ -21,8 +21,10 @@ describe('Custom Graphql Scalar Types', () => {
       });
 
       it('should throw error for unsupported types during serialization', () => {
-        const value = {key: 'value'};
-        expect(() => AnyType.serialize(value)).toThrow('AnyType can only serialize string, number, boolean, or array of primitive values');
+        const value = { key: 'value' };
+        expect(() => AnyType.serialize(value)).toThrow(
+          'AnyType can only serialize string, number, boolean, or array of primitive values',
+        );
       });
     });
 
@@ -43,29 +45,31 @@ describe('Custom Graphql Scalar Types', () => {
       });
 
       it('should throw error for unsupported types during parsing value', () => {
-        const value = {key: 'value'};
-        expect(() => AnyType.parseValue(value)).toThrow('AnyType can only parse string, number, boolean, or array of primitive values');
+        const value = { key: 'value' };
+        expect(() => AnyType.parseValue(value)).toThrow(
+          'AnyType can only parse string, number, boolean, or array of primitive values',
+        );
       });
     });
 
     describe('parseLiteral', () => {
       it('should parse string literals correctly', () => {
-        const ast: ValueNode = {kind: Kind.STRING, value: 'test'};
+        const ast: ValueNode = { kind: Kind.STRING, value: 'test' };
         expect(AnyType.parseLiteral(ast)).toBe('test');
       });
 
       it('should parse integer literals correctly', () => {
-        const ast: ValueNode = {kind: Kind.INT, value: '123'};
+        const ast: ValueNode = { kind: Kind.INT, value: '123' };
         expect(AnyType.parseLiteral(ast)).toBe(123);
       });
 
       it('should parse float literals correctly', () => {
-        const ast: ValueNode = {kind: Kind.FLOAT, value: '123.45'};
+        const ast: ValueNode = { kind: Kind.FLOAT, value: '123.45' };
         expect(AnyType.parseLiteral(ast)).toBe(123.45);
       });
 
       it('should parse boolean literals correctly', () => {
-        const ast: ValueNode = {kind: Kind.BOOLEAN, value: true};
+        const ast: ValueNode = { kind: Kind.BOOLEAN, value: true };
         expect(AnyType.parseLiteral(ast)).toBe(true);
       });
 
@@ -86,7 +90,9 @@ describe('Custom Graphql Scalar Types', () => {
             },
           ],
         };
-        expect(() => AnyType.parseLiteral(ast)).toThrow('AnyType can only parse string, number, boolean, or array values');
+        expect(() => AnyType.parseLiteral(ast)).toThrow(
+          'AnyType can only parse string, number, boolean, or array values',
+        );
       });
     });
 
@@ -94,8 +100,8 @@ describe('Custom Graphql Scalar Types', () => {
       const TestType = new GraphQLObjectType({
         name: 'TestType',
         fields: {
-          anyField: {type: AnyType},
-          stringField: {type: GraphQLString},
+          anyField: { type: AnyType },
+          stringField: { type: GraphQLString },
         },
       });
 
@@ -132,7 +138,7 @@ describe('Custom Graphql Scalar Types', () => {
                 }
             }`;
 
-      const result = await graphql({schema, source: query});
+      const result = await graphql({ schema, source: query });
       const typedResult = result as unknown as QueryResult;
       expect(typedResult.data.test.anyField).toBe('test string');
       expect(typedResult.data.test.stringField).toBe('testString');

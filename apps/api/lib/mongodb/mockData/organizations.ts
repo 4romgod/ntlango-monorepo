@@ -1,6 +1,6 @@
-import type {CreateOrganizationInput} from '@ntlango/commons/types';
-import {EventVisibility, OrganizationTicketAccess} from '@ntlango/commons/types';
-import {FollowPolicy} from '@ntlango/commons/types/user';
+import type { CreateOrganizationInput } from '@ntlango/commons/types';
+import { EventVisibility, OrganizationTicketAccess } from '@ntlango/commons/types';
+import { FollowPolicy } from '@ntlango/commons/types/user';
 
 export type OrganizationSeedData = Omit<CreateOrganizationInput, 'ownerId'> & {
   followPolicy?: FollowPolicy;
@@ -23,8 +23,8 @@ const organizations: OrganizationSeedData[] = [
       ticketAccess: OrganizationTicketAccess.Public,
     },
     links: [
-      {label: 'Website', url: 'https://signalstudios.co.za'},
-      {label: 'Instagram', url: 'https://instagram.com/signalstudios'},
+      { label: 'Website', url: 'https://signalstudios.co.za' },
+      { label: 'Instagram', url: 'https://instagram.com/signalstudios' },
     ],
     domainsAllowed: ['signalstudios.co.za'],
     followPolicy: FollowPolicy.Public,
@@ -45,9 +45,9 @@ const organizations: OrganizationSeedData[] = [
       ticketAccess: OrganizationTicketAccess.Members,
     },
     links: [
-      {label: 'Soundcloud', url: 'https://soundcloud.com/harbourcollective'},
-      {label: 'Instagram', url: 'https://instagram.com/harbourcollective'},
-      {label: 'Booking', url: 'https://harbourcollective.live/book'},
+      { label: 'Soundcloud', url: 'https://soundcloud.com/harbourcollective' },
+      { label: 'Instagram', url: 'https://instagram.com/harbourcollective' },
+      { label: 'Booking', url: 'https://harbourcollective.live/book' },
     ],
     domainsAllowed: ['harbourcollective.live'],
     followPolicy: FollowPolicy.RequireApproval,
@@ -68,9 +68,9 @@ const organizations: OrganizationSeedData[] = [
       ticketAccess: OrganizationTicketAccess.InviteOnly,
     },
     links: [
-      {label: 'Website', url: 'https://emergentlabs.studio'},
-      {label: 'Medium', url: 'https://medium.com/emergent-labs'},
-      {label: 'LinkedIn', url: 'https://linkedin.com/company/emergent-labs'},
+      { label: 'Website', url: 'https://emergentlabs.studio' },
+      { label: 'Medium', url: 'https://medium.com/emergent-labs' },
+      { label: 'LinkedIn', url: 'https://linkedin.com/company/emergent-labs' },
     ],
     domainsAllowed: ['emergentlabs.studio'],
     followPolicy: FollowPolicy.Public,
@@ -91,8 +91,8 @@ const organizations: OrganizationSeedData[] = [
       ticketAccess: OrganizationTicketAccess.Members,
     },
     links: [
-      {label: 'Discord', url: 'https://discord.gg/streetcarsociety'},
-      {label: 'Instagram', url: 'https://instagram.com/streetcar.society'},
+      { label: 'Discord', url: 'https://discord.gg/streetcarsociety' },
+      { label: 'Instagram', url: 'https://instagram.com/streetcar.society' },
     ],
     domainsAllowed: ['streetcarsociety.io'],
     followPolicy: FollowPolicy.Public,
@@ -113,8 +113,8 @@ const organizations: OrganizationSeedData[] = [
       ticketAccess: OrganizationTicketAccess.InviteOnly,
     },
     links: [
-      {label: 'Website', url: 'https://veldwellness.africa'},
-      {label: 'Journal', url: 'https://veldwellness.africa/journal'},
+      { label: 'Website', url: 'https://veldwellness.africa' },
+      { label: 'Journal', url: 'https://veldwellness.africa/journal' },
     ],
     domainsAllowed: ['veldwellness.africa'],
     followPolicy: FollowPolicy.RequireApproval,

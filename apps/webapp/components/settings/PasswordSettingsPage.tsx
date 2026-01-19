@@ -78,7 +78,7 @@ export default function PasswordSettingsPage() {
 
     const commonPatterns = [/123/i, /abc/i, /password/i, /qwerty/i, /admin/i, /(\w)\1{2,}/i];
 
-    const hasCommonPattern = commonPatterns.some(pattern => pattern.test(password));
+    const hasCommonPattern = commonPatterns.some((pattern) => pattern.test(password));
     if (!hasCommonPattern) score += 10;
     else feedback.push('Avoid common patterns');
 
@@ -119,7 +119,7 @@ export default function PasswordSettingsPage() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setSettings(prev => ({
+    setSettings((prev) => ({
       ...prev,
       [name]: value,
     }));
@@ -299,7 +299,7 @@ export default function PasswordSettingsPage() {
                     borderRadius: 2,
                     border: '1px solid',
                     borderColor: `${passwordStrength.color}.main`,
-                    bgcolor: theme =>
+                    bgcolor: (theme) =>
                       theme.palette.mode === 'dark'
                         ? `${passwordStrength.color}.dark`
                         : `${passwordStrength.color}.lighter`,

@@ -1,35 +1,41 @@
-import {z} from 'zod';
-import {EventLifecycleStatus, EventOrganizerRole, EventPrivacySetting, EventStatus, EventVisibility} from '@ntlango/commons/types/event';
-import {ERROR_MESSAGES} from '@/validation';
+import { z } from 'zod';
+import {
+  EventLifecycleStatus,
+  EventOrganizerRole,
+  EventPrivacySetting,
+  EventStatus,
+  EventVisibility,
+} from '@ntlango/commons/types/event';
+import { ERROR_MESSAGES } from '@/validation';
 import mongoose from 'mongoose';
 
 export const EventSchema = z.object({
   eventId: z
     .string()
-    .refine(mongoose.Types.ObjectId.isValid, {message: `Event ID ${ERROR_MESSAGES.INVALID}`})
+    .refine(mongoose.Types.ObjectId.isValid, { message: `Event ID ${ERROR_MESSAGES.INVALID}` })
     .describe('The unique ID of the Event.'),
 
   slug: z
     .string()
-    .min(2, {message: `Slug ${ERROR_MESSAGES.REQUIRED}`})
+    .min(2, { message: `Slug ${ERROR_MESSAGES.REQUIRED}` })
     .describe('The unique slug of the event. (It is different from the ID)'),
 
   title: z
     .string()
-    .min(2, {message: `Title ${ERROR_MESSAGES.REQUIRED}`})
+    .min(2, { message: `Title ${ERROR_MESSAGES.REQUIRED}` })
     .describe('The title of the event.'),
 
   description: z
     .string()
-    .min(2, {message: `Description ${ERROR_MESSAGES.REQUIRED}`})
+    .min(2, { message: `Description ${ERROR_MESSAGES.REQUIRED}` })
     .describe('The description of the event.'),
 
   summary: z.string().optional().describe('Short summary for listings'),
 
   recurrenceRule: z
     .string()
-    .min(0, {message: `RecurrenceRule is not valid`})
-    .refine(() => true, {message: 'RecurrenceRule is invalid'})
+    .min(0, { message: `RecurrenceRule is not valid` })
+    .refine(() => true, { message: 'RecurrenceRule is invalid' })
     .describe('The recurrence rule for the event, specifying if and how the event repeats.'),
 
   primarySchedule: z.any().optional().describe('Primary schedule details'),
@@ -42,7 +48,7 @@ export const EventSchema = z.object({
   venueId: z.string().optional().describe('Venue reference'),
 
   status: z
-    .nativeEnum(EventStatus, {message: ERROR_MESSAGES.INVALID_EVENT_STATUS})
+    .nativeEnum(EventStatus, { message: ERROR_MESSAGES.INVALID_EVENT_STATUS })
     .describe('The current status of the event (e.g., Scheduled, Cancelled).'),
 
   lifecycleStatus: z.nativeEnum(EventLifecycleStatus).optional().describe('Lifecycle status'),
@@ -62,21 +68,26 @@ export const EventSchema = z.object({
   showAttendees: z.boolean().optional().describe('Show attendee list'),
 
   eventCategories: z
-    .array(z.string().refine(mongoose.Types.ObjectId.isValid, {message: `Event Category ID ${ERROR_MESSAGES.INVALID}`}))
-    .min(1, {message: ERROR_MESSAGES.ATLEAST_ONE('event category')})
+    .array(
+      z.string().refine(mongoose.Types.ObjectId.isValid, { message: `Event Category ID ${ERROR_MESSAGES.INVALID}` }),
+    )
+    .min(1, { message: ERROR_MESSAGES.ATLEAST_ONE('event category') })
     .describe('The categories associated with the event.'),
 
   organizers: z
     .array(
       z.object({
-        user: z.string().refine(mongoose.Types.ObjectId.isValid, {message: `User ID ${ERROR_MESSAGES.INVALID}`}),
+        user: z.string().refine(mongoose.Types.ObjectId.isValid, { message: `User ID ${ERROR_MESSAGES.INVALID}` }),
         role: z.nativeEnum(EventOrganizerRole),
       }),
     )
-    .min(1, {message: 'At least one organizer is required'})
+    .min(1, { message: 'At least one organizer is required' })
     .describe('The list of organizers for the event with their roles.'),
 
-  tags: z.record(z.any()).optional().describe('A set of tags associated with the event for categorization or search purposes.'),
+  tags: z
+    .record(z.any())
+    .optional()
+    .describe('A set of tags associated with the event for categorization or search purposes.'),
 
   media: z
     .object({
@@ -92,7 +103,10 @@ export const EventSchema = z.object({
 
   comments: z.record(z.any()).optional().describe('Comments related to the event.'),
 
-  privacySetting: z.nativeEnum(EventPrivacySetting).optional().describe('The privacy setting of the event, indicating who can view or attend.'),
+  privacySetting: z
+    .nativeEnum(EventPrivacySetting)
+    .optional()
+    .describe('The privacy setting of the event, indicating who can view or attend.'),
 
   eventLink: z.string().optional().describe('A link to the event page or further information about the event.'),
 
@@ -101,13 +115,15 @@ export const EventSchema = z.object({
   heroImage: z.string().optional().describe('Hero image'),
 });
 
-export const CreateEventInputSchema = EventSchema.extend({}).omit({eventId: true, slug: true});
+export const CreateEventInputSchema = EventSchema.extend({}).omit({ eventId: true, slug: true });
 
 export const UpdateEventInputSchema = EventSchema.partial()
   .extend({
     eventId: z
       .string()
       .describe('The unique ID of the Event. (It is a required field)')
-      .refine(mongoose.Types.ObjectId.isValid, {message: `Event with eventCategoryId ${ERROR_MESSAGES.DOES_NOT_EXIST}`}),
+      .refine(mongoose.Types.ObjectId.isValid, {
+        message: `Event with eventCategoryId ${ERROR_MESSAGES.DOES_NOT_EXIST}`,
+      }),
   })
-  .omit({slug: true});
+  .omit({ slug: true });

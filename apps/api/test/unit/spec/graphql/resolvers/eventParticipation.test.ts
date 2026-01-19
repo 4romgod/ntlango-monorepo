@@ -1,10 +1,15 @@
 import 'reflect-metadata';
-import {EventParticipantResolver} from '@/graphql/resolvers/eventParticipant';
-import {EventParticipantDAO, UserDAO} from '@/mongodb/dao';
-import type {UpsertEventParticipantInput, CancelEventParticipantInput, EventParticipant, User} from '@ntlango/commons/types';
-import {ParticipantStatus} from '@ntlango/commons/types';
+import { EventParticipantResolver } from '@/graphql/resolvers/eventParticipant';
+import { EventParticipantDAO, UserDAO } from '@/mongodb/dao';
+import type {
+  UpsertEventParticipantInput,
+  CancelEventParticipantInput,
+  EventParticipant,
+  User,
+} from '@ntlango/commons/types';
+import { ParticipantStatus } from '@ntlango/commons/types';
 import * as validation from '@/validation';
-import {createMockContext} from '../../../../utils/mockContext';
+import { createMockContext } from '../../../../utils/mockContext';
 
 jest.mock('@/mongodb/dao', () => ({
   EventParticipantDAO: {
@@ -209,7 +214,7 @@ describe('EventParticipantResolver', () => {
     } as User;
 
     it('should return user when userId is present and user exists', async () => {
-      const mockContext = createMockContext({}, {users: new Map([[mockParticipant.userId, mockUser]])});
+      const mockContext = createMockContext({}, { users: new Map([[mockParticipant.userId, mockUser]]) });
 
       const result = await resolver.user(mockParticipant, mockContext);
 
@@ -229,7 +234,7 @@ describe('EventParticipantResolver', () => {
     });
 
     it('should return null when UserDAO throws an error', async () => {
-      const mockContext = createMockContext({}, {users: new Map()});
+      const mockContext = createMockContext({}, { users: new Map() });
 
       const result = await resolver.user(mockParticipant, mockContext);
       expect(result).toBeNull();
@@ -262,7 +267,7 @@ describe('EventParticipantResolver', () => {
     };
 
     it('should return user RSVP status for an event', async () => {
-      const mockContext = createMockContext({user: {userId} as User});
+      const mockContext = createMockContext({ user: { userId } as User });
       (EventParticipantDAO.readByEventAndUser as jest.Mock).mockResolvedValue(mockParticipant);
 
       const result = await resolver.myRsvpStatus(eventId, mockContext);
@@ -273,7 +278,7 @@ describe('EventParticipantResolver', () => {
     });
 
     it('should return null when user has not RSVPd', async () => {
-      const mockContext = createMockContext({user: {userId} as User});
+      const mockContext = createMockContext({ user: { userId } as User });
       (EventParticipantDAO.readByEventAndUser as jest.Mock).mockResolvedValue(null);
 
       const result = await resolver.myRsvpStatus(eventId, mockContext);
@@ -283,7 +288,7 @@ describe('EventParticipantResolver', () => {
     });
 
     it('should return null when user is not authenticated', async () => {
-      const mockContext = createMockContext({user: undefined});
+      const mockContext = createMockContext({ user: undefined });
 
       const result = await resolver.myRsvpStatus(eventId, mockContext);
 
@@ -315,7 +320,7 @@ describe('EventParticipantResolver', () => {
     ];
 
     it('should return all RSVPs for current user (excluding cancelled)', async () => {
-      const mockContext = createMockContext({user: {userId} as User});
+      const mockContext = createMockContext({ user: { userId } as User });
       (EventParticipantDAO.readByUser as jest.Mock).mockResolvedValue(mockRsvps);
 
       const result = await resolver.myRsvps(false, mockContext);
@@ -325,7 +330,7 @@ describe('EventParticipantResolver', () => {
     });
 
     it('should include cancelled RSVPs when requested', async () => {
-      const mockContext = createMockContext({user: {userId} as User});
+      const mockContext = createMockContext({ user: { userId } as User });
       const rsvpsWithCancelled = [
         ...mockRsvps,
         {
@@ -347,7 +352,7 @@ describe('EventParticipantResolver', () => {
     });
 
     it('should return empty array when user is not authenticated', async () => {
-      const mockContext = createMockContext({user: undefined});
+      const mockContext = createMockContext({ user: undefined });
 
       const result = await resolver.myRsvps(false, mockContext);
 

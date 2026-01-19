@@ -32,7 +32,7 @@ interface AccountSettings {
 // Separate submit button component to use useFormStatus
 function SubmitButton() {
   const { pending } = useFormStatus();
-  
+
   return (
     <Button
       type="submit"
@@ -73,7 +73,7 @@ export default function AccountSettingsPage({ user }: { user: User }) {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setSettings(prev => ({
+    setSettings((prev) => ({
       ...prev,
       [name]: value,
     }));
@@ -101,20 +101,20 @@ export default function AccountSettingsPage({ user }: { user: User }) {
 
     if (updateUserFormState.data && session?.user?.token) {
       const updatedUser = updateUserFormState.data as User;
-      
+
       // Update local state immediately
       setSettings({
         username: updatedUser.username,
         email: updatedUser.email,
       });
-      
+
       // Refresh the session with updated user data
       signIn('refresh-session', {
         userData: JSON.stringify(updatedUser),
         token: session.user.token,
         redirect: false,
       });
-      
+
       setToastProps({
         ...toastProps,
         open: true,
@@ -220,7 +220,7 @@ export default function AccountSettingsPage({ user }: { user: User }) {
             border: '2px solid',
             borderColor: 'error.main',
             p: 3,
-            bgcolor: theme => (theme.palette.mode === 'dark' ? 'error.dark' : 'error.lighter'),
+            bgcolor: (theme) => (theme.palette.mode === 'dark' ? 'error.dark' : 'error.lighter'),
           }}
         >
           <Stack

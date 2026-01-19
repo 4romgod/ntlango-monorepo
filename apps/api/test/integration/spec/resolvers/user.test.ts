@@ -1,9 +1,9 @@
-import {Types} from 'mongoose';
+import { Types } from 'mongoose';
 import request from 'supertest';
-import type {IntegrationServer} from '@/test/integration/utils/server';
-import {startIntegrationServer, stopIntegrationServer} from '@/test/integration/utils/server';
-import {usersMockData} from '@/mongodb/mockData';
-import {UserDAO} from '@/mongodb/dao';
+import type { IntegrationServer } from '@/test/integration/utils/server';
+import { startIntegrationServer, stopIntegrationServer } from '@/test/integration/utils/server';
+import { usersMockData } from '@/mongodb/mockData';
+import { UserDAO } from '@/mongodb/dao';
 import {
   getCreateUserMutation,
   getDeleteUserByEmailMutation,
@@ -17,10 +17,10 @@ import {
   getReadUsersWithoutOptionsQuery,
   getUpdateUserMutation,
 } from '@/test/utils';
-import type {CreateUserInput, QueryOptionsInput, User, UserWithToken} from '@ntlango/commons/types';
-import {Gender} from '@ntlango/commons/types';
-import {ERROR_MESSAGES} from '@/validation';
-import {verifyToken} from '@/utils/auth';
+import type { CreateUserInput, QueryOptionsInput, User, UserWithToken } from '@ntlango/commons/types';
+import { Gender } from '@ntlango/commons/types';
+import { ERROR_MESSAGES } from '@/validation';
+import { verifyToken } from '@/utils/auth';
 
 describe('User Resolver', () => {
   let server: IntegrationServer;
@@ -39,7 +39,7 @@ describe('User Resolver', () => {
   let createUserInput: CreateUserInput;
 
   beforeAll(async () => {
-    server = await startIntegrationServer({port: TEST_PORT});
+    server = await startIntegrationServer({ port: TEST_PORT });
     url = server.url;
     createUserInput = {
       ...usersMockData.at(0)!,
@@ -135,21 +135,30 @@ describe('User Resolver', () => {
       });
 
       it('should delete a user by userId', async () => {
-        const response = await request(url).post('').set('Authorization', 'Bearer ' + createdUser.token).send(getDeleteUserByIdMutation(createdUser.userId));
+        const response = await request(url)
+          .post('')
+          .set('Authorization', 'Bearer ' + createdUser.token)
+          .send(getDeleteUserByIdMutation(createdUser.userId));
         expect(response.status).toBe(200);
         expect(response.error).toBeFalsy();
         expect(response.body.data.deleteUserById.email).toBe(testUserEmail);
       });
 
       it('should delete a user by email', async () => {
-        const response = await request(url).post('').set('Authorization', 'Bearer ' + createdUser.token).send(getDeleteUserByEmailMutation(createdUser.email));
+        const response = await request(url)
+          .post('')
+          .set('Authorization', 'Bearer ' + createdUser.token)
+          .send(getDeleteUserByEmailMutation(createdUser.email));
         expect(response.status).toBe(200);
         expect(response.error).toBeFalsy();
         expect(response.body.data.deleteUserByEmail.email).toBe(testUserEmail);
       });
 
       it('should delete a user by username', async () => {
-        const response = await request(url).post('').set('Authorization', 'Bearer ' + createdUser.token).send(getDeleteUserByUsernameMutation(createdUser.username));
+        const response = await request(url)
+          .post('')
+          .set('Authorization', 'Bearer ' + createdUser.token)
+          .send(getDeleteUserByUsernameMutation(createdUser.username));
         expect(response.status).toBe(200);
         expect(response.error).toBeFalsy();
         expect(response.body.data.deleteUserByUsername.email).toBe(testUserEmail);
@@ -256,7 +265,7 @@ describe('User Resolver', () => {
       it('throws unauthorized for invalid email', async () => {
         const response = await request(url)
           .post('')
-          .send(getLoginUserMutation({email: 'missing@example.com', password: testPassword}));
+          .send(getLoginUserMutation({ email: 'missing@example.com', password: testPassword }));
         expect(response.status).toBe(401);
         expect(response.body.errors[0].message).toBe(ERROR_MESSAGES.PASSWORD_MISMATCH);
       });
@@ -264,7 +273,7 @@ describe('User Resolver', () => {
       it('throws unauthorized for invalid password', async () => {
         const response = await request(url)
           .post('')
-          .send(getLoginUserMutation({email: testUserEmail, password: 'invalidPassword123'}));
+          .send(getLoginUserMutation({ email: testUserEmail, password: 'invalidPassword123' }));
         expect(response.status).toBe(401);
         expect(response.body.errors[0].message).toBe(ERROR_MESSAGES.PASSWORD_MISMATCH);
       });
@@ -274,7 +283,7 @@ describe('User Resolver', () => {
       let createdUser: UserWithToken;
       const duplicateEmail = `duplicate-${Date.now()}@example.com`;
       const duplicateUsername = `duplicate-${Date.now()}`;
-      
+
       beforeEach(async () => {
         createdUser = await UserDAO.create(createUserInput);
       });
@@ -293,7 +302,7 @@ describe('User Resolver', () => {
         const response = await request(url)
           .post('')
           .set('Authorization', 'Bearer ' + createdUser.token)
-          .send(getUpdateUserMutation({userId: createdUser.userId, username: duplicateUsername}));
+          .send(getUpdateUserMutation({ userId: createdUser.userId, username: duplicateUsername }));
         expect(response.status).toBe(409);
       });
 
@@ -301,7 +310,7 @@ describe('User Resolver', () => {
         const response = await request(url)
           .post('')
           .set('Authorization', 'Bearer ' + createdUser.token)
-          .send(getUpdateUserMutation({userId: createdUser.userId, phone_number: 'invalid'}));
+          .send(getUpdateUserMutation({ userId: createdUser.userId, phone_number: 'invalid' }));
         expect(response.status).toBe(400);
         expect(response.body.errors[0].message).toBe(ERROR_MESSAGES.INVALID_PHONE_NUMBER);
       });
@@ -310,7 +319,7 @@ describe('User Resolver', () => {
         const response = await request(url)
           .post('')
           .set('Authorization', 'Bearer ' + createdUser.token)
-          .send(getUpdateUserMutation({userId: new Types.ObjectId().toString(), given_name: 'nope'}));
+          .send(getUpdateUserMutation({ userId: new Types.ObjectId().toString(), given_name: 'nope' }));
         expect(response.status).toBe(403);
       });
     });
@@ -326,12 +335,18 @@ describe('User Resolver', () => {
       });
 
       it('returns unauthenticated for invalid token', async () => {
-        const response = await request(url).post('').set('Authorization', 'Bearer ' + 'bad').send(getDeleteUserByIdMutation(createdUser.userId));
+        const response = await request(url)
+          .post('')
+          .set('Authorization', 'Bearer ' + 'bad')
+          .send(getDeleteUserByIdMutation(createdUser.userId));
         expect(response.status).toBe(401);
       });
 
       it('returns unauthorized when deleting another user', async () => {
-        const response = await request(url).post('').set('Authorization', 'Bearer ' + createdUser.token).send(getDeleteUserByIdMutation(new Types.ObjectId().toString()));
+        const response = await request(url)
+          .post('')
+          .set('Authorization', 'Bearer ' + createdUser.token)
+          .send(getDeleteUserByIdMutation(new Types.ObjectId().toString()));
         expect(response.status).toBe(403);
       });
     });
@@ -347,12 +362,18 @@ describe('User Resolver', () => {
       });
 
       it('returns unauthenticated for invalid token', async () => {
-        const response = await request(url).post('').set('Authorization', 'Bearer ' + 'bad').send(getDeleteUserByEmailMutation(createdUser.email));
+        const response = await request(url)
+          .post('')
+          .set('Authorization', 'Bearer ' + 'bad')
+          .send(getDeleteUserByEmailMutation(createdUser.email));
         expect(response.status).toBe(401);
       });
 
       it('returns unauthorized when token does not belong to owner', async () => {
-        const response = await request(url).post('').set('Authorization', 'Bearer ' + createdUser.token).send(getDeleteUserByEmailMutation('another@example.com'));
+        const response = await request(url)
+          .post('')
+          .set('Authorization', 'Bearer ' + createdUser.token)
+          .send(getDeleteUserByEmailMutation('another@example.com'));
         expect(response.status).toBe(403);
       });
     });
@@ -368,12 +389,18 @@ describe('User Resolver', () => {
       });
 
       it('returns unauthenticated for invalid token', async () => {
-        const response = await request(url).post('').set('Authorization', 'Bearer ' + 'bad').send(getDeleteUserByUsernameMutation(createdUser.username));
+        const response = await request(url)
+          .post('')
+          .set('Authorization', 'Bearer ' + 'bad')
+          .send(getDeleteUserByUsernameMutation(createdUser.username));
         expect(response.status).toBe(401);
       });
 
       it('returns unauthorized when token does not belong to owner', async () => {
-        const response = await request(url).post('').set('Authorization', 'Bearer ' + createdUser.token).send(getDeleteUserByUsernameMutation('someoneElse'));
+        const response = await request(url)
+          .post('')
+          .set('Authorization', 'Bearer ' + createdUser.token)
+          .send(getDeleteUserByUsernameMutation('someoneElse'));
         expect(response.status).toBe(403);
       });
     });

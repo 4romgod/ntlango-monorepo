@@ -1,6 +1,6 @@
-import type {FilterInput, LocationFilterInput} from '@ntlango/commons/types';
-import {FilterOperatorInput} from '@ntlango/commons/types';
-import type {PipelineStage} from 'mongoose';
+import type { FilterInput, LocationFilterInput } from '@ntlango/commons/types';
+import { FilterOperatorInput } from '@ntlango/commons/types';
+import type { PipelineStage } from 'mongoose';
 
 const buildOperatorSymbol = (operator?: FilterOperatorInput) => {
   const normalized = operator || FilterOperatorInput.eq;
@@ -11,40 +11,40 @@ const buildOperatorSymbol = (operator?: FilterOperatorInput) => {
  * Creates location filter match conditions for events.
  * Supports text-based filtering (city, state/province, country) and geospatial proximity search.
  * Note: "state" field is used for both states (US) and provinces (Canada, etc.) - they are equivalent.
- * 
+ *
  * Filter modes:
  * - Text only (city/state/country): Matches events by address text (case-insensitive)
  * - Geospatial only (lat/lng + radius): Matches events within radius (requires stored coordinates)
  * - Both: Uses AND logic - events must match BOTH proximity AND text criteria
- * 
+ *
  * AND behavior note:
  * When combining text and geospatial filters, events must satisfy ALL conditions.
  * Example: city="London" + radius=50km will only return events within 50km that ALSO
  * have "London" in their city field. Events in suburbs (e.g., "Croydon") within 50km
  * will NOT match. This is by design for precision filtering.
- * 
+ *
  * For broader "nearby OR matching city" results, use separate queries or consider
  * adding a `combineMode: 'AND' | 'OR'` option to LocationFilterInput in the future.
  */
 export const createLocationMatchStage = (location: LocationFilterInput): PipelineStage[] => {
-  const {city, state, country, latitude, longitude, radiusKm} = location;
+  const { city, state, country, latitude, longitude, radiusKm } = location;
   const stages: PipelineStage[] = [];
   const textConditions: Record<string, any> = {};
 
   // City/state/country text-based filtering (case-insensitive regex)
   if (city) {
-    textConditions['location.address.city'] = {$regex: city, $options: 'i'};
+    textConditions['location.address.city'] = { $regex: city, $options: 'i' };
   }
   if (state) {
-    textConditions['location.address.state'] = {$regex: state, $options: 'i'};
+    textConditions['location.address.state'] = { $regex: state, $options: 'i' };
   }
   if (country) {
-    textConditions['location.address.country'] = {$regex: country, $options: 'i'};
+    textConditions['location.address.country'] = { $regex: country, $options: 'i' };
   }
 
   // Add text conditions as a match stage if present
   if (Object.keys(textConditions).length > 0) {
-    stages.push({$match: textConditions});
+    stages.push({ $match: textConditions });
   }
 
   // Geospatial filtering using equirectangular approximation
@@ -56,8 +56,8 @@ export const createLocationMatchStage = (location: LocationFilterInput): Pipelin
     // This avoids computing distance for events we can't locate
     stages.push({
       $match: {
-        'location.coordinates.latitude': {$exists: true, $ne: null},
-        'location.coordinates.longitude': {$exists: true, $ne: null},
+        'location.coordinates.latitude': { $exists: true, $ne: null },
+        'location.coordinates.longitude': { $exists: true, $ne: null },
       },
     });
 
@@ -67,7 +67,7 @@ export const createLocationMatchStage = (location: LocationFilterInput): Pipelin
 
     // Use $addFields to calculate distance, then filter
     // Equirectangular approximation: d = R * sqrt(Δlat² + (cos(midLat) * Δlng)²)
-    // 
+    //
     // Accuracy notes:
     // - Within ~0.5% error for distances under 100km at mid-latitudes (30°-60°)
     // - Error increases to ~1-2% at 200km or near equator/poles
@@ -80,8 +80,8 @@ export const createLocationMatchStage = (location: LocationFilterInput): Pipelin
             vars: {
               lat1: userLatRad,
               lng1: userLngRad,
-              lat2: {$multiply: ['$location.coordinates.latitude', Math.PI / 180]},
-              lng2: {$multiply: ['$location.coordinates.longitude', Math.PI / 180]},
+              lat2: { $multiply: ['$location.coordinates.latitude', Math.PI / 180] },
+              lng2: { $multiply: ['$location.coordinates.longitude', Math.PI / 180] },
             },
             in: {
               $multiply: [
@@ -89,13 +89,13 @@ export const createLocationMatchStage = (location: LocationFilterInput): Pipelin
                 {
                   $sqrt: {
                     $add: [
-                      {$pow: [{$subtract: ['$$lat2', '$$lat1']}, 2]},
+                      { $pow: [{ $subtract: ['$$lat2', '$$lat1'] }, 2] },
                       {
                         $pow: [
                           {
                             $multiply: [
-                              {$cos: {$divide: [{$add: ['$$lat1', '$$lat2']}, 2]}},
-                              {$subtract: ['$$lng2', '$$lng1']},
+                              { $cos: { $divide: [{ $add: ['$$lat1', '$$lat2'] }, 2] } },
+                              { $subtract: ['$$lng2', '$$lng1'] },
                             ],
                           },
                           2,
@@ -114,7 +114,7 @@ export const createLocationMatchStage = (location: LocationFilterInput): Pipelin
     // Filter by distance
     stages.push({
       $match: {
-        _distanceKm: {$lte: radiusKmValue},
+        _distanceKm: { $lte: radiusKmValue },
       },
     });
 
@@ -134,7 +134,7 @@ export const createEventPipelineStages = (filters: FilterInput[]): PipelineStage
     return [];
   }
 
-  const buildMatchClause = ({field, value, operator}: FilterInput) => {
+  const buildMatchClause = ({ field, value, operator }: FilterInput) => {
     const operatorSymbol = buildOperatorSymbol(operator);
 
     if (Array.isArray(value)) {
@@ -143,17 +143,17 @@ export const createEventPipelineStages = (filters: FilterInput[]): PipelineStage
       }
       const arrayOperator = operatorSymbol === '$ne' ? '$nin' : '$in';
       return {
-        [field]: {[arrayOperator]: value},
+        [field]: { [arrayOperator]: value },
       };
     }
 
     return {
-      [field]: {[operatorSymbol]: value},
+      [field]: { [operatorSymbol]: value },
     };
   };
 
   const matchClauses = filters.map(buildMatchClause);
-  const matchPayload = matchClauses.length === 1 ? matchClauses[0] : {$and: matchClauses};
+  const matchPayload = matchClauses.length === 1 ? matchClauses[0] : { $and: matchClauses };
 
   const matchStage: PipelineStage.Match = {
     $match: matchPayload,

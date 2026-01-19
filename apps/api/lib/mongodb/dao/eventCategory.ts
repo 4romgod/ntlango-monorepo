@@ -1,9 +1,13 @@
-import {EventCategory as EventCategoryModel} from '@/mongodb/models';
-import type {EventCategory, UpdateEventCategoryInput, CreateEventCategoryInput, QueryOptionsInput} from '@ntlango/commons/types';
-import {GraphQLError} from 'graphql';
-import {CustomError, ErrorTypes, KnownCommonError, transformOptionsToQuery} from '@/utils';
-import {logger} from '@/utils/logger';
-
+import { EventCategory as EventCategoryModel } from '@/mongodb/models';
+import type {
+  EventCategory,
+  UpdateEventCategoryInput,
+  CreateEventCategoryInput,
+  QueryOptionsInput,
+} from '@ntlango/commons/types';
+import { GraphQLError } from 'graphql';
+import { CustomError, ErrorTypes, KnownCommonError, transformOptionsToQuery } from '@/utils';
+import { logger } from '@/utils/logger';
 
 class EventCategoryDAO {
   static async create(input: CreateEventCategoryInput): Promise<EventCategory> {
@@ -35,7 +39,7 @@ class EventCategoryDAO {
 
   static async readEventCategoryBySlug(slug: string): Promise<EventCategory> {
     try {
-      const query = EventCategoryModel.findOne({slug: slug});
+      const query = EventCategoryModel.findOne({ slug: slug });
       const eventCategory = await query.exec();
       if (!eventCategory) {
         throw CustomError(`Event Category with slug ${slug} not found`, ErrorTypes.NOT_FOUND);
@@ -67,14 +71,12 @@ class EventCategoryDAO {
       if (!eventCategory) {
         throw CustomError('Event Category not found', ErrorTypes.NOT_FOUND);
       }
-      
+
       // Filter out undefined values to avoid overwriting with undefined
-      const fieldsToUpdate = Object.fromEntries(
-        Object.entries(input).filter(([_, value]) => value !== undefined)
-      );
+      const fieldsToUpdate = Object.fromEntries(Object.entries(input).filter(([_, value]) => value !== undefined));
       Object.assign(eventCategory, fieldsToUpdate);
       await eventCategory.save();
-      
+
       return eventCategory.toObject();
     } catch (error) {
       logger.info(`Error updating event category with eventCategoryId ${input.eventCategoryId}`, error);
@@ -103,7 +105,7 @@ class EventCategoryDAO {
 
   static async deleteEventCategoryBySlug(slug: string): Promise<EventCategory> {
     try {
-      const deletedEventCategory = await EventCategoryModel.findOneAndDelete({slug}).exec();
+      const deletedEventCategory = await EventCategoryModel.findOneAndDelete({ slug }).exec();
       if (!deletedEventCategory) {
         throw CustomError(`Event Category with slug ${slug} not found`, ErrorTypes.NOT_FOUND);
       }

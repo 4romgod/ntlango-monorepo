@@ -1,6 +1,6 @@
 import 'reflect-metadata';
-import {getModelForClass, pre} from '@typegoose/typegoose';
-import {EventParticipant as EventParticipantEntity} from '@ntlango/commons/types';
+import { getModelForClass, pre } from '@typegoose/typegoose';
+import { EventParticipant as EventParticipantEntity } from '@ntlango/commons/types';
 
 @pre<EventParticipantModel>('validate', function (next) {
   try {
@@ -15,7 +15,7 @@ import {EventParticipant as EventParticipantEntity} from '@ntlango/commons/types
 class EventParticipantModel extends EventParticipantEntity {}
 
 const EventParticipant = getModelForClass(EventParticipantModel, {
-  options: {customName: 'EventParticipant'},
+  options: { customName: 'EventParticipant' },
 });
 
 export default EventParticipant;

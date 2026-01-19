@@ -30,7 +30,7 @@ export default function EventTileGrid({ events, loading = false, skeletonCount =
 
   return (
     <Box component="div" display="flex" flexDirection="column" gap={2}>
-      {events.map(event => (
+      {events.map((event) => (
         <Box component="div" key={`EventTileGrid.${event.eventId}`}>
           <Link href={ROUTES.EVENTS.EVENT(event.slug)} onClick={handleLinkClick}>
             <EventBox event={event} />

@@ -1,5 +1,5 @@
 import * as DAO from '@/mongodb/dao';
-import {EventCategoryDAO, EventDAO, UserDAO} from '@/mongodb/dao';
+import { EventCategoryDAO, EventDAO, UserDAO } from '@/mongodb/dao';
 
 describe('Index Exports', () => {
   it('should export EventDAO', () => {

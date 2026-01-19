@@ -1,6 +1,6 @@
 /**
  * Example: Using Elevation Zero Design Tokens
- * 
+ *
  * This file demonstrates how to use the standardized design tokens
  * from the Elevation Zero Design System in your components.
  */
@@ -217,7 +217,7 @@ export function ExampleCardGrid() {
   return (
     <Container sx={{ py: SPACING.relaxed }}>
       <Grid container spacing={SPACING.standard}>
-        {items.map(item => (
+        {items.map((item) => (
           <Grid key={item} size={GRID_COLUMNS.threeColumn}>
             <Card sx={INTERACTIVE_CARD_STYLES}>
               <CardContent>
@@ -252,24 +252,24 @@ export function ExampleSpacing() {
 
 /**
  * Quick Reference:
- * 
+ *
  * Import what you need:
  * ```tsx
  * import { CARD_STYLES, BUTTON_PRIMARY_STYLES, SPACING } from '@/lib/constants/design-tokens';
  * ```
- * 
+ *
  * Use in sx prop:
  * ```tsx
  * <Card sx={CARD_STYLES}>...</Card>
  * <Button sx={BUTTON_PRIMARY_STYLES}>Click</Button>
  * <Stack spacing={SPACING.standard}>...</Stack>
  * ```
- * 
+ *
  * Extend with custom styles:
  * ```tsx
  * <Card sx={{ ...CARD_STYLES, bgcolor: 'primary.light' }}>...</Card>
  * ```
- * 
+ *
  * Combine multiple tokens:
  * ```tsx
  * <Button sx={{ ...BUTTON_PRIMARY_STYLES, mt: SPACING.compact }}>...</Button>

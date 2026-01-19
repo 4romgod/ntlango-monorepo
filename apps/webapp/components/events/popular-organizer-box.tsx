@@ -27,9 +27,9 @@ export default function PopularOrganizerBox({ organization }: PopularOrganizerBo
   const { name, slug, description, logo, followersCount, tags } = organization;
 
   return (
-    <Card 
-      elevation={0} 
-      sx={{ 
+    <Card
+      elevation={0}
+      sx={{
         borderRadius: 3,
         border: '1px solid',
         borderColor: 'divider',
@@ -41,8 +41,8 @@ export default function PopularOrganizerBox({ organization }: PopularOrganizerBo
           <Typography variant="overline" color="text.secondary" fontWeight={600}>
             Most Popular
           </Typography>
-          <Chip 
-            icon={<GroupIcon fontSize="small" />} 
+          <Chip
+            icon={<GroupIcon fontSize="small" />}
             label={`${(followersCount ?? 0).toLocaleString()} followers`}
             size="small"
             sx={{ ml: 'auto' }}
@@ -54,8 +54,8 @@ export default function PopularOrganizerBox({ organization }: PopularOrganizerBo
           <Avatar
             src={logo}
             alt={name || 'Organization'}
-            sx={{ 
-              width: 56, 
+            sx={{
+              width: 56,
               height: 56,
               bgcolor: 'primary.main',
               fontSize: '1.5rem',
@@ -66,10 +66,10 @@ export default function PopularOrganizerBox({ organization }: PopularOrganizerBo
           </Avatar>
 
           <Box sx={{ flex: 1, minWidth: 0 }}>
-            <Typography 
-              variant="h6" 
-              fontWeight={700} 
-              sx={{ 
+            <Typography
+              variant="h6"
+              fontWeight={700}
+              sx={{
                 mb: 0.5,
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
@@ -80,8 +80,8 @@ export default function PopularOrganizerBox({ organization }: PopularOrganizerBo
             >
               {name || 'Unnamed Organization'}
             </Typography>
-            <Typography 
-              variant="body2" 
+            <Typography
+              variant="body2"
               color="text.secondary"
               sx={{
                 overflow: 'hidden',
@@ -100,22 +100,11 @@ export default function PopularOrganizerBox({ organization }: PopularOrganizerBo
         {tags && tags.length > 0 && (
           <Stack direction="row" spacing={1} sx={{ mb: 2, flexWrap: 'wrap', gap: 1 }}>
             {tags.slice(0, 3).map((tag) => (
-              <Button 
-                key={tag}
-                size="small"
-                variant="outlined"
-                sx={{ textTransform: 'none', fontWeight: 500 }}
-              >
+              <Button key={tag} size="small" variant="outlined" sx={{ textTransform: 'none', fontWeight: 500 }}>
                 #{tag}
               </Button>
             ))}
-            {tags.length > 3 && (
-              <Chip 
-                label={`+${tags.length - 3} more`}
-                size="small"
-                variant="outlined"
-              />
-            )}
+            {tags.length > 3 && <Chip label={`+${tags.length - 3} more`} size="small" variant="outlined" />}
           </Stack>
         )}
 
@@ -126,7 +115,7 @@ export default function PopularOrganizerBox({ organization }: PopularOrganizerBo
           component={Link}
           href={slug ? ROUTES.ORGANIZATIONS.ORG(slug) : ROUTES.ORGANIZATIONS.ROOT}
           aria-label={`View events by ${name || 'this organization'}`}
-          sx={{ 
+          sx={{
             borderRadius: 2,
             textTransform: 'none',
             fontWeight: 600,

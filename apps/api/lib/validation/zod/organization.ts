@@ -1,13 +1,13 @@
-import {z} from 'zod';
+import { z } from 'zod';
 import mongoose from 'mongoose';
-import {EventVisibility, OrganizationTicketAccess} from '@ntlango/commons/types';
-import {ERROR_MESSAGES} from '@/validation';
+import { EventVisibility, OrganizationTicketAccess } from '@ntlango/commons/types';
+import { ERROR_MESSAGES } from '@/validation';
 
 const mongoIdValidator = (value: string) => mongoose.Types.ObjectId.isValid(value);
 
 const organizationLinkSchema = z.object({
-  label: z.string().min(1, {message: `Link label ${ERROR_MESSAGES.REQUIRED}`}),
-  url: z.string().url({message: `Link URL ${ERROR_MESSAGES.INVALID}`}),
+  label: z.string().min(1, { message: `Link label ${ERROR_MESSAGES.REQUIRED}` }),
+  url: z.string().url({ message: `Link URL ${ERROR_MESSAGES.INVALID}` }),
 });
 
 const eventDefaultsSchema = z.object({
@@ -20,21 +20,21 @@ const eventDefaultsSchema = z.object({
 
 const domainSchema = z
   .string()
-  .min(3, {message: `Domain ${ERROR_MESSAGES.INVALID}`})
+  .min(3, { message: `Domain ${ERROR_MESSAGES.INVALID}` })
   .describe('Domain that is allowed to create content for the organization');
 
 export const CreateOrganizationInputSchema = z.object({
-  name: z.string().min(2, {message: `Name ${ERROR_MESSAGES.REQUIRED}`}),
+  name: z.string().min(2, { message: `Name ${ERROR_MESSAGES.REQUIRED}` }),
   description: z.string().optional(),
   logo: z
     .string()
-    .url({message: `Logo ${ERROR_MESSAGES.INVALID}`})
+    .url({ message: `Logo ${ERROR_MESSAGES.INVALID}` })
     .optional(),
-  ownerId: z.string().refine(mongoIdValidator, {message: `Owner ID ${ERROR_MESSAGES.INVALID}`}),
+  ownerId: z.string().refine(mongoIdValidator, { message: `Owner ID ${ERROR_MESSAGES.INVALID}` }),
   defaultVisibility: z.nativeEnum(EventVisibility).optional(),
   billingEmail: z
     .string()
-    .email({message: `Billing Email ${ERROR_MESSAGES.INVALID_EMAIL}`})
+    .email({ message: `Billing Email ${ERROR_MESSAGES.INVALID_EMAIL}` })
     .optional(),
   links: z.array(organizationLinkSchema).optional(),
   domainsAllowed: z.array(domainSchema).optional(),
@@ -46,17 +46,17 @@ export const CreateOrganizationInputSchema = z.object({
 const updatableOrganizationFields = z.object({
   name: z
     .string()
-    .min(2, {message: `Name ${ERROR_MESSAGES.TOO_SHORT}`})
+    .min(2, { message: `Name ${ERROR_MESSAGES.TOO_SHORT}` })
     .optional(),
   description: z.string().optional(),
   logo: z
     .string()
-    .url({message: `Logo ${ERROR_MESSAGES.INVALID}`})
+    .url({ message: `Logo ${ERROR_MESSAGES.INVALID}` })
     .optional(),
   defaultVisibility: z.nativeEnum(EventVisibility).optional(),
   billingEmail: z
     .string()
-    .email({message: `Billing Email ${ERROR_MESSAGES.INVALID_EMAIL}`})
+    .email({ message: `Billing Email ${ERROR_MESSAGES.INVALID_EMAIL}` })
     .optional(),
   links: z.array(organizationLinkSchema).optional(),
   domainsAllowed: z.array(domainSchema).optional(),
@@ -67,13 +67,13 @@ const updatableOrganizationFields = z.object({
 
 export const UpdateOrganizationInputSchema = z
   .object({
-    orgId: z.string().refine(mongoIdValidator, {message: `Organization ID ${ERROR_MESSAGES.INVALID}`}),
+    orgId: z.string().refine(mongoIdValidator, { message: `Organization ID ${ERROR_MESSAGES.INVALID}` }),
   })
   .merge(updatableOrganizationFields)
   .refine(
     (data) => {
-      const {orgId, ...rest} = data;
+      const { orgId, ...rest } = data;
       return Object.values(rest).some((value) => typeof value !== 'undefined');
     },
-    {message: 'At least one field must be updated'},
+    { message: 'At least one field must be updated' },
   );

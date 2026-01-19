@@ -57,7 +57,7 @@ jest.mock('next-auth/react', () => ({
 
 // Mock @apollo/client
 jest.mock('@apollo/client', () => ({
-  useMutation: jest.fn(document => {
+  useMutation: jest.fn((document) => {
     // Determine which mutation based on document reference
     const docName = document?.definitions?.[0]?.name?.value || '';
     if (docName.includes('Cancel')) {

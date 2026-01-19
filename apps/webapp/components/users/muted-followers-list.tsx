@@ -15,8 +15,8 @@ import {
   ListItemText,
   Typography,
 } from '@mui/material';
-import { 
-  Close as CloseIcon, 
+import {
+  Close as CloseIcon,
   NotificationsOff as NotificationsOffIcon,
   Notifications as NotificationsIcon,
 } from '@mui/icons-material';
@@ -30,11 +30,7 @@ interface MutedFollowersListProps {
   title?: string;
 }
 
-export default function MutedFollowersList({
-  open,
-  onClose,
-  title,
-}: MutedFollowersListProps) {
+export default function MutedFollowersList({ open, onClose, title }: MutedFollowersListProps) {
   const { mutedUsers, loading, error } = useMutedUsers();
   const { unmuteUser, loading: unmuteLoading } = useMuteUser();
 
@@ -100,7 +96,7 @@ export default function MutedFollowersList({
           </Box>
         ) : (
           <List sx={{ py: 0 }}>
-            {mutedUsers.map(user => {
+            {mutedUsers.map((user) => {
               const fullName = `${user.given_name} ${user.family_name}`.trim();
               return (
                 <ListItem
@@ -136,10 +132,7 @@ export default function MutedFollowersList({
                         }}
                       >
                         <Box sx={{ flex: 1, minWidth: 0 }}>
-                          <Link
-                            href={`/users/${user.username}`}
-                            style={{ textDecoration: 'none', color: 'inherit' }}
-                          >
+                          <Link href={`/users/${user.username}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                             <Typography
                               variant="subtitle1"
                               fontWeight={600}

@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import {Arg, Mutation, Resolver, Query, Authorized, Ctx} from 'type-graphql';
+import { Arg, Mutation, Resolver, Query, Authorized, Ctx } from 'type-graphql';
 import {
   CreateOrganizationMembershipInput,
   DeleteOrganizationMembershipInput,
@@ -7,18 +7,18 @@ import {
   UpdateOrganizationMembershipInput,
   UserRole,
 } from '@ntlango/commons/types';
-import {OrganizationMembershipDAO} from '@/mongodb/dao';
-import {RESOLVER_DESCRIPTIONS} from '@/constants';
-import {validateInput, validateMongodbId} from '@/validation';
+import { OrganizationMembershipDAO } from '@/mongodb/dao';
+import { RESOLVER_DESCRIPTIONS } from '@/constants';
+import { validateInput, validateMongodbId } from '@/validation';
 import {
   CreateOrganizationMembershipInputSchema,
   DeleteOrganizationMembershipInputSchema,
   UpdateOrganizationMembershipInputSchema,
 } from '@/validation/zod';
-import {ERROR_MESSAGES} from '@/validation';
-import {OrganizationMembershipService} from '@/services';
-import type {ServerContext} from '@/graphql';
-import {getAuthenticatedUser} from '@/utils';
+import { ERROR_MESSAGES } from '@/validation';
+import { OrganizationMembershipService } from '@/services';
+import type { ServerContext } from '@/graphql';
+import { getAuthenticatedUser } from '@/utils';
 
 @Resolver(() => OrganizationMembership)
 export class OrganizationMembershipResolver {
@@ -44,7 +44,10 @@ export class OrganizationMembershipResolver {
     @Ctx() context: ServerContext,
   ): Promise<OrganizationMembership> {
     validateInput<UpdateOrganizationMembershipInput>(UpdateOrganizationMembershipInputSchema, input);
-    validateMongodbId(input.membershipId, ERROR_MESSAGES.NOT_FOUND('Organization membership', 'ID', input.membershipId));
+    validateMongodbId(
+      input.membershipId,
+      ERROR_MESSAGES.NOT_FOUND('Organization membership', 'ID', input.membershipId),
+    );
     const user = getAuthenticatedUser(context);
     return OrganizationMembershipService.updateMemberRole(input, user.userId);
   }
@@ -57,14 +60,19 @@ export class OrganizationMembershipResolver {
     @Arg('input', () => DeleteOrganizationMembershipInput) input: DeleteOrganizationMembershipInput,
   ): Promise<OrganizationMembership> {
     validateInput<DeleteOrganizationMembershipInput>(DeleteOrganizationMembershipInputSchema, input);
-    validateMongodbId(input.membershipId, ERROR_MESSAGES.NOT_FOUND('Organization membership', 'ID', input.membershipId));
+    validateMongodbId(
+      input.membershipId,
+      ERROR_MESSAGES.NOT_FOUND('Organization membership', 'ID', input.membershipId),
+    );
     return OrganizationMembershipService.removeMember(input.membershipId);
   }
 
   @Query(() => OrganizationMembership, {
     description: RESOLVER_DESCRIPTIONS.ORGANIZATION_MEMBERSHIP.readOrganizationMembershipById,
   })
-  async readOrganizationMembershipById(@Arg('membershipId', () => String) membershipId: string): Promise<OrganizationMembership> {
+  async readOrganizationMembershipById(
+    @Arg('membershipId', () => String) membershipId: string,
+  ): Promise<OrganizationMembership> {
     validateMongodbId(membershipId, ERROR_MESSAGES.NOT_FOUND('Organization membership', 'ID', membershipId));
     return OrganizationMembershipDAO.readMembershipById(membershipId);
   }
@@ -72,7 +80,9 @@ export class OrganizationMembershipResolver {
   @Query(() => [OrganizationMembership], {
     description: RESOLVER_DESCRIPTIONS.ORGANIZATION_MEMBERSHIP.readOrganizationMembershipsByOrgId,
   })
-  async readOrganizationMembershipsByOrgId(@Arg('orgId', () => String) orgId: string): Promise<OrganizationMembership[]> {
+  async readOrganizationMembershipsByOrgId(
+    @Arg('orgId', () => String) orgId: string,
+  ): Promise<OrganizationMembership[]> {
     validateMongodbId(orgId, ERROR_MESSAGES.NOT_FOUND('Organization', 'ID', orgId));
     return OrganizationMembershipDAO.readMembershipsByOrgId(orgId);
   }

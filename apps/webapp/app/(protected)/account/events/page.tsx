@@ -70,11 +70,7 @@ export default async function EventsPage() {
             >
               Your hosted events
             </Typography>
-            <Typography
-              variant="body1"
-              color="text.secondary"
-              sx={{ mb: 4, fontSize: '1.125rem', lineHeight: 1.7 }}
-            >
+            <Typography variant="body1" color="text.secondary" sx={{ mb: 4, fontSize: '1.125rem', lineHeight: 1.7 }}>
               Manage all events you're hosting or organizing. Create new events, edit details, and track RSVPs.
             </Typography>
             <Button
@@ -102,7 +98,7 @@ export default async function EventsPage() {
       <Container sx={{ py: 6 }}>
         {eventList.length > 0 ? (
           <Grid container spacing={3}>
-            {eventList.map(event => (
+            {eventList.map((event) => (
               <Grid size={{ xs: 12, md: 6, lg: 4 }} key={event.eventId}>
                 <EventBox event={event} href={ROUTES.ACCOUNT.EVENTS.EVENT(event.slug)} />
               </Grid>

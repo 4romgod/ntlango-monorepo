@@ -1,13 +1,13 @@
-import {createSortStages} from '@/utils';
-import type {PipelineStage} from 'mongoose';
-import type {SortInput} from '@ntlango/commons/types';
-import {SortOrderInput} from '@ntlango/commons/types';
+import { createSortStages } from '@/utils';
+import type { PipelineStage } from 'mongoose';
+import type { SortInput } from '@ntlango/commons/types';
+import { SortOrderInput } from '@ntlango/commons/types';
 
 describe('createSortStages', () => {
   it('should return a valid sort pipeline stage for given sort inputs', () => {
     const sortInput: SortInput[] = [
-      {field: 'capacity', order: SortOrderInput.asc},
-      {field: 'startDateTime', order: SortOrderInput.desc},
+      { field: 'capacity', order: SortOrderInput.asc },
+      { field: 'startDateTime', order: SortOrderInput.desc },
     ];
     const expectedSortStage: PipelineStage.Sort[] = [
       {
@@ -35,7 +35,7 @@ describe('createSortStages', () => {
   });
 
   it('should handle single sort input correctly', () => {
-    const sortInput: SortInput[] = [{field: 'endDateTime', order: SortOrderInput.desc}];
+    const sortInput: SortInput[] = [{ field: 'endDateTime', order: SortOrderInput.desc }];
     const expectedSortStage: PipelineStage.Sort[] = [
       {
         $sort: {
@@ -50,8 +50,8 @@ describe('createSortStages', () => {
 
   it('should handle different order values correctly', () => {
     const sortInput: SortInput[] = [
-      {field: 'title', order: SortOrderInput.desc},
-      {field: 'location', order: SortOrderInput.asc},
+      { field: 'title', order: SortOrderInput.desc },
+      { field: 'location', order: SortOrderInput.asc },
     ];
     const expectedSortStage: PipelineStage.Sort[] = [
       {

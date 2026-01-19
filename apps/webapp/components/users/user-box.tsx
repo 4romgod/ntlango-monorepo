@@ -17,13 +17,13 @@ export default function UserBox({ user }: UserBoxProps) {
   const { data: session } = useSession();
   const displayName = getDisplayName(user) !== 'Account' ? getDisplayName(user) : user.username;
   const isOwnProfile = session?.user?.userId === user.userId;
-  
+
   // Extract location from user
   const location = user.location?.city || user.location?.country;
-  
+
   // Get interests (limit to 3 for display)
   const interests = user.interests?.slice(0, 3) || [];
-  
+
   return (
     <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
       <Box
@@ -159,7 +159,7 @@ export default function UserBox({ user }: UserBoxProps) {
           {/* Interests Tags */}
           {interests.length > 0 && (
             <Stack direction="row" spacing={0.5} sx={{ mt: 2, flexWrap: 'wrap', gap: 0.5 }}>
-              {interests.map(interest => (
+              {interests.map((interest) => (
                 <Chip
                   key={interest.eventCategoryId || interest.name}
                   label={interest.name}
@@ -181,12 +181,7 @@ export default function UserBox({ user }: UserBoxProps) {
           {/* Follow Button - Only show for other users */}
           {!isOwnProfile && (
             <Box sx={{ mt: 2 }}>
-              <FollowButton
-                targetId={user.userId}
-                targetType={FollowTargetType.User}
-                size="small"
-                fullWidth
-              />
+              <FollowButton targetId={user.userId} targetType={FollowTargetType.User} size="small" fullWidth />
             </Box>
           )}
         </Box>

@@ -1,9 +1,9 @@
-import type {GraphQLErrorExtensions} from 'graphql';
-import {GraphQLError} from 'graphql';
-import {HttpStatusCode, REGEXT_MONGO_DB_ERROR} from '@/constants';
-import {ApolloServerErrorCode} from '@apollo/server/errors';
-import {capitalize} from 'lodash';
-import {ERROR_MESSAGES} from '@/validation';
+import type { GraphQLErrorExtensions } from 'graphql';
+import { GraphQLError } from 'graphql';
+import { HttpStatusCode, REGEXT_MONGO_DB_ERROR } from '@/constants';
+import { ApolloServerErrorCode } from '@apollo/server/errors';
+import { capitalize } from 'lodash';
+import { ERROR_MESSAGES } from '@/validation';
 
 export type CustomErrorType = {
   errorCode: string;
@@ -41,10 +41,14 @@ export const ErrorTypes = {
   },
 };
 
-export const CustomError = (errorMessage: string, errorType: CustomErrorType, extensions?: GraphQLErrorExtensions): GraphQLError => {
+export const CustomError = (
+  errorMessage: string,
+  errorType: CustomErrorType,
+  extensions?: GraphQLErrorExtensions,
+): GraphQLError => {
   return new GraphQLError(errorMessage, {
     extensions: {
-      ...(extensions && {...extensions}),
+      ...(extensions && { ...extensions }),
       code: errorType.errorCode,
       http: {
         status: errorType.errorStatus,
@@ -61,7 +65,7 @@ export const KnownCommonError = (error: unknown): GraphQLError => {
   let message = ERROR_MESSAGES.INTERNAL_SERVER_ERROR;
 
   if (error && typeof error === 'object') {
-    const {code, keyValue} = error as {code?: number; keyValue?: Record<string, string>};
+    const { code, keyValue } = error as { code?: number; keyValue?: Record<string, string> };
     if (code) {
       switch (code) {
         case 11000: {
@@ -95,8 +99,8 @@ export const KnownCommonError = (error: unknown): GraphQLError => {
  * @returns A validation error message string
  */
 export const extractValidationErrorMessage = (error: unknown, defaultMessage: string = 'Validation failed'): string => {
-  type FieldError = {message?: string};
-  const typedError = error as {name?: string; message?: string; errors?: Record<string, FieldError>};
+  type FieldError = { message?: string };
+  const typedError = error as { name?: string; message?: string; errors?: Record<string, FieldError> };
   const errorName = typedError?.name;
   const errorMessage = typedError?.message;
 
@@ -111,7 +115,9 @@ export const extractValidationErrorMessage = (error: unknown, defaultMessage: st
 
   const fieldErrors = typedError.errors ? (Object.values(typedError.errors) as FieldError[]) : [];
   const validationMessage =
-    fieldErrors.map((fieldError) => fieldError.message).filter((message): message is string => typeof message === 'string')[0] ?? defaultMessage;
+    fieldErrors
+      .map((fieldError) => fieldError.message)
+      .filter((message): message is string => typeof message === 'string')[0] ?? defaultMessage;
 
   return validationMessage;
 };
@@ -126,7 +132,7 @@ export const duplicateFieldMessage = (mongoError: unknown) => {
       throw new Error('Invalid error object');
     }
     if ('message' in mongoError) {
-      const errorMessage = (mongoError as {message: unknown}).message;
+      const errorMessage = (mongoError as { message: unknown }).message;
       if (typeof errorMessage === 'string' && errorMessage.includes('duplicate key error')) {
         const splitError = errorMessage.split('dup key:');
         if (splitError.length > 1) {

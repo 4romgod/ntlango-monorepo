@@ -51,14 +51,12 @@ export default function UserProfileStats({
     // Wait for initial data to load before tracking changes
     if (loading) return;
 
-    const existingFollow = following.find(
-      f => f.targetType === FollowTargetType.User && f.targetId === userId
-    );
+    const existingFollow = following.find((f) => f.targetType === FollowTargetType.User && f.targetId === userId);
     const isCurrentlyFollowing = existingFollow?.approvalStatus === FollowApprovalStatus.Accepted;
 
     // Only adjust count after initial load is complete and state actually changed
     if (initialLoadDoneRef.current && wasFollowingRef.current !== isCurrentlyFollowing) {
-      setFollowersCount(prev => isCurrentlyFollowing ? prev + 1 : prev - 1);
+      setFollowersCount((prev) => (isCurrentlyFollowing ? prev + 1 : prev - 1));
     }
 
     wasFollowingRef.current = isCurrentlyFollowing;
@@ -68,7 +66,7 @@ export default function UserProfileStats({
   // Update following count from hook data for own profile
   useEffect(() => {
     if (isOwnProfile && !loading) {
-      const acceptedCount = following.filter(f => f.approvalStatus === FollowApprovalStatus.Accepted).length;
+      const acceptedCount = following.filter((f) => f.approvalStatus === FollowApprovalStatus.Accepted).length;
       setFollowingCount(acceptedCount);
     }
   }, [following, loading, isOwnProfile]);
@@ -184,10 +182,7 @@ export default function UserProfileStats({
 
         {/* Saved Events - scrolls to section on own profile */}
         {isOwnProfile && (
-          <Box
-            onClick={() => scrollToSection('saved-events')}
-            sx={clickableStatSx}
-          >
+          <Box onClick={() => scrollToSection('saved-events')} sx={clickableStatSx}>
             <Typography
               variant="h5"
               fontWeight={700}

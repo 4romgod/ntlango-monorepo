@@ -47,7 +47,7 @@ export default function SaveEventButton({
     try {
       await toggleSave(eventId, isSaved);
       onSaveChange?.(!isSaved);
-      
+
       setToastProps({
         open: true,
         message: isSaved ? 'Event removed from saved' : 'Event saved!',
@@ -98,11 +98,7 @@ export default function SaveEventButton({
   );
 
   if (showTooltip) {
-    return (
-      <Tooltip title={isSaved ? 'Remove from saved' : 'Save event'}>
-        {button}
-      </Tooltip>
-    );
+    return <Tooltip title={isSaved ? 'Remove from saved' : 'Save event'}>{button}</Tooltip>;
   }
 
   return button;

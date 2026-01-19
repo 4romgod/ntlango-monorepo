@@ -5,7 +5,7 @@ import { ROUTES } from '@/lib/constants';
 import { NextResponse } from 'next/server';
 import { isAuthenticated, logger } from './lib/utils';
 
-export default auth(async req => {
+export default auth(async (req) => {
   const { nextUrl } = req;
 
   // Check if there's a valid auth session with a valid token

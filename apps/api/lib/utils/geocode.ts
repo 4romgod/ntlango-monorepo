@@ -1,23 +1,23 @@
-import {logger} from './logger';
+import { logger } from './logger';
 
 /**
  * Geocoding utilities using OpenStreetMap Nominatim API.
- * 
+ *
  * IMPORTANT: Rate Limiting Requirements
  * =====================================
  * Nominatim has a strict usage policy: MAX 1 request per second.
  * See: https://operations.osmfoundation.org/policies/nominatim/
- * 
+ *
  * These utilities do NOT implement internal rate limiting. Callers are
  * responsible for enforcing rate limits when:
  * - Processing multiple addresses in a loop
  * - Handling bulk event creation/updates
  * - Running migration scripts
- * 
+ *
  * Note: geocodeAddress() uses progressive fallback and may make up to 3
  * requests per call (full address → city+state+country → city+country).
  * Account for this when calculating delays between calls.
- * 
+ *
  * Example rate-limited usage:
  * ```typescript
  * const DELAY_MS = 1100; // 1.1s minimum between request starts
@@ -56,7 +56,7 @@ const buildGeocodingParams = (address: Address): URLSearchParams => {
     limit: '1',
   });
 
-  const {street, city, state, zipCode, country} = address;
+  const { street, city, state, zipCode, country } = address;
   if (street) params.append('street', street);
   if (city) params.append('city', city);
   if (state) params.append('state', state);
@@ -90,7 +90,7 @@ async function makeGeocodingRequest(params: URLSearchParams): Promise<GeocodingR
     return null;
   }
 
-  const {lat, lon} = data[0];
+  const { lat, lon } = data[0];
   const latitude = parseFloat(lat);
   const longitude = parseFloat(lon);
 
@@ -99,13 +99,13 @@ async function makeGeocodingRequest(params: URLSearchParams): Promise<GeocodingR
     return null;
   }
 
-  return {latitude, longitude};
+  return { latitude, longitude };
 }
 
 /**
  * Geocodes an address to coordinates using OpenStreetMap Nominatim API.
  * Free tier, no API key required.
- * 
+ *
  * Uses progressive fallback: tries full address first, then city+state+country,
  * then just city+country if the street address is not found.
  *
@@ -117,7 +117,7 @@ async function makeGeocodingRequest(params: URLSearchParams): Promise<GeocodingR
  * @returns Coordinates or null if geocoding fails
  */
 export async function geocodeAddress(address: Address): Promise<GeocodingResult | null> {
-  const {street, city, state, zipCode, country} = address;
+  const { street, city, state, zipCode, country } = address;
 
   const addressParts = [street, city, state, zipCode, country].filter(Boolean);
   if (addressParts.length === 0) {
@@ -142,11 +142,11 @@ export async function geocodeAddress(address: Address): Promise<GeocodingResult 
 
     // Strategy 2: Try city + state + country (without street/zip)
     if (city && country) {
-      const cityParams = new URLSearchParams({format: 'json', limit: '1'});
+      const cityParams = new URLSearchParams({ format: 'json', limit: '1' });
       cityParams.append('city', city);
       if (state) cityParams.append('state', state);
       cityParams.append('country', country);
-      
+
       const cityStateString = [city, state, country].filter(Boolean).join(', ');
       logger.debug(`[geocodeAddress] Trying city-level: ${cityStateString}`);
       const result = await makeGeocodingRequest(cityParams);
@@ -158,10 +158,10 @@ export async function geocodeAddress(address: Address): Promise<GeocodingResult 
 
     // Strategy 3: Try just city + country (fallback for when state is wrong)
     if (city && country && state) {
-      const minimalParams = new URLSearchParams({format: 'json', limit: '1'});
+      const minimalParams = new URLSearchParams({ format: 'json', limit: '1' });
       minimalParams.append('city', city);
       minimalParams.append('country', country);
-      
+
       logger.debug(`[geocodeAddress] Trying minimal: ${city}, ${country}`);
       const result = await makeGeocodingRequest(minimalParams);
       if (result) {
@@ -196,7 +196,7 @@ const hasValidCoordinates = (location: Record<string, any>): boolean =>
  * @returns The same location object, potentially with coordinates added
  */
 export async function enrichLocationWithCoordinates(
-  location: Record<string, any> | undefined | null
+  location: Record<string, any> | undefined | null,
 ): Promise<Record<string, any> | undefined | null> {
   if (!location) {
     return location;
@@ -215,7 +215,7 @@ export async function enrichLocationWithCoordinates(
   }
 
   // Check if address exists
-  const {address} = location;
+  const { address } = location;
   if (!address) {
     logger.debug('[enrichLocationWithCoordinates] No address found, skipping geocoding');
     return location;

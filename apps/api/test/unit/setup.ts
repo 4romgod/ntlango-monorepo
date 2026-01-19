@@ -1,4 +1,4 @@
-import {APPLICATION_STAGES, AWS_REGIONS} from '@ntlango/commons';
+import { APPLICATION_STAGES, AWS_REGIONS } from '@ntlango/commons';
 
 const setup = async () => {
   console.log('\nSetting up unit tests...');

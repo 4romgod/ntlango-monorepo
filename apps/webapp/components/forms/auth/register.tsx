@@ -30,7 +30,7 @@ export default function RegisterForm() {
   const { setToastProps, toastProps } = useAppContext();
   const [formState, formAction, isPending] = useActionState(registerUserAction, {});
 
-  const handleClickShowPassword = () => setShowPassword(show => !show);
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
 
   const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();

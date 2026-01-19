@@ -1,6 +1,6 @@
 import DataLoader from 'dataloader';
-import type {User, EventCategory, Event, Organization} from '@ntlango/commons/types';
-import type {ServerContext} from '@/graphql';
+import type { User, EventCategory, Event, Organization } from '@ntlango/commons/types';
+import type { ServerContext } from '@/graphql';
 
 /**
  * Creates a mock ServerContext with loaders for testing.

@@ -1,10 +1,10 @@
 import 'reflect-metadata';
-import {IntentResolver} from '@/graphql/resolvers/intent';
-import {IntentDAO} from '@/mongodb/dao';
-import type {Intent, UpsertIntentInput, User} from '@ntlango/commons/types';
-import {IntentStatus, IntentVisibility, IntentSource, UserRole} from '@ntlango/commons/types';
-import {Types} from 'mongoose';
-import type {ServerContext} from '@/graphql';
+import { IntentResolver } from '@/graphql/resolvers/intent';
+import { IntentDAO } from '@/mongodb/dao';
+import type { Intent, UpsertIntentInput, User } from '@ntlango/commons/types';
+import { IntentStatus, IntentVisibility, IntentSource, UserRole } from '@ntlango/commons/types';
+import { Types } from 'mongoose';
+import type { ServerContext } from '@/graphql';
 
 jest.mock('@/mongodb/dao', () => ({
   IntentDAO: {
@@ -60,7 +60,7 @@ describe('IntentResolver', () => {
 
     const result = await resolver.upsertIntent(mockInput, mockContext as ServerContext);
 
-    expect(IntentDAO.upsert).toHaveBeenCalledWith({...mockInput, userId: mockUser.userId});
+    expect(IntentDAO.upsert).toHaveBeenCalledWith({ ...mockInput, userId: mockUser.userId });
     expect(result).toEqual(mockIntent);
   });
 

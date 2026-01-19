@@ -14,29 +14,20 @@ import * as path from 'path';
  */
 class SummaryReporter implements Reporter {
   private _globalConfig: Config.GlobalConfig;
-  private _options: {outputFile?: string};
+  private _options: { outputFile?: string };
 
-  constructor(
-    globalConfig: Config.GlobalConfig,
-    options: {outputFile?: string} = {}
-  ) {
+  constructor(globalConfig: Config.GlobalConfig, options: { outputFile?: string } = {}) {
     this._globalConfig = globalConfig;
     this._options = options;
   }
 
-  onRunStart(
-    _results: AggregatedResult,
-    _options: ReporterOnStartOptions
-  ): void {
+  onRunStart(_results: AggregatedResult, _options: ReporterOnStartOptions): void {
     // Optional: Log when tests start
   }
 
-  onRunComplete(
-    _contexts: Set<TestContext>,
-    results: AggregatedResult
-  ): void {
+  onRunComplete(_contexts: Set<TestContext>, results: AggregatedResult): void {
     const summary = this.generateSummary(results);
-    
+
     // Print to console
     console.log('\n' + '='.repeat(80));
     console.log(summary);
@@ -47,7 +38,7 @@ class SummaryReporter implements Reporter {
       try {
         const outputDir = path.dirname(this._options.outputFile);
         if (!fs.existsSync(outputDir)) {
-          fs.mkdirSync(outputDir, {recursive: true});
+          fs.mkdirSync(outputDir, { recursive: true });
         }
         fs.writeFileSync(this._options.outputFile, summary, 'utf-8');
         console.log(`📄 Test summary written to: ${this._options.outputFile}\n`);
@@ -67,9 +58,8 @@ class SummaryReporter implements Reporter {
     lines.push('');
 
     // Overall stats
-    const {numTotalTests, numPassedTests, numFailedTests, numPendingTests} =
-      results;
-    
+    const { numTotalTests, numPassedTests, numFailedTests, numPendingTests } = results;
+
     lines.push('📈 Overall Statistics:');
     lines.push(`   Total Tests:   ${numTotalTests}`);
     lines.push(`   ✅ Passed:      ${numPassedTests}`);
@@ -86,20 +76,16 @@ class SummaryReporter implements Reporter {
         const suiteName = this.getRelativePath(testResult.testFilePath);
         const suiteStatus = testResult.numFailingTests > 0 ? '❌' : '✅';
         const suiteStats = `(${testResult.numPassingTests}/${testResult.testResults.length})`;
-        
+
         lines.push(`${suiteStatus} ${suiteName} ${suiteStats}`);
 
         // Show failed tests
         if (testResult.numFailingTests > 0) {
-          const failedTests = testResult.testResults.filter(
-            (t) => t.status === 'failed'
-          );
+          const failedTests = testResult.testResults.filter((t) => t.status === 'failed');
           for (const test of failedTests) {
             lines.push(`     ❌ ${this.getTestName(test)}`);
             if (test.failureMessages && test.failureMessages.length > 0) {
-              const errorSnippet = test.failureMessages[0]
-                .split('\n')[0]
-                .substring(0, 80);
+              const errorSnippet = test.failureMessages[0].split('\n')[0].substring(0, 80);
               lines.push(`        ${errorSnippet}`);
             }
           }

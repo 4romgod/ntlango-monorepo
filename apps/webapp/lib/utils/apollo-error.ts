@@ -76,7 +76,7 @@ export function isApolloAuthError(error: unknown): boolean {
 
   return (
     apolloError?.graphQLErrors?.some(
-      e => e.extensions?.code === 'UNAUTHENTICATED' || e.message?.includes('logged in'),
+      (e) => e.extensions?.code === 'UNAUTHENTICATED' || e.message?.includes('logged in'),
     ) ?? false
   );
 }

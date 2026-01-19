@@ -67,17 +67,17 @@ export const HTTP_METHOD_COLOR_MAP = {
 };
 
 export const RESOLVE_TIME_COLOR_MAP = [
-  {threshold: 250, color: ANSI_COLOR_CODES.GREEN},
-  {threshold: 500, color: ANSI_COLOR_CODES.YELLOW},
-  {threshold: 1000, color: ANSI_COLOR_CODES.MAGENTA},
-  {threshold: Infinity, color: ANSI_COLOR_CODES.RED},
+  { threshold: 250, color: ANSI_COLOR_CODES.GREEN },
+  { threshold: 500, color: ANSI_COLOR_CODES.YELLOW },
+  { threshold: 1000, color: ANSI_COLOR_CODES.MAGENTA },
+  { threshold: Infinity, color: ANSI_COLOR_CODES.RED },
 ];
 
 export const STATUS_CODE_COLOR_MAP = [
-  {range: /^2\d{2}$/, color: ANSI_COLOR_CODES.GREEN},
-  {range: /^3\d{2}$/, color: ANSI_COLOR_CODES.CYAN},
-  {range: /^4\d{2}$/, color: ANSI_COLOR_CODES.YELLOW},
-  {range: /^5\d{2}$/, color: ANSI_COLOR_CODES.RED},
+  { range: /^2\d{2}$/, color: ANSI_COLOR_CODES.GREEN },
+  { range: /^3\d{2}$/, color: ANSI_COLOR_CODES.CYAN },
+  { range: /^4\d{2}$/, color: ANSI_COLOR_CODES.YELLOW },
+  { range: /^5\d{2}$/, color: ANSI_COLOR_CODES.RED },
 ];
 
 export const SECRET_KEYS = {

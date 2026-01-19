@@ -19,7 +19,7 @@ export default async function Page() {
   const { data: usersRetrieved } = await getClient().query({ query: GetAllUsersDocument });
 
   const users = usersRetrieved.readUsers;
-  const activeUsers = users.filter(u => u.username);
+  const activeUsers = users.filter((u) => u.username);
 
   return (
     <Box>
@@ -49,10 +49,8 @@ export default async function Page() {
           <Box mb={5}>
             <SearchInput
               itemList={users
-                .map(user => {
-                  const name = [user.given_name, user.family_name]
-                    .filter(n => n && typeof n === 'string')
-                    .join(' ');
+                .map((user) => {
+                  const name = [user.given_name, user.family_name].filter((n) => n && typeof n === 'string').join(' ');
                   return name || user.username;
                 })
                 .filter(Boolean)}
@@ -65,7 +63,7 @@ export default async function Page() {
 
           {/* User Grid */}
           <Grid container spacing={3}>
-            {users.map(user => (
+            {users.map((user) => (
               <UserBox key={user.userId} user={user} />
             ))}
           </Grid>

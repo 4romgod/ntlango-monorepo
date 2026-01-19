@@ -1,13 +1,19 @@
-import {AccessLogFormat, LambdaRestApi, LogGroupLogDestination, ResourceBase, RestApi} from 'aws-cdk-lib/aws-apigateway';
-import {CfnOutput, Duration, RemovalPolicy, Stack, StackProps} from 'aws-cdk-lib/core';
-import {configDotenv} from 'dotenv';
-import {NodejsFunction} from 'aws-cdk-lib/aws-lambda-nodejs';
-import {Construct} from 'constructs';
-import {LogGroup} from 'aws-cdk-lib/aws-logs';
-import {Runtime} from 'aws-cdk-lib/aws-lambda';
-import {Secret} from 'aws-cdk-lib/aws-secretsmanager';
-import {APPLICATION_STAGES} from '@ntlango/commons';
-import {join} from 'path';
+import {
+  AccessLogFormat,
+  LambdaRestApi,
+  LogGroupLogDestination,
+  ResourceBase,
+  RestApi,
+} from 'aws-cdk-lib/aws-apigateway';
+import { CfnOutput, Duration, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib/core';
+import { configDotenv } from 'dotenv';
+import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
+import { Construct } from 'constructs';
+import { LogGroup } from 'aws-cdk-lib/aws-logs';
+import { Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
+import { APPLICATION_STAGES } from '@ntlango/commons';
+import { join } from 'path';
 
 configDotenv();
 
@@ -28,7 +34,8 @@ export class GraphQLStack extends Stack {
 
     this.graphqlLambda = new NodejsFunction(this, 'GraphqlLambdaFunction', {
       functionName: 'GraphqlLambdaFunction',
-      description: 'This lambda function is a GraphQL Lambda that uses Apollo server: https://www.apollographql.com/docs/apollo-server/deployment/lambda',
+      description:
+        'This lambda function is a GraphQL Lambda that uses Apollo server: https://www.apollographql.com/docs/apollo-server/deployment/lambda',
       runtime: Runtime.NODEJS_20_X,
       timeout: Duration.seconds(30),
       memorySize: 256,
@@ -40,7 +47,7 @@ export class GraphQLStack extends Stack {
         sourceMap: true,
         minify: false,
         nodeModules: ['@typegoose/typegoose', 'reflect-metadata', 'mongoose', 'mongodb'],
-        loader: {'.html': 'file'},
+        loader: { '.html': 'file' },
       },
       environment: {
         STAGE: `${process.env.STAGE}`, // TODO fix CI/CD to pass this env variable

@@ -100,7 +100,7 @@ const VenueCard = ({ venueId, name, type, capacity, address, amenities }: VenueC
           <>
             <Divider sx={{ my: 2 }} />
             <Stack direction="row" spacing={1} flexWrap="wrap" gap={1}>
-              {amenities.slice(0, 3).map(amenity => (
+              {amenities.slice(0, 3).map((amenity) => (
                 <Chip
                   key={amenity}
                   label={amenity}

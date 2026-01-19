@@ -83,12 +83,7 @@ export default function UserEventsSection({ title, events, emptyMessage }: Props
               {emptyMessage || 'No events to display.'}
             </Typography>
           </Box>
-          <Button
-            component={Link}
-            href={ROUTES.EVENTS.ROOT}
-            variant="outlined"
-            size="small"
-          >
+          <Button component={Link} href={ROUTES.EVENTS.ROOT} variant="outlined" size="small">
             Explore Events
           </Button>
         </Stack>
@@ -116,19 +111,10 @@ export default function UserEventsSection({ title, events, emptyMessage }: Props
               <Box component="div" position="relative">
                 <EventBox event={event} />
                 {(event.userRole || event.participantStatus) && (
-                  <Box
-                    position="absolute"
-                    top={16}
-                    right={16}
-                    zIndex={10}
-                  >
+                  <Box position="absolute" top={16} right={16} zIndex={10}>
                     <Stack direction="row" spacing={1}>
                       {event.userRole && (
-                        <Chip
-                          label={event.userRole}
-                          color={getRoleColor(event.userRole) as any}
-                          size="small"
-                        />
+                        <Chip label={event.userRole} color={getRoleColor(event.userRole) as any} size="small" />
                       )}
                       {event.participantStatus && (
                         <Chip
@@ -139,11 +125,7 @@ export default function UserEventsSection({ title, events, emptyMessage }: Props
                         />
                       )}
                       {event.quantity && event.quantity > 1 && (
-                        <Chip
-                          label={`+${event.quantity - 1}`}
-                          size="small"
-                          variant="outlined"
-                        />
+                        <Chip label={`+${event.quantity - 1}`} size="small" variant="outlined" />
                       )}
                     </Stack>
                   </Box>

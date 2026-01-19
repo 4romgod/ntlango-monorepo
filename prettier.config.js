@@ -1,13 +1,11 @@
-const styleguide = require('@vercel/style-guide/prettier');
-
+/** @type {import("prettier").Config} */
 module.exports = {
-  arrowParens: 'avoid',
+  arrowParens: 'always',
   bracketSameLine: false,
   bracketSpacing: true,
   htmlWhitespaceSensitivity: 'css',
   insertPragma: false,
   jsxSingleQuote: false,
-  plugins: ['prettier-plugin-tailwindcss'],
   printWidth: 120,
   proseWrap: 'always',
   quoteProps: 'as-needed',
@@ -17,4 +15,6 @@ module.exports = {
   tabWidth: 2,
   trailingComma: 'all',
   useTabs: false,
+  // Tailwind plugin - only affects files with Tailwind classes
+  plugins: ['prettier-plugin-tailwindcss'],
 };

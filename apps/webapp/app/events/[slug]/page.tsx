@@ -1,34 +1,26 @@
 import Link from 'next/link';
 import { GetEventBySlugDocument, GetEventBySlugQuery, Location, ParticipantStatus } from '@/data/graphql/types/graphql';
 import { getClient } from '@/data/graphql';
-import { 
+import {
   Avatar,
   Box,
   Button,
   Card,
   CardContent,
-  Chip, 
+  Chip,
   Container,
   Divider,
   Grid,
   Paper,
   Stack,
   Tooltip,
-  Typography
+  Typography,
 } from '@mui/material';
 import EventCategoryChip from '@/components/events/category/chip';
 import { getFullUrl } from '@/lib/utils/url';
 import { RRule } from 'rrule';
 import { upperFirst } from 'lodash';
-import { 
-  CalendarMonth, 
-  LocationOn, 
-  Share, 
-  ConfirmationNumber,
-  Groups,
-  Language,
-  ArrowBack
-} from '@mui/icons-material';
+import { CalendarMonth, LocationOn, Share, ConfirmationNumber, Groups, Language, ArrowBack } from '@mui/icons-material';
 import type { Metadata } from 'next';
 import CopyLinkButton from '@/components/events/copy-link-button';
 import EventDetailActions from '@/components/events/EventDetailActions';
@@ -68,17 +60,22 @@ export default async function Page(props: Props) {
     },
     fetchPolicy: 'no-cache',
   });
-  const { title, organizers, description, media, recurrenceRule, location, eventCategories, participants } = eventRetrieved.readEventBySlug;
+  const { title, organizers, description, media, recurrenceRule, location, eventCategories, participants } =
+    eventRetrieved.readEventBySlug;
   logger.debug('logging to see', eventRetrieved.readEventBySlug);
 
-  type EventDetailParticipant = NonNullable<NonNullable<GetEventBySlugQuery['readEventBySlug']>['participants']>[number];
+  type EventDetailParticipant = NonNullable<
+    NonNullable<GetEventBySlugQuery['readEventBySlug']>['participants']
+  >[number];
 
   const participantList = (participants ?? []) as EventDetailParticipant[];
 
   // Count participants by status
-  const goingCount = participantList.filter(p => p.status === ParticipantStatus.Going || p.status === ParticipantStatus.CheckedIn).length;
-  const interestedCount = participantList.filter(p => p.status === ParticipantStatus.Interested).length;
-  const waitlistedCount = participantList.filter(p => p.status === ParticipantStatus.Waitlisted).length;
+  const goingCount = participantList.filter(
+    (p) => p.status === ParticipantStatus.Going || p.status === ParticipantStatus.CheckedIn,
+  ).length;
+  const interestedCount = participantList.filter((p) => p.status === ParticipantStatus.Interested).length;
+  const waitlistedCount = participantList.filter((p) => p.status === ParticipantStatus.Waitlisted).length;
 
   const getParticipantDisplayName = (participant: EventDetailParticipant) => {
     const nameParts = [participant.user?.given_name, participant.user?.family_name].filter(Boolean);
@@ -92,7 +89,8 @@ export default async function Page(props: Props) {
     participant.userId?.charAt(0) ??
     '?';
 
-  const getParticipantStatusLabel = (participant: EventDetailParticipant) => participant.status ?? ParticipantStatus.Going;
+  const getParticipantStatusLabel = (participant: EventDetailParticipant) =>
+    participant.status ?? ParticipantStatus.Going;
 
   const getLocationText = (location: Location): string => {
     switch (location.locationType) {
@@ -149,7 +147,10 @@ export default async function Page(props: Props) {
       >
         <Box
           component="img"
-          src={media?.featuredImageUrl || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=2000&q=80'}
+          src={
+            media?.featuredImageUrl ||
+            'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=2000&q=80'
+          }
           alt={title}
           sx={{
             width: '100%',
@@ -158,7 +159,7 @@ export default async function Page(props: Props) {
             objectPosition: 'center 35%',
           }}
         />
-        
+
         {/* Back Button */}
         <Box
           sx={{
@@ -274,7 +275,7 @@ export default async function Page(props: Props) {
                 <Typography variant="h5" fontWeight={700} gutterBottom sx={{ mb: 3 }}>
                   Organized By
                 </Typography>
-                
+
                 {organizers.length === 0 ? (
                   <Typography color="text.secondary">No organizers listed.</Typography>
                 ) : (
@@ -324,11 +325,12 @@ export default async function Page(props: Props) {
                                     ? `${organizer.user.given_name} ${organizer.user.family_name}`
                                     : organizer.user.username || 'Unknown User'}
                                 </Typography>
-                                {organizer.user.username && (organizer.user.given_name || organizer.user.family_name) && (
-                                  <Typography variant="body2" color="text.secondary">
-                                    @{organizer.user.username}
-                                  </Typography>
-                                )}
+                                {organizer.user.username &&
+                                  (organizer.user.given_name || organizer.user.family_name) && (
+                                    <Typography variant="body2" color="text.secondary">
+                                      @{organizer.user.username}
+                                    </Typography>
+                                  )}
                                 <Chip
                                   label={organizer.role}
                                   size="small"
@@ -369,7 +371,7 @@ export default async function Page(props: Props) {
                     />
                   )}
                 </Stack>
-                
+
                 {participantList.length === 0 ? (
                   <Box
                     sx={{
@@ -394,7 +396,7 @@ export default async function Page(props: Props) {
                         mb: 3,
                       }}
                     >
-                      {participantList.slice(0, 12).map(participant => (
+                      {participantList.slice(0, 12).map((participant) => (
                         <Tooltip
                           key={participant.participantId}
                           title={`${getParticipantDisplayName(participant)} · ${getParticipantStatusLabel(participant)}`}
@@ -421,12 +423,9 @@ export default async function Page(props: Props) {
                         </Tooltip>
                       ))}
                     </Box>
-                    
+
                     {participantList.length > 12 && (
-                      <Button
-                        variant="text"
-                        sx={{ fontWeight: 600 }}
-                      >
+                      <Button variant="text" sx={{ fontWeight: 600 }}>
                         View all {participantList.length} participants
                       </Button>
                     )}
@@ -455,7 +454,12 @@ export default async function Page(props: Props) {
                       <Stack direction="row" spacing={1.5} alignItems="flex-start" sx={{ mb: 1 }}>
                         <CalendarMonth sx={{ fontSize: 24, color: 'primary.main', mt: 0.5 }} />
                         <Box>
-                          <Typography variant="overline" color="text.secondary" fontWeight={600} sx={{ letterSpacing: 1 }}>
+                          <Typography
+                            variant="overline"
+                            color="text.secondary"
+                            fontWeight={600}
+                            sx={{ letterSpacing: 1 }}
+                          >
                             Date & Time
                           </Typography>
                           <Typography variant="body1" fontWeight={600} sx={{ mt: 0.5 }}>
@@ -471,7 +475,12 @@ export default async function Page(props: Props) {
                       <Stack direction="row" spacing={1.5} alignItems="flex-start">
                         <LocationOn sx={{ fontSize: 24, color: 'primary.main', mt: 0.5 }} />
                         <Box>
-                          <Typography variant="overline" color="text.secondary" fontWeight={600} sx={{ letterSpacing: 1 }}>
+                          <Typography
+                            variant="overline"
+                            color="text.secondary"
+                            fontWeight={600}
+                            sx={{ letterSpacing: 1 }}
+                          >
                             Location
                           </Typography>
                           <Typography variant="body1" fontWeight={600} sx={{ mt: 0.5 }}>
@@ -496,7 +505,12 @@ export default async function Page(props: Props) {
                       <Stack direction="row" spacing={1.5} alignItems="flex-start">
                         <ConfirmationNumber sx={{ fontSize: 24, color: 'primary.main', mt: 0.5 }} />
                         <Box>
-                          <Typography variant="overline" color="text.secondary" fontWeight={600} sx={{ letterSpacing: 1 }}>
+                          <Typography
+                            variant="overline"
+                            color="text.secondary"
+                            fontWeight={600}
+                            sx={{ letterSpacing: 1 }}
+                          >
                             Admission
                           </Typography>
                           <Typography variant="body1" fontWeight={600} sx={{ mt: 0.5 }}>
@@ -512,26 +526,43 @@ export default async function Page(props: Props) {
                       <Stack direction="row" spacing={1.5} alignItems="flex-start">
                         <Groups sx={{ fontSize: 24, color: 'primary.main', mt: 0.5 }} />
                         <Box sx={{ flex: 1 }}>
-                          <Typography variant="overline" color="text.secondary" fontWeight={600} sx={{ letterSpacing: 1 }}>
+                          <Typography
+                            variant="overline"
+                            color="text.secondary"
+                            fontWeight={600}
+                            sx={{ letterSpacing: 1 }}
+                          >
                             Attendance
                           </Typography>
                           <Stack spacing={0.5} sx={{ mt: 0.5 }}>
                             {goingCount > 0 && (
                               <Stack direction="row" justifyContent="space-between" alignItems="center">
-                                <Typography variant="body2" color="text.secondary">Going</Typography>
-                                <Typography variant="body2" fontWeight={700} color="primary.main">{goingCount}</Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                  Going
+                                </Typography>
+                                <Typography variant="body2" fontWeight={700} color="primary.main">
+                                  {goingCount}
+                                </Typography>
                               </Stack>
                             )}
                             {interestedCount > 0 && (
                               <Stack direction="row" justifyContent="space-between" alignItems="center">
-                                <Typography variant="body2" color="text.secondary">Interested</Typography>
-                                <Typography variant="body2" fontWeight={700} color="info.main">{interestedCount}</Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                  Interested
+                                </Typography>
+                                <Typography variant="body2" fontWeight={700} color="info.main">
+                                  {interestedCount}
+                                </Typography>
                               </Stack>
                             )}
                             {waitlistedCount > 0 && (
                               <Stack direction="row" justifyContent="space-between" alignItems="center">
-                                <Typography variant="body2" color="text.secondary">Waitlisted</Typography>
-                                <Typography variant="body2" fontWeight={700} color="warning.main">{waitlistedCount}</Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                  Waitlisted
+                                </Typography>
+                                <Typography variant="body2" fontWeight={700} color="warning.main">
+                                  {waitlistedCount}
+                                </Typography>
                               </Stack>
                             )}
                             {participantList.length === 0 && (
@@ -559,7 +590,12 @@ export default async function Page(props: Props) {
                   }}
                 >
                   <CardContent sx={{ p: 3 }}>
-                    <Typography variant="overline" color="text.secondary" fontWeight={600} sx={{ letterSpacing: 1, mb: 2, display: 'block' }}>
+                    <Typography
+                      variant="overline"
+                      color="text.secondary"
+                      fontWeight={600}
+                      sx={{ letterSpacing: 1, mb: 2, display: 'block' }}
+                    >
                       Categories
                     </Typography>
                     <Stack direction="row" flexWrap="wrap" gap={1}>

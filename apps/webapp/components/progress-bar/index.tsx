@@ -18,7 +18,7 @@ export default function TopProgressBar() {
   }, [pathname, searchParams]);
 
   useEffect(() => {
-    NProgress.configure({ 
+    NProgress.configure({
       showSpinner: false,
       minimum: 0.2,
       easing: 'ease',

@@ -1,6 +1,6 @@
-import {createOrganizationLoader} from '@/graphql/loaders';
-import {Organization as OrganizationModel} from '@/mongodb/models';
-import type {Organization} from '@ntlango/commons/types';
+import { createOrganizationLoader } from '@/graphql/loaders';
+import { Organization as OrganizationModel } from '@/mongodb/models';
+import type { Organization } from '@ntlango/commons/types';
 
 jest.mock('@/mongodb/models', () => ({
   Organization: {
@@ -14,7 +14,7 @@ describe('OrganizationLoader', () => {
   });
 
   it('should batch load organizations by ID', async () => {
-    const mockOrganizations: Array<Partial<Organization> & {_id: string}> = [
+    const mockOrganizations: Array<Partial<Organization> & { _id: string }> = [
       {
         _id: 'org1',
         orgId: 'org1',
@@ -45,7 +45,7 @@ describe('OrganizationLoader', () => {
 
     // Should make single batch query
     expect(OrganizationModel.find).toHaveBeenCalledTimes(1);
-    expect(OrganizationModel.find).toHaveBeenCalledWith({_id: {$in: ['org1', 'org2', 'org3']}});
+    expect(OrganizationModel.find).toHaveBeenCalledWith({ _id: { $in: ['org1', 'org2', 'org3'] } });
 
     // Should return results in correct order
     expect(results[0]).toEqual(mockOrganizations[0]);
@@ -60,7 +60,7 @@ describe('OrganizationLoader', () => {
   });
 
   it('should deduplicate IDs in batch', async () => {
-    const mockOrganizations: Array<Partial<Organization> & {_id: string}> = [
+    const mockOrganizations: Array<Partial<Organization> & { _id: string }> = [
       {
         _id: 'org1',
         orgId: 'org1',
@@ -83,7 +83,7 @@ describe('OrganizationLoader', () => {
 
     // Should deduplicate and make single query
     expect(OrganizationModel.find).toHaveBeenCalledTimes(1);
-    expect(OrganizationModel.find).toHaveBeenCalledWith({_id: {$in: ['org1']}});
+    expect(OrganizationModel.find).toHaveBeenCalledWith({ _id: { $in: ['org1'] } });
 
     // All results should be the same organization
     expect(results[0]).toEqual(mockOrganizations[0]);
@@ -105,7 +105,7 @@ describe('OrganizationLoader', () => {
   });
 
   it('should cache loaded organizations', async () => {
-    const mockOrganizations: Array<Partial<Organization> & {_id: string}> = [
+    const mockOrganizations: Array<Partial<Organization> & { _id: string }> = [
       {
         _id: 'org1',
         orgId: 'org1',
@@ -132,7 +132,7 @@ describe('OrganizationLoader', () => {
   });
 
   it('should handle mixed found and not-found organizations', async () => {
-    const mockOrganizations: Array<Partial<Organization> & {_id: string}> = [
+    const mockOrganizations: Array<Partial<Organization> & { _id: string }> = [
       {
         _id: 'org1',
         orgId: 'org1',
@@ -150,11 +150,7 @@ describe('OrganizationLoader', () => {
 
     const loader = createOrganizationLoader();
 
-    const results = await Promise.all([
-      loader.load('org1'),
-      loader.load('nonexistent1'),
-      loader.load('nonexistent2'),
-    ]);
+    const results = await Promise.all([loader.load('org1'), loader.load('nonexistent1'), loader.load('nonexistent2')]);
 
     expect(results[0]).toEqual(mockOrganizations[0]);
     expect(results[1]).toBeNull();

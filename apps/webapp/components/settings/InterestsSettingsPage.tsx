@@ -53,10 +53,10 @@ export default function InterestsSettingsPage({ user, eventCategoryGroups }: Int
   }, [session?.user?.interests]);
 
   const handleInterestToggle = (eventCategory: EventCategory) => {
-    setTempInterests(prev => {
-      const exists = prev.some(item => item.eventCategoryId === eventCategory.eventCategoryId);
+    setTempInterests((prev) => {
+      const exists = prev.some((item) => item.eventCategoryId === eventCategory.eventCategoryId);
       if (exists) {
-        return prev.filter(item => item.eventCategoryId !== eventCategory.eventCategoryId);
+        return prev.filter((item) => item.eventCategoryId !== eventCategory.eventCategoryId);
       } else {
         return [...prev, eventCategory];
       }
@@ -66,7 +66,7 @@ export default function InterestsSettingsPage({ user, eventCategoryGroups }: Int
   const handleSaveInterests = () => {
     const formData = new FormData();
     formData.append('userId', user.userId);
-    formData.append('interests', JSON.stringify(tempInterests.map(i => i.eventCategoryId)));
+    formData.append('interests', JSON.stringify(tempInterests.map((i) => i.eventCategoryId)));
 
     startTransition(() => {
       formAction(formData);
@@ -75,14 +75,14 @@ export default function InterestsSettingsPage({ user, eventCategoryGroups }: Int
 
   // Filter event categories based on search term
   const filteredCategoryGroups = eventCategoryGroups
-    .map(group => {
-      const filteredCategories = group.eventCategories.filter(category =>
+    .map((group) => {
+      const filteredCategories = group.eventCategories.filter((category) =>
         category.name.toLowerCase().includes(searchTerm.toLowerCase()),
       );
 
       return { ...group, eventCategories: filteredCategories };
     })
-    .filter(group => group.eventCategories.length > 0);
+    .filter((group) => group.eventCategories.length > 0);
 
   // Update local state and session when action succeeds
   useEffect(() => {
@@ -178,7 +178,7 @@ export default function InterestsSettingsPage({ user, eventCategoryGroups }: Int
             </Box>
           ) : (
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5 }}>
-              {selectedInterests.map(interest => (
+              {selectedInterests.map((interest) => (
                 <Box key={interest.eventCategoryId} sx={{ position: 'relative', display: 'inline-flex' }}>
                   <EventCategoryChip category={interest} />
                 </Box>
@@ -223,7 +223,7 @@ export default function InterestsSettingsPage({ user, eventCategoryGroups }: Int
               fullWidth
               placeholder="Search interests..."
               value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
+              onChange={(e) => setSearchTerm(e.target.value)}
               slotProps={{
                 input: {
                   startAdornment: (
@@ -244,7 +244,7 @@ export default function InterestsSettingsPage({ user, eventCategoryGroups }: Int
             sx={{
               p: 2,
               mb: 2,
-              bgcolor: theme => (theme.palette.mode === 'dark' ? 'secondary.dark' : 'secondary.lighter'),
+              bgcolor: (theme) => (theme.palette.mode === 'dark' ? 'secondary.dark' : 'secondary.lighter'),
               borderRadius: 2,
             }}
           >
@@ -253,7 +253,7 @@ export default function InterestsSettingsPage({ user, eventCategoryGroups }: Int
             </Typography>
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 2 }}>
               {tempInterests.length > 0 ? (
-                tempInterests.map(interest => (
+                tempInterests.map((interest) => (
                   <Chip
                     key={interest.eventCategoryId}
                     label={interest.name}
@@ -285,23 +285,23 @@ export default function InterestsSettingsPage({ user, eventCategoryGroups }: Int
                 </Typography>
               </Box>
             ) : (
-              filteredCategoryGroups.map(categoryGroup => (
+              filteredCategoryGroups.map((categoryGroup) => (
                 <Box key={categoryGroup.eventCategoryGroupId} sx={{ mb: 4 }}>
                   <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 700, color: 'primary.main' }}>
                     {categoryGroup.name}
                   </Typography>
                   <Grid container spacing={{ xs: 1, sm: 1.5 }}>
-                    {categoryGroup.eventCategories.map(category => (
+                    {categoryGroup.eventCategories.map((category) => (
                       <Grid size={{ xs: 12, sm: 6 }} key={category.eventCategoryId}>
                         <Box
                           sx={{
                             p: 1.5,
                             border: '2px solid',
-                            borderColor: tempInterests.some(item => item.eventCategoryId === category.eventCategoryId)
+                            borderColor: tempInterests.some((item) => item.eventCategoryId === category.eventCategoryId)
                               ? 'secondary.main'
                               : 'divider',
                             borderRadius: 2,
-                            bgcolor: tempInterests.some(item => item.eventCategoryId === category.eventCategoryId)
+                            bgcolor: tempInterests.some((item) => item.eventCategoryId === category.eventCategoryId)
                               ? 'secondary.lighter'
                               : 'transparent',
                             cursor: 'pointer',
@@ -315,7 +315,9 @@ export default function InterestsSettingsPage({ user, eventCategoryGroups }: Int
                           <FormControlLabel
                             control={
                               <Checkbox
-                                checked={tempInterests.some(item => item.eventCategoryId === category.eventCategoryId)}
+                                checked={tempInterests.some(
+                                  (item) => item.eventCategoryId === category.eventCategoryId,
+                                )}
                                 onChange={() => handleInterestToggle(category)}
                                 color="secondary"
                               />

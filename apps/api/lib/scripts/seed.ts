@@ -1,4 +1,4 @@
-import {getConfigValue, MongoDbClient} from '@/clients';
+import { getConfigValue, MongoDbClient } from '@/clients';
 import {
   ActivityDAO,
   EventCategoryDAO,
@@ -21,13 +21,13 @@ import {
   intentSeedData,
   activitySeedData,
 } from '@/mongodb/mockData';
-import type {FollowSeed, IntentSeed, ActivitySeed} from '@/mongodb/mockData/social';
-import type {EventSeedData} from '@/mongodb/mockData';
-import type {OrganizationSeedData} from '@/mongodb/mockData/organizations';
+import type { FollowSeed, IntentSeed, ActivitySeed } from '@/mongodb/mockData/social';
+import type { EventSeedData } from '@/mongodb/mockData';
+import type { OrganizationSeedData } from '@/mongodb/mockData/organizations';
 import organizationsData from '@/mongodb/mockData/organizations';
-import type {VenueSeedData} from '@/mongodb/mockData/venues';
+import type { VenueSeedData } from '@/mongodb/mockData/venues';
 import venuesData from '@/mongodb/mockData/venues';
-import type {OrganizationMembershipSeed} from '@/mongodb/mockData/organizationMemberships';
+import type { OrganizationMembershipSeed } from '@/mongodb/mockData/organizationMemberships';
 import organizationMembershipsData from '@/mongodb/mockData/organizationMemberships';
 import type {
   CreateEventCategoryGroupInput,
@@ -41,10 +41,10 @@ import type {
   Organization,
   Venue,
 } from '@ntlango/commons/types';
-import {SECRET_KEYS} from '@/constants';
-import {ParticipantStatus, ParticipantVisibility} from '@ntlango/commons/types';
-import {EventVisibility} from '@ntlango/commons/types/event';
-import {logger} from '@/utils/logger';
+import { SECRET_KEYS } from '@/constants';
+import { ParticipantStatus, ParticipantVisibility } from '@ntlango/commons/types';
+import { EventVisibility } from '@ntlango/commons/types/event';
+import { logger } from '@/utils/logger';
 
 function getRandomUniqueItems(array: Array<string>, count: number) {
   const copyArray = [...array];
@@ -66,18 +66,18 @@ function getRandomUniqueItems(array: Array<string>, count: number) {
 
 async function seedEventCategories(categories: Array<CreateEventCategoryInput>) {
   logger.info('Starting to seed event category data...');
-  
+
   const existing = await EventCategoryDAO.readEventCategories();
-  
+
   for (const category of categories) {
     try {
-      const found = existing.find(c => c.name === category.name);
-      
+      const found = existing.find((c) => c.name === category.name);
+
       if (found) {
         logger.info(`   Event Category "${category.name}" already exists, skipping...`);
         continue;
       }
-      
+
       const eventCategoryResponse = await EventCategoryDAO.create(category);
       logger.info(`   Created Event Category item with id: ${eventCategoryResponse.eventCategoryId}`);
     } catch (error) {
@@ -87,14 +87,17 @@ async function seedEventCategories(categories: Array<CreateEventCategoryInput>) 
   logger.info('Completed seeding event category data.');
 }
 
-async function seedEventCategoryGroups(eventCategoryGroupsInputList: Array<CreateEventCategoryGroupInput>, eventCategoryList: Array<EventCategory>) {
+async function seedEventCategoryGroups(
+  eventCategoryGroupsInputList: Array<CreateEventCategoryGroupInput>,
+  eventCategoryList: Array<EventCategory>,
+) {
   logger.info('Starting to seed event category groups data...');
 
   const existingGroups = await EventCategoryGroupDAO.readEventCategoryGroups();
 
   for (const groupInput of eventCategoryGroupsInputList) {
     try {
-      const found = existingGroups.find(g => g.name === groupInput.name);
+      const found = existingGroups.find((g) => g.name === groupInput.name);
       if (found) {
         logger.info(`   Event Category Group "${groupInput.name}" already exists, skipping...`);
         continue;
@@ -127,11 +130,11 @@ async function seedEventCategoryGroups(eventCategoryGroupsInputList: Array<Creat
 async function seedUsers(users: Array<CreateUserInput>, eventCategoryIds: Array<string>) {
   logger.info('Starting to seed user data...');
   const existingUsers = await UserDAO.readUsers();
-  
+
   for (const user of users) {
     try {
       // Check if user with this email already exists (case-insensitive)
-      const found = existingUsers.find(u => u.email?.toLowerCase() === user.email?.toLowerCase());
+      const found = existingUsers.find((u) => u.email?.toLowerCase() === user.email?.toLowerCase());
       if (found) {
         logger.info(`   User with email "${user.email}" already exists, skipping...`);
         continue;
@@ -153,14 +156,14 @@ async function seedOrganizations(seedData: OrganizationSeedData[], ownerIds: str
   logger.info('Starting to seed organization data...');
   const created: Organization[] = [];
   const existingOrgs = await OrganizationDAO.readOrganizations();
-  
+
   for (let i = 0; i < seedData.length; i++) {
     try {
       const config = seedData[i];
       const ownerId = ownerIds[i % ownerIds.length];
-      
+
       // Check if organization with this name already exists
-      const found = existingOrgs.find(o => o.name === config.name);
+      const found = existingOrgs.find((o) => o.name === config.name);
       if (found) {
         logger.info(`   Organization "${config.name}" already exists, using existing...`);
         created.push(found);
@@ -186,23 +189,23 @@ async function seedVenues(seedData: VenueSeedData[], organizations: Organization
   logger.info('Starting to seed venue data...');
   const createdVenues: Venue[] = [];
   const existingVenues = await VenueDAO.readVenues();
-  
+
   for (const venueSeed of seedData) {
     try {
       const organization = organizations[venueSeed.orgIndex];
       if (!organization) {
         throw new Error(`Organization not found for venue index ${venueSeed.orgIndex}`);
       }
-      
+
       // Check if venue with this name already exists
-      const found = existingVenues.find(v => v.name === venueSeed.name);
+      const found = existingVenues.find((v) => v.name === venueSeed.name);
       if (found) {
         logger.info(`   Venue "${venueSeed.name}" already exists, using existing...`);
         createdVenues.push(found);
         continue;
       }
 
-      const {orgIndex, ...venueFields} = venueSeed;
+      const { orgIndex, ...venueFields } = venueSeed;
       const venueInput: CreateVenueInput = {
         ...venueFields,
         orgId: organization.orgId,
@@ -218,9 +221,13 @@ async function seedVenues(seedData: VenueSeedData[], organizations: Organization
   return createdVenues;
 }
 
-async function seedOrganizationMemberships(seedData: OrganizationMembershipSeed[], organizations: Organization[], userIds: string[]) {
+async function seedOrganizationMemberships(
+  seedData: OrganizationMembershipSeed[],
+  organizations: Organization[],
+  userIds: string[],
+) {
   logger.info('Starting to seed organization membership data...');
-  
+
   for (const membership of seedData) {
     try {
       const organization = organizations[membership.orgIndex];
@@ -228,16 +235,18 @@ async function seedOrganizationMemberships(seedData: OrganizationMembershipSeed[
         throw new Error(`Organization not found for membership orgIndex ${membership.orgIndex}`);
       }
       const userId = userIds[membership.userIndex % userIds.length];
-      
+
       // Check if membership already exists by querying for this specific org
       const existingMemberships = await OrganizationMembershipDAO.readMembershipsByOrgId(organization.orgId);
-      const found = existingMemberships.find(m => m.userId === userId);
-      
+      const found = existingMemberships.find((m) => m.userId === userId);
+
       if (found) {
-        logger.info(`   OrganizationMembership for user ${userId} in org ${organization.orgId} already exists, skipping...`);
+        logger.info(
+          `   OrganizationMembership for user ${userId} in org ${organization.orgId} already exists, skipping...`,
+        );
         continue;
       }
-      
+
       await OrganizationMembershipDAO.create({
         orgId: organization.orgId,
         userId,
@@ -261,11 +270,11 @@ async function seedEvents(
   logger.info('Starting to seed event data...');
   const createdEvents: Event[] = [];
   const existingEvents = await EventDAO.readEvents();
-  
+
   for (const event of events) {
     try {
       // Check if event with this title already exists
-      const found = existingEvents.find(e => e.title === event.title);
+      const found = existingEvents.find((e) => e.title === event.title);
       if (found) {
         logger.info(`   Event "${event.title}" already exists, using existing...`);
         createdEvents.push(found);
@@ -279,9 +288,11 @@ async function seedEvents(
       const participantCount = Math.floor(Math.random() * 5) + 2; // Random number between 2 and 6
       const participantIds = getRandomUniqueItems(userIds, participantCount);
       const categorySelection =
-        event.eventCategories && event.eventCategories.length ? event.eventCategories : getRandomUniqueItems(eventCategoryIds, 5);
+        event.eventCategories && event.eventCategories.length
+          ? event.eventCategories
+          : getRandomUniqueItems(eventCategoryIds, 5);
 
-      const {orgIndex, venueIndex, ...eventBase} = event;
+      const { orgIndex, venueIndex, ...eventBase } = event;
       const eventInput: CreateEventInput = {
         ...eventBase,
         organizers: organizerIds.map((userId, index) => ({
@@ -314,7 +325,10 @@ async function seedEvents(
             sharedVisibility,
           });
         } catch (err) {
-          logger.error(`Failed to upsert participant (userId: ${userId}) for event (eventId: ${eventResponse.eventId}):`, err);
+          logger.error(
+            `Failed to upsert participant (userId: ${userId}) for event (eventId: ${eventResponse.eventId}):`,
+            err,
+          );
         }
       }
       logger.info(`   Created Event item with id: ${eventResponse.eventId}`);
@@ -387,7 +401,7 @@ async function seedActivities(seedData: ActivitySeed[], userIds: string[], event
 
     let metadata = seed.metadata;
     if (!metadata && seed.objectRef === 'event') {
-      metadata = {eventTitle: events[seed.objectIndex]?.title};
+      metadata = { eventTitle: events[seed.objectIndex]?.title };
     }
     let targetId: string | undefined;
     if (seed.targetIndex !== undefined) {
@@ -428,7 +442,13 @@ async function main() {
   const createdVenues = await seedVenues(venuesData, createdOrganizations);
   await seedOrganizationMemberships(organizationMembershipsData, createdOrganizations, allUserIds);
 
-  const createdEvents = await seedEvents(eventsMockData, allUserIds, allEventCategoriesIds, createdOrganizations, createdVenues);
+  const createdEvents = await seedEvents(
+    eventsMockData,
+    allUserIds,
+    allEventCategoriesIds,
+    createdOrganizations,
+    createdVenues,
+  );
 
   await seedFollows(followSeedData, allUserIds, createdOrganizations);
   await seedIntents(intentSeedData, allUserIds, createdEvents);

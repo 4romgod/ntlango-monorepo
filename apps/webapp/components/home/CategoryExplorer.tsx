@@ -23,13 +23,13 @@ export default function CategoryExplorer({ categories }: CategoryExplorerProps) 
       }}
     >
       <Container>
-        <Typography 
-          variant="h4" 
-          sx={{ 
-            ...SECTION_TITLE_STYLES, 
-            mb: 1, 
-            textAlign: 'center', 
-            fontSize: { xs: '1.5rem', md: '2rem' } 
+        <Typography
+          variant="h4"
+          sx={{
+            ...SECTION_TITLE_STYLES,
+            mb: 1,
+            textAlign: 'center',
+            fontSize: { xs: '1.5rem', md: '2rem' },
           }}
         >
           Choose your kind of magic

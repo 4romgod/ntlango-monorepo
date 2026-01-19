@@ -1,8 +1,12 @@
-import {OrganizationMembership as OrganizationMembershipModel} from '@/mongodb/models';
-import type {CreateOrganizationMembershipInput, OrganizationMembership, UpdateOrganizationMembershipInput} from '@ntlango/commons/types';
-import {CustomError, ErrorTypes, KnownCommonError} from '@/utils';
-import {GraphQLError} from 'graphql';
-import {logger} from '@/utils/logger';
+import { OrganizationMembership as OrganizationMembershipModel } from '@/mongodb/models';
+import type {
+  CreateOrganizationMembershipInput,
+  OrganizationMembership,
+  UpdateOrganizationMembershipInput,
+} from '@ntlango/commons/types';
+import { CustomError, ErrorTypes, KnownCommonError } from '@/utils';
+import { GraphQLError } from 'graphql';
+import { logger } from '@/utils/logger';
 
 class OrganizationMembershipDAO {
   static async create(input: CreateOrganizationMembershipInput): Promise<OrganizationMembership> {
@@ -17,7 +21,7 @@ class OrganizationMembershipDAO {
 
   static async readMembershipById(membershipId: string): Promise<OrganizationMembership> {
     try {
-      const query = OrganizationMembershipModel.findOne({membershipId});
+      const query = OrganizationMembershipModel.findOne({ membershipId });
       const membership = await query.exec();
       if (!membership) {
         throw CustomError(`Organization membership ${membershipId} not found`, ErrorTypes.NOT_FOUND);
@@ -34,7 +38,7 @@ class OrganizationMembershipDAO {
 
   static async readMembershipsByOrgId(orgId: string): Promise<OrganizationMembership[]> {
     try {
-      const memberships = await OrganizationMembershipModel.find({orgId}).exec();
+      const memberships = await OrganizationMembershipModel.find({ orgId }).exec();
       return memberships.map((membership) => membership.toObject());
     } catch (error) {
       logger.error(`Error reading memberships for org ${orgId}`, error);
@@ -44,19 +48,17 @@ class OrganizationMembershipDAO {
 
   static async update(input: UpdateOrganizationMembershipInput): Promise<OrganizationMembership> {
     try {
-      const {membershipId, ...rest} = input;
-      const membership = await OrganizationMembershipModel.findOne({membershipId}).exec();
+      const { membershipId, ...rest } = input;
+      const membership = await OrganizationMembershipModel.findOne({ membershipId }).exec();
       if (!membership) {
         throw CustomError(`Organization membership ${membershipId} not found`, ErrorTypes.NOT_FOUND);
       }
-      
+
       // Filter out undefined values to avoid overwriting with undefined
-      const fieldsToUpdate = Object.fromEntries(
-        Object.entries(rest).filter(([_, value]) => value !== undefined)
-      );
+      const fieldsToUpdate = Object.fromEntries(Object.entries(rest).filter(([_, value]) => value !== undefined));
       Object.assign(membership, fieldsToUpdate);
       await membership.save();
-      
+
       return membership.toObject();
     } catch (error) {
       logger.error(`Error updating membership ${input.membershipId}`, error);
@@ -69,7 +71,7 @@ class OrganizationMembershipDAO {
 
   static async delete(membershipId: string): Promise<OrganizationMembership> {
     try {
-      const deletedMembership = await OrganizationMembershipModel.findOneAndDelete({membershipId}).exec();
+      const deletedMembership = await OrganizationMembershipModel.findOneAndDelete({ membershipId }).exec();
       if (!deletedMembership) {
         throw CustomError(`Organization membership ${membershipId} not found`, ErrorTypes.NOT_FOUND);
       }

@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { AvatarGroup, Box, Card, Skeleton, Stack } from '@mui/material';
 import React from 'react';

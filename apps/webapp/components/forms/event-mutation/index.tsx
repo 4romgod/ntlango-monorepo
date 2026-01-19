@@ -60,8 +60,8 @@ export default function EventMutationForm({ categoryList, event }: EventMutation
     allowGuestPlusOnes: false,
     remindersEnabled: true,
     showAttendees: true,
-    eventCategories: event?.eventCategories?.map(c => c.eventCategoryId) ?? [],
-    organizers: event?.organizers?.map(o => o.user.userId) ?? [],
+    eventCategories: event?.eventCategories?.map((c) => c.eventCategoryId) ?? [],
+    organizers: event?.organizers?.map((o) => o.user.userId) ?? [],
     tags: event?.tags ?? {},
     media: event?.media ?? {},
     mediaAssets: [],
@@ -581,7 +581,7 @@ export default function EventMutationForm({ categoryList, event }: EventMutation
                     label="Status"
                     sx={{ borderRadius: 2 }}
                   >
-                    {Object.values(EventStatus).map(status => (
+                    {Object.values(EventStatus).map((status) => (
                       <MenuItem key={status} value={status}>
                         {status}
                       </MenuItem>
@@ -601,7 +601,7 @@ export default function EventMutationForm({ categoryList, event }: EventMutation
                     label="Visibility"
                     sx={{ borderRadius: 2 }}
                   >
-                    {Object.values(EventVisibility).map(visibility => (
+                    {Object.values(EventVisibility).map((visibility) => (
                       <MenuItem key={visibility} value={visibility}>
                         {visibility}
                       </MenuItem>
@@ -621,7 +621,7 @@ export default function EventMutationForm({ categoryList, event }: EventMutation
                     label="Privacy"
                     sx={{ borderRadius: 2 }}
                   >
-                    {Object.values(EventPrivacySetting).map(privacy => (
+                    {Object.values(EventPrivacySetting).map((privacy) => (
                       <MenuItem key={privacy} value={privacy}>
                         {privacy}
                       </MenuItem>

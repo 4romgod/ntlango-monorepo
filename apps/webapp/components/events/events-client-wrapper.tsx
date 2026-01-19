@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useMemo, useState, useEffect } from 'react';
 import { Box, Grid } from '@mui/material';
@@ -33,7 +33,19 @@ interface EventsClientWrapperProps {
 }
 
 function EventsContent({ categories, initialEvents, popularOrganization, stats }: EventsContentProps) {
-  const { filters, setSearchQuery, resetFilters, hasActiveFilters, removeCategory, removeStatus, setCategories, setStatuses, setDateRange, setLocation, clearLocation } = useEventFilters();
+  const {
+    filters,
+    setSearchQuery,
+    resetFilters,
+    hasActiveFilters,
+    removeCategory,
+    removeStatus,
+    setCategories,
+    setStatuses,
+    setDateRange,
+    setLocation,
+    clearLocation,
+  } = useEventFilters();
   const { events: serverEvents, loading, error } = useFilteredEvents(filters, initialEvents);
 
   const [categoryAnchor, setCategoryAnchor] = useState<null | HTMLElement>(null);
@@ -77,7 +89,7 @@ function EventsContent({ categories, initialEvents, popularOrganization, stats }
       return serverEvents;
     }
     return serverEvents.filter(
-      event =>
+      (event) =>
         event.title?.toLowerCase().includes(query) ||
         event.summary?.toLowerCase().includes(query) ||
         event.description?.toLowerCase().includes(query),
@@ -86,14 +98,14 @@ function EventsContent({ categories, initialEvents, popularOrganization, stats }
 
   const handleCategoryToggle = (categoryName: string) => {
     const newCategories = filters.categories.includes(categoryName)
-      ? filters.categories.filter(c => c !== categoryName)
+      ? filters.categories.filter((c) => c !== categoryName)
       : [...filters.categories, categoryName];
     setCategories(newCategories);
   };
 
   const handleStatusToggle = (status: EventStatus) => {
     const newStatuses = filters.statuses.includes(status)
-      ? filters.statuses.filter(s => s !== status)
+      ? filters.statuses.filter((s) => s !== status)
       : [...filters.statuses, status];
     setStatuses(newStatuses);
   };
@@ -121,7 +133,14 @@ function EventsContent({ categories, initialEvents, popularOrganization, stats }
     setDateAnchor(null);
   };
 
-  const handleLocationApply = (location: { city?: string; state?: string; country?: string; latitude?: number; longitude?: number; radiusKm?: number }) => {
+  const handleLocationApply = (location: {
+    city?: string;
+    state?: string;
+    country?: string;
+    latitude?: number;
+    longitude?: number;
+    radiusKm?: number;
+  }) => {
     setLocation(location);
     setLocationAnchor(null);
   };
@@ -139,7 +158,7 @@ function EventsContent({ categories, initialEvents, popularOrganization, stats }
       const formattedDate = jsDate.toLocaleDateString('en-US', {
         month: 'short',
         day: 'numeric',
-        year: 'numeric'
+        year: 'numeric',
       });
       setSelectedDateOption(formattedDate);
       // Apply custom date filter - store the actual date
@@ -152,18 +171,14 @@ function EventsContent({ categories, initialEvents, popularOrganization, stats }
   const statuses = Object.values(EventStatus);
   const dateOptions = Object.values(DATE_FILTER_OPTIONS);
 
-  const eventTitles = filteredEvents.map(item => item.title).filter((title): title is string => !!title);
+  const eventTitles = filteredEvents.map((item) => item.title).filter((title): title is string => !!title);
 
   return (
     <Box component="main" sx={{ minHeight: '100vh', py: 4 }}>
       <Grid container spacing={3}>
         {/* Main Content - Events List */}
         <Grid size={{ xs: 12, lg: 8 }}>
-          <EventsHeader
-            eventCount={filteredEvents.length}
-            eventTitles={eventTitles}
-            onSearch={setSearchQuery}
-          />
+          <EventsHeader eventCount={filteredEvents.length} eventTitles={eventTitles} onSearch={setSearchQuery} />
 
           <FilterButtons
             categoryCount={filters.categories.length}
@@ -271,10 +286,20 @@ function EventsContent({ categories, initialEvents, popularOrganization, stats }
   );
 }
 
-export default function EventsClientWrapper({ events, categories, popularOrganization, stats }: EventsClientWrapperProps) {
+export default function EventsClientWrapper({
+  events,
+  categories,
+  popularOrganization,
+  stats,
+}: EventsClientWrapperProps) {
   return (
     <EventFilterProvider>
-      <EventsContent categories={categories} initialEvents={events} popularOrganization={popularOrganization} stats={stats} />
+      <EventsContent
+        categories={categories}
+        initialEvents={events}
+        popularOrganization={popularOrganization}
+        stats={stats}
+      />
     </EventFilterProvider>
   );
 }

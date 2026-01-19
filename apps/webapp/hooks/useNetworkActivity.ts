@@ -9,7 +9,7 @@ const listeners = new Set<NetworkActivityListener>();
 let interceptorInstalled = false;
 
 const notifyListeners = () => {
-  listeners.forEach(listener => listener(activeRequests));
+  listeners.forEach((listener) => listener(activeRequests));
 };
 
 const updateActiveRequests = (delta: number) => {

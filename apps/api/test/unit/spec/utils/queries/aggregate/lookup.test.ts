@@ -1,5 +1,5 @@
-import {createEventLookupStages} from '@/utils';
-import type {PipelineStage} from 'mongoose';
+import { createEventLookupStages } from '@/utils';
+import type { PipelineStage } from 'mongoose';
 
 describe('createEventLookupStages', () => {
   it('should return an array of pipeline stages for lookup', () => {
@@ -37,7 +37,7 @@ describe('createEventLookupStages', () => {
     expect(secondStage.$lookup).toHaveProperty('let');
     expect(secondStage.$lookup).toHaveProperty('pipeline');
     expect(secondStage.$lookup).toHaveProperty('as', 'organizersUsersMap');
-    
+
     // Verify the pipeline uses $in for efficient filtering
     const pipeline = secondStage.$lookup.pipeline as any[];
     expect(pipeline).toBeDefined();
@@ -65,7 +65,7 @@ describe('createEventLookupStages', () => {
     expect(participantsUsersStage.$lookup).toHaveProperty('let');
     expect(participantsUsersStage.$lookup).toHaveProperty('pipeline');
     expect(participantsUsersStage.$lookup).toHaveProperty('as', 'participantsUsersMap');
-    
+
     // Verify the pipeline uses $in for efficient filtering
     const pipeline = participantsUsersStage.$lookup.pipeline as any[];
     expect(pipeline).toBeDefined();

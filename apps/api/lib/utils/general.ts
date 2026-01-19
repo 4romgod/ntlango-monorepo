@@ -1,4 +1,4 @@
-import {ANSI_COLOR_CODES, STATUS_CODE_COLOR_MAP} from '@/constants';
+import { ANSI_COLOR_CODES, STATUS_CODE_COLOR_MAP } from '@/constants';
 
 export const getStatusCodeColor = (statusCode: number) => {
   const statusString = statusCode.toString();

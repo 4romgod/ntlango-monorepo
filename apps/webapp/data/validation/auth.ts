@@ -5,7 +5,7 @@ import { Gender, UserRole, FollowPolicy, SocialVisibility } from '../graphql/typ
 const InputMaybe = z.union([z.string(), z.undefined()]);
 
 export const CreateUserInputSchema = z.object({
-  birthdate: z.string().refine(date => isValid(parseISO(date)), {
+  birthdate: z.string().refine((date) => isValid(parseISO(date)), {
     message: 'Birthdate should be in YYYY-MM-DD format',
   }),
   email: z.string().email({ message: 'Invalid email format' }),

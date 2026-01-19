@@ -2,16 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import {
-  Avatar,
-  Box,
-  Button,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Avatar, Box, Button, ListItem, ListItemAvatar, ListItemText, Stack, Typography } from '@mui/material';
 import { Check as CheckIcon, Close as CloseIcon } from '@mui/icons-material';
 import { formatDistanceToNow } from 'date-fns';
 import { FollowApprovalStatus } from '@/data/graphql/types/graphql';
@@ -105,10 +96,7 @@ export default function PendingFollowRequestItem({
             }}
           >
             <Box sx={{ flex: 1, minWidth: 0 }}>
-              <Link
-                href={`/users/${follower.username}`}
-                style={{ textDecoration: 'none', color: 'inherit' }}
-              >
+              <Link href={`/users/${follower.username}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                 <Typography
                   variant="subtitle1"
                   fontWeight={600}

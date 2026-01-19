@@ -1,6 +1,6 @@
-import {MongoDbClient} from '@/clients';
-import {getConfigValue} from '@/clients/AWS/secretsManager';
-import {SECRET_KEYS} from '@/constants';
+import { MongoDbClient } from '@/clients';
+import { getConfigValue } from '@/clients/AWS/secretsManager';
+import { SECRET_KEYS } from '@/constants';
 import {
   User,
   Event,
@@ -51,8 +51,8 @@ const teardown = async () => {
     // Clean up test users (emails/usernames with test patterns)
     const userResult = await User.deleteMany({
       $or: [
-        {email: {$regex: buildPrefixRegex(TEST_DATA_PREFIXES.EMAIL)}},
-        {username: {$regex: buildPrefixRegex(TEST_DATA_PREFIXES.USERNAME)}},
+        { email: { $regex: buildPrefixRegex(TEST_DATA_PREFIXES.EMAIL) } },
+        { username: { $regex: buildPrefixRegex(TEST_DATA_PREFIXES.USERNAME) } },
       ],
     });
     if (userResult.deletedCount > 0) {
@@ -62,8 +62,8 @@ const teardown = async () => {
     // Clean up test organizations
     const orgResult = await Organization.deleteMany({
       $or: [
-        {name: {$regex: buildPrefixRegex(TEST_DATA_PREFIXES.ORGANIZATION)}},
-        {slug: {$regex: buildPrefixRegex(TEST_DATA_PREFIXES.ORGANIZATION)}},
+        { name: { $regex: buildPrefixRegex(TEST_DATA_PREFIXES.ORGANIZATION) } },
+        { slug: { $regex: buildPrefixRegex(TEST_DATA_PREFIXES.ORGANIZATION) } },
       ],
     });
     if (orgResult.deletedCount > 0) {
@@ -73,8 +73,8 @@ const teardown = async () => {
     // Clean up test events
     const eventResult = await Event.deleteMany({
       $or: [
-        {title: {$regex: buildPrefixRegex(TEST_DATA_PREFIXES.EVENT)}},
-        {slug: {$regex: buildPrefixRegex(TEST_DATA_PREFIXES.EVENT)}},
+        { title: { $regex: buildPrefixRegex(TEST_DATA_PREFIXES.EVENT) } },
+        { slug: { $regex: buildPrefixRegex(TEST_DATA_PREFIXES.EVENT) } },
       ],
     });
     if (eventResult.deletedCount > 0) {
@@ -84,8 +84,8 @@ const teardown = async () => {
     // Clean up test event categories
     const categoryResult = await EventCategory.deleteMany({
       $or: [
-        {name: {$regex: buildPrefixRegex(TEST_DATA_PREFIXES.CATEGORY)}},
-        {slug: {$regex: buildPrefixRegex(TEST_DATA_PREFIXES.CATEGORY)}},
+        { name: { $regex: buildPrefixRegex(TEST_DATA_PREFIXES.CATEGORY) } },
+        { slug: { $regex: buildPrefixRegex(TEST_DATA_PREFIXES.CATEGORY) } },
       ],
     });
     if (categoryResult.deletedCount > 0) {
@@ -94,7 +94,7 @@ const teardown = async () => {
 
     // Clean up test event category groups
     const groupResult = await EventCategoryGroup.deleteMany({
-      name: {$regex: buildPrefixRegex(TEST_DATA_PREFIXES.VENUE)},
+      name: { $regex: buildPrefixRegex(TEST_DATA_PREFIXES.VENUE) },
     });
     if (groupResult.deletedCount > 0) {
       console.log(`  Cleaned up ${groupResult.deletedCount} test event category groups`);
@@ -103,8 +103,8 @@ const teardown = async () => {
     // Clean up test venues
     const venueResult = await Venue.deleteMany({
       $or: [
-        {name: {$regex: buildPrefixRegex(TEST_DATA_PREFIXES.VENUE)}},
-        {slug: {$regex: buildPrefixRegex(TEST_DATA_PREFIXES.VENUE)}},
+        { name: { $regex: buildPrefixRegex(TEST_DATA_PREFIXES.VENUE) } },
+        { slug: { $regex: buildPrefixRegex(TEST_DATA_PREFIXES.VENUE) } },
       ],
     });
     if (venueResult.deletedCount > 0) {

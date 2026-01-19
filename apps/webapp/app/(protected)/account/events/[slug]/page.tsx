@@ -67,7 +67,7 @@ export default async function Page(props: Props) {
   }
 
   // Authorization check: Only organizers can access this page
-  const isOrganizer = event.organizers.some(organizer => organizer.user.userId === currentUserId);
+  const isOrganizer = event.organizers.some((organizer) => organizer.user.userId === currentUserId);
 
   if (!isOrganizer) {
     // Redirect unauthorized users back to their events list
@@ -75,7 +75,9 @@ export default async function Page(props: Props) {
   }
   const { title, organizers, description, media, recurrenceRule, location, eventCategories, participants } = event;
 
-  type EventDetailParticipant = NonNullable<NonNullable<GetEventBySlugQuery['readEventBySlug']>['participants']>[number];
+  type EventDetailParticipant = NonNullable<
+    NonNullable<GetEventBySlugQuery['readEventBySlug']>['participants']
+  >[number];
 
   const participantList = (participants ?? []) as EventDetailParticipant[];
 
@@ -91,7 +93,8 @@ export default async function Page(props: Props) {
     participant.userId?.charAt(0) ??
     '?';
 
-  const getParticipantStatusLabel = (participant: EventDetailParticipant) => participant.status ?? ParticipantStatus.Going;
+  const getParticipantStatusLabel = (participant: EventDetailParticipant) =>
+    participant.status ?? ParticipantStatus.Going;
 
   const getLocationText = (loc: Location): string => {
     switch (loc.locationType) {
@@ -148,7 +151,10 @@ export default async function Page(props: Props) {
       >
         <Box
           component="img"
-          src={media?.featuredImageUrl || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=2000&q=80'}
+          src={
+            media?.featuredImageUrl ||
+            'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=2000&q=80'
+          }
           alt={title}
           sx={{
             width: '100%',
@@ -259,7 +265,7 @@ export default async function Page(props: Props) {
                     },
                   }}
                 >
-                  {participantList.slice(0, 5).map(participant => (
+                  {participantList.slice(0, 5).map((participant) => (
                     <Avatar
                       key={participant.participantId}
                       src={participant.user?.profile_picture || undefined}
@@ -328,8 +334,8 @@ export default async function Page(props: Props) {
                 ) : (
                   <Stack spacing={2}>
                     {organizers
-                      .filter(organizer => organizer.user)
-                      .map(organizer => (
+                      .filter((organizer) => organizer.user)
+                      .map((organizer) => (
                         <Link
                           key={organizer.user.userId}
                           href={`/users/${organizer.user.username}`}
@@ -372,11 +378,12 @@ export default async function Page(props: Props) {
                                     ? `${organizer.user.given_name} ${organizer.user.family_name}`
                                     : organizer.user.username || 'Unknown User'}
                                 </Typography>
-                                {organizer.user.username && (organizer.user.given_name || organizer.user.family_name) && (
-                                  <Typography variant="body2" color="text.secondary">
-                                    @{organizer.user.username}
-                                  </Typography>
-                                )}
+                                {organizer.user.username &&
+                                  (organizer.user.given_name || organizer.user.family_name) && (
+                                    <Typography variant="body2" color="text.secondary">
+                                      @{organizer.user.username}
+                                    </Typography>
+                                  )}
                                 <Chip
                                   label={organizer.role}
                                   size="small"
@@ -432,7 +439,7 @@ export default async function Page(props: Props) {
                         mb: 3,
                       }}
                     >
-                      {participantList.slice(0, 12).map(participant => (
+                      {participantList.slice(0, 12).map((participant) => (
                         <Tooltip
                           key={participant.participantId}
                           title={`${getParticipantDisplayName(participant)} · ${getParticipantStatusLabel(participant)}`}
@@ -490,7 +497,12 @@ export default async function Page(props: Props) {
                       <Stack direction="row" spacing={1.5} alignItems="flex-start" sx={{ mb: 1 }}>
                         <CalendarMonth sx={{ fontSize: 24, color: 'primary.main', mt: 0.5 }} />
                         <Box>
-                          <Typography variant="overline" color="text.secondary" fontWeight={600} sx={{ letterSpacing: 1 }}>
+                          <Typography
+                            variant="overline"
+                            color="text.secondary"
+                            fontWeight={600}
+                            sx={{ letterSpacing: 1 }}
+                          >
                             Date & Time
                           </Typography>
                           <Typography variant="body1" fontWeight={600} sx={{ mt: 0.5 }}>
@@ -506,7 +518,12 @@ export default async function Page(props: Props) {
                       <Stack direction="row" spacing={1.5} alignItems="flex-start">
                         <LocationOn sx={{ fontSize: 24, color: 'primary.main', mt: 0.5 }} />
                         <Box>
-                          <Typography variant="overline" color="text.secondary" fontWeight={600} sx={{ letterSpacing: 1 }}>
+                          <Typography
+                            variant="overline"
+                            color="text.secondary"
+                            fontWeight={600}
+                            sx={{ letterSpacing: 1 }}
+                          >
                             Location
                           </Typography>
                           <Typography variant="body1" fontWeight={600} sx={{ mt: 0.5 }}>
@@ -532,7 +549,12 @@ export default async function Page(props: Props) {
                       <Stack direction="row" spacing={1.5} alignItems="flex-start">
                         <ConfirmationNumber sx={{ fontSize: 24, color: 'primary.main', mt: 0.5 }} />
                         <Box>
-                          <Typography variant="overline" color="text.secondary" fontWeight={600} sx={{ letterSpacing: 1 }}>
+                          <Typography
+                            variant="overline"
+                            color="text.secondary"
+                            fontWeight={600}
+                            sx={{ letterSpacing: 1 }}
+                          >
                             Admission
                           </Typography>
                           <Typography variant="body1" fontWeight={600} sx={{ mt: 0.5 }}>
@@ -557,7 +579,12 @@ export default async function Page(props: Props) {
                   }}
                 >
                   <CardContent sx={{ p: 3 }}>
-                    <Typography variant="overline" color="text.secondary" fontWeight={600} sx={{ letterSpacing: 1, mb: 2, display: 'block' }}>
+                    <Typography
+                      variant="overline"
+                      color="text.secondary"
+                      fontWeight={600}
+                      sx={{ letterSpacing: 1, mb: 2, display: 'block' }}
+                    >
                       Categories
                     </Typography>
                     <Stack direction="row" flexWrap="wrap" gap={1}>

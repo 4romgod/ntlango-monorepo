@@ -1,6 +1,6 @@
 'use client';
 
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import {
   Avatar,
@@ -16,7 +16,7 @@ import {
   ListItemText,
   Typography,
 } from '@mui/material';
-import {PersonRemove as PersonRemoveIcon} from '@mui/icons-material';
+import { PersonRemove as PersonRemoveIcon } from '@mui/icons-material';
 import FollowButton from './follow-button';
 import { FollowTargetType } from '@/data/graphql/types/graphql';
 import { useSession } from 'next-auth/react';
@@ -40,11 +40,11 @@ interface FollowersListItemProps {
   isOwnProfile?: boolean;
 }
 
-export default function FollowersListItem({ 
-  follower, 
+export default function FollowersListItem({
+  follower,
   targetType = FollowTargetType.User,
   targetUserId,
-  isOwnProfile = false 
+  isOwnProfile = false,
 }: FollowersListItemProps) {
   const { data: session } = useSession();
   const { removeFollower, loading: removeLoading } = useRemoveFollower();
@@ -107,10 +107,7 @@ export default function FollowersListItem({
             }}
           >
             <Box sx={{ flex: 1, minWidth: 0 }}>
-              <Link
-                href={`/users/${follower.username}`}
-                style={{ textDecoration: 'none', color: 'inherit' }}
-              >
+              <Link href={`/users/${follower.username}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                 <Typography
                   variant="subtitle1"
                   fontWeight={600}
@@ -156,11 +153,7 @@ export default function FollowersListItem({
                     <PersonRemoveIcon fontSize="small" />
                   </IconButton>
                 )}
-                <FollowButton
-                  targetId={follower.userId}
-                  targetType={targetType}
-                  size="small"
-                />
+                <FollowButton targetId={follower.userId} targetType={targetType} size="small" />
               </Box>
             )}
           </Box>
@@ -186,12 +179,7 @@ export default function FollowersListItem({
       />
 
       {/* Confirmation Dialog */}
-      <Dialog
-        open={showConfirmDialog}
-        onClose={() => setShowConfirmDialog(false)}
-        maxWidth="xs"
-        fullWidth
-      >
+      <Dialog open={showConfirmDialog} onClose={() => setShowConfirmDialog(false)} maxWidth="xs" fullWidth>
         <DialogTitle>Remove Follower</DialogTitle>
         <DialogContent>
           <Typography>
@@ -202,12 +190,7 @@ export default function FollowersListItem({
           <Button onClick={() => setShowConfirmDialog(false)} color="inherit">
             Cancel
           </Button>
-          <Button 
-            onClick={handleRemoveFollower} 
-            color="error" 
-            variant="contained"
-            disabled={removeLoading}
-          >
+          <Button onClick={handleRemoveFollower} color="error" variant="contained" disabled={removeLoading}>
             Remove
           </Button>
         </DialogActions>

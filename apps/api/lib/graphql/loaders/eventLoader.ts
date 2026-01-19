@@ -1,7 +1,7 @@
 import DataLoader from 'dataloader';
-import {Event as EventModel} from '@/mongodb/models';
-import type {Event} from '@ntlango/commons/types';
-import {logger} from '@/utils/logger';
+import { Event as EventModel } from '@/mongodb/models';
+import type { Event } from '@ntlango/commons/types';
+import { logger } from '@/utils/logger';
 
 /**
  * Creates a per-request DataLoader for batching Event lookups by ID.
@@ -13,7 +13,7 @@ export const createEventLoader = () =>
       const uniqueKeys = Array.from(new Set(keys.map((k) => k.toString())));
       logger.debug(`EventLoader batching ${uniqueKeys.length} event IDs`);
 
-      const events = await EventModel.find({_id: {$in: uniqueKeys}})
+      const events = await EventModel.find({ _id: { $in: uniqueKeys } })
         .lean()
         .exec();
 

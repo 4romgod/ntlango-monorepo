@@ -1,11 +1,11 @@
-import {GraphQLError} from 'graphql';
-import {ActivityDAO} from '@/mongodb/dao';
-import {Activity as ActivityModel} from '@/mongodb/models';
-import type {Activity as ActivityEntity, CreateActivityInput} from '@ntlango/commons/types';
-import {ActivityObjectType, ActivityVerb, ActivityVisibility} from '@ntlango/commons/types';
-import {CustomError, ErrorTypes} from '@/utils';
-import {MockMongoError} from '@/test/utils';
-import {ERROR_MESSAGES} from '@/validation';
+import { GraphQLError } from 'graphql';
+import { ActivityDAO } from '@/mongodb/dao';
+import { Activity as ActivityModel } from '@/mongodb/models';
+import type { Activity as ActivityEntity, CreateActivityInput } from '@ntlango/commons/types';
+import { ActivityObjectType, ActivityVerb, ActivityVisibility } from '@ntlango/commons/types';
+import { CustomError, ErrorTypes } from '@/utils';
+import { MockMongoError } from '@/test/utils';
+import { ERROR_MESSAGES } from '@/validation';
 
 jest.mock('@/mongodb/models', () => ({
   Activity: {
@@ -51,7 +51,7 @@ describe('ActivityDAO', () => {
         toObject: () => mockActivity,
       });
 
-      const input: CreateActivityInput & {actorId: string} = {
+      const input: CreateActivityInput & { actorId: string } = {
         actorId: 'actor-1',
         verb: ActivityVerb.Published,
         objectType: ActivityObjectType.Event,
@@ -65,7 +65,9 @@ describe('ActivityDAO', () => {
 
       const result = await ActivityDAO.create(input);
 
-      expect(ActivityModel.create).toHaveBeenCalledWith(expect.objectContaining({...input, activityId: expect.any(String)}));
+      expect(ActivityModel.create).toHaveBeenCalledWith(
+        expect.objectContaining({ ...input, activityId: expect.any(String) }),
+      );
       expect(result).toEqual(mockActivity);
     });
 
@@ -73,7 +75,7 @@ describe('ActivityDAO', () => {
       const graphQLError = new GraphQLError('GraphQL Error');
       (ActivityModel.create as jest.Mock).mockRejectedValue(graphQLError);
 
-      const input: CreateActivityInput & {actorId: string} = {
+      const input: CreateActivityInput & { actorId: string } = {
         actorId: 'actor-1',
         verb: ActivityVerb.Published,
         objectType: ActivityObjectType.Event,
@@ -91,7 +93,7 @@ describe('ActivityDAO', () => {
     it('wraps unknown errors from create', async () => {
       (ActivityModel.create as jest.Mock).mockRejectedValue(new MockMongoError(0));
 
-      const input: CreateActivityInput & {actorId: string} = {
+      const input: CreateActivityInput & { actorId: string } = {
         actorId: 'actor-1',
         verb: ActivityVerb.Published,
         objectType: ActivityObjectType.Event,
@@ -103,19 +105,25 @@ describe('ActivityDAO', () => {
         metadata: {},
       };
 
-      await expect(ActivityDAO.create(input)).rejects.toThrow(CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR));
+      await expect(ActivityDAO.create(input)).rejects.toThrow(
+        CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR),
+      );
     });
   });
 
   describe('readByActor', () => {
     it('reads activities by actor and clamps limit', async () => {
-      (ActivityModel.find as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery([{
-        toObject: () => mockActivity,
-      }]));
+      (ActivityModel.find as jest.Mock).mockReturnValue(
+        createMockSuccessMongooseQuery([
+          {
+            toObject: () => mockActivity,
+          },
+        ]),
+      );
 
       const result = await ActivityDAO.readByActor('actor-1', 200);
 
-      expect(ActivityModel.find).toHaveBeenCalledWith({actorId: 'actor-1'});
+      expect(ActivityModel.find).toHaveBeenCalledWith({ actorId: 'actor-1' });
       expect(result).toEqual([mockActivity]);
       const query = (ActivityModel.find as jest.Mock).mock.results[0].value;
       expect(query.limit).toHaveBeenCalledWith(100);
@@ -124,7 +132,9 @@ describe('ActivityDAO', () => {
     it('wraps errors when reading by actor', async () => {
       (ActivityModel.find as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(new MockMongoError(0)));
 
-      await expect(ActivityDAO.readByActor('actor-1')).rejects.toThrow(CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR));
+      await expect(ActivityDAO.readByActor('actor-1')).rejects.toThrow(
+        CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR),
+      );
     });
   });
 
@@ -137,13 +147,17 @@ describe('ActivityDAO', () => {
     });
 
     it('reads activities for multiple actors', async () => {
-      (ActivityModel.find as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery([{
-        toObject: () => mockActivity,
-      }]));
+      (ActivityModel.find as jest.Mock).mockReturnValue(
+        createMockSuccessMongooseQuery([
+          {
+            toObject: () => mockActivity,
+          },
+        ]),
+      );
 
       const result = await ActivityDAO.readByActorIds(['actor-1', 'actor-2'], 0);
 
-      expect(ActivityModel.find).toHaveBeenCalledWith({actorId: {$in: ['actor-1', 'actor-2']}});
+      expect(ActivityModel.find).toHaveBeenCalledWith({ actorId: { $in: ['actor-1', 'actor-2'] } });
       expect(result).toEqual([mockActivity]);
       const query = (ActivityModel.find as jest.Mock).mock.results[0].value;
       expect(query.limit).toHaveBeenCalledWith(1);

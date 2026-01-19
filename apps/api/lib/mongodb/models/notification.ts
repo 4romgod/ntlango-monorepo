@@ -1,21 +1,21 @@
 import 'reflect-metadata';
-import {getModelForClass, pre} from '@typegoose/typegoose';
-import {Notification as NotificationEntity} from '@ntlango/commons/types';
+import { getModelForClass, pre } from '@typegoose/typegoose';
+import { Notification as NotificationEntity } from '@ntlango/commons/types';
 
 @pre<NotificationModel>('validate', function (next) {
-    try {
-        if (!this.notificationId && this._id) {
-            this.notificationId = this._id.toString();
-        }
-        next();
-    } catch (error) {
-        next(error as Error);
+  try {
+    if (!this.notificationId && this._id) {
+      this.notificationId = this._id.toString();
     }
+    next();
+  } catch (error) {
+    next(error as Error);
+  }
 })
 class NotificationModel extends NotificationEntity {}
 
 const Notification = getModelForClass(NotificationModel, {
-    options: {customName: 'Notification'},
+  options: { customName: 'Notification' },
 });
 
 export default Notification;
