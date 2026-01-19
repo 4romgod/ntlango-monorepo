@@ -1,6 +1,6 @@
 import 'reflect-metadata';
-import {getModelForClass, pre} from '@typegoose/typegoose';
-import {Venue as VenueEntity} from '@ntlango/commons/types';
+import { getModelForClass, pre } from '@typegoose/typegoose';
+import { Venue as VenueEntity } from '@ntlango/commons/types';
 
 @pre<VenueModel>('validate', function (next) {
   try {
@@ -15,7 +15,7 @@ import {Venue as VenueEntity} from '@ntlango/commons/types';
 class VenueModel extends VenueEntity {}
 
 const Venue = getModelForClass(VenueModel, {
-  options: {customName: 'Venue'},
+  options: { customName: 'Venue' },
 });
 
 export default Venue;

@@ -1,7 +1,7 @@
-import {APPLICATION_STAGES} from '@ntlango/commons';
-import {config} from 'dotenv';
-import {z} from 'zod';
-import {initLogger, LOG_LEVEL_MAP, LogLevel} from '@/utils/logger';
+import { APPLICATION_STAGES } from '@ntlango/commons';
+import { config } from 'dotenv';
+import { z } from 'zod';
+import { initLogger, LOG_LEVEL_MAP, LogLevel } from '@/utils/logger';
 
 config();
 
@@ -21,7 +21,7 @@ const EnvSchema = z
       .toLowerCase()
       .optional()
       .default('info')
-      .transform(val => LOG_LEVEL_MAP[val] ?? LogLevel.INFO),
+      .transform((val) => LOG_LEVEL_MAP[val] ?? LogLevel.INFO),
   })
   .superRefine((env, ctx) => {
     if (env.STAGE === APPLICATION_STAGES.DEV) {
@@ -69,8 +69,8 @@ initLogger(env.LOG_LEVEL);
  * Log configuration (excluding secrets)
  * Note: Using console.log here instead of logger because this is bootstrap logging
  * that happens immediately after logger initialization, ensuring config is always visible
-*/
-const logLevel = Object.keys(LOG_LEVEL_MAP).find(key => LOG_LEVEL_MAP[key] === env.LOG_LEVEL) || 'unknown';
+ */
+const logLevel = Object.keys(LOG_LEVEL_MAP).find((key) => LOG_LEVEL_MAP[key] === env.LOG_LEVEL) || 'unknown';
 console.log(`[INFO] Environment configuration loaded:`);
 console.log(`  - Stage: ${env.STAGE}`);
 console.log(`  - Region: ${env.AWS_REGION}`);

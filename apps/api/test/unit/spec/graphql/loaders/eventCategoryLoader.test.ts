@@ -1,6 +1,6 @@
-import {createEventCategoryLoader} from '@/graphql/loaders';
-import {EventCategory as EventCategoryModel} from '@/mongodb/models';
-import type {EventCategory} from '@ntlango/commons/types';
+import { createEventCategoryLoader } from '@/graphql/loaders';
+import { EventCategory as EventCategoryModel } from '@/mongodb/models';
+import type { EventCategory } from '@ntlango/commons/types';
 
 jest.mock('@/mongodb/models', () => ({
   EventCategory: {
@@ -49,7 +49,7 @@ describe('EventCategoryLoader', () => {
 
     // Should make single batch query
     expect(EventCategoryModel.find).toHaveBeenCalledTimes(1);
-    expect(EventCategoryModel.find).toHaveBeenCalledWith({_id: {$in: ['cat1', 'cat2', 'cat3']}});
+    expect(EventCategoryModel.find).toHaveBeenCalledWith({ _id: { $in: ['cat1', 'cat2', 'cat3'] } });
 
     // Should return results in correct order
     expect(results[0]).toEqual(mockCategories[0]);
@@ -93,9 +93,33 @@ describe('EventCategoryLoader', () => {
 
   it('should maintain correct order when database returns results in different order', async () => {
     const mockCategories: EventCategory[] = [
-      {_id: 'cat2', eventCategoryId: 'cat2', name: 'Music', slug: 'music', iconName: 'music', description: 'Music events', color: '#00FF00'} as EventCategory,
-      {_id: 'cat1', eventCategoryId: 'cat1', name: 'Sports', slug: 'sports', iconName: 'sport', description: 'Sports events', color: '#FF0000'} as EventCategory,
-      {_id: 'cat3', eventCategoryId: 'cat3', name: 'Art', slug: 'art', iconName: 'art', description: 'Art events', color: '#0000FF'} as EventCategory,
+      {
+        _id: 'cat2',
+        eventCategoryId: 'cat2',
+        name: 'Music',
+        slug: 'music',
+        iconName: 'music',
+        description: 'Music events',
+        color: '#00FF00',
+      } as EventCategory,
+      {
+        _id: 'cat1',
+        eventCategoryId: 'cat1',
+        name: 'Sports',
+        slug: 'sports',
+        iconName: 'sport',
+        description: 'Sports events',
+        color: '#FF0000',
+      } as EventCategory,
+      {
+        _id: 'cat3',
+        eventCategoryId: 'cat3',
+        name: 'Art',
+        slug: 'art',
+        iconName: 'art',
+        description: 'Art events',
+        color: '#0000FF',
+      } as EventCategory,
     ];
 
     const mockQuery = {
@@ -111,9 +135,9 @@ describe('EventCategoryLoader', () => {
     const results = await Promise.all([loader.load('cat1'), loader.load('cat2'), loader.load('cat3')]);
 
     // Results should match requested order, not database return order
-    expect((results[0] as Partial<EventCategory> & {_id: string})?._id).toBe('cat1');
-    expect((results[1] as Partial<EventCategory> & {_id: string})?._id).toBe('cat2');
-    expect((results[2] as Partial<EventCategory> & {_id: string})?._id).toBe('cat3');
+    expect((results[0] as Partial<EventCategory> & { _id: string })?._id).toBe('cat1');
+    expect((results[1] as Partial<EventCategory> & { _id: string })?._id).toBe('cat2');
+    expect((results[2] as Partial<EventCategory> & { _id: string })?._id).toBe('cat3');
   });
 
   it('should handle database errors gracefully', async () => {

@@ -1,10 +1,10 @@
 import mongoose from 'mongoose';
-import {CustomError, ErrorTypes} from '@/utils/exceptions';
-import type {ZodSchema} from 'zod';
-import {z} from 'zod';
-import {EventStatus} from '@ntlango/commons/types/event';
-import {Gender} from '@ntlango/commons/types/user';
-import {isValid, parseISO} from 'date-fns';
+import { CustomError, ErrorTypes } from '@/utils/exceptions';
+import type { ZodSchema } from 'zod';
+import { z } from 'zod';
+import { EventStatus } from '@ntlango/commons/types/event';
+import { Gender } from '@ntlango/commons/types/user';
+import { isValid, parseISO } from 'date-fns';
 
 export const validateMongodbId = (id: string, message?: string) => {
   if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -14,29 +14,29 @@ export const validateMongodbId = (id: string, message?: string) => {
 };
 
 export const validateEmail = (email: string, message?: string) => {
-  const {error, success} = z.string().email({message: ERROR_MESSAGES.INVALID_EMAIL}).safeParse(email);
+  const { error, success } = z.string().email({ message: ERROR_MESSAGES.INVALID_EMAIL }).safeParse(email);
   if (!success && error) {
-    const {path} = error.issues[0];
-    throw CustomError(message || ERROR_MESSAGES.INVALID_EMAIL, ErrorTypes.BAD_USER_INPUT, {argumentName: path[0]});
+    const { path } = error.issues[0];
+    throw CustomError(message || ERROR_MESSAGES.INVALID_EMAIL, ErrorTypes.BAD_USER_INPUT, { argumentName: path[0] });
   }
   return true;
 };
 
 export const validateUsername = (username: string, message?: string) => {
-  const {error, success} = z.string().min(3, {message: ERROR_MESSAGES.INVALID_USERNAME}).safeParse(username);
+  const { error, success } = z.string().min(3, { message: ERROR_MESSAGES.INVALID_USERNAME }).safeParse(username);
   if (!success && error) {
-    const {path} = error.issues[0];
-    throw CustomError(message || ERROR_MESSAGES.INVALID_USERNAME, ErrorTypes.BAD_USER_INPUT, {argumentName: path[0]});
+    const { path } = error.issues[0];
+    throw CustomError(message || ERROR_MESSAGES.INVALID_USERNAME, ErrorTypes.BAD_USER_INPUT, { argumentName: path[0] });
   }
   return true;
 };
 
 // https://www.apollographql.com/docs/apollo-server/data/errors/
 export const validateInput = <Type>(schema: ZodSchema, input: Type) => {
-  const {error, success} = schema.safeParse(input);
+  const { error, success } = schema.safeParse(input);
   if (!success && error) {
-    const {message, path} = error.issues[0];
-    throw CustomError(message, ErrorTypes.BAD_USER_INPUT, {argumentName: path[0]});
+    const { message, path } = error.issues[0];
+    throw CustomError(message, ErrorTypes.BAD_USER_INPUT, { argumentName: path[0] });
   }
 };
 

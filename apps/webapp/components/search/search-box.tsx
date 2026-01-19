@@ -32,7 +32,7 @@ export default function SearchBar({
         options={itemList ?? []}
         inputValue={inputValue}
         onInputChange={handleInputChange}
-        renderInput={params => (
+        renderInput={(params) => (
           <TextField
             {...params}
             label="Search events by title, description..."

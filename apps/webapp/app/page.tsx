@@ -36,13 +36,15 @@ export default async function HomePage() {
 
   // Get user data from session for personalization (populated at login)
   const sessionUser = session?.user;
-  const userLocation = sessionUser?.location ? {
-    city: sessionUser.location.city,
-    country: sessionUser.location.country,
-    latitude: sessionUser.location.coordinates?.latitude,
-    longitude: sessionUser.location.coordinates?.longitude,
-  } : null;
-  const userInterestIds = sessionUser?.interests?.map(i => i.eventCategoryId) ?? [];
+  const userLocation = sessionUser?.location
+    ? {
+        city: sessionUser.location.city,
+        country: sessionUser.location.country,
+        latitude: sessionUser.location.coordinates?.latitude,
+        longitude: sessionUser.location.coordinates?.longitude,
+      }
+    : null;
+  const userInterestIds = sessionUser?.interests?.map((i) => i.eventCategoryId) ?? [];
 
   // Fetch events - personalized for authenticated users with location, all events otherwise
   let eventList: EventPreview[] = [];
@@ -101,7 +103,7 @@ export default async function HomePage() {
   // 3. Personalized fetch succeeded but returned empty results (better UX than empty carousel)
   const shouldFetchAllEvents = !isAuth || !userLocation || !personalizedFetchSucceeded || eventList.length === 0;
   if (shouldFetchAllEvents) {
-    const eventsResponse = await getClient().query({ 
+    const eventsResponse = await getClient().query({
       query: GetAllEventsDocument,
       context: {
         headers: getAuthHeader(token),
@@ -113,7 +115,7 @@ export default async function HomePage() {
   // Fetch categories
   const { data } = await getClient().query({ query: GetAllEventCategoriesDocument });
   const eventCategories = data.readEventCategories?.slice(0, 6) ?? [];
-  
+
   const featuredEvents = eventList.slice(0, 8);
   const heroEvent = eventList[0] ?? null;
 
@@ -142,11 +144,7 @@ export default async function HomePage() {
       <HeroSection heroEvent={heroEvent} />
       <FeaturedEvents events={featuredEvents} />
       <CategoryExplorer categories={eventCategories} />
-      <SocialFeed 
-        isAuthenticated={isAuth} 
-        hasToken={!!hasValidToken} 
-        socialFeed={socialFeed} 
-      />
+      <SocialFeed isAuthenticated={isAuth} hasToken={!!hasValidToken} socialFeed={socialFeed} />
     </Box>
   );
 }

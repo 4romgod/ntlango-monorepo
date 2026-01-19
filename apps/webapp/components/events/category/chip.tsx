@@ -6,7 +6,7 @@ import Link from 'next/link';
 export default function EventCategoryChip({ category }: { category: EventCategory }) {
   const IconComponent = getEventCategoryIcon(category.iconName);
   const categoryColor = category.color ?? 'black';
-  
+
   return (
     <Link key={category.eventCategoryId} href={`/events#${category.name}`} passHref style={{ textDecoration: 'none' }}>
       <Chip

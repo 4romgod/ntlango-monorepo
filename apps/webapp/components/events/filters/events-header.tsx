@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { Box, Stack, Typography } from '@mui/material';
 import SearchInput from '@/components/search/search-box';
@@ -14,12 +14,7 @@ export default function EventsHeader({ eventCount, eventTitles, onSearch }: Even
     <Box mb={4}>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={3}>
         <Box>
-          <Typography
-            variant="h3"
-            fontWeight={700}
-            className="glow-text"
-            sx={{ mb: 1 }}
-          >
+          <Typography variant="h3" fontWeight={700} className="glow-text" sx={{ mb: 1 }}>
             Discover Events
           </Typography>
           <Typography variant="body1" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>

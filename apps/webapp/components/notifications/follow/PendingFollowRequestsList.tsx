@@ -1,15 +1,7 @@
 'use client';
 
 import React from 'react';
-import {
-  Alert,
-  Box,
-  CircularProgress,
-  Divider,
-  List,
-  Paper,
-  Typography,
-} from '@mui/material';
+import { Alert, Box, CircularProgress, Divider, List, Paper, Typography } from '@mui/material';
 import { PersonAdd as PersonAddIcon } from '@mui/icons-material';
 import { FollowTargetType } from '@/data/graphql/types/graphql';
 import { useFollowRequests } from '@/hooks';

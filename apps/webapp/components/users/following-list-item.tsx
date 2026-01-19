@@ -69,11 +69,9 @@ export default function FollowingListItem({
 
   const isUser = following.targetType === FollowTargetType.User;
   const target = isUser ? following.targetUser : following.targetOrganization;
-  
+
   // Check if muted based on the muted lists
-  const isMuted = isUser 
-    ? mutedUserIds.includes(following.targetId)
-    : mutedOrgIds.includes(following.targetId);
+  const isMuted = isUser ? mutedUserIds.includes(following.targetId) : mutedOrgIds.includes(following.targetId);
 
   if (!target) return null;
 
@@ -137,11 +135,7 @@ export default function FollowingListItem({
     >
       <ListItemAvatar sx={{ mt: 0.5 }}>
         <Link href={linkPath}>
-          <Avatar
-            src={avatarSrc || undefined}
-            alt={fullName}
-            sx={{ width: 48, height: 48, cursor: 'pointer' }}
-          >
+          <Avatar src={avatarSrc || undefined} alt={fullName} sx={{ width: 48, height: 48, cursor: 'pointer' }}>
             {fullName.charAt(0).toUpperCase()}
           </Avatar>
         </Link>
@@ -159,10 +153,7 @@ export default function FollowingListItem({
             }}
           >
             <Box sx={{ flex: 1, minWidth: 0 }}>
-              <Link
-                href={linkPath}
-                style={{ textDecoration: 'none', color: 'inherit' }}
-              >
+              <Link href={linkPath} style={{ textDecoration: 'none', color: 'inherit' }}>
                 <Typography
                   variant="subtitle1"
                   fontWeight={600}
@@ -206,7 +197,7 @@ export default function FollowingListItem({
                   {isMuted ? <NotificationsOffIcon fontSize="small" /> : <NotificationsIcon fontSize="small" />}
                 </IconButton>
               </Tooltip>
-              
+
               <Button
                 size="small"
                 variant="outlined"

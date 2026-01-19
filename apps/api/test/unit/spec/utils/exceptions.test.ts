@@ -1,7 +1,13 @@
-import type {CustomErrorType} from '@/utils';
-import {CustomError, KnownCommonError, ErrorTypes, duplicateFieldMessage, extractValidationErrorMessage} from '@/utils';
-import {ERROR_MESSAGES} from '@/validation';
-import {GraphQLError} from 'graphql';
+import type { CustomErrorType } from '@/utils';
+import {
+  CustomError,
+  KnownCommonError,
+  ErrorTypes,
+  duplicateFieldMessage,
+  extractValidationErrorMessage,
+} from '@/utils';
+import { ERROR_MESSAGES } from '@/validation';
+import { GraphQLError } from 'graphql';
 
 describe('exceptions', () => {
   describe('CustomError', () => {
@@ -29,7 +35,7 @@ describe('exceptions', () => {
         errorCode: 'TEST_ERROR_CODE',
         errorStatus: 400,
       };
-      const extensions = {additional: 'Additional extension'};
+      const extensions = { additional: 'Additional extension' };
 
       const error = CustomError(errorMessage, errorType, extensions);
       expect(error).toBeInstanceOf(GraphQLError);
@@ -46,7 +52,7 @@ describe('exceptions', () => {
 
   describe('KnownCommonError', () => {
     it('should handle MongoDB duplicate key error (11000)', () => {
-      const error = {code: 11000, keyValue: {email: 'test@example.com'}};
+      const error = { code: 11000, keyValue: { email: 'test@example.com' } };
       const graphQLError = KnownCommonError(error);
 
       expect(graphQLError).toBeInstanceOf(GraphQLError);
@@ -62,7 +68,8 @@ describe('exceptions', () => {
     it('should handle MongoDB duplicate key error (11001)', () => {
       const error = {
         code: 11001,
-        message: 'E11000 duplicate key error collection: test.users index: email_1 dup key: { email: "test@example.com" }',
+        message:
+          'E11000 duplicate key error collection: test.users index: email_1 dup key: { email: "test@example.com" }',
       };
       const graphQLError = KnownCommonError(error);
 
@@ -77,7 +84,7 @@ describe('exceptions', () => {
     });
 
     it('should handle MongoDB Content Too Large error (10334)', () => {
-      const error = {code: 10334};
+      const error = { code: 10334 };
       const graphQLError = KnownCommonError(error);
 
       expect(graphQLError).toBeInstanceOf(GraphQLError);
@@ -91,7 +98,7 @@ describe('exceptions', () => {
     });
 
     it('should handle Unknown error', () => {
-      const error = {code: 'unknown'};
+      const error = { code: 'unknown' };
       const graphQLError = KnownCommonError(error);
 
       expect(graphQLError).toBeInstanceOf(GraphQLError);
@@ -108,7 +115,8 @@ describe('exceptions', () => {
   describe('duplicateFieldMessage', () => {
     it('should return the correct message for a duplicate key error', () => {
       const mongoError = {
-        message: 'E11000 duplicate key error collection: test.users index: email_1 dup key: { email: "test@example.com" }',
+        message:
+          'E11000 duplicate key error collection: test.users index: email_1 dup key: { email: "test@example.com" }',
       };
       const result = duplicateFieldMessage(mongoError);
       expect(result).toBe("The 'email' with value '\"test@example.com\"' already exists.");
@@ -159,8 +167,8 @@ describe('exceptions', () => {
         name: 'ValidationError',
         message: 'Validation failed',
         errors: {
-          email: {message: 'Email is required'},
-          name: {message: 'Name must be at least 3 characters'},
+          email: { message: 'Email is required' },
+          name: { message: 'Name must be at least 3 characters' },
         },
       };
       const result = extractValidationErrorMessage(error);
@@ -172,7 +180,7 @@ describe('exceptions', () => {
         name: 'ValidatorError',
         message: 'validation failed: email is invalid',
         errors: {
-          email: {message: 'Email format is invalid'},
+          email: { message: 'Email format is invalid' },
         },
       };
       const result = extractValidationErrorMessage(error);
@@ -184,7 +192,7 @@ describe('exceptions', () => {
         name: 'SomeError',
         message: 'Event validation failed: age must be positive',
         errors: {
-          age: {message: 'Age must be a positive number'},
+          age: { message: 'Age must be a positive number' },
         },
       };
       const result = extractValidationErrorMessage(error);
@@ -216,7 +224,7 @@ describe('exceptions', () => {
         message: 'validation failed',
         errors: {
           field1: {},
-          field2: {message: undefined},
+          field2: { message: undefined },
         },
       };
       const result = extractValidationErrorMessage(error);
@@ -232,7 +240,7 @@ describe('exceptions', () => {
     });
 
     it('should use custom default message when provided', () => {
-      const error = {name: 'SomeError'};
+      const error = { name: 'SomeError' };
       const result = extractValidationErrorMessage(error, 'Event validation failed');
       expect(result).toBe('Event validation failed');
     });

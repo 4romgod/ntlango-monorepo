@@ -1,441 +1,453 @@
 import 'reflect-metadata';
 import z from 'zod';
 import GraphQLJSON from 'graphql-type-json';
-import {Authorized, Field, ID, InputType, ObjectType, registerEnumType} from 'type-graphql';
-import {modelOptions, prop, Ref, Severity} from '@typegoose/typegoose';
+import { Authorized, Field, ID, InputType, ObjectType, registerEnumType } from 'type-graphql';
+import { modelOptions, prop, Ref, Severity } from '@typegoose/typegoose';
 
-import {EVENT_DESCRIPTIONS, USER_DESCRIPTIONS} from '../constants';
-import {EventCategory} from './eventCategory';
+import { EVENT_DESCRIPTIONS, USER_DESCRIPTIONS } from '../constants';
+import { EventCategory } from './eventCategory';
 import {
-    CreateUserInputSchema,
-    ForgotPasswordInputTypeSchema,
-    LoginUserInputSchema,
-    ResetPasswordInputTypeSchema,
-    UpdateUserInputSchema,
+  CreateUserInputSchema,
+  ForgotPasswordInputTypeSchema,
+  LoginUserInputSchema,
+  ResetPasswordInputTypeSchema,
+  UpdateUserInputSchema,
 } from '../validation';
 
 export enum Gender {
-    Male = 'Male',
-    Female = 'Female',
-    Other = 'Other',
+  Male = 'Male',
+  Female = 'Female',
+  Other = 'Other',
 }
 
 export enum UserRole {
-    Admin = 'Admin',
-    User = 'User',
-    Host = 'Host',
-    Guest = 'Guest',
+  Admin = 'Admin',
+  User = 'User',
+  Host = 'Host',
+  Guest = 'Guest',
 }
 
 export enum SocialVisibility {
-    Public = 'Public',
-    Followers = 'Followers',
-    Private = 'Private',
+  Public = 'Public',
+  Followers = 'Followers',
+  Private = 'Private',
 }
 
 export enum FollowPolicy {
-    Public = 'Public',
-    RequireApproval = 'RequireApproval',
+  Public = 'Public',
+  RequireApproval = 'RequireApproval',
 }
 
 registerEnumType(Gender, {
-    name: 'Gender',
-    description: USER_DESCRIPTIONS.GENDER,
+  name: 'Gender',
+  description: USER_DESCRIPTIONS.GENDER,
 });
 
 registerEnumType(UserRole, {
-    name: 'UserRole',
-    description: USER_DESCRIPTIONS.USER_ROLE,
+  name: 'UserRole',
+  description: USER_DESCRIPTIONS.USER_ROLE,
 });
 
 registerEnumType(SocialVisibility, {
-    name: 'SocialVisibility',
-    description: 'Visibility of social signals (intents, presence)',
+  name: 'SocialVisibility',
+  description: 'Visibility of social signals (intents, presence)',
 });
 
 registerEnumType(FollowPolicy, {
-    name: 'FollowPolicy',
-    description: USER_DESCRIPTIONS.FOLLOW_POLICY,
+  name: 'FollowPolicy',
+  description: USER_DESCRIPTIONS.FOLLOW_POLICY,
 });
 
 @ObjectType('CommunicationPrefs')
 export class CommunicationPrefs {
-    @prop({type: () => Boolean})
-    @Field(() => Boolean, {nullable: true})
-    emailEnabled?: boolean;
+  @prop({ type: () => Boolean })
+  @Field(() => Boolean, { nullable: true })
+  emailEnabled?: boolean;
 
-    @prop({type: () => Boolean})
-    @Field(() => Boolean, {nullable: true})
-    smsEnabled?: boolean;
+  @prop({ type: () => Boolean })
+  @Field(() => Boolean, { nullable: true })
+  smsEnabled?: boolean;
 
-    @prop({type: () => Boolean})
-    @Field(() => Boolean, {nullable: true})
-    pushEnabled?: boolean;
+  @prop({ type: () => Boolean })
+  @Field(() => Boolean, { nullable: true })
+  pushEnabled?: boolean;
 }
 
 @ObjectType('UserPreferences')
-@modelOptions({options: {allowMixed: Severity.ALLOW}})
+@modelOptions({ options: { allowMixed: Severity.ALLOW } })
 export class UserPreferences {
-    @prop({type: () => CommunicationPrefs})
-    @Field(() => CommunicationPrefs, {nullable: true})
-    communicationPrefs?: CommunicationPrefs;
+  @prop({ type: () => CommunicationPrefs })
+  @Field(() => CommunicationPrefs, { nullable: true })
+  communicationPrefs?: CommunicationPrefs;
 
-    @prop({type: () => Object})
-    @Field(() => GraphQLJSON, {nullable: true})
-    notificationPrefs?: Record<string, any>;
+  @prop({ type: () => Object })
+  @Field(() => GraphQLJSON, { nullable: true })
+  notificationPrefs?: Record<string, any>;
 }
 
-@ObjectType('UserLocationCoordinates', {description: 'Geographic coordinates for user location'})
+@ObjectType('UserLocationCoordinates', { description: 'Geographic coordinates for user location' })
 export class UserLocationCoordinates {
-    @prop({type: () => Number})
-    @Field(() => Number, {description: 'Latitude coordinate'})
-    latitude: number;
+  @prop({ type: () => Number })
+  @Field(() => Number, { description: 'Latitude coordinate' })
+  latitude: number;
 
-    @prop({type: () => Number})
-    @Field(() => Number, {description: 'Longitude coordinate'})
-    longitude: number;
+  @prop({ type: () => Number })
+  @Field(() => Number, { description: 'Longitude coordinate' })
+  longitude: number;
 }
 
-@ObjectType('UserLocation', {description: 'User location for personalized content'})
+@ObjectType('UserLocation', { description: 'User location for personalized content' })
 export class UserLocation {
-    @prop({type: () => String})
-    @Field(() => String, {description: 'City name'})
-    city: string;
+  @prop({ type: () => String })
+  @Field(() => String, { description: 'City name' })
+  city: string;
 
-    @prop({type: () => String})
-    @Field(() => String, {nullable: true, description: 'State or region'})
-    state?: string;
+  @prop({ type: () => String })
+  @Field(() => String, { nullable: true, description: 'State or region' })
+  state?: string;
 
-    @prop({type: () => String})
-    @Field(() => String, {description: 'Country name'})
-    country: string;
+  @prop({ type: () => String })
+  @Field(() => String, { description: 'Country name' })
+  country: string;
 
-    @prop({type: () => UserLocationCoordinates})
-    @Field(() => UserLocationCoordinates, {nullable: true, description: 'Geographic coordinates for proximity-based filtering'})
-    coordinates?: UserLocationCoordinates;
+  @prop({ type: () => UserLocationCoordinates })
+  @Field(() => UserLocationCoordinates, {
+    nullable: true,
+    description: 'Geographic coordinates for proximity-based filtering',
+  })
+  coordinates?: UserLocationCoordinates;
 }
 
-@InputType('UserLocationCoordinatesInput', {description: 'Geographic coordinates input'})
+@InputType('UserLocationCoordinatesInput', { description: 'Geographic coordinates input' })
 export class UserLocationCoordinatesInput {
-    @Field(() => Number, {description: 'Latitude coordinate'})
-    latitude: number;
+  @Field(() => Number, { description: 'Latitude coordinate' })
+  latitude: number;
 
-    @Field(() => Number, {description: 'Longitude coordinate'})
-    longitude: number;
+  @Field(() => Number, { description: 'Longitude coordinate' })
+  longitude: number;
 }
 
-@InputType('UserLocationInput', {description: 'User location input for personalized content'})
+@InputType('UserLocationInput', { description: 'User location input for personalized content' })
 export class UserLocationInput {
-    @Field(() => String, {description: 'City name'})
-    city: string;
+  @Field(() => String, { description: 'City name' })
+  city: string;
 
-    @Field(() => String, {nullable: true, description: 'State or region'})
-    state?: string;
+  @Field(() => String, { nullable: true, description: 'State or region' })
+  state?: string;
 
-    @Field(() => String, {description: 'Country name'})
-    country: string;
+  @Field(() => String, { description: 'Country name' })
+  country: string;
 
-    @Field(() => UserLocationCoordinatesInput, {nullable: true, description: 'Geographic coordinates for proximity-based filtering'})
-    coordinates?: UserLocationCoordinatesInput;
+  @Field(() => UserLocationCoordinatesInput, {
+    nullable: true,
+    description: 'Geographic coordinates for proximity-based filtering',
+  })
+  coordinates?: UserLocationCoordinatesInput;
 }
 
-@ObjectType('User', {description: USER_DESCRIPTIONS.TYPE})
-@modelOptions({schemaOptions: {timestamps: true}, options: {allowMixed: Severity.ALLOW}})
+@ObjectType('User', { description: USER_DESCRIPTIONS.TYPE })
+@modelOptions({ schemaOptions: { timestamps: true }, options: { allowMixed: Severity.ALLOW } })
 export class User {
-    @prop({required: true, unique: true, index: true, type: () => String})
-    @Field((type) => ID, {description: USER_DESCRIPTIONS.ID})
-    userId: string;
+  @prop({ required: true, unique: true, index: true, type: () => String })
+  @Field((type) => ID, { description: USER_DESCRIPTIONS.ID })
+  userId: string;
 
-    @prop({required: true, unique: true, index: true, lowercase: true, type: () => String})
-    @Field((type) => String, {description: USER_DESCRIPTIONS.EMAIL})
-    email: string;
+  @prop({ required: true, unique: true, index: true, lowercase: true, type: () => String })
+  @Field((type) => String, { description: USER_DESCRIPTIONS.EMAIL })
+  email: string;
 
-    @prop({required: true, unique: true, index: true, type: () => String})
-    @Field((type) => String, {description: USER_DESCRIPTIONS.USERNAME})
-    username: string;
+  @prop({ required: true, unique: true, index: true, type: () => String })
+  @Field((type) => String, { description: USER_DESCRIPTIONS.USERNAME })
+  username: string;
 
-    @prop({type: () => UserLocation})
-    @Field(() => UserLocation, {nullable: true, description: 'User location for personalized event recommendations'})
-    location?: UserLocation;
+  @prop({ type: () => UserLocation })
+  @Field(() => UserLocation, { nullable: true, description: 'User location for personalized event recommendations' })
+  location?: UserLocation;
 
-    @prop({required: true, type: () => String})
-    @Field((type) => String, {description: USER_DESCRIPTIONS.BIRTHDATE})
-    birthdate: string;
+  @prop({ required: true, type: () => String })
+  @Field((type) => String, { description: USER_DESCRIPTIONS.BIRTHDATE })
+  birthdate: string;
 
-    @prop({required: true, type: () => String})
-    @Field((type) => String, {description: USER_DESCRIPTIONS.GIVEN_NAME})
-    given_name: string;
+  @prop({ required: true, type: () => String })
+  @Field((type) => String, { description: USER_DESCRIPTIONS.GIVEN_NAME })
+  given_name: string;
 
-    @prop({required: true, type: () => String})
-    @Field((type) => String, {description: USER_DESCRIPTIONS.FAMILY_NAME})
-    family_name: string;
+  @prop({ required: true, type: () => String })
+  @Field((type) => String, { description: USER_DESCRIPTIONS.FAMILY_NAME })
+  family_name: string;
 
-    @prop({enum: Gender, type: () => String})
-    @Field((type) => Gender, {nullable: true, description: USER_DESCRIPTIONS.GENDER})
-    gender?: Gender;
+  @prop({ enum: Gender, type: () => String })
+  @Field((type) => Gender, { nullable: true, description: USER_DESCRIPTIONS.GENDER })
+  gender?: Gender;
 
-    @prop({type: () => String})
-    @Field((type) => String, {nullable: true, description: USER_DESCRIPTIONS.PHONE_NUMBER})
-    phone_number?: string;
+  @prop({ type: () => String })
+  @Field((type) => String, { nullable: true, description: USER_DESCRIPTIONS.PHONE_NUMBER })
+  phone_number?: string;
 
-    @prop({type: () => String})
-    @Field((type) => String, {nullable: true, description: USER_DESCRIPTIONS.PROFILE_PICTURE})
-    profile_picture?: string;
+  @prop({ type: () => String })
+  @Field((type) => String, { nullable: true, description: USER_DESCRIPTIONS.PROFILE_PICTURE })
+  profile_picture?: string;
 
-    @prop({type: () => String})
-    @Field((type) => String, {nullable: true, description: USER_DESCRIPTIONS.BIO})
-    bio?: string;
+  @prop({ type: () => String })
+  @Field((type) => String, { nullable: true, description: USER_DESCRIPTIONS.BIO })
+  bio?: string;
 
-    @prop({enum: UserRole, default: UserRole.User, required: true, type: () => String})
-    @Field((type) => UserRole, {description: USER_DESCRIPTIONS.USER_ROLE})
-    userRole: UserRole;
+  @prop({ enum: UserRole, default: UserRole.User, required: true, type: () => String })
+  @Field((type) => UserRole, { description: USER_DESCRIPTIONS.USER_ROLE })
+  userRole: UserRole;
 
-    @prop({type: () => [String], enum: UserRole, default: [UserRole.User]})
-    @Field(() => [UserRole], {nullable: true, description: 'Multiple roles supported'})
-    roles?: UserRole[];
+  @prop({ type: () => [String], enum: UserRole, default: [UserRole.User] })
+  @Field(() => [UserRole], { nullable: true, description: 'Multiple roles supported' })
+  roles?: UserRole[];
 
-    @prop({required: true, select: false, type: () => String})
-    password: string;
+  @prop({ required: true, select: false, type: () => String })
+  password: string;
 
-    @prop({type: () => [String], ref: () => EventCategory, default: []})
-    @Field(() => [EventCategory], {nullable: true, description: EVENT_DESCRIPTIONS.EVENT.EVENT_CATEGORY_LIST})
-    interests?: Ref<EventCategory>[];
+  @prop({ type: () => [String], ref: () => EventCategory, default: [] })
+  @Field(() => [EventCategory], { nullable: true, description: EVENT_DESCRIPTIONS.EVENT.EVENT_CATEGORY_LIST })
+  interests?: Ref<EventCategory>[];
 
-    @prop({type: () => String})
-    @Field(() => String, {nullable: true})
-    primaryTimezone?: string;
+  @prop({ type: () => String })
+  @Field(() => String, { nullable: true })
+  primaryTimezone?: string;
 
-    @prop({enum: SocialVisibility, type: () => String})
-    @Field(() => SocialVisibility, {nullable: true})
-    defaultVisibility?: SocialVisibility;
+  @prop({ enum: SocialVisibility, type: () => String })
+  @Field(() => SocialVisibility, { nullable: true })
+  defaultVisibility?: SocialVisibility;
 
-    @prop({type: () => UserPreferences})
-    @Field(() => UserPreferences, {nullable: true})
-    preferences?: UserPreferences;
+  @prop({ type: () => UserPreferences })
+  @Field(() => UserPreferences, { nullable: true })
+  preferences?: UserPreferences;
 
-    @prop({enum: SocialVisibility, type: () => String})
-    @Field(() => SocialVisibility, {nullable: true})
-    socialVisibility?: SocialVisibility;
+  @prop({ enum: SocialVisibility, type: () => String })
+  @Field(() => SocialVisibility, { nullable: true })
+  socialVisibility?: SocialVisibility;
 
-    @prop({default: true, type: () => Boolean})
-    @Field(() => Boolean, {nullable: true})
-    shareRSVPByDefault?: boolean;
+  @prop({ default: true, type: () => Boolean })
+  @Field(() => Boolean, { nullable: true })
+  shareRSVPByDefault?: boolean;
 
-    @prop({default: true, type: () => Boolean})
-    @Field(() => Boolean, {nullable: true, description: USER_DESCRIPTIONS.SHARE_CHECKINS})
-    shareCheckinsByDefault?: boolean;
+  @prop({ default: true, type: () => Boolean })
+  @Field(() => Boolean, { nullable: true, description: USER_DESCRIPTIONS.SHARE_CHECKINS })
+  shareCheckinsByDefault?: boolean;
 
-    @prop({default: [], type: () => [String]})
-    @Field(() => [String], {nullable: true})
-    mutedUserIds?: string[];
+  @prop({ default: [], type: () => [String] })
+  @Field(() => [String], { nullable: true })
+  mutedUserIds?: string[];
 
-    @prop({default: [], type: () => [String]})
-    @Field(() => [String], {nullable: true, description: 'IDs of organizations whose content is muted'})
-    mutedOrgIds?: string[];
+  @prop({ default: [], type: () => [String] })
+  @Field(() => [String], { nullable: true, description: 'IDs of organizations whose content is muted' })
+  mutedOrgIds?: string[];
 
-    @prop({default: [], type: () => [String]})
-    @Field(() => [String], {nullable: true})
-    blockedUserIds?: string[];
+  @prop({ default: [], type: () => [String] })
+  @Field(() => [String], { nullable: true })
+  blockedUserIds?: string[];
 
-    @prop({enum: FollowPolicy, default: FollowPolicy.Public, type: () => String})
-    @Field(() => FollowPolicy, {nullable: true, description: USER_DESCRIPTIONS.FOLLOW_POLICY})
-    followPolicy?: FollowPolicy;
+  @prop({ enum: FollowPolicy, default: FollowPolicy.Public, type: () => String })
+  @Field(() => FollowPolicy, { nullable: true, description: USER_DESCRIPTIONS.FOLLOW_POLICY })
+  followPolicy?: FollowPolicy;
 
-    @prop({enum: SocialVisibility, default: SocialVisibility.Public, type: () => String})
-    @Field(() => SocialVisibility, {nullable: true, description: 'Who can see your followers list'})
-    followersListVisibility?: SocialVisibility;
+  @prop({ enum: SocialVisibility, default: SocialVisibility.Public, type: () => String })
+  @Field(() => SocialVisibility, { nullable: true, description: 'Who can see your followers list' })
+  followersListVisibility?: SocialVisibility;
 
-    @prop({enum: SocialVisibility, default: SocialVisibility.Public, type: () => String})
-    @Field(() => SocialVisibility, {nullable: true, description: 'Who can see your following list'})
-    followingListVisibility?: SocialVisibility;
+  @prop({ enum: SocialVisibility, default: SocialVisibility.Public, type: () => String })
+  @Field(() => SocialVisibility, { nullable: true, description: 'Who can see your following list' })
+  followingListVisibility?: SocialVisibility;
 
-    // Computed field - resolved via @FieldResolver in UserResolver (no @prop, not stored in DB)
-    @Field(() => Number, {description: USER_DESCRIPTIONS.FOLLOWERS_COUNT})
-    followersCount?: number;
+  // Computed field - resolved via @FieldResolver in UserResolver (no @prop, not stored in DB)
+  @Field(() => Number, { description: USER_DESCRIPTIONS.FOLLOWERS_COUNT })
+  followersCount?: number;
 }
 
-@ObjectType('UserWithToken', {description: USER_DESCRIPTIONS.WITH_TOKEN})
+@ObjectType('UserWithToken', { description: USER_DESCRIPTIONS.WITH_TOKEN })
 export class UserWithToken extends User {
-    @Field((type) => String, {description: USER_DESCRIPTIONS.TOKEN})
-    token: string;
+  @Field((type) => String, { description: USER_DESCRIPTIONS.TOKEN })
+  token: string;
 }
 
-@InputType('CreateUserInput', {description: USER_DESCRIPTIONS.CREATE_INPUT})
+@InputType('CreateUserInput', { description: USER_DESCRIPTIONS.CREATE_INPUT })
 export class CreateUserInput {
-    @Field((type) => String, {description: USER_DESCRIPTIONS.EMAIL})
-    email: string;
+  @Field((type) => String, { description: USER_DESCRIPTIONS.EMAIL })
+  email: string;
 
-    @Field((type) => String, {nullable: true, description: USER_DESCRIPTIONS.USERNAME})
-    username?: string;
+  @Field((type) => String, { nullable: true, description: USER_DESCRIPTIONS.USERNAME })
+  username?: string;
 
-    @Field(() => UserLocationInput, {nullable: true, description: 'User location for personalized event recommendations'})
-    location?: UserLocationInput;
+  @Field(() => UserLocationInput, {
+    nullable: true,
+    description: 'User location for personalized event recommendations',
+  })
+  location?: UserLocationInput;
 
-    @Field((type) => String, {description: USER_DESCRIPTIONS.BIRTHDATE})
-    birthdate: string;
+  @Field((type) => String, { description: USER_DESCRIPTIONS.BIRTHDATE })
+  birthdate: string;
 
-    @Field((type) => String, {description: USER_DESCRIPTIONS.GIVEN_NAME})
-    given_name: string;
+  @Field((type) => String, { description: USER_DESCRIPTIONS.GIVEN_NAME })
+  given_name: string;
 
-    @Field((type) => String, {description: USER_DESCRIPTIONS.FAMILY_NAME})
-    family_name: string;
+  @Field((type) => String, { description: USER_DESCRIPTIONS.FAMILY_NAME })
+  family_name: string;
 
-    @Field((type) => Gender, {nullable: true, description: USER_DESCRIPTIONS.GENDER})
-    gender?: Gender;
+  @Field((type) => Gender, { nullable: true, description: USER_DESCRIPTIONS.GENDER })
+  gender?: Gender;
 
-    @Field((type) => String, {description: USER_DESCRIPTIONS.PASSWORD})
-    password: string;
+  @Field((type) => String, { description: USER_DESCRIPTIONS.PASSWORD })
+  password: string;
 
-    @Field((type) => String, {nullable: true, description: USER_DESCRIPTIONS.PHONE_NUMBER})
-    phone_number?: string;
+  @Field((type) => String, { nullable: true, description: USER_DESCRIPTIONS.PHONE_NUMBER })
+  phone_number?: string;
 
-    @Field((type) => String, {nullable: true, description: USER_DESCRIPTIONS.PROFILE_PICTURE})
-    profile_picture?: string;
+  @Field((type) => String, { nullable: true, description: USER_DESCRIPTIONS.PROFILE_PICTURE })
+  profile_picture?: string;
 
-    @Field((type) => String, {nullable: true, description: USER_DESCRIPTIONS.BIO})
-    bio?: string;
+  @Field((type) => String, { nullable: true, description: USER_DESCRIPTIONS.BIO })
+  bio?: string;
 
-    @Field(() => [String], {nullable: true, description: EVENT_DESCRIPTIONS.EVENT.EVENT_CATEGORY_LIST})
-    interests?: string[];
+  @Field(() => [String], { nullable: true, description: EVENT_DESCRIPTIONS.EVENT.EVENT_CATEGORY_LIST })
+  interests?: string[];
 
-    @Field(() => String, {nullable: true})
-    primaryTimezone?: string;
+  @Field(() => String, { nullable: true })
+  primaryTimezone?: string;
 
-    @Field(() => SocialVisibility, {nullable: true})
-    defaultVisibility?: SocialVisibility;
+  @Field(() => SocialVisibility, { nullable: true })
+  defaultVisibility?: SocialVisibility;
 
-    @Field(() => SocialVisibility, {nullable: true})
-    socialVisibility?: SocialVisibility;
+  @Field(() => SocialVisibility, { nullable: true })
+  socialVisibility?: SocialVisibility;
 
-    @Field(() => Boolean, {nullable: true})
-    shareRSVPByDefault?: boolean;
+  @Field(() => Boolean, { nullable: true })
+  shareRSVPByDefault?: boolean;
 
-    @Field(() => Boolean, {nullable: true, description: USER_DESCRIPTIONS.SHARE_CHECKINS})
-    shareCheckinsByDefault?: boolean;
+  @Field(() => Boolean, { nullable: true, description: USER_DESCRIPTIONS.SHARE_CHECKINS })
+  shareCheckinsByDefault?: boolean;
 
-    @Field(() => GraphQLJSON, {nullable: true})
-    profile?: Record<string, any>;
+  @Field(() => GraphQLJSON, { nullable: true })
+  profile?: Record<string, any>;
 
-    @Field(() => GraphQLJSON, {nullable: true})
-    preferences?: Record<string, any>;
+  @Field(() => GraphQLJSON, { nullable: true })
+  preferences?: Record<string, any>;
 
-    @Field(() => [String], {nullable: true})
-    mutedUserIds?: string[];
+  @Field(() => [String], { nullable: true })
+  mutedUserIds?: string[];
 
-    @Field(() => [String], {nullable: true, description: 'IDs of organizations whose content is muted'})
-    mutedOrgIds?: string[];
+  @Field(() => [String], { nullable: true, description: 'IDs of organizations whose content is muted' })
+  mutedOrgIds?: string[];
 
-    @Field(() => [String], {nullable: true})
-    blockedUserIds?: string[];
+  @Field(() => [String], { nullable: true })
+  blockedUserIds?: string[];
 
-    @Field(() => [UserRole], {nullable: true})
-    roles?: UserRole[];
+  @Field(() => [UserRole], { nullable: true })
+  roles?: UserRole[];
 
-    @Field(() => FollowPolicy, {nullable: true, description: USER_DESCRIPTIONS.FOLLOW_POLICY})
-    followPolicy?: FollowPolicy;
+  @Field(() => FollowPolicy, { nullable: true, description: USER_DESCRIPTIONS.FOLLOW_POLICY })
+  followPolicy?: FollowPolicy;
 
-    @Field(() => SocialVisibility, {nullable: true, description: 'Who can see your followers list'})
-    followersListVisibility?: SocialVisibility;
+  @Field(() => SocialVisibility, { nullable: true, description: 'Who can see your followers list' })
+  followersListVisibility?: SocialVisibility;
 
-    @Field(() => SocialVisibility, {nullable: true, description: 'Who can see your following list'})
-    followingListVisibility?: SocialVisibility;
+  @Field(() => SocialVisibility, { nullable: true, description: 'Who can see your following list' })
+  followingListVisibility?: SocialVisibility;
 }
 
-@InputType('UpdateUserInput', {description: USER_DESCRIPTIONS.UPDATE_INPUT})
+@InputType('UpdateUserInput', { description: USER_DESCRIPTIONS.UPDATE_INPUT })
 export class UpdateUserInput {
-    @Field((type) => ID, {description: USER_DESCRIPTIONS.ID})
-    userId: string;
+  @Field((type) => ID, { description: USER_DESCRIPTIONS.ID })
+  userId: string;
 
-    @Field((type) => String, {nullable: true, description: USER_DESCRIPTIONS.EMAIL})
-    email?: string;
+  @Field((type) => String, { nullable: true, description: USER_DESCRIPTIONS.EMAIL })
+  email?: string;
 
-    @Field((type) => String, {nullable: true, description: USER_DESCRIPTIONS.USERNAME})
-    username?: string;
+  @Field((type) => String, { nullable: true, description: USER_DESCRIPTIONS.USERNAME })
+  username?: string;
 
-    @Field(() => UserLocationInput, {nullable: true, description: 'User location for personalized event recommendations'})
-    location?: UserLocationInput;
+  @Field(() => UserLocationInput, {
+    nullable: true,
+    description: 'User location for personalized event recommendations',
+  })
+  location?: UserLocationInput;
 
-    @Field((type) => String, {nullable: true, description: USER_DESCRIPTIONS.BIRTHDATE})
-    birthdate?: string;
+  @Field((type) => String, { nullable: true, description: USER_DESCRIPTIONS.BIRTHDATE })
+  birthdate?: string;
 
-    @Field((type) => String, {nullable: true, description: USER_DESCRIPTIONS.GIVEN_NAME})
-    given_name?: string;
+  @Field((type) => String, { nullable: true, description: USER_DESCRIPTIONS.GIVEN_NAME })
+  given_name?: string;
 
-    @Field((type) => String, {nullable: true, description: USER_DESCRIPTIONS.FAMILY_NAME})
-    family_name?: string;
+  @Field((type) => String, { nullable: true, description: USER_DESCRIPTIONS.FAMILY_NAME })
+  family_name?: string;
 
-    @Field((type) => Gender, {nullable: true, description: USER_DESCRIPTIONS.GENDER})
-    gender?: Gender;
+  @Field((type) => Gender, { nullable: true, description: USER_DESCRIPTIONS.GENDER })
+  gender?: Gender;
 
-    @Field((type) => String, {nullable: true, description: USER_DESCRIPTIONS.PASSWORD})
-    password?: string;
+  @Field((type) => String, { nullable: true, description: USER_DESCRIPTIONS.PASSWORD })
+  password?: string;
 
-    @Field((type) => String, {nullable: true, description: USER_DESCRIPTIONS.PHONE_NUMBER})
-    phone_number?: string;
+  @Field((type) => String, { nullable: true, description: USER_DESCRIPTIONS.PHONE_NUMBER })
+  phone_number?: string;
 
-    @Field((type) => String, {nullable: true, description: USER_DESCRIPTIONS.PROFILE_PICTURE})
-    profile_picture?: string;
+  @Field((type) => String, { nullable: true, description: USER_DESCRIPTIONS.PROFILE_PICTURE })
+  profile_picture?: string;
 
-    @Authorized([UserRole.Admin])
-    @Field(() => UserRole, {nullable: true, description: USER_DESCRIPTIONS.USER_ROLE})
-    userRole?: UserRole;
+  @Authorized([UserRole.Admin])
+  @Field(() => UserRole, { nullable: true, description: USER_DESCRIPTIONS.USER_ROLE })
+  userRole?: UserRole;
 
-    @Field((type) => String, {nullable: true, description: USER_DESCRIPTIONS.BIO})
-    bio?: string;
+  @Field((type) => String, { nullable: true, description: USER_DESCRIPTIONS.BIO })
+  bio?: string;
 
-    @Field(() => [String], {nullable: true, description: EVENT_DESCRIPTIONS.EVENT.EVENT_CATEGORY_LIST})
-    interests?: string[];
+  @Field(() => [String], { nullable: true, description: EVENT_DESCRIPTIONS.EVENT.EVENT_CATEGORY_LIST })
+  interests?: string[];
 
-    @Field(() => String, {nullable: true})
-    primaryTimezone?: string;
+  @Field(() => String, { nullable: true })
+  primaryTimezone?: string;
 
-    @Field(() => SocialVisibility, {nullable: true})
-    defaultVisibility?: SocialVisibility;
+  @Field(() => SocialVisibility, { nullable: true })
+  defaultVisibility?: SocialVisibility;
 
-    @Field(() => SocialVisibility, {nullable: true})
-    socialVisibility?: SocialVisibility;
+  @Field(() => SocialVisibility, { nullable: true })
+  socialVisibility?: SocialVisibility;
 
-    @Field(() => Boolean, {nullable: true})
-    shareRSVPByDefault?: boolean;
+  @Field(() => Boolean, { nullable: true })
+  shareRSVPByDefault?: boolean;
 
-    @Field(() => Boolean, {nullable: true, description: USER_DESCRIPTIONS.SHARE_CHECKINS})
-    shareCheckinsByDefault?: boolean;
+  @Field(() => Boolean, { nullable: true, description: USER_DESCRIPTIONS.SHARE_CHECKINS })
+  shareCheckinsByDefault?: boolean;
 
-    @Field(() => GraphQLJSON, {nullable: true})
-    profile?: Record<string, any>;
+  @Field(() => GraphQLJSON, { nullable: true })
+  profile?: Record<string, any>;
 
-    @Field(() => GraphQLJSON, {nullable: true})
-    preferences?: Record<string, any>;
+  @Field(() => GraphQLJSON, { nullable: true })
+  preferences?: Record<string, any>;
 
-    @Field(() => [String], {nullable: true})
-    mutedUserIds?: string[];
+  @Field(() => [String], { nullable: true })
+  mutedUserIds?: string[];
 
-    @Field(() => [String], {nullable: true, description: 'IDs of organizations whose content is muted'})
-    mutedOrgIds?: string[];
+  @Field(() => [String], { nullable: true, description: 'IDs of organizations whose content is muted' })
+  mutedOrgIds?: string[];
 
-    @Field(() => [String], {nullable: true})
-    blockedUserIds?: string[];
+  @Field(() => [String], { nullable: true })
+  blockedUserIds?: string[];
 
-    @Field(() => [UserRole], {nullable: true})
-    roles?: UserRole[];
+  @Field(() => [UserRole], { nullable: true })
+  roles?: UserRole[];
 
-    @Field(() => FollowPolicy, {nullable: true, description: USER_DESCRIPTIONS.FOLLOW_POLICY})
-    followPolicy?: FollowPolicy;
+  @Field(() => FollowPolicy, { nullable: true, description: USER_DESCRIPTIONS.FOLLOW_POLICY })
+  followPolicy?: FollowPolicy;
 
-    @Field(() => SocialVisibility, {nullable: true, description: 'Who can see your followers list'})
-    followersListVisibility?: SocialVisibility;
+  @Field(() => SocialVisibility, { nullable: true, description: 'Who can see your followers list' })
+  followersListVisibility?: SocialVisibility;
 
-    @Field(() => SocialVisibility, {nullable: true, description: 'Who can see your following list'})
-    followingListVisibility?: SocialVisibility;
+  @Field(() => SocialVisibility, { nullable: true, description: 'Who can see your following list' })
+  followingListVisibility?: SocialVisibility;
 }
 
-@InputType('LoginUserInput', {description: USER_DESCRIPTIONS.LOGIN_INPUT})
+@InputType('LoginUserInput', { description: USER_DESCRIPTIONS.LOGIN_INPUT })
 export class LoginUserInput {
-    @Field((type) => String, {description: USER_DESCRIPTIONS.EMAIL})
-    email: string;
+  @Field((type) => String, { description: USER_DESCRIPTIONS.EMAIL })
+  email: string;
 
-    @Field((type) => String, {description: USER_DESCRIPTIONS.PASSWORD})
-    password: string;
+  @Field((type) => String, { description: USER_DESCRIPTIONS.PASSWORD })
+  password: string;
 }
 
 export type LoginUserInputInferedType = z.infer<typeof LoginUserInputSchema>;

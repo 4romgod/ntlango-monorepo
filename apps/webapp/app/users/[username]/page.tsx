@@ -1,16 +1,5 @@
 import React from 'react';
-import {
-  Avatar,
-  Box,
-  Button,
-  Chip,
-  Container,
-  Divider,
-  Grid,
-  Paper,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Avatar, Box, Button, Chip, Container, Divider, Grid, Paper, Stack, Typography } from '@mui/material';
 import {
   Edit as EditIcon,
   Email as EmailIcon,
@@ -67,7 +56,7 @@ export default async function UserPage(props: Props) {
         context: { headers: { token } },
       });
       savedEvents = (savedEventsData?.readSavedEvents ?? [])
-        .map(follow => follow.targetEvent)
+        .map((follow) => follow.targetEvent)
         .filter((event): event is NonNullable<typeof event> => event !== null && event !== undefined) as EventPreview[];
     } catch (error) {
       logger.debug('Failed to fetch saved events:', error);
@@ -75,9 +64,9 @@ export default async function UserPage(props: Props) {
   }
 
   const allEvents = (events.readEvents ?? []) as EventPreview[];
-  const rsvpdEvents = allEvents.filter(event => event.participants?.some(p => p.userId === user.userId));
-  const organizedEvents = allEvents.filter(event =>
-    event.organizers.some(organizer => organizer.user.userId === user.userId),
+  const rsvpdEvents = allEvents.filter((event) => event.participants?.some((p) => p.userId === user.userId));
+  const organizedEvents = allEvents.filter((event) =>
+    event.organizers.some((organizer) => organizer.user.userId === user.userId),
   );
   const interests = user.interests ? user.interests : [];
   const age = user.birthdate ? differenceInYears(new Date(), new Date(user.birthdate)) : null;
@@ -261,7 +250,9 @@ export default async function UserPage(props: Props) {
                   </Typography>
                   <Divider />
                   <Stack spacing={0} divider={<Divider />}>
-                    {isOwnProfile && <InfoItem icon={<EmailIcon fontSize="small" />} label="Email" value={user.email} />}
+                    {isOwnProfile && (
+                      <InfoItem icon={<EmailIcon fontSize="small" />} label="Email" value={user.email} />
+                    )}
                     {isOwnProfile && (
                       <InfoItem
                         icon={<PhoneIcon fontSize="small" />}
@@ -361,7 +352,9 @@ export default async function UserPage(props: Props) {
                   No events created yet
                 </Typography>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                  {isOwnProfile ? "Start hosting events and they'll appear here" : `${user.given_name} hasn't created any events yet`}
+                  {isOwnProfile
+                    ? "Start hosting events and they'll appear here"
+                    : `${user.given_name} hasn't created any events yet`}
                 </Typography>
                 {isOwnProfile && (
                   <Button
@@ -413,7 +406,9 @@ export default async function UserPage(props: Props) {
                   No RSVPs yet
                 </Typography>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                  {isOwnProfile ? "Browse events and RSVP to ones you're interested in" : `${user.given_name} hasn't RSVP'd to any events yet`}
+                  {isOwnProfile
+                    ? "Browse events and RSVP to ones you're interested in"
+                    : `${user.given_name} hasn't RSVP'd to any events yet`}
                 </Typography>
                 {isOwnProfile && (
                   <Button

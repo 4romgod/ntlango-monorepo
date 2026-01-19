@@ -1,7 +1,7 @@
-import {createEventPipelineStages, createLocationMatchStage} from '@/utils';
-import {PipelineStage} from 'mongoose';
-import {FilterInput, LocationFilterInput} from '@ntlango/commons/types';
-import {FilterOperatorInput} from '@ntlango/commons/types';
+import { createEventPipelineStages, createLocationMatchStage } from '@/utils';
+import { PipelineStage } from 'mongoose';
+import { FilterInput, LocationFilterInput } from '@ntlango/commons/types';
+import { FilterOperatorInput } from '@ntlango/commons/types';
 
 describe('createEventPipelineStages', () => {
   it('should return a valid pipeline for simple equality filters', () => {
@@ -15,7 +15,7 @@ describe('createEventPipelineStages', () => {
     const expectedPipeline: PipelineStage[] = [
       {
         $match: {
-          status: {$eq: 'Completed'},
+          status: { $eq: 'Completed' },
         },
       },
     ];
@@ -25,11 +25,13 @@ describe('createEventPipelineStages', () => {
   });
 
   it('should return a valid pipeline for nested field filters', () => {
-    const filters: FilterInput[] = [{field: 'organizers.email', value: 'jay@rocknation.com', operator: FilterOperatorInput.eq}];
+    const filters: FilterInput[] = [
+      { field: 'organizers.email', value: 'jay@rocknation.com', operator: FilterOperatorInput.eq },
+    ];
     const expectedPipeline: PipelineStage[] = [
       {
         $match: {
-          'organizers.email': {$eq: 'jay@rocknation.com'},
+          'organizers.email': { $eq: 'jay@rocknation.com' },
         },
       },
     ];
@@ -39,11 +41,11 @@ describe('createEventPipelineStages', () => {
   });
 
   it('should return a valid pipeline for different operators', () => {
-    const filters: FilterInput[] = [{field: 'capacity', value: 50, operator: FilterOperatorInput.gt}];
+    const filters: FilterInput[] = [{ field: 'capacity', value: 50, operator: FilterOperatorInput.gt }];
     const expectedPipeline: PipelineStage[] = [
       {
         $match: {
-          capacity: {$gt: 50},
+          capacity: { $gt: 50 },
         },
       },
     ];
@@ -54,16 +56,13 @@ describe('createEventPipelineStages', () => {
 
   it('should handle multiple filters correctly', () => {
     const filters: FilterInput[] = [
-      {field: 'status', value: 'Completed', operator: FilterOperatorInput.eq},
-      {field: 'capacity', value: 50, operator: FilterOperatorInput.gte},
+      { field: 'status', value: 'Completed', operator: FilterOperatorInput.eq },
+      { field: 'capacity', value: 50, operator: FilterOperatorInput.gte },
     ];
     const expectedPipeline: PipelineStage[] = [
       {
         $match: {
-          $and: [
-            {status: {$eq: 'Completed'}},
-            {capacity: {$gte: 50}},
-          ],
+          $and: [{ status: { $eq: 'Completed' } }, { capacity: { $gte: 50 } }],
         },
       },
     ];
@@ -73,11 +72,11 @@ describe('createEventPipelineStages', () => {
   });
 
   it('should handle nested field filters with different operators', () => {
-    const filters: FilterInput[] = [{field: 'eventCategories.name', value: 'Arts', operator: FilterOperatorInput.ne}];
+    const filters: FilterInput[] = [{ field: 'eventCategories.name', value: 'Arts', operator: FilterOperatorInput.ne }];
     const expectedPipeline: PipelineStage[] = [
       {
         $match: {
-          'eventCategories.name': {$ne: 'Arts'},
+          'eventCategories.name': { $ne: 'Arts' },
         },
       },
     ];
@@ -88,12 +87,12 @@ describe('createEventPipelineStages', () => {
 
   it('should use $in when a filter value is an array', () => {
     const filters: FilterInput[] = [
-      {field: 'status', value: ['Upcoming', 'Ongoing'], operator: FilterOperatorInput.eq},
+      { field: 'status', value: ['Upcoming', 'Ongoing'], operator: FilterOperatorInput.eq },
     ];
     const expectedPipeline: PipelineStage[] = [
       {
         $match: {
-          status: {$in: ['Upcoming', 'Ongoing']},
+          status: { $in: ['Upcoming', 'Ongoing'] },
         },
       },
     ];
@@ -104,12 +103,12 @@ describe('createEventPipelineStages', () => {
 
   it('should use $nin when a filter value array uses ne operator', () => {
     const filters: FilterInput[] = [
-      {field: 'status', value: ['Cancelled', 'Completed'], operator: FilterOperatorInput.ne},
+      { field: 'status', value: ['Cancelled', 'Completed'], operator: FilterOperatorInput.ne },
     ];
     const expectedPipeline: PipelineStage[] = [
       {
         $match: {
-          status: {$nin: ['Cancelled', 'Completed']},
+          status: { $nin: ['Cancelled', 'Completed'] },
         },
       },
     ];
@@ -127,36 +126,36 @@ describe('createLocationMatchStage', () => {
   });
 
   it('should filter by city (case-insensitive)', () => {
-    const location: LocationFilterInput = {city: 'London'};
+    const location: LocationFilterInput = { city: 'London' };
     const stages = createLocationMatchStage(location);
     expect(stages).toEqual([
       {
         $match: {
-          'location.address.city': {$regex: 'London', $options: 'i'},
+          'location.address.city': { $regex: 'London', $options: 'i' },
         },
       },
     ]);
   });
 
   it('should filter by state/province (case-insensitive)', () => {
-    const location: LocationFilterInput = {state: 'California'};
+    const location: LocationFilterInput = { state: 'California' };
     const stages = createLocationMatchStage(location);
     expect(stages).toEqual([
       {
         $match: {
-          'location.address.state': {$regex: 'California', $options: 'i'},
+          'location.address.state': { $regex: 'California', $options: 'i' },
         },
       },
     ]);
   });
 
   it('should filter by country (case-insensitive)', () => {
-    const location: LocationFilterInput = {country: 'United States'};
+    const location: LocationFilterInput = { country: 'United States' };
     const stages = createLocationMatchStage(location);
     expect(stages).toEqual([
       {
         $match: {
-          'location.address.country': {$regex: 'United States', $options: 'i'},
+          'location.address.country': { $regex: 'United States', $options: 'i' },
         },
       },
     ]);
@@ -172,9 +171,9 @@ describe('createLocationMatchStage', () => {
     expect(stages).toEqual([
       {
         $match: {
-          'location.address.city': {$regex: 'San Francisco', $options: 'i'},
-          'location.address.state': {$regex: 'California', $options: 'i'},
-          'location.address.country': {$regex: 'USA', $options: 'i'},
+          'location.address.city': { $regex: 'San Francisco', $options: 'i' },
+          'location.address.state': { $regex: 'California', $options: 'i' },
+          'location.address.country': { $regex: 'USA', $options: 'i' },
         },
       },
     ]);
@@ -182,7 +181,7 @@ describe('createLocationMatchStage', () => {
 
   it('should filter by geospatial proximity with default 50km radius', () => {
     const location: LocationFilterInput = {
-      latitude: 51.5074,  // London coordinates
+      latitude: 51.5074, // London coordinates
       longitude: -0.1278,
     };
     const stages = createLocationMatchStage(location);
@@ -191,24 +190,24 @@ describe('createLocationMatchStage', () => {
     expect(stages).toHaveLength(4);
     expect(stages[0]).toEqual({
       $match: {
-        'location.coordinates.latitude': {$exists: true, $ne: null},
-        'location.coordinates.longitude': {$exists: true, $ne: null},
+        'location.coordinates.latitude': { $exists: true, $ne: null },
+        'location.coordinates.longitude': { $exists: true, $ne: null },
       },
     });
     expect(stages[1]).toHaveProperty('$addFields._distanceKm');
     expect(stages[2]).toEqual({
       $match: {
-        _distanceKm: {$lte: 50}, // Default 50km
+        _distanceKm: { $lte: 50 }, // Default 50km
       },
     });
-    expect(stages[3]).toEqual({$project: {_distanceKm: 0}});
+    expect(stages[3]).toEqual({ $project: { _distanceKm: 0 } });
   });
 
   it('should filter by geospatial proximity with custom radius', () => {
     const location: LocationFilterInput = {
-      latitude: 40.7128,  // New York coordinates
+      latitude: 40.7128, // New York coordinates
       longitude: -74.006,
-      radiusKm: 25,       // 25km radius
+      radiusKm: 25, // 25km radius
     };
     const stages = createLocationMatchStage(location);
 
@@ -216,17 +215,17 @@ describe('createLocationMatchStage', () => {
     expect(stages).toHaveLength(4);
     expect(stages[0]).toEqual({
       $match: {
-        'location.coordinates.latitude': {$exists: true, $ne: null},
-        'location.coordinates.longitude': {$exists: true, $ne: null},
+        'location.coordinates.latitude': { $exists: true, $ne: null },
+        'location.coordinates.longitude': { $exists: true, $ne: null },
       },
     });
     expect(stages[1]).toHaveProperty('$addFields._distanceKm');
     expect(stages[2]).toEqual({
       $match: {
-        _distanceKm: {$lte: 25}, // Custom 25km radius
+        _distanceKm: { $lte: 25 }, // Custom 25km radius
       },
     });
-    expect(stages[3]).toEqual({$project: {_distanceKm: 0}});
+    expect(stages[3]).toEqual({ $project: { _distanceKm: 0 } });
   });
 
   it('should combine text and geospatial filters with $and (all must match)', () => {
@@ -242,22 +241,22 @@ describe('createLocationMatchStage', () => {
     expect(stages).toHaveLength(5);
     expect(stages[0]).toEqual({
       $match: {
-        'location.address.country': {$regex: 'UK', $options: 'i'},
+        'location.address.country': { $regex: 'UK', $options: 'i' },
       },
     });
     expect(stages[1]).toEqual({
       $match: {
-        'location.coordinates.latitude': {$exists: true, $ne: null},
-        'location.coordinates.longitude': {$exists: true, $ne: null},
+        'location.coordinates.latitude': { $exists: true, $ne: null },
+        'location.coordinates.longitude': { $exists: true, $ne: null },
       },
     });
     expect(stages[2]).toHaveProperty('$addFields._distanceKm');
     expect(stages[3]).toEqual({
       $match: {
-        _distanceKm: {$lte: 100},
+        _distanceKm: { $lte: 100 },
       },
     });
-    expect(stages[4]).toEqual({$project: {_distanceKm: 0}});
+    expect(stages[4]).toEqual({ $project: { _distanceKm: 0 } });
   });
 
   it('should combine multiple text fields with geospatial filter', () => {
@@ -275,24 +274,24 @@ describe('createLocationMatchStage', () => {
     expect(stages).toHaveLength(5);
     expect(stages[0]).toEqual({
       $match: {
-        'location.address.city': {$regex: 'London', $options: 'i'},
-        'location.address.state': {$regex: 'England', $options: 'i'},
-        'location.address.country': {$regex: 'UK', $options: 'i'},
+        'location.address.city': { $regex: 'London', $options: 'i' },
+        'location.address.state': { $regex: 'England', $options: 'i' },
+        'location.address.country': { $regex: 'UK', $options: 'i' },
       },
     });
     expect(stages[1]).toEqual({
       $match: {
-        'location.coordinates.latitude': {$exists: true, $ne: null},
-        'location.coordinates.longitude': {$exists: true, $ne: null},
+        'location.coordinates.latitude': { $exists: true, $ne: null },
+        'location.coordinates.longitude': { $exists: true, $ne: null },
       },
     });
     expect(stages[2]).toHaveProperty('$addFields._distanceKm');
     expect(stages[3]).toEqual({
       $match: {
-        _distanceKm: {$lte: 50},
+        _distanceKm: { $lte: 50 },
       },
     });
-    expect(stages[4]).toEqual({$project: {_distanceKm: 0}});
+    expect(stages[4]).toEqual({ $project: { _distanceKm: 0 } });
   });
 
   it('should ignore coordinates if only latitude is provided (no longitude)', () => {
@@ -306,7 +305,7 @@ describe('createLocationMatchStage', () => {
     expect(stages).toEqual([
       {
         $match: {
-          'location.address.city': {$regex: 'London', $options: 'i'},
+          'location.address.city': { $regex: 'London', $options: 'i' },
         },
       },
     ]);
@@ -323,7 +322,7 @@ describe('createLocationMatchStage', () => {
     expect(stages).toEqual([
       {
         $match: {
-          'location.address.city': {$regex: 'London', $options: 'i'},
+          'location.address.city': { $regex: 'London', $options: 'i' },
         },
       },
     ]);

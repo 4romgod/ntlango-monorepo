@@ -36,7 +36,7 @@ export default function EventCarousel({
       const { scrollLeft, scrollWidth, clientWidth } = containerRef.current;
       setCanScrollLeft(scrollLeft > 0);
       setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
-      
+
       // Calculate current index based on scroll position (for mobile)
       if (isMobile) {
         const index = Math.round(scrollLeft / clientWidth);
@@ -78,25 +78,14 @@ export default function EventCarousel({
     <Box sx={{ width: '100%' }}>
       {/* Header */}
       {(title || viewAllEventsButton) && (
-        <Stack
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center"
-          sx={{ mb: 3 }}
-        >
+        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
           {title && (
             <Typography variant="h5" fontWeight={700}>
               {title}
             </Typography>
           )}
           {viewAllEventsButton && (
-            <Button
-              endIcon={<ArrowForward />}
-              color="secondary"
-              component={Link}
-              href="/events"
-              size="small"
-            >
+            <Button endIcon={<ArrowForward />} color="secondary" component={Link} href="/events" size="small">
               View all
             </Button>
           )}

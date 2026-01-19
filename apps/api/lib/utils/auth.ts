@@ -1,17 +1,17 @@
-import type {ServerContext} from '@/graphql';
-import type {ArgsDictionary, ResolverData} from 'type-graphql';
-import {CustomError, ErrorTypes} from '@/utils/exceptions';
-import {ERROR_MESSAGES} from '@/validation';
-import {OPERATION_NAMES, SECRET_KEYS} from '@/constants';
-import type {User} from '@ntlango/commons/types';
-import {UserRole} from '@ntlango/commons/types';
-import {verify, sign} from 'jsonwebtoken';
-import type {JwtPayload, Secret, SignOptions} from 'jsonwebtoken';
-import type {StringValue} from 'ms';
-import {EventDAO, EventParticipantDAO} from '@/mongodb/dao';
-import {getConfigValue} from '@/clients';
-import {Types} from 'mongoose';
-import {logger} from '@/utils/logger';
+import type { ServerContext } from '@/graphql';
+import type { ArgsDictionary, ResolverData } from 'type-graphql';
+import { CustomError, ErrorTypes } from '@/utils/exceptions';
+import { ERROR_MESSAGES } from '@/validation';
+import { OPERATION_NAMES, SECRET_KEYS } from '@/constants';
+import type { User } from '@ntlango/commons/types';
+import { UserRole } from '@ntlango/commons/types';
+import { verify, sign } from 'jsonwebtoken';
+import type { JwtPayload, Secret, SignOptions } from 'jsonwebtoken';
+import type { StringValue } from 'ms';
+import { EventDAO, EventParticipantDAO } from '@/mongodb/dao';
+import { getConfigValue } from '@/clients';
+import { Types } from 'mongoose';
+import { logger } from '@/utils/logger';
 
 const operationsRequiringOwnership = new Set([
   OPERATION_NAMES.UPDATE_USER,
@@ -40,7 +40,7 @@ const operationsRequiringOwnership = new Set([
  * @returns Returns true if the user is authorized, throws error otherwise.
  */
 export const authChecker = async (resolverData: ResolverData<ServerContext>, roles: string[]) => {
-  const {context, args, info} = resolverData;
+  const { context, args, info } = resolverData;
   const token = context.token;
 
   if (token) {
@@ -64,7 +64,9 @@ export const authChecker = async (resolverData: ResolverData<ServerContext>, rol
     if (operationsRequiringOwnership.has(operationName)) {
       const isAuthorized = await isAuthorizedByOperation(info.fieldName, args, user);
       if (isAuthorized) {
-        logger.debug(`${userRole} type user: '${user.username}' has 'isAuthorizedByOperation' permission for operation ${operationName}`);
+        logger.debug(
+          `${userRole} type user: '${user.username}' has 'isAuthorizedByOperation' permission for operation ${operationName}`,
+        );
         return true;
       }
       logger.debug(`${userRole} type user: '${user.username}' was denied for operation ${operationName}`);
@@ -72,7 +74,9 @@ export const authChecker = async (resolverData: ResolverData<ServerContext>, rol
     }
 
     // Operation doesn't require ownership, user role is valid, allow access
-    logger.debug(`${userRole} type user: '${user.username}' has permission for operation ${operationName}. All users allowed.`);
+    logger.debug(
+      `${userRole} type user: '${user.username}' has permission for operation ${operationName}. All users allowed.`,
+    );
     return true;
   }
 
@@ -86,14 +90,14 @@ export const authChecker = async (resolverData: ResolverData<ServerContext>, rol
  * @returns A JWT token as a string
  */
 export const generateToken = async (user: User, secret?: string, expiresIn?: string | number) => {
-  logger.debug('Generating JWT token', {userId: user.userId, username: user.username, expiresIn});
+  logger.debug('Generating JWT token', { userId: user.userId, username: user.username, expiresIn });
   const jwtSecret: Secret | undefined = secret ?? (await getConfigValue(SECRET_KEYS.JWT_SECRET));
   if (!jwtSecret) {
     throw CustomError(ERROR_MESSAGES.UNAUTHENTICATED, ErrorTypes.UNAUTHENTICATED);
   }
   // TODO 1 hour is for testing, consider longer expiry for production
   const tokenExpiry: StringValue | number = (expiresIn ?? '1h') as StringValue | number;
-  const signOptions: SignOptions = {expiresIn: tokenExpiry};
+  const signOptions: SignOptions = { expiresIn: tokenExpiry };
   return sign(user, jwtSecret as Secret, signOptions);
 };
 
@@ -108,7 +112,7 @@ export const verifyToken = async (token: string, secret?: string) => {
     if (!jwtSecret) {
       throw CustomError(ERROR_MESSAGES.UNAUTHENTICATED, ErrorTypes.UNAUTHENTICATED);
     }
-    const {iat: _iat, exp: _exp, ...user} = verify(token, jwtSecret) as JwtPayload;
+    const { iat: _iat, exp: _exp, ...user } = verify(token, jwtSecret) as JwtPayload;
     return user as User;
   } catch (err) {
     logger.debug('Error when verifying token', err);
@@ -116,7 +120,11 @@ export const verifyToken = async (token: string, secret?: string) => {
   }
 };
 
-export const isAuthorizedByOperation = async (operationName: string, args: ArgsDictionary, user: User): Promise<boolean> => {
+export const isAuthorizedByOperation = async (
+  operationName: string,
+  args: ArgsDictionary,
+  user: User,
+): Promise<boolean> => {
   switch (operationName) {
     case OPERATION_NAMES.UPDATE_USER:
       return args.input.userId == user.userId;
@@ -146,7 +154,7 @@ export const isAuthorizedByOperation = async (operationName: string, args: ArgsD
 /**
  * Type guard to check if value has a toString method
  */
-const hasToString = (value: unknown): value is {toString: () => string} => {
+const hasToString = (value: unknown): value is { toString: () => string } => {
   return typeof value === 'object' && value !== null && typeof (value as any).toString === 'function';
 };
 
@@ -195,7 +203,7 @@ const toOrganizerUserId = (organizer: unknown): string | undefined => {
   return undefined;
 };
 
-const getOrganizerIdsFromEvent = (event: {organizers?: Array<{user?: any}>}): string[] => {
+const getOrganizerIdsFromEvent = (event: { organizers?: Array<{ user?: any }> }): string[] => {
   if (!event.organizers) {
     return [];
   }
@@ -210,7 +218,7 @@ const getOrganizerIdsFromEvent = (event: {organizers?: Array<{user?: any}>}): st
     .filter((id): id is string => Boolean(id));
 };
 
-const isUserOrganizer = (event: {organizers?: Array<{user?: any}>}, user: User) => {
+const isUserOrganizer = (event: { organizers?: Array<{ user?: any }> }, user: User) => {
   const organizerIds = getOrganizerIdsFromEvent(event);
   return organizerIds.includes(user.userId);
 };
@@ -235,7 +243,10 @@ const isAuthorizedToReadEventParticipants = async (eventId: string | undefined, 
   if (!eventId) {
     return false;
   }
-  const [event, participants] = await Promise.all([EventDAO.readEventById(eventId), EventParticipantDAO.readByEvent(eventId)]);
+  const [event, participants] = await Promise.all([
+    EventDAO.readEventById(eventId),
+    EventParticipantDAO.readByEvent(eventId),
+  ]);
   if (isUserOrganizer(event, user)) {
     return true;
   }

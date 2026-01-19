@@ -2,7 +2,11 @@ import { Metadata } from 'next';
 import { getClient } from '@/data/graphql';
 import { EventCategory } from '@/data/graphql/types/graphql';
 import { Container } from '@mui/material';
-import { GetAllEventCategoriesDocument, GetAllEventsDocument, GetPopularOrganizationsDocument } from '@/data/graphql/query';
+import {
+  GetAllEventCategoriesDocument,
+  GetAllEventsDocument,
+  GetPopularOrganizationsDocument,
+} from '@/data/graphql/query';
 import { EventPreview } from '@/data/graphql/query/Event/types';
 import { PopularOrganization } from '@/components/events/popular-organizer-box';
 import EventsClientWrapper from '@/components/events/events-client-wrapper';
@@ -44,16 +48,17 @@ export default async function Events() {
   ]);
 
   const categoryList: EventCategory[] = eventCategories.readEventCategories;
-  const eventsList: EventPreview[] = (events.readEvents ?? []);
+  const eventsList: EventPreview[] = events.readEvents ?? [];
   const orgsList = organizations.readOrganizations ?? [];
 
-  const popularOrganization: PopularOrganization | null = orgsList.length > 0
-    ? (orgsList as PopularOrganization[]).reduce((prev: PopularOrganization, current: PopularOrganization) => {
-        const prevFollowers = prev.followersCount ?? 0;
-        const currentFollowers = current.followersCount ?? 0;
-        return prevFollowers > currentFollowers ? prev : current;
-      })
-    : null;
+  const popularOrganization: PopularOrganization | null =
+    orgsList.length > 0
+      ? (orgsList as PopularOrganization[]).reduce((prev: PopularOrganization, current: PopularOrganization) => {
+          const prevFollowers = prev.followersCount ?? 0;
+          const currentFollowers = current.followersCount ?? 0;
+          return prevFollowers > currentFollowers ? prev : current;
+        })
+      : null;
 
   const stats = {
     totalEvents: eventsList.length,

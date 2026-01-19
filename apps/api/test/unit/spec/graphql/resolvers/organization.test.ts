@@ -1,9 +1,15 @@
 import 'reflect-metadata';
-import {OrganizationResolver} from '@/graphql/resolvers/organization';
-import {FollowDAO, OrganizationDAO, OrganizationMembershipDAO} from '@/mongodb/dao';
-import type {CreateOrganizationInput, Organization, OrganizationMembership, QueryOptionsInput, UpdateOrganizationInput} from '@ntlango/commons/types';
-import {FollowTargetType, OrganizationRole} from '@ntlango/commons/types';
-import {OrganizationTicketAccess} from '@ntlango/commons/types';
+import { OrganizationResolver } from '@/graphql/resolvers/organization';
+import { FollowDAO, OrganizationDAO, OrganizationMembershipDAO } from '@/mongodb/dao';
+import type {
+  CreateOrganizationInput,
+  Organization,
+  OrganizationMembership,
+  QueryOptionsInput,
+  UpdateOrganizationInput,
+} from '@ntlango/commons/types';
+import { FollowTargetType, OrganizationRole } from '@ntlango/commons/types';
+import { OrganizationTicketAccess } from '@ntlango/commons/types';
 import * as validation from '@/validation';
 
 jest.mock('@/mongodb/dao', () => ({
@@ -125,7 +131,7 @@ describe('OrganizationResolver', () => {
     };
 
     it('validates and updates organization', async () => {
-      (OrganizationDAO.updateOrganization as jest.Mock).mockResolvedValue({...mockOrganization, name: 'Updated Org'});
+      (OrganizationDAO.updateOrganization as jest.Mock).mockResolvedValue({ ...mockOrganization, name: 'Updated Org' });
 
       const result = await resolver.updateOrganization(updateInput);
 
@@ -142,7 +148,10 @@ describe('OrganizationResolver', () => {
 
       const result = await resolver.deleteOrganizationById(mockOrganization.orgId);
 
-      expect(validation.validateMongodbId).toHaveBeenCalledWith(mockOrganization.orgId, expect.stringContaining('Organization'));
+      expect(validation.validateMongodbId).toHaveBeenCalledWith(
+        mockOrganization.orgId,
+        expect.stringContaining('Organization'),
+      );
       expect(OrganizationDAO.deleteOrganizationById).toHaveBeenCalledWith(mockOrganization.orgId);
       expect(result).toEqual(mockOrganization);
     });
@@ -154,7 +163,10 @@ describe('OrganizationResolver', () => {
 
       const result = await resolver.readOrganizationById(mockOrganization.orgId);
 
-      expect(validation.validateMongodbId).toHaveBeenCalledWith(mockOrganization.orgId, expect.stringContaining('Organization'));
+      expect(validation.validateMongodbId).toHaveBeenCalledWith(
+        mockOrganization.orgId,
+        expect.stringContaining('Organization'),
+      );
       expect(OrganizationDAO.readOrganizationById).toHaveBeenCalledWith(mockOrganization.orgId);
       expect(result).toEqual(mockOrganization);
     });
@@ -174,7 +186,7 @@ describe('OrganizationResolver', () => {
 
   describe('readOrganizations', () => {
     it('calls DAO with query options when provided', async () => {
-      const options: QueryOptionsInput = {filters: []};
+      const options: QueryOptionsInput = { filters: [] };
       (OrganizationDAO.readOrganizations as jest.Mock).mockResolvedValue([mockOrganization]);
 
       const result = await resolver.readOrganizations(options);

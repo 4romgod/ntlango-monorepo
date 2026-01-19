@@ -63,31 +63,31 @@ export const EventFilterProvider: React.FC<EventFilterProviderProps> = ({ childr
   const [filters, setFilters] = useState<EventFilters>(initialFilters);
 
   const setCategories = (categories: string[]) => {
-    setFilters(prev => ({ ...prev, categories }));
+    setFilters((prev) => ({ ...prev, categories }));
   };
 
   const setPriceRange = (range: [number, number]) => {
-    setFilters(prev => ({ ...prev, priceRange: range }));
+    setFilters((prev) => ({ ...prev, priceRange: range }));
   };
 
   const setDateRange = (start: Dayjs | null, end: Dayjs | null, filterOption?: string) => {
-    setFilters(prev => ({ ...prev, dateRange: { start, end, filterOption } }));
+    setFilters((prev) => ({ ...prev, dateRange: { start, end, filterOption } }));
   };
 
   const setStatuses = (statuses: EventStatus[]) => {
-    setFilters(prev => ({ ...prev, statuses }));
+    setFilters((prev) => ({ ...prev, statuses }));
   };
 
   const setSearchQuery = (query: string) => {
-    setFilters(prev => ({ ...prev, searchQuery: query }));
+    setFilters((prev) => ({ ...prev, searchQuery: query }));
   };
 
   const setLocation = (location: LocationFilter) => {
-    setFilters(prev => ({ ...prev, location }));
+    setFilters((prev) => ({ ...prev, location }));
   };
 
   const clearLocation = () => {
-    setFilters(prev => ({ ...prev, location: {} }));
+    setFilters((prev) => ({ ...prev, location: {} }));
   };
 
   const resetFilters = () => {
@@ -95,21 +95,26 @@ export const EventFilterProvider: React.FC<EventFilterProviderProps> = ({ childr
   };
 
   const removeCategory = (category: string) => {
-    setFilters(prev => ({
+    setFilters((prev) => ({
       ...prev,
-      categories: prev.categories.filter(c => c !== category),
+      categories: prev.categories.filter((c) => c !== category),
     }));
   };
 
   const removeStatus = (status: EventStatus) => {
-    setFilters(prev => ({
+    setFilters((prev) => ({
       ...prev,
-      statuses: prev.statuses.filter(s => s !== status),
+      statuses: prev.statuses.filter((s) => s !== status),
     }));
   };
 
   const hasActiveFilters = useMemo(() => {
-    const hasLocation = !!(filters.location.city || filters.location.state || filters.location.country || filters.location.latitude);
+    const hasLocation = !!(
+      filters.location.city ||
+      filters.location.state ||
+      filters.location.country ||
+      filters.location.latitude
+    );
     return (
       filters.categories.length > 0 ||
       filters.statuses.length > 0 ||

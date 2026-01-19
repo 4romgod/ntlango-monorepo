@@ -1,21 +1,26 @@
 import cors from 'cors';
-import type {Express} from 'express';
+import type { Express } from 'express';
 import express from 'express';
 import bodyParser from 'body-parser';
-import type {ListenOptions} from 'net';
-import {getConfigValue, MongoDbClient} from '@/clients';
-import {GRAPHQL_API_PATH, HttpStatusCode, SECRET_KEYS} from '@/constants';
-import {createApolloServer} from './server';
-import {expressMiddleware} from '@apollo/server/express4';
-import {createUserLoader, createEventCategoryLoader, createEventLoader, createOrganizationLoader} from '@/graphql/loaders';
-import type {Server} from 'http';
-import {logger} from '@/utils/logger';
-import {verifyToken} from '@/utils/auth';
+import type { ListenOptions } from 'net';
+import { getConfigValue, MongoDbClient } from '@/clients';
+import { GRAPHQL_API_PATH, HttpStatusCode, SECRET_KEYS } from '@/constants';
+import { createApolloServer } from './server';
+import { expressMiddleware } from '@apollo/server/express4';
+import {
+  createUserLoader,
+  createEventCategoryLoader,
+  createEventLoader,
+  createOrganizationLoader,
+} from '@/graphql/loaders';
+import type { Server } from 'http';
+import { logger } from '@/utils/logger';
+import { verifyToken } from '@/utils/auth';
 import { User } from '@ntlango/commons';
 
 const DEV_PORT = 9000;
 
-export const startExpressApolloServer = async (listenOptions: ListenOptions = {port: DEV_PORT}) => {
+export const startExpressApolloServer = async (listenOptions: ListenOptions = { port: DEV_PORT }) => {
   const actualPort = listenOptions.port ?? DEV_PORT;
   const actualUrl = `http://localhost:${actualPort}${GRAPHQL_API_PATH}`;
   const startTime = Date.now();
@@ -29,8 +34,8 @@ export const startExpressApolloServer = async (listenOptions: ListenOptions = {p
   await MongoDbClient.connectToDatabase(secret);
 
   const expressApp: Express = express();
-  expressApp.use(bodyParser.json({limit: '50mb'}));
-  expressApp.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
+  expressApp.use(bodyParser.json({ limit: '50mb' }));
+  expressApp.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
   const apolloServer = await createApolloServer(expressApp);
 
@@ -43,10 +48,10 @@ export const startExpressApolloServer = async (listenOptions: ListenOptions = {p
     cors<cors.CorsRequest>(),
     express.json(),
     expressMiddleware(apolloServer, {
-      context: async ({req, res}) => {
+      context: async ({ req, res }) => {
         const authHeader = req.headers.authorization;
         const tokenValue = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : undefined;
-        
+
         // Try to verify token and populate user for all requests (not just @Authorized ones)
         // This enables field resolvers like isSavedByMe to access the current user
         let user: User | undefined;
@@ -59,7 +64,7 @@ export const startExpressApolloServer = async (listenOptions: ListenOptions = {p
             logger.debug('Token verification failed', { error });
           }
         }
-        
+
         return {
           token: tokenValue,
           user,
@@ -114,5 +119,5 @@ export const startExpressApolloServer = async (listenOptions: ListenOptions = {p
   const httpServer = await listenForConnections();
   const elapsed = Date.now() - startTime;
   logger.info(`Server started after ${elapsed}ms`);
-  return {url: actualUrl, expressApp, apolloServer, httpServer};
+  return { url: actualUrl, expressApp, apolloServer, httpServer };
 };

@@ -1,8 +1,8 @@
-import {Venue as VenueModel} from '@/mongodb/models';
-import type {CreateVenueInput, QueryOptionsInput, UpdateVenueInput, Venue} from '@ntlango/commons/types';
-import {CustomError, ErrorTypes, KnownCommonError, transformOptionsToQuery} from '@/utils';
-import {GraphQLError} from 'graphql';
-import {logger} from '@/utils/logger';
+import { Venue as VenueModel } from '@/mongodb/models';
+import type { CreateVenueInput, QueryOptionsInput, UpdateVenueInput, Venue } from '@ntlango/commons/types';
+import { CustomError, ErrorTypes, KnownCommonError, transformOptionsToQuery } from '@/utils';
+import { GraphQLError } from 'graphql';
+import { logger } from '@/utils/logger';
 
 class VenueDAO {
   static async create(input: CreateVenueInput): Promise<Venue> {
@@ -17,7 +17,7 @@ class VenueDAO {
 
   static async readVenueById(venueId: string): Promise<Venue> {
     try {
-      const query = VenueModel.findOne({venueId});
+      const query = VenueModel.findOne({ venueId });
       const venue = await query.exec();
       if (!venue) {
         throw CustomError(`Venue with id ${venueId} not found`, ErrorTypes.NOT_FOUND);
@@ -45,7 +45,7 @@ class VenueDAO {
 
   static async readVenuesByOrgId(orgId: string): Promise<Venue[]> {
     try {
-      const venues = await VenueModel.find({orgId}).exec();
+      const venues = await VenueModel.find({ orgId }).exec();
       return venues.map((venue) => venue.toObject());
     } catch (error) {
       logger.error(`Error reading venues for org ${orgId}`, error);
@@ -55,19 +55,17 @@ class VenueDAO {
 
   static async update(input: UpdateVenueInput): Promise<Venue> {
     try {
-      const {venueId, ...rest} = input;
-      const venue = await VenueModel.findOne({venueId}).exec();
+      const { venueId, ...rest } = input;
+      const venue = await VenueModel.findOne({ venueId }).exec();
       if (!venue) {
         throw CustomError(`Venue with id ${venueId} not found`, ErrorTypes.NOT_FOUND);
       }
-      
+
       // Filter out undefined values to avoid overwriting with undefined
-      const fieldsToUpdate = Object.fromEntries(
-        Object.entries(rest).filter(([_, value]) => value !== undefined)
-      );
+      const fieldsToUpdate = Object.fromEntries(Object.entries(rest).filter(([_, value]) => value !== undefined));
       Object.assign(venue, fieldsToUpdate);
       await venue.save();
-      
+
       return venue.toObject();
     } catch (error) {
       logger.error(`Error updating venue ${input.venueId}`, error);
@@ -80,7 +78,7 @@ class VenueDAO {
 
   static async delete(venueId: string): Promise<Venue> {
     try {
-      const deletedVenue = await VenueModel.findOneAndDelete({venueId}).exec();
+      const deletedVenue = await VenueModel.findOneAndDelete({ venueId }).exec();
       if (!deletedVenue) {
         throw CustomError(`Venue with id ${venueId} not found`, ErrorTypes.NOT_FOUND);
       }

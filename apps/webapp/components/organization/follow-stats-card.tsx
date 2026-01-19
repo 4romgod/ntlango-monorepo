@@ -27,13 +27,13 @@ export default function FollowStatsCard({ orgId, orgName, initialFollowersCount 
     if (loading) return;
 
     const existingFollow = following.find(
-      f => f.targetType === FollowTargetType.Organization && f.targetId === orgId
+      (f) => f.targetType === FollowTargetType.Organization && f.targetId === orgId,
     );
     const isCurrentlyFollowing = existingFollow?.approvalStatus === FollowApprovalStatus.Accepted;
 
     // Only adjust count after initial load is complete and state actually changed
     if (initialLoadDoneRef.current && wasFollowingRef.current !== isCurrentlyFollowing) {
-      setFollowersCount(prev => isCurrentlyFollowing ? prev + 1 : prev - 1);
+      setFollowersCount((prev) => (isCurrentlyFollowing ? prev + 1 : prev - 1));
     }
 
     wasFollowingRef.current = isCurrentlyFollowing;
@@ -70,22 +70,12 @@ export default function FollowStatsCard({ orgId, orgName, initialFollowersCount 
             }}
           >
             <People sx={{ color: 'primary.main', fontSize: 28 }} />
-            <Typography
-              variant="h4"
-              fontWeight={700}
-              className="follower-count"
-              sx={{ transition: 'color 0.2s' }}
-            >
+            <Typography variant="h4" fontWeight={700} className="follower-count" sx={{ transition: 'color 0.2s' }}>
               {followersCount.toLocaleString()}
             </Typography>
             <Typography color="text.secondary">followers</Typography>
           </Box>
-          <FollowButton
-            targetId={orgId}
-            targetType={FollowTargetType.Organization}
-            fullWidth
-            variant="primary"
-          />
+          <FollowButton targetId={orgId} targetType={FollowTargetType.Organization} fullWidth variant="primary" />
         </CardContent>
       </Card>
 

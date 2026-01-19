@@ -1,6 +1,6 @@
 /**
  * Logging utility with configurable log levels
- * 
+ *
  * Log levels (in order of severity):
  * - DEBUG: Detailed information for debugging
  * - INFO: General informational messages
@@ -43,7 +43,7 @@ class Logger {
   private formatMessage(level: string, message: string, ...args: any[]): void {
     const timestamp = new Date().toISOString();
     const prefix = `[${timestamp}] [${level}]`;
-    
+
     if (args.length > 0) {
       console.log(prefix, message, ...args);
     } else {

@@ -1,15 +1,7 @@
 'use client';
 
 import React from 'react';
-import {
-  Box,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  List,
-  Typography,
-} from '@mui/material';
+import { Box, Dialog, DialogContent, DialogTitle, IconButton, List, Typography } from '@mui/material';
 import { Close as CloseIcon, People as PeopleIcon } from '@mui/icons-material';
 import { useFollowers } from '@/hooks';
 import { FollowTargetType } from '@/data/graphql/types/graphql';
@@ -25,13 +17,7 @@ interface FollowersListProps {
   title?: string;
 }
 
-export default function FollowersList({
-  targetId,
-  targetType,
-  open,
-  onClose,
-  title,
-}: FollowersListProps) {
+export default function FollowersList({ targetId, targetType, open, onClose, title }: FollowersListProps) {
   const { data: session } = useSession();
   const { followers, loading, error } = useFollowers(targetType, targetId);
 
@@ -105,7 +91,7 @@ export default function FollowersList({
           </Box>
         ) : (
           <List sx={{ py: 0 }}>
-            {mappedFollowers.map(follower => (
+            {mappedFollowers.map((follower) => (
               <FollowersListItem
                 key={follower.followId}
                 follower={follower.follower}

@@ -1,8 +1,8 @@
 import 'reflect-metadata';
-import {VenueResolver} from '@/graphql/resolvers/venue';
-import {VenueDAO} from '@/mongodb/dao';
-import type {CreateVenueInput, QueryOptionsInput, UpdateVenueInput, Venue} from '@ntlango/commons/types';
-import {VenueType} from '@ntlango/commons/types';
+import { VenueResolver } from '@/graphql/resolvers/venue';
+import { VenueDAO } from '@/mongodb/dao';
+import type { CreateVenueInput, QueryOptionsInput, UpdateVenueInput, Venue } from '@ntlango/commons/types';
+import { VenueType } from '@ntlango/commons/types';
 import * as validation from '@/validation';
 
 jest.mock('@/mongodb/dao', () => ({
@@ -71,7 +71,7 @@ describe('VenueResolver', () => {
     };
 
     it('validates and updates the venue', async () => {
-      (VenueDAO.update as jest.Mock).mockResolvedValue({...mockVenue, name: 'Updated Venue'});
+      (VenueDAO.update as jest.Mock).mockResolvedValue({ ...mockVenue, name: 'Updated Venue' });
 
       const result = await resolver.updateVenue(updateInput);
 
@@ -108,7 +108,7 @@ describe('VenueResolver', () => {
 
   describe('readVenues', () => {
     it('calls DAO with query options when provided', async () => {
-      const options: QueryOptionsInput = {filters: []};
+      const options: QueryOptionsInput = { filters: [] };
       (VenueDAO.readVenues as jest.Mock).mockResolvedValue([mockVenue]);
 
       const result = await resolver.readVenues(options);

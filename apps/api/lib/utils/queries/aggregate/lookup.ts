@@ -1,4 +1,4 @@
-import type {PipelineStage} from 'mongoose';
+import type { PipelineStage } from 'mongoose';
 
 export const createEventLookupStages = (): PipelineStage[] => {
   return [
@@ -13,11 +13,11 @@ export const createEventLookupStages = (): PipelineStage[] => {
     {
       $lookup: {
         from: 'users',
-        let: {organizerUserIds: '$organizers.user'},
+        let: { organizerUserIds: '$organizers.user' },
         pipeline: [
           {
             $match: {
-              $expr: {$in: ['$userId', '$$organizerUserIds']},
+              $expr: { $in: ['$userId', '$$organizerUserIds'] },
             },
           },
         ],
@@ -32,7 +32,7 @@ export const createEventLookupStages = (): PipelineStage[] => {
             $map: {
               input: '$organizersUsersMap',
               as: 'user',
-              in: {k: '$$user.userId', v: '$$user'},
+              in: { k: '$$user.userId', v: '$$user' },
             },
           },
         },
@@ -58,7 +58,7 @@ export const createEventLookupStages = (): PipelineStage[] => {
               },
             },
             as: 'organizer',
-            cond: {$ne: ['$$organizer.user', null]},
+            cond: { $ne: ['$$organizer.user', null] },
           },
         },
       },
@@ -82,11 +82,11 @@ export const createEventLookupStages = (): PipelineStage[] => {
     {
       $lookup: {
         from: 'users',
-        let: {participantUserIds: '$participants.userId'},
+        let: { participantUserIds: '$participants.userId' },
         pipeline: [
           {
             $match: {
-              $expr: {$in: ['$userId', '$$participantUserIds']},
+              $expr: { $in: ['$userId', '$$participantUserIds'] },
             },
           },
         ],
@@ -101,7 +101,7 @@ export const createEventLookupStages = (): PipelineStage[] => {
             $map: {
               input: '$participantsUsersMap',
               as: 'user',
-              in: {k: '$$user.userId', v: '$$user'},
+              in: { k: '$$user.userId', v: '$$user' },
             },
           },
         },

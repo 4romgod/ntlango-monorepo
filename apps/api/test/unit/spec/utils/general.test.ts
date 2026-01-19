@@ -1,4 +1,4 @@
-import {getStatusCodeColor} from '@/utils';
+import { getStatusCodeColor } from '@/utils';
 
 describe('getStatusCodeColor', () => {
   it('should return green for 2xx status codes', () => {

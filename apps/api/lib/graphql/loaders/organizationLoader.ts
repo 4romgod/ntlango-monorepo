@@ -1,7 +1,7 @@
 import DataLoader from 'dataloader';
-import {Organization as OrganizationModel} from '@/mongodb/models';
-import type {Organization} from '@ntlango/commons/types';
-import {logger} from '@/utils/logger';
+import { Organization as OrganizationModel } from '@/mongodb/models';
+import type { Organization } from '@ntlango/commons/types';
+import { logger } from '@/utils/logger';
 
 /**
  * Creates a per-request DataLoader for batching Organization lookups by ID.
@@ -13,7 +13,7 @@ export const createOrganizationLoader = () =>
       const uniqueKeys = Array.from(new Set(keys.map((k) => k.toString())));
       logger.debug(`OrganizationLoader batching ${uniqueKeys.length} organization IDs`);
 
-      const organizations = await OrganizationModel.find({_id: {$in: uniqueKeys}})
+      const organizations = await OrganizationModel.find({ _id: { $in: uniqueKeys } })
         .lean()
         .exec();
 

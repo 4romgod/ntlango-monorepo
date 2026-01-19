@@ -72,7 +72,7 @@ const OrganizationCard = ({
           </Typography>
         )}
         <Stack direction="row" spacing={1} flexWrap="wrap" mt={2} gap={1}>
-          {tags?.slice(0, 4).map(tag => (
+          {tags?.slice(0, 4).map((tag) => (
             <Chip
               key={tag}
               label={`#${tag}`}

@@ -11,13 +11,13 @@ module.exports = [
     },
     languageOptions: {
       parser: tsParser,
-        parserOptions: {
-          ecmaVersion: 'latest',
-          sourceType: 'module',
-          ecmaFeatures: {
-            jsx: true,
-          },
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+        ecmaFeatures: {
+          jsx: true,
         },
+      },
     },
     rules: {
       '@typescript-eslint/no-explicit-any': 'warn',

@@ -1,6 +1,6 @@
-import {App} from 'aws-cdk-lib';
-import {GitHubActionsAwsAuthStack, GraphQLStack, SecretsManagementStack} from '../stack';
-import {ServiceAccount} from '../constants';
+import { App } from 'aws-cdk-lib';
+import { GitHubActionsAwsAuthStack, GraphQLStack, SecretsManagementStack } from '../stack';
+import { ServiceAccount } from '../constants';
 
 export const setupServiceAccount = (app: App, account: ServiceAccount) => {
   new GitHubActionsAwsAuthStack(app, 'GitHubActionsAwsAuthStack', {

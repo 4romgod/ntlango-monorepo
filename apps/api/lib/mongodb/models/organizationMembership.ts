@@ -1,6 +1,6 @@
 import 'reflect-metadata';
-import {getModelForClass, pre} from '@typegoose/typegoose';
-import {OrganizationMembership as OrganizationMembershipEntity} from '@ntlango/commons/types';
+import { getModelForClass, pre } from '@typegoose/typegoose';
+import { OrganizationMembership as OrganizationMembershipEntity } from '@ntlango/commons/types';
 
 @pre<OrganizationMembershipModel>('validate', function (next) {
   try {
@@ -15,7 +15,7 @@ import {OrganizationMembership as OrganizationMembershipEntity} from '@ntlango/c
 class OrganizationMembershipModel extends OrganizationMembershipEntity {}
 
 const OrganizationMembership = getModelForClass(OrganizationMembershipModel, {
-  options: {customName: 'OrganizationMembership'},
+  options: { customName: 'OrganizationMembership' },
 });
 
 export default OrganizationMembership;

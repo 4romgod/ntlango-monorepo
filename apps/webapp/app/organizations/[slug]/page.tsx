@@ -81,7 +81,9 @@ export default async function OrganizationPage({ params }: Props) {
     events = [];
   }
 
-  const coverImage = organization.logo || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1200&q=80';
+  const coverImage =
+    organization.logo ||
+    'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1200&q=80';
 
   return (
     <Box>
@@ -116,7 +118,7 @@ export default async function OrganizationPage({ params }: Props) {
               background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%)',
             }}
           />
-          
+
           {/* Back Button */}
           <Button
             component={Link}
@@ -215,10 +217,10 @@ export default async function OrganizationPage({ params }: Props) {
                 <Typography variant="body1" color="text.secondary" sx={{ mb: 3, lineHeight: 1.7 }}>
                   {organization.description || 'No description provided yet.'}
                 </Typography>
-                
+
                 {tags.length > 0 && (
                   <Stack direction="row" spacing={1} flexWrap="wrap" gap={1} sx={{ mt: 3 }}>
-                    {tags.map(tag => (
+                    {tags.map((tag) => (
                       <Chip key={tag} label={`#${tag}`} size="small" sx={{ fontWeight: 500 }} />
                     ))}
                   </Stack>
@@ -242,7 +244,7 @@ export default async function OrganizationPage({ params }: Props) {
                     Links & Domains
                   </Typography>
                   <Stack spacing={1}>
-                    {links.map(link => (
+                    {links.map((link) => (
                       <Button
                         key={link.url}
                         component="a"
@@ -257,7 +259,7 @@ export default async function OrganizationPage({ params }: Props) {
                         {link.label}
                       </Button>
                     ))}
-                    {domainsAllowed.map(domain => (
+                    {domainsAllowed.map((domain) => (
                       <Chip key={domain} label={domain} variant="outlined" />
                     ))}
                   </Stack>
@@ -307,11 +309,7 @@ export default async function OrganizationPage({ params }: Props) {
                   <Typography variant="body2" color="text.secondary" fontWeight={600} gutterBottom>
                     Share this organization
                   </Typography>
-                  <Button
-                    variant="contained"
-                    size="small"
-                    sx={{ mt: 2, fontWeight: 600, textTransform: 'none' }}
-                  >
+                  <Button variant="contained" size="small" sx={{ mt: 2, fontWeight: 600, textTransform: 'none' }}>
                     Copy Link
                   </Button>
                 </CardContent>
@@ -334,9 +332,15 @@ export default async function OrganizationPage({ params }: Props) {
                     {[
                       { label: 'Visibility', value: organization.eventDefaults?.visibility ?? 'Public' },
                       { label: 'Reminders', value: organization.eventDefaults?.remindersEnabled ? 'On' : 'Off' },
-                      { label: 'Waitlist', value: organization.eventDefaults?.waitlistEnabled ? 'Enabled' : 'Disabled' },
-                      { label: 'Guest +1', value: organization.eventDefaults?.allowGuestPlusOnes ? 'Allowed' : 'Disabled' },
-                    ].map(meta => (
+                      {
+                        label: 'Waitlist',
+                        value: organization.eventDefaults?.waitlistEnabled ? 'Enabled' : 'Disabled',
+                      },
+                      {
+                        label: 'Guest +1',
+                        value: organization.eventDefaults?.allowGuestPlusOnes ? 'Allowed' : 'Disabled',
+                      },
+                    ].map((meta) => (
                       <Box key={meta.label}>
                         <Typography variant="caption" color="text.secondary" fontWeight={600}>
                           {meta.label}

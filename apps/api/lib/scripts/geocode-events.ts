@@ -1,26 +1,26 @@
 /**
  * Migration script to geocode existing events that have addresses but no coordinates.
- * 
+ *
  * Usage: npx ts-node -r tsconfig-paths/register lib/scripts/geocode-events.ts
- * 
+ *
  * Note: This script respects Nominatim's rate limit (1 request/second).
  */
 
-import {getConfigValue, MongoDbClient} from '@/clients';
-import {Event as EventModel} from '@/mongodb/models';
-import {geocodeAddress} from '@/utils/geocode';
-import {logger} from '@/utils/logger';
-import {SECRET_KEYS} from '@/constants';
+import { getConfigValue, MongoDbClient } from '@/clients';
+import { Event as EventModel } from '@/mongodb/models';
+import { geocodeAddress } from '@/utils/geocode';
+import { logger } from '@/utils/logger';
+import { SECRET_KEYS } from '@/constants';
 
 const TARGET_INTERVAL_MS = 1100; // Target 1.1 seconds between request starts to respect Nominatim rate limit
 
-const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const formatDuration = (ms: number): string => {
   const seconds = Math.floor(ms / 1000);
   const minutes = Math.floor(seconds / 60);
   const hours = Math.floor(minutes / 60);
-  
+
   if (hours > 0) {
     return `${hours}h ${minutes % 60}m`;
   }
@@ -41,16 +41,16 @@ async function geocodeExistingEvents() {
     // Find all events with venue location that have address but no coordinates
     const events = await EventModel.find({
       'location.locationType': 'venue',
-      'location.address': {$exists: true},
+      'location.address': { $exists: true },
       $or: [
-        {'location.coordinates': {$exists: false}},
-        {'location.coordinates.latitude': {$exists: false}},
-        {'location.coordinates.longitude': {$exists: false}},
+        { 'location.coordinates': { $exists: false } },
+        { 'location.coordinates.latitude': { $exists: false } },
+        { 'location.coordinates.longitude': { $exists: false } },
       ],
     }).exec();
 
     logger.info(`Found ${events.length} events to geocode`);
-    
+
     // Show estimated time
     const estimatedMs = events.length * TARGET_INTERVAL_MS;
     logger.info(`Estimated time: ${formatDuration(estimatedMs)} (at ~${TARGET_INTERVAL_MS}ms per request)`);
@@ -64,14 +64,14 @@ async function geocodeExistingEvents() {
       const event = events[i];
       const address = event.location?.address;
       const requestStartTime = Date.now();
-      
+
       // Calculate progress and ETA
-      const progress = ((i + 1) / events.length * 100).toFixed(1);
+      const progress = (((i + 1) / events.length) * 100).toFixed(1);
       const elapsed = Date.now() - startTime;
       const avgTimePerEvent = i > 0 ? elapsed / i : TARGET_INTERVAL_MS;
       const remainingEvents = events.length - i - 1;
       const eta = formatDuration(remainingEvents * avgTimePerEvent);
-      
+
       logger.info(`[${i + 1}/${events.length}] (${progress}% | ETA: ${eta}) Processing: "${event.title}"`);
       logger.info(`  Address: ${address?.city}, ${address?.state}, ${address?.country}`);
 
@@ -87,11 +87,8 @@ async function geocodeExistingEvents() {
 
         if (coordinates) {
           // Update the event in the database
-          await EventModel.updateOne(
-            {_id: event._id},
-            {$set: {'location.coordinates': coordinates}}
-          );
-          
+          await EventModel.updateOne({ _id: event._id }, { $set: { 'location.coordinates': coordinates } });
+
           logger.info(`  ✓ Geocoded to: ${coordinates.latitude}, ${coordinates.longitude}`);
           successCount++;
         } else {

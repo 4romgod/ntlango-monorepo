@@ -69,7 +69,7 @@ export default function EditProfilePage({ user }: { user: User }) {
 
     if (formState.data && session?.user?.token) {
       const updatedUser = formState.data as User;
-      
+
       // Update local state immediately with the returned data
       setProfile({
         userId: updatedUser.userId,
@@ -80,14 +80,14 @@ export default function EditProfilePage({ user }: { user: User }) {
         username: updatedUser.username,
         location: updatedUser.location,
       });
-      
+
       // Refresh the session with updated user data
       signIn('refresh-session', {
         userData: JSON.stringify(updatedUser),
         token: session.user.token,
         redirect: false,
       });
-      
+
       setToastProps({
         ...toastProps,
         open: true,
@@ -100,14 +100,14 @@ export default function EditProfilePage({ user }: { user: User }) {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setProfile(prev => ({
+    setProfile((prev) => ({
       ...prev,
       [name]: value,
     }));
   };
 
   const handleLocationChange = (location: UserLocationInput) => {
-    setProfile(prev => ({
+    setProfile((prev) => ({
       ...prev,
       location: location,
     }));
@@ -153,7 +153,7 @@ export default function EditProfilePage({ user }: { user: User }) {
         <input type="hidden" name="username" value={profile.username || ''} />
         <input type="hidden" name="bio" value={profile.bio || ''} />
         <input type="hidden" name="location" value={JSON.stringify(profile.location || {})} />
-        
+
         {/* Profile Picture Section */}
         <Card
           elevation={0}
@@ -172,7 +172,7 @@ export default function EditProfilePage({ user }: { user: User }) {
               <Avatar
                 src={profile.profile_picture || ''}
                 alt={`${profile.given_name} ${profile.family_name}`}
-                sx={theme => ({
+                sx={(theme) => ({
                   width: { xs: 80, sm: 100 },
                   height: { xs: 80, sm: 100 },
                   background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
@@ -292,7 +292,12 @@ export default function EditProfilePage({ user }: { user: User }) {
             Location
           </Typography>
 
-          <LocationForm value={profile.location} onChange={handleLocationChange} disabled={!isEditing} name="location" />
+          <LocationForm
+            value={profile.location}
+            onChange={handleLocationChange}
+            disabled={!isEditing}
+            name="location"
+          />
         </Card>
 
         {/* Action Buttons */}

@@ -73,21 +73,12 @@ export function BlockedUsersList({ open, onClose }: BlockedUsersListProps) {
                 <ListItemAvatar>
                   <Skeleton variant="circular" width={40} height={40} />
                 </ListItemAvatar>
-                <ListItemText
-                  primary={<Skeleton width="60%" />}
-                  secondary={<Skeleton width="40%" />}
-                />
+                <ListItemText primary={<Skeleton width="60%" />} secondary={<Skeleton width="40%" />} />
               </ListItem>
             ))}
           </List>
         ) : blockedUsers.length === 0 ? (
-          <Box
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
-            justifyContent="center"
-            py={4}
-          >
+          <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" py={4}>
             <BlockIcon sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
             <Typography variant="body1" color="text.secondary">
               No blocked users

@@ -82,8 +82,8 @@ export default function SocialMediaSettingsPage() {
   const [tempLink, setTempLink] = useState(customLink);
 
   const handleToggleConnection = (id: string) => {
-    setSocialAccounts(prevAccounts =>
-      prevAccounts.map(account => (account.id === id ? { ...account, connected: !account.connected } : account)),
+    setSocialAccounts((prevAccounts) =>
+      prevAccounts.map((account) => (account.id === id ? { ...account, connected: !account.connected } : account)),
     );
   };
 
@@ -126,7 +126,7 @@ export default function SocialMediaSettingsPage() {
           </Typography>
 
           <Grid container spacing={{ xs: 2, sm: 2.5 }}>
-            {socialAccounts.map(account => (
+            {socialAccounts.map((account) => (
               <Grid size={{ xs: 12 }} key={account.id}>
                 <Card
                   elevation={0}
@@ -266,7 +266,7 @@ export default function SocialMediaSettingsPage() {
             <Stack spacing={2}>
               <TextField
                 value={tempLink}
-                onChange={e => setTempLink(e.target.value)}
+                onChange={(e) => setTempLink(e.target.value)}
                 fullWidth
                 placeholder="Enter your custom link"
                 slotProps={{

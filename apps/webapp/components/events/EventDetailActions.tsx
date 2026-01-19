@@ -17,12 +17,7 @@ interface EventDetailActionsProps {
  * Client component for event detail page actions (Save, RSVP, Share).
  * Manages local state to reflect immediate UI updates after mutations.
  */
-export default function EventDetailActions({
-  eventId,
-  eventUrl,
-  isSavedByMe,
-  myRsvpStatus,
-}: EventDetailActionsProps) {
+export default function EventDetailActions({ eventId, eventUrl, isSavedByMe, myRsvpStatus }: EventDetailActionsProps) {
   // Local state for immediate UI feedback
   const [isSaved, setIsSaved] = useState(isSavedByMe);
   const [rsvpStatus, setRsvpStatus] = useState<ParticipantStatus | null>(myRsvpStatus);
@@ -45,13 +40,7 @@ export default function EventDetailActions({
         showTooltip={false}
         onRsvpChange={setRsvpStatus}
       />
-      <SaveEventButton
-        eventId={eventId}
-        isSaved={isSaved}
-        size="large"
-        showTooltip={false}
-        onSaveChange={setIsSaved}
-      />
+      <SaveEventButton eventId={eventId} isSaved={isSaved} size="large" showTooltip={false} onSaveChange={setIsSaved} />
       <CopyLinkButton url={eventUrl} />
     </Stack>
   );

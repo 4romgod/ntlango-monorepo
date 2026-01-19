@@ -38,7 +38,7 @@ const LocationInput: React.FC<LocationInputProps> = ({ onChange }) => {
 
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setLocationDetails(prev => ({
+    setLocationDetails((prev) => ({
       ...prev,
       address: prev.address ? { ...prev.address, [name]: value } : undefined,
     }));

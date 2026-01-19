@@ -1,11 +1,11 @@
-import type {SortInput} from '@ntlango/commons/types';
-import type {PipelineStage} from 'mongoose';
+import type { SortInput } from '@ntlango/commons/types';
+import type { PipelineStage } from 'mongoose';
 
 export const createSortStages = (sortInput: SortInput[]): PipelineStage.Sort[] => {
   const sortOptions: PipelineStage.Sort = {
     $sort: {},
   };
-  sortInput.forEach(({field, order}) => {
+  sortInput.forEach(({ field, order }) => {
     sortOptions.$sort[field] = order === 'asc' ? 1 : -1;
   });
   return [sortOptions];

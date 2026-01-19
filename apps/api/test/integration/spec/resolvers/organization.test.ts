@@ -1,13 +1,13 @@
 import request from 'supertest';
-import {Types} from 'mongoose';
-import type {IntegrationServer} from '@/test/integration/utils/server';
-import {startIntegrationServer, stopIntegrationServer} from '@/test/integration/utils/server';
-import {OrganizationDAO} from '@/mongodb/dao';
-import {usersMockData} from '@/mongodb/mockData';
-import {generateToken} from '@/utils/auth';
-import type {User, UserWithToken} from '@ntlango/commons/types';
-import {UserRole} from '@ntlango/commons/types';
-import {OrganizationTicketAccess} from '@ntlango/commons/types';
+import { Types } from 'mongoose';
+import type { IntegrationServer } from '@/test/integration/utils/server';
+import { startIntegrationServer, stopIntegrationServer } from '@/test/integration/utils/server';
+import { OrganizationDAO } from '@/mongodb/dao';
+import { usersMockData } from '@/mongodb/mockData';
+import { generateToken } from '@/utils/auth';
+import type { User, UserWithToken } from '@ntlango/commons/types';
+import { UserRole } from '@ntlango/commons/types';
+import { OrganizationTicketAccess } from '@ntlango/commons/types';
 import {
   getCreateOrganizationMutation,
   getReadOrganizationByIdQuery,
@@ -42,7 +42,7 @@ describe('Organization Resolver', () => {
   };
 
   beforeAll(async () => {
-    server = await startIntegrationServer({port: TEST_PORT});
+    server = await startIntegrationServer({ port: TEST_PORT });
     url = server.url;
     const user: User = {
       ...usersMockData[0],
@@ -117,15 +117,17 @@ describe('Organization Resolver', () => {
       const allResponse = await request(url).post('').send(getReadOrganizationsQuery());
       expect(allResponse.status).toBe(200);
       expect(allResponse.body.data.readOrganizations).toEqual(
-        expect.arrayContaining([{orgId: createdOrganization.orgId}].map((org) => expect.objectContaining(org))),
+        expect.arrayContaining([{ orgId: createdOrganization.orgId }].map((org) => expect.objectContaining(org))),
       );
 
-      const options = {filters: [{field: 'name', value: createdOrganization.name}]};
+      const options = { filters: [{ field: 'name', value: createdOrganization.name }] };
       const filteredResponse = await request(url).post('').send(getReadOrganizationsWithOptionsQuery(options));
 
       expect(filteredResponse.status).toBe(200);
       const filteredList = filteredResponse.body.data.readOrganizations;
-      expect(filteredList).toEqual(expect.arrayContaining([{orgId: createdOrganization.orgId}].map((org) => expect.objectContaining(org))));
+      expect(filteredList).toEqual(
+        expect.arrayContaining([{ orgId: createdOrganization.orgId }].map((org) => expect.objectContaining(org))),
+      );
     });
 
     it('reads organizations with pagination options', async () => {
@@ -159,7 +161,7 @@ describe('Organization Resolver', () => {
         .post('')
         .send(
           getReadOrganizationsWithOptionsQuery({
-            sort: [{field: 'name', order: 'asc'}],
+            sort: [{ field: 'name', order: 'asc' }],
           }),
         );
 

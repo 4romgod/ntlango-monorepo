@@ -1,15 +1,7 @@
 'use client';
 
 import React from 'react';
-import {
-  Box,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  List,
-  Typography,
-} from '@mui/material';
+import { Box, Dialog, DialogContent, DialogTitle, IconButton, List, Typography } from '@mui/material';
 import { Close as CloseIcon, PersonOutline as PersonOutlineIcon } from '@mui/icons-material';
 import { useFollowing, useFollow, useMutedUsers, useMutedOrganizations } from '@/hooks';
 import { FollowTargetType, FollowApprovalStatus } from '@/data/graphql/types/graphql';
@@ -22,42 +14,42 @@ interface FollowingListProps {
   title?: string;
 }
 
-export default function FollowingList({
-  open,
-  onClose,
-  title,
-}: FollowingListProps) {
+export default function FollowingList({ open, onClose, title }: FollowingListProps) {
   const { following, loading, error } = useFollowing();
   const { unfollow, unfollowLoading } = useFollow();
   const { mutedUsers } = useMutedUsers();
   const { mutedOrgIds } = useMutedOrganizations();
 
   // Extract muted user IDs from the muted users list
-  const mutedUserIds = mutedUsers.map(u => u.userId);
+  const mutedUserIds = mutedUsers.map((u) => u.userId);
 
   const dialogTitle = title || 'Following';
 
   const acceptedFollowing = following
-    .filter(item => item.approvalStatus === FollowApprovalStatus.Accepted)
+    .filter((item) => item.approvalStatus === FollowApprovalStatus.Accepted)
     .map((item) => ({
       followId: item.followId,
       targetType: item.targetType,
       targetId: item.targetId,
-      targetUser: item.targetUser ? {
-        userId: item.targetUser.userId,
-        username: item.targetUser.username,
-        email: item.targetUser.email,
-        given_name: item.targetUser.given_name,
-        family_name: item.targetUser.family_name,
-        profile_picture: item.targetUser.profile_picture || undefined,
-        bio: item.targetUser.bio || undefined,
-      } : undefined,
-      targetOrganization: item.targetOrganization ? {
-        orgId: item.targetOrganization.orgId,
-        slug: item.targetOrganization.slug,
-        name: item.targetOrganization.name,
-        logo: item.targetOrganization.logo || undefined,
-      } : undefined,
+      targetUser: item.targetUser
+        ? {
+            userId: item.targetUser.userId,
+            username: item.targetUser.username,
+            email: item.targetUser.email,
+            given_name: item.targetUser.given_name,
+            family_name: item.targetUser.family_name,
+            profile_picture: item.targetUser.profile_picture || undefined,
+            bio: item.targetUser.bio || undefined,
+          }
+        : undefined,
+      targetOrganization: item.targetOrganization
+        ? {
+            orgId: item.targetOrganization.orgId,
+            slug: item.targetOrganization.slug,
+            name: item.targetOrganization.name,
+            logo: item.targetOrganization.logo || undefined,
+          }
+        : undefined,
     }));
 
   const handleUnfollow = async (targetId: string, targetType: FollowTargetType) => {
@@ -117,7 +109,7 @@ export default function FollowingList({
           </Box>
         ) : (
           <List sx={{ py: 0 }}>
-            {acceptedFollowing.map(item => (
+            {acceptedFollowing.map((item) => (
               <FollowingListItem
                 key={item.followId}
                 following={item}

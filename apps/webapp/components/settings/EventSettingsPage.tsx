@@ -1,16 +1,7 @@
 'use client';
 
 import React, { useActionState, useEffect, useState } from 'react';
-import {
-  Box,
-  Typography,
-  Switch,
-  FormControlLabel,
-  Button,
-  Stack,
-  Card,
-  CircularProgress,
-} from '@mui/material';
+import { Box, Typography, Switch, FormControlLabel, Button, Stack, Card, CircularProgress } from '@mui/material';
 import { User } from '@/data/graphql/types/graphql';
 import { updateUserProfileAction } from '@/data/actions/server/user/update-user-profile';
 import { useAppContext } from '@/hooks/useAppContext';
@@ -30,7 +21,7 @@ interface EventPreferences {
 // Separate submit button component to use useFormStatus
 function SubmitButton() {
   const { pending } = useFormStatus();
-  
+
   return (
     <Button
       type="submit"
@@ -109,7 +100,7 @@ export default function EventSettingsPage({ user }: { user: User }) {
   }, [formState]);
 
   const handleToggleChange = (field: keyof CommunicationPrefs) => {
-    setPreferences(prev => ({
+    setPreferences((prev) => ({
       ...prev,
       communicationPrefs: {
         ...prev.communicationPrefs,
@@ -221,4 +212,3 @@ export default function EventSettingsPage({ user }: { user: User }) {
     </Box>
   );
 }
-

@@ -1,6 +1,6 @@
 import 'reflect-metadata';
-import {getModelForClass, pre} from '@typegoose/typegoose';
-import {Intent as IntentEntity} from '@ntlango/commons/types';
+import { getModelForClass, pre } from '@typegoose/typegoose';
+import { Intent as IntentEntity } from '@ntlango/commons/types';
 
 @pre<IntentModel>('validate', function (next) {
   try {
@@ -15,7 +15,7 @@ import {Intent as IntentEntity} from '@ntlango/commons/types';
 class IntentModel extends IntentEntity {}
 
 const Intent = getModelForClass(IntentModel, {
-  options: {customName: 'Intent'},
+  options: { customName: 'Intent' },
 });
 
 export default Intent;

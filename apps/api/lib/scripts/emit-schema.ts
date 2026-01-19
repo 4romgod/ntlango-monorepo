@@ -52,10 +52,7 @@ const emitSchema = () => {
   const schemaString = printSchema(schema);
 
   // Output to packages/commons so it can be shared
-  const outputPath = path.resolve(
-    __dirname,
-    '../../../../packages/commons/schema.graphql'
-  );
+  const outputPath = path.resolve(__dirname, '../../../../packages/commons/schema.graphql');
 
   fs.writeFileSync(outputPath, schemaString, 'utf-8');
   console.log(`✅ Schema written to: ${outputPath}`);

@@ -1,9 +1,9 @@
 import request from 'supertest';
-import type {IntegrationServer} from '@/test/integration/utils/server';
-import {startIntegrationServer, stopIntegrationServer} from '@/test/integration/utils/server';
-import {EventCategoryDAO, EventDAO, UserDAO, OrganizationDAO} from '@/mongodb/dao';
-import {Activity, Follow, Intent} from '@/mongodb/models';
-import {usersMockData, eventsMockData} from '@/mongodb/mockData';
+import type { IntegrationServer } from '@/test/integration/utils/server';
+import { startIntegrationServer, stopIntegrationServer } from '@/test/integration/utils/server';
+import { EventCategoryDAO, EventDAO, UserDAO, OrganizationDAO } from '@/mongodb/dao';
+import { Activity, Follow, Intent } from '@/mongodb/models';
+import { usersMockData, eventsMockData } from '@/mongodb/mockData';
 import {
   CreateUserInput,
   SocialVisibility,
@@ -48,7 +48,7 @@ describe('Social resolver integration', () => {
   let eventId = '';
 
   beforeAll(async () => {
-    server = await startIntegrationServer({port: TEST_PORT});
+    server = await startIntegrationServer({ port: TEST_PORT });
     url = server.url;
 
     const baseActorUser: CreateUserInput = {
@@ -78,7 +78,7 @@ describe('Social resolver integration', () => {
       title: 'Social Feed Event',
       description: 'A gathering for social signals',
       eventCategories: [category.eventCategoryId],
-      organizers: [{user: actorUser.userId, role: 'Host'}],
+      organizers: [{ user: actorUser.userId, role: 'Host' }],
       status: EventStatus.Upcoming,
       lifecycleStatus: EventLifecycleStatus.Published,
       visibility: EventVisibility.Public,
@@ -91,9 +91,9 @@ describe('Social resolver integration', () => {
   });
 
   afterAll(async () => {
-    await Follow.deleteMany({followerUserId: actorUser.userId}).catch(() => {});
-    await Intent.deleteMany({userId: actorUser.userId}).catch(() => {});
-    await Activity.deleteMany({actorId: actorUser.userId}).catch(() => {});
+    await Follow.deleteMany({ followerUserId: actorUser.userId }).catch(() => {});
+    await Intent.deleteMany({ userId: actorUser.userId }).catch(() => {});
+    await Activity.deleteMany({ actorId: actorUser.userId }).catch(() => {});
     await EventDAO.deleteEventById(eventId).catch(() => {});
     await EventCategoryDAO.deleteEventCategoryBySlug(category.slug).catch(() => {});
     await UserDAO.deleteUserById(actorUser.userId).catch(() => {});
@@ -105,12 +105,15 @@ describe('Social resolver integration', () => {
     const followResponse = await request(url)
       .post('')
       .set('Authorization', 'Bearer ' + actorUser.token)
-      .send(getFollowMutation({targetType: FollowTargetType.User, targetId: targetUser.userId}));
+      .send(getFollowMutation({ targetType: FollowTargetType.User, targetId: targetUser.userId }));
 
     expect(followResponse.status).toBe(200);
     expect(followResponse.body.data.follow.targetId).toBe(targetUser.userId);
 
-    const followingResponse = await request(url).post('').set('Authorization', 'Bearer ' + actorUser.token).send(getReadFollowingQuery());
+    const followingResponse = await request(url)
+      .post('')
+      .set('Authorization', 'Bearer ' + actorUser.token)
+      .send(getReadFollowingQuery());
 
     expect(followingResponse.status).toBe(200);
     expect(followingResponse.body.data.readFollowing.length).toBeGreaterThan(0);
@@ -151,12 +154,18 @@ describe('Social resolver integration', () => {
     expect(intentResponse.status).toBe(200);
     expect(intentResponse.body.data.upsertIntent.eventId).toBe(eventId);
 
-    const userIntentsResponse = await request(url).post('').set('Authorization', 'Bearer ' + actorUser.token).send(getReadIntentsByUserQuery());
+    const userIntentsResponse = await request(url)
+      .post('')
+      .set('Authorization', 'Bearer ' + actorUser.token)
+      .send(getReadIntentsByUserQuery());
 
     expect(userIntentsResponse.status).toBe(200);
     expect(userIntentsResponse.body.data.readIntentsByUser.length).toBeGreaterThan(0);
 
-    const eventIntentsResponse = await request(url).post('').set('Authorization', 'Bearer ' + actorUser.token).send(getReadIntentsByEventQuery(eventId));
+    const eventIntentsResponse = await request(url)
+      .post('')
+      .set('Authorization', 'Bearer ' + actorUser.token)
+      .send(getReadIntentsByEventQuery(eventId));
 
     expect(eventIntentsResponse.status).toBe(200);
     expect(eventIntentsResponse.body.data.readIntentsByEvent.length).toBeGreaterThan(0);
@@ -178,12 +187,18 @@ describe('Social resolver integration', () => {
     expect(logResponse.status).toBe(200);
     expect(logResponse.body.data.logActivity.actorId).toBe(actorUser.userId);
 
-    const actorFeedResponse = await request(url).post('').set('Authorization', 'Bearer ' + actorUser.token).send(getReadActivitiesByActorQuery(actorUser.userId));
+    const actorFeedResponse = await request(url)
+      .post('')
+      .set('Authorization', 'Bearer ' + actorUser.token)
+      .send(getReadActivitiesByActorQuery(actorUser.userId));
 
     expect(actorFeedResponse.status).toBe(200);
     expect(actorFeedResponse.body.data.readActivitiesByActor.length).toBeGreaterThan(0);
 
-    const feedResponse = await request(url).post('').set('Authorization', 'Bearer ' + actorUser.token).send(getReadFeedQuery(5));
+    const feedResponse = await request(url)
+      .post('')
+      .set('Authorization', 'Bearer ' + actorUser.token)
+      .send(getReadFeedQuery(5));
 
     expect(feedResponse.status).toBe(200);
     expect(feedResponse.body.data.readFeed.length).toBeGreaterThan(0);
@@ -193,19 +208,22 @@ describe('Social resolver integration', () => {
     const firstFollow = await request(url)
       .post('')
       .set('Authorization', 'Bearer ' + actorUser.token)
-      .send(getFollowMutation({targetType: FollowTargetType.User, targetId: targetUser.userId}));
+      .send(getFollowMutation({ targetType: FollowTargetType.User, targetId: targetUser.userId }));
 
     expect(firstFollow.status).toBe(200);
 
     const duplicateFollow = await request(url)
       .post('')
       .set('Authorization', 'Bearer ' + actorUser.token)
-      .send(getFollowMutation({targetType: FollowTargetType.User, targetId: targetUser.userId}));
+      .send(getFollowMutation({ targetType: FollowTargetType.User, targetId: targetUser.userId }));
 
     // The API may return 200 (idempotent) or 409 (conflict)
     expect([200, 409]).toContain(duplicateFollow.status);
 
-    await request(url).post('').set('Authorization', 'Bearer ' + actorUser.token).send(getUnfollowMutation(FollowTargetType.User, targetUser.userId));
+    await request(url)
+      .post('')
+      .set('Authorization', 'Bearer ' + actorUser.token)
+      .send(getUnfollowMutation(FollowTargetType.User, targetUser.userId));
   });
 
   it('handles intent status updates', async () => {
@@ -243,7 +261,7 @@ describe('Social resolver integration', () => {
   it('requires authentication for follow mutation', async () => {
     const response = await request(url)
       .post('')
-      .send(getFollowMutation({targetType: FollowTargetType.User, targetId: targetUser.userId}));
+      .send(getFollowMutation({ targetType: FollowTargetType.User, targetId: targetUser.userId }));
 
     expect(response.status).toBe(401);
   });
@@ -288,7 +306,7 @@ describe('Social resolver integration', () => {
     const response = await request(url)
       .post('')
       .set('Authorization', 'Bearer ' + actorUser.token)
-      .send(getFollowMutation({targetType: 'InvalidType', targetId: targetUser.userId}));
+      .send(getFollowMutation({ targetType: 'InvalidType', targetId: targetUser.userId }));
 
     expect(response.status).toBe(400);
   });
@@ -303,13 +321,16 @@ describe('Social resolver integration', () => {
     const followResponse = await request(url)
       .post('')
       .set('Authorization', 'Bearer ' + actorUser.token)
-      .send(getFollowMutation({targetType: FollowTargetType.Organization, targetId: org.orgId}));
+      .send(getFollowMutation({ targetType: FollowTargetType.Organization, targetId: org.orgId }));
 
     expect(followResponse.status).toBe(200);
     expect(followResponse.body.data.follow.targetType).toBe(FollowTargetType.Organization);
     expect(followResponse.body.data.follow.targetId).toBe(org.orgId);
 
-    await request(url).post('').set('Authorization', 'Bearer ' + actorUser.token).send(getUnfollowMutation(FollowTargetType.Organization, org.orgId));
+    await request(url)
+      .post('')
+      .set('Authorization', 'Bearer ' + actorUser.token)
+      .send(getUnfollowMutation(FollowTargetType.Organization, org.orgId));
 
     await OrganizationDAO.deleteOrganizationById(org.orgId).catch(() => {});
   });

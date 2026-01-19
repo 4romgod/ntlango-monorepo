@@ -17,7 +17,16 @@ import {
   Avatar,
   Typography,
 } from '@mui/material';
-import { Clear, Login, Menu, ControlPointOutlined, MailOutline, NotificationsOutlined, Settings, Logout } from '@mui/icons-material';
+import {
+  Clear,
+  Login,
+  Menu,
+  ControlPointOutlined,
+  MailOutline,
+  NotificationsOutlined,
+  Settings,
+  Logout,
+} from '@mui/icons-material';
 import { useSession } from 'next-auth/react';
 import NavLinksList from '@/components/navigation/main/nav-links-list';
 import { logoutUserAction } from '@/data/actions/server/auth/logout';
@@ -65,10 +74,7 @@ export default function TemporaryDrawer({ isAuthN }: { isAuthN: boolean }) {
           <Box />
         )}
 
-        <IconButton
-          onClick={toggleDrawer(false)}
-          aria-label="close drawer"
-        >
+        <IconButton onClick={toggleDrawer(false)} aria-label="close drawer">
           <Clear />
         </IconButton>
       </Box>

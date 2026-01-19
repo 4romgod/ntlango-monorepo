@@ -1,12 +1,12 @@
 import request from 'supertest';
-import {Types} from 'mongoose';
-import type {IntegrationServer} from '@/test/integration/utils/server';
-import {startIntegrationServer, stopIntegrationServer} from '@/test/integration/utils/server';
-import {generateToken} from '@/utils/auth';
-import {usersMockData} from '@/mongodb/mockData';
-import type {User, UserWithToken} from '@ntlango/commons/types';
-import {OrganizationDAO} from '@/mongodb/dao';
-import {UserRole, OrganizationRole, OrganizationTicketAccess} from '@ntlango/commons/types';
+import { Types } from 'mongoose';
+import type { IntegrationServer } from '@/test/integration/utils/server';
+import { startIntegrationServer, stopIntegrationServer } from '@/test/integration/utils/server';
+import { generateToken } from '@/utils/auth';
+import { usersMockData } from '@/mongodb/mockData';
+import type { User, UserWithToken } from '@ntlango/commons/types';
+import { OrganizationDAO } from '@/mongodb/dao';
+import { UserRole, OrganizationRole, OrganizationTicketAccess } from '@ntlango/commons/types';
 import {
   getCreateOrganizationMembershipMutation,
   getDeleteOrganizationMembershipMutation,
@@ -59,7 +59,7 @@ describe('OrganizationMembership Resolver', () => {
   };
 
   beforeAll(async () => {
-    server = await startIntegrationServer({port: TEST_PORT});
+    server = await startIntegrationServer({ port: TEST_PORT });
     url = server.url;
     const user: User = {
       ...usersMockData[0],
@@ -70,7 +70,7 @@ describe('OrganizationMembership Resolver', () => {
       interests: undefined,
     } as User;
     const token = await generateToken(user);
-    adminUser = {...user, token};
+    adminUser = { ...user, token };
   });
 
   afterAll(async () => {
@@ -83,7 +83,7 @@ describe('OrganizationMembership Resolver', () => {
         request(url)
           .post('')
           .set('Authorization', 'Bearer ' + adminUser.token)
-          .send(getDeleteOrganizationMembershipMutation({membershipId}))
+          .send(getDeleteOrganizationMembershipMutation({ membershipId }))
           .catch(() => {}),
       ),
     );
@@ -123,14 +123,20 @@ describe('OrganizationMembership Resolver', () => {
       const organization = await createOrganization('Membership Read Org');
       const membership = await createMembership(organization.orgId, new Types.ObjectId().toString());
 
-      const byIdResponse = await request(url).post('').send(getReadOrganizationMembershipByIdQuery(membership.membershipId));
+      const byIdResponse = await request(url)
+        .post('')
+        .send(getReadOrganizationMembershipByIdQuery(membership.membershipId));
       expect(byIdResponse.status).toBe(200);
       expect(byIdResponse.body.data.readOrganizationMembershipById.membershipId).toBe(membership.membershipId);
 
-      const byOrgResponse = await request(url).post('').send(getReadOrganizationMembershipsByOrgIdQuery(organization.orgId));
+      const byOrgResponse = await request(url)
+        .post('')
+        .send(getReadOrganizationMembershipsByOrgIdQuery(organization.orgId));
       expect(byOrgResponse.status).toBe(200);
       expect(byOrgResponse.body.data.readOrganizationMembershipsByOrgId).toEqual(
-        expect.arrayContaining([{membershipId: membership.membershipId}].map((item) => expect.objectContaining(item))),
+        expect.arrayContaining(
+          [{ membershipId: membership.membershipId }].map((item) => expect.objectContaining(item)),
+        ),
       );
     });
 
@@ -141,7 +147,7 @@ describe('OrganizationMembership Resolver', () => {
       const response = await request(url)
         .post('')
         .set('Authorization', 'Bearer ' + adminUser.token)
-        .send(getDeleteOrganizationMembershipMutation({membershipId: membership.membershipId}));
+        .send(getDeleteOrganizationMembershipMutation({ membershipId: membership.membershipId }));
 
       expect(response.status).toBe(200);
       expect(response.body.data.deleteOrganizationMembership.membershipId).toBe(membership.membershipId);

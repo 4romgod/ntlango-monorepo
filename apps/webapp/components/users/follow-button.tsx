@@ -37,12 +37,13 @@ export default function FollowButton({
 
   const targetLabel = targetType === FollowTargetType.Organization ? 'organization' : 'user';
   const isLoading = isMutating || isLoadingFollowing;
-  
+
   // Check if target user is blocked (only for User target type)
-  const isBlocked = targetType === FollowTargetType.User && blockedUsers?.some((u: { userId: string }) => u.userId === targetId);
+  const isBlocked =
+    targetType === FollowTargetType.User && blockedUsers?.some((u: { userId: string }) => u.userId === targetId);
 
   useEffect(() => {
-    const existingFollow = following.find(f => f.targetType === targetType && f.targetId === targetId);
+    const existingFollow = following.find((f) => f.targetType === targetType && f.targetId === targetId);
     setFollowStatus(existingFollow?.approvalStatus ?? null);
   }, [following, targetId, targetType]);
 
@@ -65,7 +66,7 @@ export default function FollowButton({
       }
     } catch (error: any) {
       logger.error('Error toggling follow status:', error);
-      
+
       // Extract error message from Apollo/GraphQL error
       // Apollo errors can have graphQLErrors array or networkError with result
       let errorMessage: string;
@@ -76,11 +77,12 @@ export default function FollowButton({
       } else if (error?.message) {
         errorMessage = error.message;
       } else {
-        errorMessage = (isFollowing || isPending)
-          ? `Failed to unfollow ${targetLabel}. Please try again.`
-          : `Failed to follow ${targetLabel}. Please try again.`;
+        errorMessage =
+          isFollowing || isPending
+            ? `Failed to unfollow ${targetLabel}. Please try again.`
+            : `Failed to follow ${targetLabel}. Please try again.`;
       }
-      
+
       setToastProps({
         open: true,
         message: errorMessage,

@@ -1,11 +1,18 @@
-import {User as UserModel, Organization as OrganizationModel} from '@/mongodb/models';
-import type {User, UpdateUserInput, CreateUserInput, QueryOptionsInput, LoginUserInput, UserWithToken} from '@ntlango/commons/types';
-import {UserRole} from '@ntlango/commons/types';
-import {ErrorTypes, CustomError, KnownCommonError, transformOptionsToQuery} from '@/utils';
-import {GraphQLError} from 'graphql';
-import {ERROR_MESSAGES} from '@/validation';
-import {generateToken} from '@/utils/auth';
-import {logger} from '@/utils/logger';
+import { User as UserModel, Organization as OrganizationModel } from '@/mongodb/models';
+import type {
+  User,
+  UpdateUserInput,
+  CreateUserInput,
+  QueryOptionsInput,
+  LoginUserInput,
+  UserWithToken,
+} from '@ntlango/commons/types';
+import { UserRole } from '@ntlango/commons/types';
+import { ErrorTypes, CustomError, KnownCommonError, transformOptionsToQuery } from '@/utils';
+import { GraphQLError } from 'graphql';
+import { ERROR_MESSAGES } from '@/validation';
+import { generateToken } from '@/utils/auth';
+import { logger } from '@/utils/logger';
 
 class UserDAO {
   static async create(userData: CreateUserInput): Promise<UserWithToken> {
@@ -13,16 +20,16 @@ class UserDAO {
       const savedUser = await UserModel.create(userData);
       const tokenPayload = savedUser.toObject();
       const token = await generateToken(tokenPayload);
-      return {...tokenPayload, token};
+      return { ...tokenPayload, token };
     } catch (error) {
       logger.error('Error when creating a new user', error);
       throw KnownCommonError(error);
     }
   }
 
-  static async login({email, password}: LoginUserInput): Promise<UserWithToken> {
+  static async login({ email, password }: LoginUserInput): Promise<UserWithToken> {
     try {
-      const query = UserModel.findOne({email}).select('+password');
+      const query = UserModel.findOne({ email }).select('+password');
       const user = await query.exec();
       if (!user) {
         throw CustomError(ERROR_MESSAGES.PASSWORD_MISMATCH, ErrorTypes.UNAUTHENTICATED);
@@ -34,7 +41,7 @@ class UserDAO {
       }
 
       const jwtToken = await generateToken(user.toObject());
-      return {token: jwtToken, ...user.toObject()};
+      return { token: jwtToken, ...user.toObject() };
     } catch (error) {
       logger.error('Error when user logging in', error);
       if (error instanceof GraphQLError) {
@@ -63,7 +70,7 @@ class UserDAO {
 
   static async readUserByUsername(username: string): Promise<User> {
     try {
-      const query = UserModel.findOne({username});
+      const query = UserModel.findOne({ username });
       const user = await query.exec();
       if (!user) {
         throw CustomError(`User with username ${username} does not exist`, ErrorTypes.NOT_FOUND);
@@ -80,7 +87,7 @@ class UserDAO {
 
   static async readUserByEmail(email: string): Promise<User> {
     try {
-      const query = UserModel.findOne({email});
+      const query = UserModel.findOne({ email });
       const user = await query.exec();
       if (!user) {
         throw CustomError(`User with email ${email} does not exist`, ErrorTypes.NOT_FOUND);
@@ -109,19 +116,19 @@ class UserDAO {
 
   static async updateUser(user: UpdateUserInput) {
     try {
-      const {userId, ...updatableFields} = user;
+      const { userId, ...updatableFields } = user;
       const existingUser = await UserModel.findById(userId).exec();
       if (!existingUser) {
         throw CustomError(ERROR_MESSAGES.NOT_FOUND('User', 'ID', userId), ErrorTypes.NOT_FOUND);
       }
-      
+
       // Filter out undefined values to avoid overwriting with undefined
       const fieldsToUpdate = Object.fromEntries(
-        Object.entries(updatableFields).filter(([_, value]) => value !== undefined)
+        Object.entries(updatableFields).filter(([_, value]) => value !== undefined),
       );
       Object.assign(existingUser, fieldsToUpdate);
       await existingUser.save();
-      
+
       return existingUser.toObject();
     } catch (error) {
       logger.error(`Error updating user with userId ${user.userId}`, error);
@@ -151,7 +158,7 @@ class UserDAO {
 
   static async deleteUserByEmail(email: string): Promise<User> {
     try {
-      const query = UserModel.findOneAndDelete({email});
+      const query = UserModel.findOneAndDelete({ email });
       const deletedUser = await query.exec();
       if (!deletedUser) {
         throw CustomError('User not found', ErrorTypes.NOT_FOUND);
@@ -168,7 +175,7 @@ class UserDAO {
 
   static async deleteUserByUsername(username: string): Promise<User> {
     try {
-      const query = UserModel.findOneAndDelete({username});
+      const query = UserModel.findOneAndDelete({ username });
       const deletedUser = await query.exec();
       if (!deletedUser) {
         throw CustomError('User not found', ErrorTypes.NOT_FOUND);
@@ -189,10 +196,10 @@ class UserDAO {
       if (!user) {
         throw CustomError(ERROR_MESSAGES.NOT_FOUND('User', 'ID', userId), ErrorTypes.NOT_FOUND);
       }
-      
+
       user.userRole = UserRole.Admin;
       await user.save();
-      
+
       return user.toObject();
     } catch (error) {
       logger.error(`Error promoting user to Admin with userId ${userId}`, error);
@@ -248,7 +255,7 @@ class UserDAO {
       }
 
       if (user.blockedUserIds) {
-        user.blockedUserIds = user.blockedUserIds.filter(id => id !== blockedUserId);
+        user.blockedUserIds = user.blockedUserIds.filter((id) => id !== blockedUserId);
         await user.save();
       }
 
@@ -274,10 +281,10 @@ class UserDAO {
       }
 
       const blockedUsers = await UserModel.find({
-        userId: { $in: user.blockedUserIds }
+        userId: { $in: user.blockedUserIds },
       }).exec();
 
-      return blockedUsers.map(u => u.toObject());
+      return blockedUsers.map((u) => u.toObject());
     } catch (error) {
       logger.error(`Error reading blocked users for userId ${userId}`, error);
       if (error instanceof GraphQLError) {
@@ -326,7 +333,7 @@ class UserDAO {
       }
 
       if (user.mutedUserIds) {
-        user.mutedUserIds = user.mutedUserIds.filter(id => id !== mutedUserId);
+        user.mutedUserIds = user.mutedUserIds.filter((id) => id !== mutedUserId);
         await user.save();
       }
 
@@ -352,10 +359,10 @@ class UserDAO {
       }
 
       const mutedUsers = await UserModel.find({
-        userId: { $in: user.mutedUserIds }
+        userId: { $in: user.mutedUserIds },
       }).exec();
 
-      return mutedUsers.map(u => u.toObject());
+      return mutedUsers.map((u) => u.toObject());
     } catch (error) {
       logger.error(`Error reading muted users for userId ${userId}`, error);
       if (error instanceof GraphQLError) {
@@ -408,7 +415,7 @@ class UserDAO {
       }
 
       if (user.mutedOrgIds) {
-        user.mutedOrgIds = user.mutedOrgIds.filter(id => id !== orgId);
+        user.mutedOrgIds = user.mutedOrgIds.filter((id) => id !== orgId);
         await user.save();
       }
 

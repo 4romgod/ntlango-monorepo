@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { Button, Stack } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -33,10 +33,10 @@ export default function FilterButtons({
   onClearAll,
 }: FilterButtonsProps) {
   return (
-    <Stack 
-      direction="row" 
-      spacing={1} 
-      sx={{ 
+    <Stack
+      direction="row"
+      spacing={1}
+      sx={{
         overflowX: 'auto',
         overflowY: 'hidden',
         flexWrap: 'nowrap',

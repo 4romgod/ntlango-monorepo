@@ -68,12 +68,7 @@ const Footer = () => {
             >
               Host an experience
             </Button>
-            <Button
-              variant="outlined"
-              color="inherit"
-              href={ROUTES.EVENTS.ROOT}
-              sx={{ ...BUTTON_STYLES, px: 3 }}
-            >
+            <Button variant="outlined" color="inherit" href={ROUTES.EVENTS.ROOT} sx={{ ...BUTTON_STYLES, px: 3 }}>
               Browse events
             </Button>
           </Box>
@@ -81,7 +76,7 @@ const Footer = () => {
 
         {/* Footer Links */}
         <Grid container spacing={4}>
-          {footerSections.map(section => (
+          {footerSections.map((section) => (
             <Grid size={{ xs: 6, sm: 3 }} key={section.title}>
               <Typography
                 variant="overline"
@@ -97,7 +92,7 @@ const Footer = () => {
                 {section.title}
               </Typography>
               <Box component="ul" sx={{ listStyle: 'none', p: 0, m: 0 }}>
-                {section.links.map(link => (
+                {section.links.map((link) => (
                   <Box component="li" key={link.name} sx={{ mb: 1 }}>
                     <Link
                       href={link.href}

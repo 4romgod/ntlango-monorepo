@@ -1,9 +1,9 @@
 import 'reflect-metadata';
-import type {DocumentType} from '@typegoose/typegoose';
-import {getModelForClass, pre} from '@typegoose/typegoose';
-import {User as UserEntity} from '@ntlango/commons/types';
-import {genSalt, hash, compare} from 'bcryptjs';
-import {logger} from '@/utils/logger';
+import type { DocumentType } from '@typegoose/typegoose';
+import { getModelForClass, pre } from '@typegoose/typegoose';
+import { User as UserEntity } from '@ntlango/commons/types';
+import { genSalt, hash, compare } from 'bcryptjs';
+import { logger } from '@/utils/logger';
 
 async function hashPassword(plainPassword: string): Promise<string> {
   const salt = await genSalt(10);
@@ -27,7 +27,7 @@ type UpdateFields = {
 
       for (let usernameSuffix = 1; ; usernameSuffix++) {
         const candidateUsername = usernameSuffix === 1 ? baseUsername : `${baseUsername}${usernameSuffix}`;
-        const existingUser = await User.findOne({username: candidateUsername});
+        const existingUser = await User.findOne({ username: candidateUsername });
         if (!existingUser) {
           this.username = candidateUsername;
           break;
@@ -60,7 +60,7 @@ type UpdateFields = {
       return next();
     }
 
-    const updateObj = {...(update as Record<string, unknown>)} as UpdateFields;
+    const updateObj = { ...(update as Record<string, unknown>) } as UpdateFields;
 
     if (typeof updateObj.password === 'string') {
       updateObj.password = await hashPassword(updateObj.password);
@@ -85,11 +85,11 @@ class UserModel extends UserEntity {
 export type UserDocument = DocumentType<UserModel>;
 
 const User = getModelForClass(UserModel, {
-  options: {customName: 'User'},
+  options: { customName: 'User' },
   schemaOptions: {
     // TODO ensure default select behavior stays in sync with commons definition
-    toObject: {getters: true},
-    toJSON: {getters: true},
+    toObject: { getters: true },
+    toJSON: { getters: true },
   },
 });
 

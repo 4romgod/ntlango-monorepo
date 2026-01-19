@@ -1,4 +1,4 @@
-import {VenueType} from '@ntlango/commons/types';
+import { VenueType } from '@ntlango/commons/types';
 
 export type VenueSeedData = {
   orgIndex: number;

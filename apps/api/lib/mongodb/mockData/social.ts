@@ -1,6 +1,6 @@
-import {ActivityObjectType, ActivityVerb, ActivityVisibility} from '@ntlango/commons/types/activity';
-import {FollowTargetType, FollowApprovalStatus} from '@ntlango/commons/types/follow';
-import {IntentVisibility, IntentSource, IntentStatus} from '@ntlango/commons/types/intent';
+import { ActivityObjectType, ActivityVerb, ActivityVisibility } from '@ntlango/commons/types/activity';
+import { FollowTargetType, FollowApprovalStatus } from '@ntlango/commons/types/follow';
+import { IntentVisibility, IntentSource, IntentStatus } from '@ntlango/commons/types/intent';
 
 export type FollowSeed = {
   followerIndex: number;
@@ -34,8 +34,8 @@ export type ActivitySeed = {
 };
 
 export const followSeedData: FollowSeed[] = [
-  {followerIndex: 0, targetType: FollowTargetType.User, targetUserIndex: 1},
-  {followerIndex: 0, targetType: FollowTargetType.Organization, targetOrgIndex: 0},
+  { followerIndex: 0, targetType: FollowTargetType.User, targetUserIndex: 1 },
+  { followerIndex: 0, targetType: FollowTargetType.Organization, targetOrgIndex: 0 },
   {
     followerIndex: 2,
     targetType: FollowTargetType.User,
@@ -49,8 +49,20 @@ export const followSeedData: FollowSeed[] = [
 ];
 
 export const intentSeedData: IntentSeed[] = [
-  {userIndex: 0, eventIndex: 0, status: IntentStatus.Going, visibility: IntentVisibility.Public, source: IntentSource.Manual},
-  {userIndex: 1, eventIndex: 1, status: IntentStatus.Interested, visibility: IntentVisibility.Followers, source: IntentSource.Invite},
+  {
+    userIndex: 0,
+    eventIndex: 0,
+    status: IntentStatus.Going,
+    visibility: IntentVisibility.Public,
+    source: IntentSource.Manual,
+  },
+  {
+    userIndex: 1,
+    eventIndex: 1,
+    status: IntentStatus.Interested,
+    visibility: IntentVisibility.Followers,
+    source: IntentSource.Invite,
+  },
 ];
 
 export const activitySeedData: ActivitySeed[] = [

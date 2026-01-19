@@ -1,5 +1,5 @@
-import type {CreateEventInput} from '@ntlango/commons/types';
-import {EventLifecycleStatus, EventPrivacySetting, EventStatus, EventVisibility} from '@ntlango/commons/types/event';
+import type { CreateEventInput } from '@ntlango/commons/types';
+import { EventLifecycleStatus, EventPrivacySetting, EventStatus, EventVisibility } from '@ntlango/commons/types/event';
 
 export type EventSeedData = CreateEventInput & {
   orgIndex?: number;
@@ -25,7 +25,7 @@ const events: EventSeedData[] = [
     organizers: [],
     eventCategories: [],
     capacity: 600,
-    tags: {features: ['installations', 'workshops'], vibe: ['creative', 'immersive']},
+    tags: { features: ['installations', 'workshops'], vibe: ['creative', 'immersive'] },
     status: EventStatus.Upcoming,
     lifecycleStatus: EventLifecycleStatus.Published,
     visibility: EventVisibility.Public,
@@ -34,7 +34,7 @@ const events: EventSeedData[] = [
       otherMediaData: {},
     },
     heroImage: 'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1600&q=80',
-    additionalDetails: {floorPlan: 'Main + Studio 2'},
+    additionalDetails: { floorPlan: 'Main + Studio 2' },
     comments: {},
     privacySetting: EventPrivacySetting.Public,
     orgIndex: 0,
@@ -58,7 +58,7 @@ const events: EventSeedData[] = [
     organizers: [],
     eventCategories: [],
     capacity: 900,
-    tags: {themes: ['music', 'food', 'nightlife']},
+    tags: { themes: ['music', 'food', 'nightlife'] },
     status: EventStatus.Ongoing,
     lifecycleStatus: EventLifecycleStatus.Published,
     visibility: EventVisibility.Public,
@@ -67,7 +67,7 @@ const events: EventSeedData[] = [
       otherMediaData: {},
     },
     heroImage: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1600&q=80',
-    additionalDetails: {featuredChef: 'Mandla Okafor', afterparty: 'Harbour Rooftop'},
+    additionalDetails: { featuredChef: 'Mandla Okafor', afterparty: 'Harbour Rooftop' },
     comments: {},
     privacySetting: EventPrivacySetting.Public,
     orgIndex: 1,
@@ -91,7 +91,7 @@ const events: EventSeedData[] = [
     organizers: [],
     eventCategories: [],
     capacity: 220,
-    tags: {access: ['invite-only'], music: ['amapiano', 'house']},
+    tags: { access: ['invite-only'], music: ['amapiano', 'house'] },
     status: EventStatus.Upcoming,
     lifecycleStatus: EventLifecycleStatus.Draft,
     visibility: EventVisibility.Private,
@@ -100,7 +100,7 @@ const events: EventSeedData[] = [
       otherMediaData: {},
     },
     heroImage: 'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1600&q=80',
-    additionalDetails: {hostedBy: 'Harbour Collective Membership'},
+    additionalDetails: { hostedBy: 'Harbour Collective Membership' },
     comments: {},
     privacySetting: EventPrivacySetting.Private,
     orgIndex: 1,
@@ -118,7 +118,7 @@ const events: EventSeedData[] = [
     organizers: [],
     eventCategories: [],
     capacity: 180,
-    tags: {tracks: ['AI', 'Climate'], format: ['hybrid']},
+    tags: { tracks: ['AI', 'Climate'], format: ['hybrid'] },
     status: EventStatus.Upcoming,
     lifecycleStatus: EventLifecycleStatus.Published,
     visibility: EventVisibility.Unlisted,
@@ -127,7 +127,7 @@ const events: EventSeedData[] = [
       otherMediaData: {},
     },
     heroImage: 'https://images.unsplash.com/photo-1474631245212-32dc3c8310c6?auto=format&fit=crop&w=1600&q=80',
-    additionalDetails: {featuredSpeakers: ['Nia Dlamini', 'Marcelo Adeyemi']},
+    additionalDetails: { featuredSpeakers: ['Nia Dlamini', 'Marcelo Adeyemi'] },
     comments: {},
     privacySetting: EventPrivacySetting.Private,
     orgIndex: 2,
@@ -151,7 +151,7 @@ const events: EventSeedData[] = [
     organizers: [],
     eventCategories: [],
     capacity: 40,
-    tags: {format: ['workshop', 'studio'], mood: ['intimate']},
+    tags: { format: ['workshop', 'studio'], mood: ['intimate'] },
     status: EventStatus.Ongoing,
     lifecycleStatus: EventLifecycleStatus.Published,
     visibility: EventVisibility.Invitation,
@@ -160,7 +160,7 @@ const events: EventSeedData[] = [
       otherMediaData: {},
     },
     heroImage: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1600&q=80',
-    additionalDetails: {kit: 'Rapid Prototype Pack'},
+    additionalDetails: { kit: 'Rapid Prototype Pack' },
     comments: {},
     privacySetting: EventPrivacySetting.Private,
     orgIndex: 2,
@@ -184,7 +184,7 @@ const events: EventSeedData[] = [
     organizers: [],
     eventCategories: [],
     capacity: 120,
-    tags: {focus: ['wellness', 'retreat'], include: ['sound', 'yoga']},
+    tags: { focus: ['wellness', 'retreat'], include: ['sound', 'yoga'] },
     status: EventStatus.Upcoming,
     lifecycleStatus: EventLifecycleStatus.Published,
     visibility: EventVisibility.Public,
@@ -193,7 +193,7 @@ const events: EventSeedData[] = [
       otherMediaData: {},
     },
     heroImage: 'https://images.unsplash.com/photo-1441716844725-09cedc13a4e7?auto=format&fit=crop&w=1600&q=80',
-    additionalDetails: {wellnessLeads: ['Amina Ngcobo', 'Ethan Mokoena']},
+    additionalDetails: { wellnessLeads: ['Amina Ngcobo', 'Ethan Mokoena'] },
     comments: {},
     privacySetting: EventPrivacySetting.Public,
     orgIndex: 0,
@@ -218,7 +218,7 @@ const events: EventSeedData[] = [
     organizers: [],
     eventCategories: [],
     capacity: 220,
-    tags: {themes: ['art', 'music'], vibe: ['transit', 'nocturnal'], locale: ['Johannesburg']},
+    tags: { themes: ['art', 'music'], vibe: ['transit', 'nocturnal'], locale: ['Johannesburg'] },
     status: EventStatus.Upcoming,
     lifecycleStatus: EventLifecycleStatus.Published,
     visibility: EventVisibility.Public,
@@ -227,7 +227,7 @@ const events: EventSeedData[] = [
       otherMediaData: {},
     },
     heroImage: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1600&q=80',
-    additionalDetails: {curators: ['Nandi Motuba', 'Tumi Thusi'], tram: 'Platform 3'},
+    additionalDetails: { curators: ['Nandi Motuba', 'Tumi Thusi'], tram: 'Platform 3' },
     comments: {},
     privacySetting: EventPrivacySetting.Public,
     orgIndex: 3,
@@ -252,7 +252,7 @@ const events: EventSeedData[] = [
     organizers: [],
     eventCategories: [],
     capacity: 120,
-    tags: {focus: ['wellness', 'retreat'], rituals: ['sound', 'campfire'], mood: ['restorative']},
+    tags: { focus: ['wellness', 'retreat'], rituals: ['sound', 'campfire'], mood: ['restorative'] },
     status: EventStatus.Upcoming,
     lifecycleStatus: EventLifecycleStatus.Published,
     visibility: EventVisibility.Invitation,
@@ -261,7 +261,7 @@ const events: EventSeedData[] = [
       otherMediaData: {},
     },
     heroImage: 'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1600&q=80',
-    additionalDetails: {lodging: 'Safari tents', meals: 'Farm-to-table harvest'},
+    additionalDetails: { lodging: 'Safari tents', meals: 'Farm-to-table harvest' },
     comments: {},
     privacySetting: EventPrivacySetting.Private,
     orgIndex: 4,
@@ -271,7 +271,8 @@ const events: EventSeedData[] = [
   {
     title: 'Digital Art Exhibition Opening',
     summary: 'Opening night for contemporary digital art showcase.',
-    description: 'Experience the intersection of technology and creativity with local digital artists. Opening reception with refreshments and artist meet-and-greet.',
+    description:
+      'Experience the intersection of technology and creativity with local digital artists. Opening reception with refreshments and artist meet-and-greet.',
     location: {
       locationType: 'venue',
       address: {
@@ -292,7 +293,7 @@ const events: EventSeedData[] = [
     organizers: [],
     eventCategories: [],
     capacity: 150,
-    tags: {themes: ['art', 'technology'], vibe: ['cultural', 'modern']},
+    tags: { themes: ['art', 'technology'], vibe: ['cultural', 'modern'] },
     status: EventStatus.Ongoing,
     lifecycleStatus: EventLifecycleStatus.Published,
     visibility: EventVisibility.Public,
@@ -301,7 +302,7 @@ const events: EventSeedData[] = [
       otherMediaData: {},
     },
     heroImage: 'https://images.unsplash.com/photo-1547826039-bfc35e0f1ea8?auto=format&fit=crop&w=1600&q=80',
-    additionalDetails: {dress: 'Smart casual', parking: 'Street parking available'},
+    additionalDetails: { dress: 'Smart casual', parking: 'Street parking available' },
     comments: {},
     privacySetting: EventPrivacySetting.Public,
     orgIndex: 0,
@@ -309,8 +310,9 @@ const events: EventSeedData[] = [
   },
   {
     title: 'Startup Pitch Night',
-    summary: 'Watch tomorrow\'s innovators present their groundbreaking ideas.',
-    description: 'Five local startups will pitch their ideas to investors and the community. Networking session to follow with light refreshments.',
+    summary: "Watch tomorrow's innovators present their groundbreaking ideas.",
+    description:
+      'Five local startups will pitch their ideas to investors and the community. Networking session to follow with light refreshments.',
     location: {
       locationType: 'venue',
       address: {
@@ -332,7 +334,7 @@ const events: EventSeedData[] = [
     organizers: [],
     eventCategories: [],
     capacity: 200,
-    tags: {themes: ['business', 'technology'], format: ['networking', 'pitches']},
+    tags: { themes: ['business', 'technology'], format: ['networking', 'pitches'] },
     status: EventStatus.Upcoming,
     lifecycleStatus: EventLifecycleStatus.Published,
     visibility: EventVisibility.Public,
@@ -341,7 +343,7 @@ const events: EventSeedData[] = [
       otherMediaData: {},
     },
     heroImage: 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&w=1600&q=80',
-    additionalDetails: {judges: ['Thabo Mbeki', 'Sarah Chen', 'Amina Patel']},
+    additionalDetails: { judges: ['Thabo Mbeki', 'Sarah Chen', 'Amina Patel'] },
     comments: {},
     privacySetting: EventPrivacySetting.Public,
     orgIndex: 2,
@@ -350,7 +352,8 @@ const events: EventSeedData[] = [
   {
     title: 'Wednesday Coffee & Code',
     summary: 'Casual coding meetup for developers of all levels.',
-    description: 'Bring your laptop and join fellow developers for a relaxed coding session. Perfect for working on side projects or learning something new.',
+    description:
+      'Bring your laptop and join fellow developers for a relaxed coding session. Perfect for working on side projects or learning something new.',
     location: {
       locationType: 'venue',
       address: {
@@ -375,7 +378,7 @@ const events: EventSeedData[] = [
     organizers: [],
     eventCategories: [],
     capacity: 50,
-    tags: {themes: ['technology', 'community'], format: ['casual', 'meetup']},
+    tags: { themes: ['technology', 'community'], format: ['casual', 'meetup'] },
     status: EventStatus.Upcoming,
     lifecycleStatus: EventLifecycleStatus.Published,
     visibility: EventVisibility.Public,
@@ -384,7 +387,7 @@ const events: EventSeedData[] = [
       otherMediaData: {},
     },
     heroImage: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=1600&q=80',
-    additionalDetails: {wifi: 'High-speed available', drinks: 'Coffee and tea provided'},
+    additionalDetails: { wifi: 'High-speed available', drinks: 'Coffee and tea provided' },
     comments: {},
     privacySetting: EventPrivacySetting.Public,
     orgIndex: 0,
@@ -393,7 +396,8 @@ const events: EventSeedData[] = [
   {
     title: 'Weekend Food Festival',
     summary: 'Two-day celebration of local cuisine and culture.',
-    description: 'Over 40 food vendors, live music, cooking demonstrations, and kids activities. A culinary journey through South African flavors.',
+    description:
+      'Over 40 food vendors, live music, cooking demonstrations, and kids activities. A culinary journey through South African flavors.',
     location: {
       locationType: 'venue',
       address: {
@@ -418,7 +422,7 @@ const events: EventSeedData[] = [
     organizers: [],
     eventCategories: [],
     capacity: 5000,
-    tags: {themes: ['food', 'music', 'family'], vibe: ['festive', 'outdoor']},
+    tags: { themes: ['food', 'music', 'family'], vibe: ['festive', 'outdoor'] },
     status: EventStatus.Upcoming,
     lifecycleStatus: EventLifecycleStatus.Published,
     visibility: EventVisibility.Public,
@@ -427,7 +431,7 @@ const events: EventSeedData[] = [
       otherMediaData: {},
     },
     heroImage: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1600&q=80',
-    additionalDetails: {parking: 'Ample parking', accessibility: 'Wheelchair accessible'},
+    additionalDetails: { parking: 'Ample parking', accessibility: 'Wheelchair accessible' },
     comments: {},
     privacySetting: EventPrivacySetting.Public,
     orgIndex: 1,
@@ -436,7 +440,8 @@ const events: EventSeedData[] = [
   {
     title: 'Monthly Book Club: African Literature',
     summary: 'Discussing contemporary African authors and their impact.',
-    description: 'Join us for an engaging discussion on this month\'s selected book. New members welcome, refreshments provided.',
+    description:
+      "Join us for an engaging discussion on this month's selected book. New members welcome, refreshments provided.",
     location: {
       locationType: 'venue',
       address: {
@@ -462,7 +467,7 @@ const events: EventSeedData[] = [
     organizers: [],
     eventCategories: [],
     capacity: 30,
-    tags: {themes: ['literature', 'culture'], format: ['discussion', 'social']},
+    tags: { themes: ['literature', 'culture'], format: ['discussion', 'social'] },
     status: EventStatus.Upcoming,
     lifecycleStatus: EventLifecycleStatus.Published,
     visibility: EventVisibility.Public,
@@ -471,7 +476,7 @@ const events: EventSeedData[] = [
       otherMediaData: {},
     },
     heroImage: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?auto=format&fit=crop&w=1600&q=80',
-    additionalDetails: {currentBook: 'The Hairdresser of Harare', dresscode: 'Casual'},
+    additionalDetails: { currentBook: 'The Hairdresser of Harare', dresscode: 'Casual' },
     comments: {},
     privacySetting: EventPrivacySetting.Public,
     orgIndex: 0,

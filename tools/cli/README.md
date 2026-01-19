@@ -1,6 +1,7 @@
 # Ntlango Operations CLI
 
-This repository contains a python source code for the Ntlango CLI. This tool is used to perform common operations for the Ntlango system.
+This repository contains a python source code for the Ntlango CLI. This tool is used to perform common operations for
+the Ntlango system.
 
 ## Getting Started
 
@@ -11,7 +12,6 @@ To get started with this tool, follow these steps:
 To use this tool, ensure that you have `python3`, if not, you can install it.
 
 > Write instructions to install python3
-
 
 ### <u>Clone the repository</u>
 
@@ -24,7 +24,6 @@ $ git clone <repository-url>
 We use Python `virtual environments` to run this tool.
 
 Create the virtual environment, run the command:
-
 
 ```bash
 $ python3 -m venv .ntlango-env

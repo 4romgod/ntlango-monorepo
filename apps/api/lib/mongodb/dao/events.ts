@@ -1,13 +1,28 @@
-import {GraphQLError} from 'graphql';
-import {Event as EventModel} from '@/mongodb/models';
-import type {Event as EventEntity, UpdateEventInput, CreateEventInput, EventsQueryOptionsInput, RsvpInput, CancelRsvpInput} from '@ntlango/commons/types';
-import {CustomError, ErrorTypes, KnownCommonError, extractValidationErrorMessage, transformEventOptionsToPipeline, validateUserIdentifiers, enrichLocationWithCoordinates, createEventLookupStages} from '@/utils';
-import {ERROR_MESSAGES} from '@/validation';
-import {EventParticipantDAO} from '@/mongodb/dao';
-import {ParticipantStatus, DATE_FILTER_OPTIONS} from '@ntlango/commons';
-import {logger} from '@/utils/logger';
-import {hasOccurrenceInRange, getDateRangeForFilter} from '@/utils/rrule';
-
+import { GraphQLError } from 'graphql';
+import { Event as EventModel } from '@/mongodb/models';
+import type {
+  Event as EventEntity,
+  UpdateEventInput,
+  CreateEventInput,
+  EventsQueryOptionsInput,
+  RsvpInput,
+  CancelRsvpInput,
+} from '@ntlango/commons/types';
+import {
+  CustomError,
+  ErrorTypes,
+  KnownCommonError,
+  extractValidationErrorMessage,
+  transformEventOptionsToPipeline,
+  validateUserIdentifiers,
+  enrichLocationWithCoordinates,
+  createEventLookupStages,
+} from '@/utils';
+import { ERROR_MESSAGES } from '@/validation';
+import { EventParticipantDAO } from '@/mongodb/dao';
+import { ParticipantStatus, DATE_FILTER_OPTIONS } from '@ntlango/commons';
+import { logger } from '@/utils/logger';
+import { hasOccurrenceInRange, getDateRangeForFilter } from '@/utils/rrule';
 
 class EventDAO {
   static async create(input: CreateEventInput): Promise<EventEntity> {
@@ -16,7 +31,7 @@ class EventDAO {
       if (input.location) {
         await enrichLocationWithCoordinates(input.location);
       }
-      
+
       const event = await EventModel.create(input);
       return event.toObject();
     } catch (error) {
@@ -32,10 +47,7 @@ class EventDAO {
 
   static async readEventById(eventId: string): Promise<EventEntity> {
     try {
-      const pipeline = [
-        {$match: {eventId: eventId}},
-        ...createEventLookupStages(),
-      ];
+      const pipeline = [{ $match: { eventId: eventId } }, ...createEventLookupStages()];
       const events = await EventModel.aggregate<EventEntity>(pipeline).exec();
       if (!events || events.length === 0) {
         throw CustomError(`Event with eventId ${eventId} not found`, ErrorTypes.NOT_FOUND);
@@ -53,10 +65,7 @@ class EventDAO {
   static async readEventBySlug(slug: string): Promise<EventEntity> {
     try {
       // Use aggregation pipeline to include participants lookup
-      const pipeline = [
-        {$match: {slug: slug}},
-        ...createEventLookupStages(),
-      ];
+      const pipeline = [{ $match: { slug: slug } }, ...createEventLookupStages()];
       const events = await EventModel.aggregate<EventEntity>(pipeline).exec();
       if (!events || events.length === 0) {
         throw CustomError(`Event with slug ${slug} not found`, ErrorTypes.NOT_FOUND);
@@ -74,16 +83,16 @@ class EventDAO {
   static async readEvents(options?: EventsQueryOptionsInput): Promise<EventEntity[]> {
     try {
       logger.debug('Reading events with options:', options);
-      
+
       // Transform options to aggregation pipeline (handles filters, location, sort, pagination)
       const pipeline = transformEventOptionsToPipeline(options);
-      
+
       let events = await EventModel.aggregate<EventEntity>(pipeline).exec();
-      
+
       // Apply date range filtering if provided (filter in application layer since RRULEs are strings)
       // Handle customDate (takes precedence), dateFilterOption, and direct dateRange (for backwards compatibility)
       let dateRangeToUse = options?.dateRange;
-      
+
       if (options?.customDate) {
         // Custom date takes precedence - use it directly
         logger.debug('Using custom date:', options.customDate);
@@ -103,22 +112,18 @@ class EventDAO {
       }
 
       if (dateRangeToUse?.startDate && dateRangeToUse?.endDate) {
-        const {startDate, endDate} = dateRangeToUse;
-        logger.debug('Applying date range filter:', {startDate, endDate});
-        
-        events = events.filter(event => {
+        const { startDate, endDate } = dateRangeToUse;
+        logger.debug('Applying date range filter:', { startDate, endDate });
+
+        events = events.filter((event) => {
           if (!event.recurrenceRule) {
             return false;
           }
-          
-          return hasOccurrenceInRange(
-            event.recurrenceRule,
-            new Date(startDate),
-            new Date(endDate)
-          );
+
+          return hasOccurrenceInRange(event.recurrenceRule, new Date(startDate), new Date(endDate));
         });
       }
-      
+
       return events;
     } catch (error) {
       logger.error('Error reading events', error);
@@ -128,25 +133,23 @@ class EventDAO {
 
   static async updateEvent(input: UpdateEventInput): Promise<EventEntity> {
     try {
-      const {eventId, ...restInput} = input;
+      const { eventId, ...restInput } = input;
       const event = await EventModel.findById(eventId).exec();
 
       if (!event) {
         throw CustomError(`Event with eventId ${eventId} not found`, ErrorTypes.NOT_FOUND);
       }
-      
+
       // Geocode address to coordinates if location is being updated
       if (restInput.location) {
         await enrichLocationWithCoordinates(restInput.location);
       }
-      
+
       // Filter out undefined values to avoid overwriting with undefined
-      const fieldsToUpdate = Object.fromEntries(
-        Object.entries(restInput).filter(([_, value]) => value !== undefined)
-      );
+      const fieldsToUpdate = Object.fromEntries(Object.entries(restInput).filter(([_, value]) => value !== undefined));
       Object.assign(event, fieldsToUpdate);
       await event.save();
-      
+
       return event.toObject();
     } catch (error) {
       logger.error('Error updating event', error);
@@ -175,7 +178,7 @@ class EventDAO {
 
   static async deleteEventBySlug(slug: string): Promise<EventEntity> {
     try {
-      const deletedEvent = await EventModel.findOneAndDelete({slug}).exec();
+      const deletedEvent = await EventModel.findOneAndDelete({ slug }).exec();
       if (!deletedEvent) {
         throw CustomError(`Event with slug ${slug} not found`, ErrorTypes.NOT_FOUND);
       }
@@ -190,7 +193,7 @@ class EventDAO {
   }
 
   static async RSVP(input: RsvpInput) {
-    const {eventId} = input;
+    const { eventId } = input;
 
     try {
       const validUserIds = await validateUserIdentifiers(input);
@@ -201,7 +204,7 @@ class EventDAO {
       }
 
       for (const userId of validUserIds) {
-        await EventParticipantDAO.upsert({eventId, userId, status: ParticipantStatus.Going});
+        await EventParticipantDAO.upsert({ eventId, userId, status: ParticipantStatus.Going });
       }
 
       return event.toObject();
@@ -215,7 +218,7 @@ class EventDAO {
   }
 
   static async cancelRSVP(input: CancelRsvpInput) {
-    const {eventId} = input;
+    const { eventId } = input;
 
     try {
       const validUserIds = await validateUserIdentifiers(input);
@@ -226,7 +229,7 @@ class EventDAO {
       }
 
       for (const userId of validUserIds) {
-        await EventParticipantDAO.cancel({eventId, userId});
+        await EventParticipantDAO.cancel({ eventId, userId });
       }
 
       return event.toObject();

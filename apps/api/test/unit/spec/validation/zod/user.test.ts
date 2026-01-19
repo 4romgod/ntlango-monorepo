@@ -7,7 +7,7 @@ import {
   ResetPasswordInputTypeSchema,
   ERROR_MESSAGES,
 } from '@/validation';
-import {Gender} from '@ntlango/commons/types/user';
+import { Gender } from '@ntlango/commons/types/user';
 import mongoose from 'mongoose';
 
 describe('User', () => {
@@ -35,13 +35,13 @@ describe('User', () => {
   describe('UserSchema', () => {
     it('should validate valid UserSchema', () => {
       const validInput = getValidUserInput();
-      const {success} = UserSchema.safeParse(validInput);
+      const { success } = UserSchema.safeParse(validInput);
       expect(success).toBe(true);
     });
 
     it('should invalidate missing required fields', () => {
       const invalidInput = {};
-      const {success, error} = UserSchema.safeParse(invalidInput);
+      const { success, error } = UserSchema.safeParse(invalidInput);
       expect(success).toBe(false);
       if (error) {
         expect(error.errors.length).toBeGreaterThan(0);
@@ -53,7 +53,7 @@ describe('User', () => {
         ...getValidUserInput(),
         email: 'invalid-email',
       };
-      const {success, error} = UserSchema.safeParse(invalidInput);
+      const { success, error } = UserSchema.safeParse(invalidInput);
       expect(success).toBe(false);
       if (error) {
         expect(error.errors[0].message).toBe(ERROR_MESSAGES.INVALID_EMAIL);
@@ -65,7 +65,7 @@ describe('User', () => {
         ...getValidUserInput(),
         phone_number: 'invalid-phone',
       };
-      const {success, error} = UserSchema.safeParse(invalidInput);
+      const { success, error } = UserSchema.safeParse(invalidInput);
       expect(success).toBe(false);
       if (error) {
         expect(error.errors[0].message).toBe(ERROR_MESSAGES.INVALID_PHONE_NUMBER);
@@ -80,13 +80,13 @@ describe('User', () => {
         password: 'securepassword123',
         userId: undefined,
       };
-      const {success} = CreateUserInputSchema.safeParse(validInput);
+      const { success } = CreateUserInputSchema.safeParse(validInput);
       expect(success).toBe(true);
     });
 
     it('should invalidate missing required fields', () => {
       const invalidInput = {};
-      const {success, error} = CreateUserInputSchema.safeParse(invalidInput);
+      const { success, error } = CreateUserInputSchema.safeParse(invalidInput);
       expect(success).toBe(false);
       if (error) {
         expect(error.errors.length).toBeGreaterThan(0);
@@ -100,7 +100,7 @@ describe('User', () => {
         userId: mockID,
         given_name: 'Updated Name',
       };
-      const {success} = UpdateUserInputSchema.safeParse(validInput);
+      const { success } = UpdateUserInputSchema.safeParse(validInput);
       expect(success).toBe(true);
     });
 
@@ -109,7 +109,7 @@ describe('User', () => {
         userId: 'invalid-id-format',
         given_name: 'Updated Name',
       };
-      const {success, error} = UpdateUserInputSchema.safeParse(invalidInput);
+      const { success, error } = UpdateUserInputSchema.safeParse(invalidInput);
       expect(success).toBe(false);
       if (error) {
         expect(error.errors[0].message).toBe(`User with UserId ${ERROR_MESSAGES.DOES_NOT_EXIST}`);
@@ -123,13 +123,13 @@ describe('User', () => {
         email: 'user@example.com',
         password: 'securepassword123',
       };
-      const {success} = LoginUserInputSchema.safeParse(validInput);
+      const { success } = LoginUserInputSchema.safeParse(validInput);
       expect(success).toBe(true);
     });
 
     it('should invalidate missing required fields', () => {
       const invalidInput = {};
-      const {success, error} = LoginUserInputSchema.safeParse(invalidInput);
+      const { success, error } = LoginUserInputSchema.safeParse(invalidInput);
       expect(success).toBe(false);
       if (error) {
         expect(error.errors.length).toBeGreaterThan(0);
@@ -141,7 +141,7 @@ describe('User', () => {
         email: 'invalid-email',
         password: 'securepassword123',
       };
-      const {success, error} = LoginUserInputSchema.safeParse(invalidInput);
+      const { success, error } = LoginUserInputSchema.safeParse(invalidInput);
       expect(success).toBe(false);
       if (error) {
         expect(error.errors[0].message).toBe(ERROR_MESSAGES.INVALID_EMAIL);
@@ -154,13 +154,13 @@ describe('User', () => {
       const validInput = {
         email: 'user@example.com',
       };
-      const {success} = ForgotPasswordInputTypeSchema.safeParse(validInput);
+      const { success } = ForgotPasswordInputTypeSchema.safeParse(validInput);
       expect(success).toBe(true);
     });
 
     it('should invalidate missing required fields', () => {
       const invalidInput = {};
-      const {success, error} = ForgotPasswordInputTypeSchema.safeParse(invalidInput);
+      const { success, error } = ForgotPasswordInputTypeSchema.safeParse(invalidInput);
       expect(success).toBe(false);
       if (error) {
         expect(error.errors.length).toBeGreaterThan(0);
@@ -171,7 +171,7 @@ describe('User', () => {
       const invalidInput = {
         email: 'invalid-email',
       };
-      const {success, error} = ForgotPasswordInputTypeSchema.safeParse(invalidInput);
+      const { success, error } = ForgotPasswordInputTypeSchema.safeParse(invalidInput);
       expect(success).toBe(false);
       if (error) {
         expect(error.errors[0].message).toBe(ERROR_MESSAGES.INVALID_EMAIL);
@@ -184,13 +184,13 @@ describe('User', () => {
       const validInput = {
         password: 'newsecurepassword123',
       };
-      const {success} = ResetPasswordInputTypeSchema.safeParse(validInput);
+      const { success } = ResetPasswordInputTypeSchema.safeParse(validInput);
       expect(success).toBe(true);
     });
 
     it('should invalidate missing required fields', () => {
       const invalidInput = {};
-      const {success, error} = ResetPasswordInputTypeSchema.safeParse(invalidInput);
+      const { success, error } = ResetPasswordInputTypeSchema.safeParse(invalidInput);
       expect(success).toBe(false);
       if (error) {
         expect(error.errors.length).toBeGreaterThan(0);
@@ -201,7 +201,7 @@ describe('User', () => {
       const invalidInput = {
         password: 'short',
       };
-      const {success, error} = ResetPasswordInputTypeSchema.safeParse(invalidInput);
+      const { success, error } = ResetPasswordInputTypeSchema.safeParse(invalidInput);
       expect(success).toBe(false);
       if (error) {
         expect(error.errors[0].message).toBe(ERROR_MESSAGES.INVALID_PASSWORD);

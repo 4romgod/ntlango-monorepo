@@ -1,0 +1,27 @@
+# Build outputs
+dist/
+build/
+.next/
+.vercel/
+out/
+cdk.out/
+
+# Dependencies
+node_modules/
+
+# Test artifacts
+coverage/
+<rootDir>/
+
+# Generated files
+*.generated.*
+*.d.ts
+
+# Package manager
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# Misc
+.git/
+.DS_Store

@@ -1,11 +1,11 @@
-import {GraphQLError} from 'graphql';
-import {FollowDAO} from '@/mongodb/dao';
-import {Follow as FollowModel} from '@/mongodb/models';
-import type {Follow, CreateFollowInput} from '@ntlango/commons/types';
-import {FollowTargetType, FollowApprovalStatus} from '@ntlango/commons/types';
-import {CustomError, ErrorTypes} from '@/utils';
-import {MockMongoError} from '@/test/utils';
-import {ERROR_MESSAGES} from '@/validation';
+import { GraphQLError } from 'graphql';
+import { FollowDAO } from '@/mongodb/dao';
+import { Follow as FollowModel } from '@/mongodb/models';
+import type { Follow, CreateFollowInput } from '@ntlango/commons/types';
+import { FollowTargetType, FollowApprovalStatus } from '@ntlango/commons/types';
+import { CustomError, ErrorTypes } from '@/utils';
+import { MockMongoError } from '@/test/utils';
+import { ERROR_MESSAGES } from '@/validation';
 
 jest.mock('@/mongodb/models', () => ({
   Follow: {
@@ -50,7 +50,7 @@ describe('FollowDAO', () => {
         toObject: () => mockFollow,
       });
 
-      const input: CreateFollowInput & {followerUserId: string} = {
+      const input: CreateFollowInput & { followerUserId: string } = {
         followerUserId: 'user-1',
         targetType: FollowTargetType.User,
         targetId: 'user-2',
@@ -81,7 +81,7 @@ describe('FollowDAO', () => {
         targetId: 'user-2',
         approvalStatus: FollowApprovalStatus.Rejected,
         save: jest.fn().mockResolvedValue(undefined),
-        toObject: () => ({...existingRejectedFollow, approvalStatus: FollowApprovalStatus.Pending}),
+        toObject: () => ({ ...existingRejectedFollow, approvalStatus: FollowApprovalStatus.Pending }),
       };
 
       (FollowModel.findOne as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(existingRejectedFollow));
@@ -108,7 +108,7 @@ describe('FollowDAO', () => {
       (FollowModel.findOne as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(graphQLError));
 
       await expect(
-        FollowDAO.upsert({followerUserId: 'user-1', targetType: FollowTargetType.User, targetId: 'user-2'}),
+        FollowDAO.upsert({ followerUserId: 'user-1', targetType: FollowTargetType.User, targetId: 'user-2' }),
       ).rejects.toThrow(graphQLError);
     });
 
@@ -116,7 +116,7 @@ describe('FollowDAO', () => {
       (FollowModel.findOne as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(new MockMongoError(0)));
 
       await expect(
-        FollowDAO.upsert({followerUserId: 'user-1', targetType: FollowTargetType.User, targetId: 'user-2'}),
+        FollowDAO.upsert({ followerUserId: 'user-1', targetType: FollowTargetType.User, targetId: 'user-2' }),
       ).rejects.toThrow(CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR));
     });
   });
@@ -133,7 +133,7 @@ describe('FollowDAO', () => {
 
       const result = await FollowDAO.readFollowingForUser('user-1');
 
-      expect(FollowModel.find).toHaveBeenCalledWith({followerUserId: 'user-1'});
+      expect(FollowModel.find).toHaveBeenCalledWith({ followerUserId: 'user-1' });
       expect(result).toEqual([mockFollow]);
     });
 
@@ -184,7 +184,7 @@ describe('FollowDAO', () => {
       );
 
       await expect(
-        FollowDAO.remove({followerUserId: 'user-1', targetType: FollowTargetType.User, targetId: 'user-2'}),
+        FollowDAO.remove({ followerUserId: 'user-1', targetType: FollowTargetType.User, targetId: 'user-2' }),
       ).resolves.toBe(true);
     });
 
@@ -192,7 +192,7 @@ describe('FollowDAO', () => {
       (FollowModel.findOneAndDelete as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(null));
 
       await expect(
-        FollowDAO.remove({followerUserId: 'user-1', targetType: FollowTargetType.User, targetId: 'user-2'}),
+        FollowDAO.remove({ followerUserId: 'user-1', targetType: FollowTargetType.User, targetId: 'user-2' }),
       ).rejects.toThrow(CustomError('Follow edge not found', ErrorTypes.NOT_FOUND));
     });
 
@@ -201,7 +201,7 @@ describe('FollowDAO', () => {
       (FollowModel.findOneAndDelete as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(graphQLError));
 
       await expect(
-        FollowDAO.remove({followerUserId: 'user-1', targetType: FollowTargetType.User, targetId: 'user-2'}),
+        FollowDAO.remove({ followerUserId: 'user-1', targetType: FollowTargetType.User, targetId: 'user-2' }),
       ).rejects.toThrow(graphQLError);
     });
 
@@ -209,7 +209,7 @@ describe('FollowDAO', () => {
       (FollowModel.findOneAndDelete as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(new MockMongoError(0)));
 
       await expect(
-        FollowDAO.remove({followerUserId: 'user-1', targetType: FollowTargetType.User, targetId: 'user-2'}),
+        FollowDAO.remove({ followerUserId: 'user-1', targetType: FollowTargetType.User, targetId: 'user-2' }),
       ).rejects.toThrow(CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR));
     });
   });
@@ -221,7 +221,7 @@ describe('FollowDAO', () => {
         targetId: 'user-2',
         approvalStatus: FollowApprovalStatus.Pending,
         save: jest.fn().mockResolvedValue(undefined),
-        toObject: () => ({...mockFollow, approvalStatus: FollowApprovalStatus.Accepted}),
+        toObject: () => ({ ...mockFollow, approvalStatus: FollowApprovalStatus.Accepted }),
       };
       (FollowModel.findOne as jest.Mock).mockReturnValue({
         exec: jest.fn().mockResolvedValue(mockFollowDoc),
@@ -229,7 +229,7 @@ describe('FollowDAO', () => {
 
       const result = await FollowDAO.updateApprovalStatus('follow-1', 'user-2', FollowApprovalStatus.Accepted);
 
-      expect(FollowModel.findOne).toHaveBeenCalledWith({followId: 'follow-1'});
+      expect(FollowModel.findOne).toHaveBeenCalledWith({ followId: 'follow-1' });
       expect(mockFollowDoc.save).toHaveBeenCalled();
       expect(result.approvalStatus).toBe(FollowApprovalStatus.Accepted);
     });
@@ -264,7 +264,9 @@ describe('FollowDAO', () => {
         exec: jest.fn().mockRejectedValue(graphQLError),
       });
 
-      await expect(FollowDAO.updateApprovalStatus('follow-1', 'user-2', FollowApprovalStatus.Accepted)).rejects.toThrow(graphQLError);
+      await expect(FollowDAO.updateApprovalStatus('follow-1', 'user-2', FollowApprovalStatus.Accepted)).rejects.toThrow(
+        graphQLError,
+      );
     });
 
     it('wraps unknown errors', async () => {
@@ -282,8 +284,8 @@ describe('FollowDAO', () => {
     it('reads follow requests for a user', async () => {
       (FollowModel.find as jest.Mock).mockReturnValue(
         createMockSuccessMongooseQuery([
-          {toObject: () => mockFollow},
-          {toObject: () => ({...mockFollow, followId: 'follow-2', followerUserId: 'user-3'})},
+          { toObject: () => mockFollow },
+          { toObject: () => ({ ...mockFollow, followId: 'follow-2', followerUserId: 'user-3' }) },
         ]),
       );
 
@@ -473,8 +475,8 @@ describe('FollowDAO', () => {
     it('reads saved events for a user', async () => {
       (FollowModel.find as jest.Mock).mockReturnValue(
         createMockSuccessMongooseQuery([
-          {toObject: () => mockEventFollow},
-          {toObject: () => ({...mockEventFollow, followId: 'follow-event-2', targetId: 'event-2'})},
+          { toObject: () => mockEventFollow },
+          { toObject: () => ({ ...mockEventFollow, followId: 'follow-event-2', targetId: 'event-2' }) },
         ]),
       );
 

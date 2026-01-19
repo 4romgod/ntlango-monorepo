@@ -1,20 +1,19 @@
-import {GraphQLError} from 'graphql';
-import type {
-  Follow as FollowEntity,
-  CreateFollowInput,
-} from '@ntlango/commons/types';
-import {FollowApprovalStatus, FollowTargetType} from '@ntlango/commons/types';
-import {Follow as FollowModel} from '@/mongodb/models';
-import {CustomError, ErrorTypes, KnownCommonError} from '@/utils';
-import {logger} from '@/utils/logger';
+import { GraphQLError } from 'graphql';
+import type { Follow as FollowEntity, CreateFollowInput } from '@ntlango/commons/types';
+import { FollowApprovalStatus, FollowTargetType } from '@ntlango/commons/types';
+import { Follow as FollowModel } from '@/mongodb/models';
+import { CustomError, ErrorTypes, KnownCommonError } from '@/utils';
+import { logger } from '@/utils/logger';
 
 class FollowDAO {
-  static async upsert(input: CreateFollowInput & {followerUserId: string; approvalStatus?: FollowApprovalStatus}): Promise<FollowEntity> {
+  static async upsert(
+    input: CreateFollowInput & { followerUserId: string; approvalStatus?: FollowApprovalStatus },
+  ): Promise<FollowEntity> {
     try {
-      const {followerUserId, targetType, targetId, approvalStatus} = input;
-      
-      let follow = await FollowModel.findOne({followerUserId, targetType, targetId}).exec();
-      
+      const { followerUserId, targetType, targetId, approvalStatus } = input;
+
+      let follow = await FollowModel.findOne({ followerUserId, targetType, targetId }).exec();
+
       if (follow) {
         // Update existing follow (e.g., re-following after rejection)
         follow.targetType = targetType;
@@ -43,9 +42,13 @@ class FollowDAO {
     }
   }
 
-  static async updateApprovalStatus(followId: string, targetUserId: string, approvalStatus: FollowApprovalStatus): Promise<FollowEntity> {
+  static async updateApprovalStatus(
+    followId: string,
+    targetUserId: string,
+    approvalStatus: FollowApprovalStatus,
+  ): Promise<FollowEntity> {
     try {
-      const follow = await FollowModel.findOne({followId}).exec();
+      const follow = await FollowModel.findOne({ followId }).exec();
 
       if (!follow) {
         throw CustomError('Follow request not found', ErrorTypes.NOT_FOUND);
@@ -75,7 +78,7 @@ class FollowDAO {
         targetType,
         approvalStatus: FollowApprovalStatus.Pending,
       })
-        .sort({createdAt: -1})
+        .sort({ createdAt: -1 })
         .exec();
       return follows.map((f) => f.toObject());
     } catch (error) {
@@ -90,7 +93,7 @@ class FollowDAO {
         targetId: targetUserId,
         targetType,
       })
-        .sort({updatedAt: -1})
+        .sort({ updatedAt: -1 })
         .exec();
       return follows.map((f) => f.toObject());
     } catch (error) {
@@ -101,7 +104,7 @@ class FollowDAO {
 
   static async readFollowingForUser(followerUserId: string): Promise<FollowEntity[]> {
     try {
-      const follows = await FollowModel.find({followerUserId}).sort({createdAt: -1}).exec();
+      const follows = await FollowModel.find({ followerUserId }).sort({ createdAt: -1 }).exec();
       return follows.map((f) => f.toObject());
     } catch (error) {
       logger.error('Error reading following list', error);
@@ -116,7 +119,7 @@ class FollowDAO {
         targetId,
         approvalStatus: FollowApprovalStatus.Accepted,
       })
-        .sort({createdAt: -1})
+        .sort({ createdAt: -1 })
         .exec();
       return follows.map((f) => f.toObject());
     } catch (error) {
@@ -142,11 +145,7 @@ class FollowDAO {
    * Check if a user follows a specific target.
    * More efficient than loading all follows when checking a single relationship.
    */
-  static async isFollowing(
-    followerUserId: string,
-    targetType: FollowTargetType,
-    targetId: string,
-  ): Promise<boolean> {
+  static async isFollowing(followerUserId: string, targetType: FollowTargetType, targetId: string): Promise<boolean> {
     try {
       const follow = await FollowModel.findOne({
         followerUserId,
@@ -171,7 +170,11 @@ class FollowDAO {
    * @returns true if the follow was removed
    * @throws NOT_FOUND if no follow edge exists
    */
-  static async remove(params: {followerUserId: string; targetType: FollowTargetType; targetId: string}): Promise<boolean> {
+  static async remove(params: {
+    followerUserId: string;
+    targetType: FollowTargetType;
+    targetId: string;
+  }): Promise<boolean> {
     try {
       const removed = await FollowModel.findOneAndDelete(params).exec();
       if (!removed) {
@@ -197,7 +200,11 @@ class FollowDAO {
    * @returns true if the follower was removed
    * @throws NOT_FOUND if no accepted follow exists
    */
-  static async removeFollower(targetUserId: string, followerUserId: string, targetType: FollowTargetType): Promise<boolean> {
+  static async removeFollower(
+    targetUserId: string,
+    followerUserId: string,
+    targetType: FollowTargetType,
+  ): Promise<boolean> {
     try {
       const removed = await FollowModel.findOneAndDelete({
         followerUserId,
@@ -205,11 +212,11 @@ class FollowDAO {
         targetId: targetUserId,
         approvalStatus: FollowApprovalStatus.Accepted,
       }).exec();
-      
+
       if (!removed) {
         throw CustomError('Follower not found or not authorized', ErrorTypes.NOT_FOUND);
       }
-      
+
       return true;
     } catch (error) {
       logger.error('Error removing follower', error);
@@ -236,7 +243,7 @@ class FollowDAO {
         targetType: FollowTargetType.Event,
         approvalStatus: FollowApprovalStatus.Accepted,
       })
-        .sort({createdAt: -1})
+        .sort({ createdAt: -1 })
         .exec();
       return follows.map((f) => f.toObject());
     } catch (error) {

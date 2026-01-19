@@ -1,10 +1,15 @@
-import {EventCategoryGroupDAO} from '@/mongodb/dao';
-import {EventCategoryGroup as EventCategoryGroupModel} from '@/mongodb/models';
-import type {EventCategoryGroup, CreateEventCategoryGroupInput, UpdateEventCategoryGroupInput, QueryOptionsInput} from '@ntlango/commons/types';
-import {SortOrderInput} from '@ntlango/commons/types';
-import {CustomError, ErrorTypes, transformOptionsToQuery} from '@/utils';
-import {ERROR_MESSAGES} from '@/validation';
-import {MockMongoError} from '@/test/utils';
+import { EventCategoryGroupDAO } from '@/mongodb/dao';
+import { EventCategoryGroup as EventCategoryGroupModel } from '@/mongodb/models';
+import type {
+  EventCategoryGroup,
+  CreateEventCategoryGroupInput,
+  UpdateEventCategoryGroupInput,
+  QueryOptionsInput,
+} from '@ntlango/commons/types';
+import { SortOrderInput } from '@ntlango/commons/types';
+import { CustomError, ErrorTypes, transformOptionsToQuery } from '@/utils';
+import { ERROR_MESSAGES } from '@/validation';
+import { MockMongoError } from '@/test/utils';
 
 jest.mock('@/mongodb/models', () => ({
   EventCategoryGroup: {
@@ -132,7 +137,7 @@ describe('EventCategoryGroupDAO', () => {
 
       const result = await EventCategoryGroupDAO.readEventCategoryGroupBySlug(slug);
 
-      expect(EventCategoryGroupModel.findOne).toHaveBeenCalledWith({slug});
+      expect(EventCategoryGroupModel.findOne).toHaveBeenCalledWith({ slug });
       expect(mockQuery.exec).toHaveBeenCalled();
       expect(result).toEqual(mockEventCategoryGroup);
     });
@@ -185,9 +190,9 @@ describe('EventCategoryGroupDAO', () => {
 
     it('should read event category groups with options and populate eventCategories', async () => {
       const options: QueryOptionsInput = {
-        filters: [{field: 'name', value: 'Test Group'}],
-        sort: [{field: 'name', order: SortOrderInput.asc}],
-        pagination: {skip: 0, limit: 10},
+        filters: [{ field: 'name', value: 'Test Group' }],
+        sort: [{ field: 'name', order: SortOrderInput.asc }],
+        pagination: { skip: 0, limit: 10 },
       };
 
       const mockGroups = [mockEventCategoryGroup];
@@ -231,13 +236,13 @@ describe('EventCategoryGroupDAO', () => {
       };
 
       const mockSave = jest.fn().mockResolvedValue({
-        toObject: () => ({...mockEventCategoryGroup, name: 'Updated Group'}),
+        toObject: () => ({ ...mockEventCategoryGroup, name: 'Updated Group' }),
       });
       const mockQuery = createMockSuccessMongooseQuery({
         ...mockEventCategoryGroup,
         name: 'Updated Group',
         save: mockSave,
-        toObject: jest.fn().mockReturnValue({...mockEventCategoryGroup, name: 'Updated Group'}),
+        toObject: jest.fn().mockReturnValue({ ...mockEventCategoryGroup, name: 'Updated Group' }),
       });
 
       (EventCategoryGroupModel.findById as jest.Mock).mockReturnValue(mockQuery);
@@ -297,7 +302,7 @@ describe('EventCategoryGroupDAO', () => {
 
       const result = await EventCategoryGroupDAO.deleteEventCategoryGroupBySlug(slug);
 
-      expect(EventCategoryGroupModel.findOneAndDelete).toHaveBeenCalledWith({slug});
+      expect(EventCategoryGroupModel.findOneAndDelete).toHaveBeenCalledWith({ slug });
       expect(result).toEqual(mockEventCategoryGroup);
     });
 

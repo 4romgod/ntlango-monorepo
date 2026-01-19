@@ -2,16 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import {
-  Avatar,
-  Box,
-  IconButton,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  Typography,
-  Tooltip,
-} from '@mui/material';
+import { Avatar, Box, IconButton, ListItem, ListItemAvatar, ListItemText, Typography, Tooltip } from '@mui/material';
 import {
   PersonAdd as FollowIcon,
   Check as CheckIcon,
@@ -95,9 +86,8 @@ export default function NotificationItem({
   isLoading = false,
 }: NotificationItemProps) {
   const { icon, color } = getNotificationStyle(notification.type);
-  const timestamp = typeof notification.createdAt === 'string' 
-    ? new Date(notification.createdAt) 
-    : notification.createdAt;
+  const timestamp =
+    typeof notification.createdAt === 'string' ? new Date(notification.createdAt) : notification.createdAt;
 
   const handleMarkRead = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -139,11 +129,7 @@ export default function NotificationItem({
     >
       <ListItemAvatar sx={{ mt: 0.5, minWidth: 48 }}>
         {notification.actor?.profile_picture ? (
-          <Avatar
-            src={notification.actor.profile_picture}
-            alt={actorName || 'User'}
-            sx={{ width: 40, height: 40 }}
-          />
+          <Avatar src={notification.actor.profile_picture} alt={actorName || 'User'} sx={{ width: 40, height: 40 }} />
         ) : (
           <Avatar
             sx={{
@@ -174,7 +160,7 @@ export default function NotificationItem({
                 {notification.message}
               </Typography>
             </Box>
-            
+
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexShrink: 0 }}>
               {!notification.isRead && onMarkRead && (
                 <Tooltip title="Mark as read">
@@ -182,7 +168,7 @@ export default function NotificationItem({
                     size="small"
                     onClick={handleMarkRead}
                     disabled={isLoading}
-                    sx={{ 
+                    sx={{
                       p: 0.5,
                       '&:hover': { color: 'primary.main' },
                     }}
@@ -197,7 +183,7 @@ export default function NotificationItem({
                     size="small"
                     onClick={handleDelete}
                     disabled={isLoading}
-                    sx={{ 
+                    sx={{
                       p: 0.5,
                       '&:hover': { color: 'error.main' },
                     }}

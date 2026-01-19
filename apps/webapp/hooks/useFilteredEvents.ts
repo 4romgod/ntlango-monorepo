@@ -123,7 +123,7 @@ export const useFilteredEvents = (filters: EventFilters, initialEvents: EventPre
         },
       },
     })
-      .then(response => {
+      .then((response) => {
         if (!isCurrent) {
           return;
         }
@@ -134,7 +134,7 @@ export const useFilteredEvents = (filters: EventFilters, initialEvents: EventPre
           setError('Failed to load filtered events. Please try again.');
         }
       })
-      .catch(error => {
+      .catch((error) => {
         if (isCurrent && error.name !== 'AbortError') {
           console.error('Error fetching filtered events', error);
           setError('Unable to apply filters. Please check your connection and try again.');

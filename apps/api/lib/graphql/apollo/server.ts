@@ -1,19 +1,19 @@
-import {ApolloServerPluginLandingPageLocalDefault} from '@apollo/server/plugin/landingPage/default';
-import {ApolloServerPluginDrainHttpServer} from '@apollo/server/plugin/drainHttpServer';
-import type {Express, Request, Response} from 'express';
-import type {GraphQLError, GraphQLFormattedError} from 'graphql';
-import {STAGE} from '@/constants';
-import {logger} from '@/utils/logger';
-import type {ApolloServerPlugin} from '@apollo/server';
-import {ApolloServer} from '@apollo/server';
-import {createServer} from 'http';
-import {APPLICATION_STAGES} from '@ntlango/commons';
-import {ApolloServerErrorCode} from '@apollo/server/errors';
-import {HttpStatusCode} from '@/constants';
-import {ERROR_MESSAGES} from '@/validation';
+import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
+import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
+import type { Express, Request, Response } from 'express';
+import type { GraphQLError, GraphQLFormattedError } from 'graphql';
+import { STAGE } from '@/constants';
+import { logger } from '@/utils/logger';
+import type { ApolloServerPlugin } from '@apollo/server';
+import { ApolloServer } from '@apollo/server';
+import { createServer } from 'http';
+import { APPLICATION_STAGES } from '@ntlango/commons';
+import { ApolloServerErrorCode } from '@apollo/server/errors';
+import { HttpStatusCode } from '@/constants';
+import { ERROR_MESSAGES } from '@/validation';
 import createSchema from '@/graphql/schema';
 import type DataLoader from 'dataloader';
-import type {User, EventCategory, Organization, Event} from '@ntlango/commons/types';
+import type { User, EventCategory, Organization, Event } from '@ntlango/commons/types';
 
 export interface ServerContext {
   token?: string;
@@ -52,7 +52,7 @@ const ERROR_CODE_HTTP_STATUS_MAP: Record<string, HttpStatusCode> = {
 };
 
 const getHttpStatusFromError = (errorCode: string, error: GraphQLError) => {
-  const httpExtension = error.extensions?.http as {status?: number} | undefined;
+  const httpExtension = error.extensions?.http as { status?: number } | undefined;
   const explicitStatus = httpExtension?.status;
   if (typeof explicitStatus === 'number') {
     return explicitStatus;
@@ -83,7 +83,7 @@ const getQueryStringFromRequest = (query: GraphQLQueryValue | undefined) => {
 };
 
 const createGraphQLRequestLoggingPlugin = (): ApolloServerPlugin<ServerContext> => ({
-  async requestDidStart({request}) {
+  async requestDidStart({ request }) {
     if (!request) {
       return {};
     }
@@ -108,13 +108,15 @@ export const createApolloServer = async (expressApp?: Express) => {
     includeStacktraceInErrorResponses: STAGE !== APPLICATION_STAGES.PROD,
     status400ForVariableCoercionErrors: true,
     formatError: (formattedError: GraphQLFormattedError, error: unknown) => {
-      logger.warn('GraphQL Error:', {formattedError, error});
+      logger.warn('GraphQL Error:', { formattedError, error });
 
       const graphQLError = error as GraphQLError;
 
-      const {exception: _exception, http: _http, ...extensionsWithoutException} = formattedError.extensions ?? {};
+      const { exception: _exception, http: _http, ...extensionsWithoutException } = formattedError.extensions ?? {};
       const baseErrorCode =
-        typeof extensionsWithoutException.code === 'string' ? extensionsWithoutException.code : ApolloServerErrorCode.INTERNAL_SERVER_ERROR;
+        typeof extensionsWithoutException.code === 'string'
+          ? extensionsWithoutException.code
+          : ApolloServerErrorCode.INTERNAL_SERVER_ERROR;
       const resolvedErrorCode = baseErrorCode;
       const message = useInvalidQueryMessage(resolvedErrorCode) ? ERROR_MESSAGES.INVALID_QUERY : formattedError.message;
       const status = getHttpStatusFromError(resolvedErrorCode, graphQLError);
@@ -133,7 +135,7 @@ export const createApolloServer = async (expressApp?: Express) => {
     },
     plugins: [
       ApolloServerPluginLandingPageLocalDefault(),
-      ...(expressApp ? [ApolloServerPluginDrainHttpServer({httpServer: createServer(expressApp)})] : []),
+      ...(expressApp ? [ApolloServerPluginDrainHttpServer({ httpServer: createServer(expressApp) })] : []),
       ...(STAGE !== APPLICATION_STAGES.PROD ? [createGraphQLRequestLoggingPlugin()] : []),
     ],
   });

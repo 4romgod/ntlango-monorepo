@@ -1,7 +1,7 @@
 import DataLoader from 'dataloader';
-import {EventCategory as EventCategoryModel} from '@/mongodb/models';
-import type {EventCategory} from '@ntlango/commons/types';
-import {logger} from '@/utils/logger';
+import { EventCategory as EventCategoryModel } from '@/mongodb/models';
+import type { EventCategory } from '@ntlango/commons/types';
+import { logger } from '@/utils/logger';
 
 /**
  * Creates a per-request DataLoader for batching EventCategory lookups by ID.
@@ -13,7 +13,7 @@ export const createEventCategoryLoader = () =>
       const uniqueKeys = Array.from(new Set(keys.map((k) => k.toString())));
       logger.debug(`EventCategoryLoader batching ${uniqueKeys.length} category IDs`);
 
-      const categories = await EventCategoryModel.find({_id: {$in: uniqueKeys}})
+      const categories = await EventCategoryModel.find({ _id: { $in: uniqueKeys } })
         .lean()
         .exec();
 

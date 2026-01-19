@@ -1,16 +1,16 @@
 import 'reflect-metadata';
-import {OrganizationMembershipResolver} from '@/graphql/resolvers/organizationMembership';
-import {OrganizationMembershipDAO} from '@/mongodb/dao';
-import {OrganizationMembershipService} from '@/services';
+import { OrganizationMembershipResolver } from '@/graphql/resolvers/organizationMembership';
+import { OrganizationMembershipDAO } from '@/mongodb/dao';
+import { OrganizationMembershipService } from '@/services';
 import type {
   CreateOrganizationMembershipInput,
   DeleteOrganizationMembershipInput,
   OrganizationMembership,
   UpdateOrganizationMembershipInput,
 } from '@ntlango/commons/types';
-import {OrganizationRole} from '@ntlango/commons/types';
+import { OrganizationRole } from '@ntlango/commons/types';
 import * as validation from '@/validation';
-import type {ServerContext} from '@/graphql';
+import type { ServerContext } from '@/graphql';
 
 jest.mock('@/mongodb/dao', () => ({
   OrganizationMembershipDAO: {
@@ -57,7 +57,7 @@ describe('OrganizationMembershipResolver', () => {
   };
 
   const mockContext = {
-    user: {userId: 'admin-user-001', email: 'admin@test.com'},
+    user: { userId: 'admin-user-001', email: 'admin@test.com' },
   } as ServerContext;
 
   beforeEach(() => {
@@ -141,7 +141,10 @@ describe('OrganizationMembershipResolver', () => {
 
       const result = await resolver.readOrganizationMembershipsByOrgId(mockMembership.orgId);
 
-      expect(validation.validateMongodbId).toHaveBeenCalledWith(mockMembership.orgId, expect.stringContaining('Organization'));
+      expect(validation.validateMongodbId).toHaveBeenCalledWith(
+        mockMembership.orgId,
+        expect.stringContaining('Organization'),
+      );
       expect(OrganizationMembershipDAO.readMembershipsByOrgId).toHaveBeenCalledWith(mockMembership.orgId);
       expect(result).toEqual([mockMembership]);
     });

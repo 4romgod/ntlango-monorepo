@@ -2,28 +2,34 @@
 
 ## Product Overview
 
-**Ntlango** is a social-first event discovery and management platform that helps people find exciting events and see where their friends are going—creating natural FOMO and driving real-world participation.
+**Ntlango** is a social-first event discovery and management platform that helps people find exciting events and see
+where their friends are going—creating natural FOMO and driving real-world participation.
 
-Unlike traditional event platforms that focus purely on listings, Ntlango emphasizes **social context, discovery, and momentum**, helping users decide *what to do next* based on what’s happening around them and who’s attending.
+Unlike traditional event platforms that focus purely on listings, Ntlango emphasizes **social context, discovery, and
+momentum**, helping users decide _what to do next_ based on what’s happening around them and who’s attending.
 
-The platform launches as a **website**, starting in **Gauteng**, with the ambition to expand nationally and eventually globally.
+The platform launches as a **website**, starting in **Gauteng**, with the ambition to expand nationally and eventually
+globally.
 
 ---
 
 ## Vision Statement
 
-> **Ntlango turns events into experiences you don’t want to miss—by helping people discover what’s happening around them and where their friends are showing up.**
+> **Ntlango turns events into experiences you don’t want to miss—by helping people discover what’s happening around them
+> and where their friends are showing up.**
 
 ---
 
 ## Problem Statement
 
 ### For Users
+
 - Events are scattered across platforms and social media
 - Discovery lacks personalization and social context
 - People miss great events because they don’t know their friends are going
 
 ### For Hosts
+
 - Promotion is expensive or inefficient
 - Organic reach is limited
 - Engagement before and after events is weak
@@ -33,9 +39,11 @@ The platform launches as a **website**, starting in **Gauteng**, with the ambiti
 ## Target Audience
 
 ### Primary Users
+
 - Partygoers and social event attendees (music, nightlife, lifestyle events)
 
 ### Secondary Users
+
 - Community events
 - Sports events
 - Arts and cultural events
@@ -43,6 +51,7 @@ The platform launches as a **website**, starting in **Gauteng**, with the ambiti
 - Meetups and interest-based gatherings
 
 ### Hosts
+
 - Organizations
 - Individual creators
 - Event collectives
@@ -60,6 +69,7 @@ The platform launches as a **website**, starting in **Gauteng**, with the ambiti
 ## MVP Scope (Website)
 
 ### User Features
+
 - Authentication
 - Browse and search events
 - Event details page
@@ -73,12 +83,14 @@ The platform launches as a **website**, starting in **Gauteng**, with the ambiti
   - Past attended events
 
 ### Social & FOMO Features
+
 - Friends-going feed
 - Personalized “For You” feed
 - Trending events
 - Attendee visibility (opt-in, default on)
 
 ### Host Features
+
 - Create and manage events
 - Support for multiple roles:
   - Organizers
@@ -97,6 +109,7 @@ The platform launches as a **website**, starting in **Gauteng**, with the ambiti
 ## Event Model (High-Level)
 
 Events support:
+
 - Rich metadata (media, tags, categories)
 - Recurrence via iCalendar rules
 - Privacy controls (public / private / invitation-only)
@@ -109,6 +122,7 @@ Events support:
 ## Discovery & Feed
 
 Users can discover events through:
+
 - Map view
 - Categories
 - Search
@@ -119,6 +133,7 @@ Users can discover events through:
 - Personalized “For You” feed
 
 ### Discovery Ranking Priorities
+
 1. Proximity
 2. Friends attending or interested
 3. Popularity (RSVP velocity)
@@ -131,6 +146,7 @@ Users can discover events through:
 ## Moderation, Trust & Safety
 
 ### MVP Phase
+
 - Authentication required to host events
 - Email verification
 - Rate limits on event creation
@@ -138,6 +154,7 @@ Users can discover events through:
 - Soft moderation for flagged or new hosts
 
 ### Future Enhancements
+
 - Phone verification for hosts
 - Host reputation scoring
 - Verified organization badges
@@ -149,9 +166,11 @@ Users can discover events through:
 ## Monetization Strategy
 
 ### Short Term
+
 - Paid promoted events (boosted visibility)
 
 ### Long Term
+
 - Percentage of ticket sales
 - Premium tools for hosts
 - Featured placements and sponsorships
@@ -177,4 +196,5 @@ Users can discover events through:
 
 ## Long-Term Vision
 
-Ntlango becomes the **social layer for real-world experiences**—a platform where people decide what to do next based on momentum, friends, and excitement, not just static event listings.
+Ntlango becomes the **social layer for real-world experiences**—a platform where people decide what to do next based on
+momentum, friends, and excitement, not just static event listings.

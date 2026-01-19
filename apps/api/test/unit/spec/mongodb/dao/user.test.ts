@@ -1,11 +1,11 @@
-import {UserDAO} from '@/mongodb/dao';
-import {User} from '@/mongodb/models';
-import type {CreateUserInput, UpdateUserInput, QueryOptionsInput} from '@ntlango/commons/types';
-import {SortOrderInput} from '@ntlango/commons/types';
-import {Gender, UserRole} from '@ntlango/commons/types/user';
-import {ErrorTypes, CustomError, KnownCommonError, transformOptionsToQuery} from '@/utils';
-import {ERROR_MESSAGES} from '@/validation';
-import {generateToken} from '@/utils/auth';
+import { UserDAO } from '@/mongodb/dao';
+import { User } from '@/mongodb/models';
+import type { CreateUserInput, UpdateUserInput, QueryOptionsInput } from '@ntlango/commons/types';
+import { SortOrderInput } from '@ntlango/commons/types';
+import { Gender, UserRole } from '@ntlango/commons/types/user';
+import { ErrorTypes, CustomError, KnownCommonError, transformOptionsToQuery } from '@/utils';
+import { ERROR_MESSAGES } from '@/validation';
+import { generateToken } from '@/utils/auth';
 
 jest.mock('@/mongodb/models', () => ({
   User: {
@@ -23,7 +23,7 @@ jest.mock('@/mongodb/models', () => ({
   },
 }));
 
-import {Organization} from '@/mongodb/models';
+import { Organization } from '@/mongodb/models';
 
 jest.mock('bcryptjs', () => ({
   hash: jest.fn(),
@@ -97,7 +97,7 @@ describe('UserDAO', () => {
 
       const result = await UserDAO.create(mockCreateUserInput);
 
-      expect(result).toEqual({...mockUser, token: 'mockToken'});
+      expect(result).toEqual({ ...mockUser, token: 'mockToken' });
       expect(generateToken).toHaveBeenCalledWith(mockUser);
     });
 
@@ -114,10 +114,10 @@ describe('UserDAO', () => {
         }),
       );
 
-      const result = await UserDAO.create({...mockCreateUserInput, username: undefined});
+      const result = await UserDAO.create({ ...mockCreateUserInput, username: undefined });
 
-      expect(result).toEqual({...mockUser, username: 'test', token: 'mockToken'});
-      expect(generateToken).toHaveBeenCalledWith({...mockUser, username: 'test'});
+      expect(result).toEqual({ ...mockUser, username: 'test', token: 'mockToken' });
+      expect(generateToken).toHaveBeenCalledWith({ ...mockUser, username: 'test' });
     });
 
     it('should throw INTERNAL_SERVER_ERROR GraphQLError when an unknown error occurs', async () => {
@@ -154,8 +154,8 @@ describe('UserDAO', () => {
 
       const result = await UserDAO.login(mockLoginUserInput);
 
-      expect(result).toEqual({...mockUser, token: 'mockToken'});
-      expect(User.findOne).toHaveBeenCalledWith({email: 'test@example.com'});
+      expect(result).toEqual({ ...mockUser, token: 'mockToken' });
+      expect(User.findOne).toHaveBeenCalledWith({ email: 'test@example.com' });
       expect(generateToken).toHaveBeenCalledWith(mockUser);
     });
 
@@ -177,7 +177,9 @@ describe('UserDAO', () => {
         }),
       );
 
-      await expect(UserDAO.login(mockLoginUserInput)).rejects.toThrow(CustomError(ERROR_MESSAGES.PASSWORD_MISMATCH, ErrorTypes.UNAUTHENTICATED));
+      await expect(UserDAO.login(mockLoginUserInput)).rejects.toThrow(
+        CustomError(ERROR_MESSAGES.PASSWORD_MISMATCH, ErrorTypes.UNAUTHENTICATED),
+      );
     });
 
     it('should throw UNAUTHENTICATED error when user not found', async () => {
@@ -188,7 +190,9 @@ describe('UserDAO', () => {
 
       (User.findOne as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(null));
 
-      await expect(UserDAO.login(mockLoginUserInput)).rejects.toThrow(CustomError(ERROR_MESSAGES.PASSWORD_MISMATCH, ErrorTypes.UNAUTHENTICATED));
+      await expect(UserDAO.login(mockLoginUserInput)).rejects.toThrow(
+        CustomError(ERROR_MESSAGES.PASSWORD_MISMATCH, ErrorTypes.UNAUTHENTICATED),
+      );
     });
 
     it('should throw INTERNAL_SERVER_ERROR GraphQLError when an unknown error occurs', async () => {
@@ -233,7 +237,9 @@ describe('UserDAO', () => {
 
       (User.findById as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(null));
 
-      await expect(UserDAO.readUserById(userId)).rejects.toThrow(CustomError(`User with id ${userId} does not exist`, ErrorTypes.NOT_FOUND));
+      await expect(UserDAO.readUserById(userId)).rejects.toThrow(
+        CustomError(`User with id ${userId} does not exist`, ErrorTypes.NOT_FOUND),
+      );
     });
 
     it('should throw INTERNAL_SERVER_ERROR GraphQLError when an unknown error occurs', async () => {
@@ -267,7 +273,7 @@ describe('UserDAO', () => {
       const result = await UserDAO.readUserByUsername(username);
 
       expect(result).toEqual(mockUser);
-      expect(User.findOne).toHaveBeenCalledWith({username: 'testUser'});
+      expect(User.findOne).toHaveBeenCalledWith({ username: 'testUser' });
     });
 
     it('should throw NOT_FOUND error when user not found', async () => {
@@ -310,7 +316,7 @@ describe('UserDAO', () => {
       const result = await UserDAO.readUserByEmail(email);
 
       expect(result).toEqual(mockUser);
-      expect(User.findOne).toHaveBeenCalledWith({email: 'test@example.com'});
+      expect(User.findOne).toHaveBeenCalledWith({ email: 'test@example.com' });
     });
 
     it('should throw NOT_FOUND error when user not found', async () => {
@@ -318,7 +324,9 @@ describe('UserDAO', () => {
 
       (User.findOne as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(null));
 
-      await expect(UserDAO.readUserByEmail(email)).rejects.toThrow(CustomError(`User with email ${email} does not exist`, ErrorTypes.NOT_FOUND));
+      await expect(UserDAO.readUserByEmail(email)).rejects.toThrow(
+        CustomError(`User with email ${email} does not exist`, ErrorTypes.NOT_FOUND),
+      );
     });
 
     it('should throw INTERNAL_SERVER_ERROR GraphQLError when an unknown error occurs', async () => {
@@ -349,7 +357,7 @@ describe('UserDAO', () => {
         },
       ];
 
-      const mockResults = mockUsers.map((user) => ({toObject: () => user}));
+      const mockResults = mockUsers.map((user) => ({ toObject: () => user }));
       (User.find as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(mockResults));
 
       const result = await UserDAO.readUsers();
@@ -381,7 +389,7 @@ describe('UserDAO', () => {
         },
       ];
 
-      const mockResults = mockUsers.map((user) => ({toObject: () => user}));
+      const mockResults = mockUsers.map((user) => ({ toObject: () => user }));
       (transformOptionsToQuery as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(mockResults));
 
       const result = await UserDAO.readUsers(options);
@@ -418,9 +426,7 @@ describe('UserDAO', () => {
         }),
       };
 
-      (User.findById as jest.Mock).mockReturnValue(
-        createMockSuccessMongooseQuery(mockUpdatedUser),
-      );
+      (User.findById as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(mockUpdatedUser));
 
       const result = await UserDAO.updateUser(mockUpdateUserInput);
 
@@ -524,7 +530,7 @@ describe('UserDAO', () => {
       const result = await UserDAO.deleteUserByEmail(email);
 
       expect(result).toEqual(mockDeletedUser);
-      expect(User.findOneAndDelete).toHaveBeenCalledWith({email: 'deleted@example.com'});
+      expect(User.findOneAndDelete).toHaveBeenCalledWith({ email: 'deleted@example.com' });
     });
 
     it('should throw NOT_FOUND error when user not found', async () => {
@@ -532,7 +538,9 @@ describe('UserDAO', () => {
 
       (User.findOneAndDelete as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(null));
 
-      await expect(UserDAO.deleteUserByEmail(nonExistingEmail)).rejects.toThrow(CustomError('User not found', ErrorTypes.NOT_FOUND));
+      await expect(UserDAO.deleteUserByEmail(nonExistingEmail)).rejects.toThrow(
+        CustomError('User not found', ErrorTypes.NOT_FOUND),
+      );
     });
 
     it('should throw INTERNAL_SERVER_ERROR GraphQLError when an unknown error occurs', async () => {
@@ -566,7 +574,7 @@ describe('UserDAO', () => {
       const result = await UserDAO.deleteUserByUsername(username);
 
       expect(result).toEqual(mockDeletedUser);
-      expect(User.findOneAndDelete).toHaveBeenCalledWith({username: 'deletedUser'});
+      expect(User.findOneAndDelete).toHaveBeenCalledWith({ username: 'deletedUser' });
     });
 
     it('should throw NOT_FOUND error when user not found', async () => {
@@ -574,7 +582,9 @@ describe('UserDAO', () => {
 
       (User.findOneAndDelete as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(null));
 
-      await expect(UserDAO.deleteUserByUsername(nonExistingUsername)).rejects.toThrow(CustomError('User not found', ErrorTypes.NOT_FOUND));
+      await expect(UserDAO.deleteUserByUsername(nonExistingUsername)).rejects.toThrow(
+        CustomError('User not found', ErrorTypes.NOT_FOUND),
+      );
     });
 
     it('should throw INTERNAL_SERVER_ERROR GraphQLError when an unknown error occurs', async () => {
@@ -598,9 +608,7 @@ describe('UserDAO', () => {
         }),
       };
 
-      (User.findById as jest.Mock).mockReturnValue(
-        createMockSuccessMongooseQuery(mockUser),
-      );
+      (User.findById as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(mockUser));
 
       const result = await UserDAO.promoteUserToAdmin('mockUserId');
 
@@ -644,9 +652,7 @@ describe('UserDAO', () => {
         }),
       };
 
-      (User.findById as jest.Mock).mockReturnValue(
-        createMockSuccessMongooseQuery(mockUser),
-      );
+      (User.findById as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(mockUser));
 
       const result = await UserDAO.blockUser(userId, blockedUserId);
 
@@ -671,9 +677,7 @@ describe('UserDAO', () => {
         }),
       };
 
-      (User.findById as jest.Mock).mockReturnValue(
-        createMockSuccessMongooseQuery(mockUser),
-      );
+      (User.findById as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(mockUser));
 
       const result = await UserDAO.blockUser(userId, blockedUserId);
 
@@ -699,7 +703,7 @@ describe('UserDAO', () => {
     });
 
     it('should throw NOT_FOUND when blocked user does not exist', async () => {
-      const mockUser = {userId: 'userId', blockedUserIds: []};
+      const mockUser = { userId: 'userId', blockedUserIds: [] };
       (User.findById as jest.Mock)
         .mockReturnValueOnce(createMockSuccessMongooseQuery(mockUser))
         .mockReturnValueOnce(createMockSuccessMongooseQuery(null));
@@ -731,9 +735,7 @@ describe('UserDAO', () => {
         }),
       };
 
-      (User.findById as jest.Mock).mockReturnValue(
-        createMockSuccessMongooseQuery(mockUser),
-      );
+      (User.findById as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(mockUser));
 
       const result = await UserDAO.unblockUser(userId, blockedUserId);
 
@@ -770,24 +772,28 @@ describe('UserDAO', () => {
         blockedUserIds,
       };
       const blockedUserDocs = [
-        {userId: 'blocked1', username: 'user1', toObject: jest.fn().mockReturnValue({userId: 'blocked1', username: 'user1'})},
-        {userId: 'blocked2', username: 'user2', toObject: jest.fn().mockReturnValue({userId: 'blocked2', username: 'user2'})},
+        {
+          userId: 'blocked1',
+          username: 'user1',
+          toObject: jest.fn().mockReturnValue({ userId: 'blocked1', username: 'user1' }),
+        },
+        {
+          userId: 'blocked2',
+          username: 'user2',
+          toObject: jest.fn().mockReturnValue({ userId: 'blocked2', username: 'user2' }),
+        },
       ];
 
-      (User.findById as jest.Mock).mockReturnValue(
-        createMockSuccessMongooseQuery(mockUser),
-      );
-      (User.find as jest.Mock).mockReturnValue(
-        createMockSuccessMongooseQuery(blockedUserDocs),
-      );
+      (User.findById as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(mockUser));
+      (User.find as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(blockedUserDocs));
 
       const result = await UserDAO.readBlockedUsers(userId);
 
       expect(User.findById).toHaveBeenCalledWith(userId);
-      expect(User.find).toHaveBeenCalledWith({userId: {$in: blockedUserIds}});
+      expect(User.find).toHaveBeenCalledWith({ userId: { $in: blockedUserIds } });
       expect(result).toEqual([
-        {userId: 'blocked1', username: 'user1'},
-        {userId: 'blocked2', username: 'user2'},
+        { userId: 'blocked1', username: 'user1' },
+        { userId: 'blocked2', username: 'user2' },
       ]);
     });
 
@@ -798,9 +804,7 @@ describe('UserDAO', () => {
         blockedUserIds: [],
       };
 
-      (User.findById as jest.Mock).mockReturnValue(
-        createMockSuccessMongooseQuery(mockUser),
-      );
+      (User.findById as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(mockUser));
 
       const result = await UserDAO.readBlockedUsers(userId);
 
@@ -840,9 +844,7 @@ describe('UserDAO', () => {
         }),
       };
 
-      (User.findById as jest.Mock).mockReturnValue(
-        createMockSuccessMongooseQuery(mockUser),
-      );
+      (User.findById as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(mockUser));
 
       const result = await UserDAO.muteUser(userId, mutedUserId);
 
@@ -873,9 +875,7 @@ describe('UserDAO', () => {
         }),
       };
 
-      (User.findById as jest.Mock).mockReturnValue(
-        createMockSuccessMongooseQuery(mockUser),
-      );
+      (User.findById as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(mockUser));
 
       const result = await UserDAO.muteUser(userId, mutedUserId);
 
@@ -916,9 +916,7 @@ describe('UserDAO', () => {
         }),
       };
 
-      (User.findById as jest.Mock).mockReturnValue(
-        createMockSuccessMongooseQuery(mockUser),
-      );
+      (User.findById as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(mockUser));
 
       const result = await UserDAO.unmuteUser(userId, mutedUserId);
 
@@ -955,24 +953,28 @@ describe('UserDAO', () => {
         mutedUserIds,
       };
       const mutedUserDocs = [
-        {userId: 'muted1', username: 'user1', toObject: jest.fn().mockReturnValue({userId: 'muted1', username: 'user1'})},
-        {userId: 'muted2', username: 'user2', toObject: jest.fn().mockReturnValue({userId: 'muted2', username: 'user2'})},
+        {
+          userId: 'muted1',
+          username: 'user1',
+          toObject: jest.fn().mockReturnValue({ userId: 'muted1', username: 'user1' }),
+        },
+        {
+          userId: 'muted2',
+          username: 'user2',
+          toObject: jest.fn().mockReturnValue({ userId: 'muted2', username: 'user2' }),
+        },
       ];
 
-      (User.findById as jest.Mock).mockReturnValue(
-        createMockSuccessMongooseQuery(mockUser),
-      );
-      (User.find as jest.Mock).mockReturnValue(
-        createMockSuccessMongooseQuery(mutedUserDocs),
-      );
+      (User.findById as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(mockUser));
+      (User.find as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(mutedUserDocs));
 
       const result = await UserDAO.readMutedUsers(userId);
 
       expect(User.findById).toHaveBeenCalledWith(userId);
-      expect(User.find).toHaveBeenCalledWith({userId: {$in: mutedUserIds}});
+      expect(User.find).toHaveBeenCalledWith({ userId: { $in: mutedUserIds } });
       expect(result).toEqual([
-        {userId: 'muted1', username: 'user1'},
-        {userId: 'muted2', username: 'user2'},
+        { userId: 'muted1', username: 'user1' },
+        { userId: 'muted2', username: 'user2' },
       ]);
     });
 
@@ -983,9 +985,7 @@ describe('UserDAO', () => {
         mutedUserIds: [],
       };
 
-      (User.findById as jest.Mock).mockReturnValue(
-        createMockSuccessMongooseQuery(mockUser),
-      );
+      (User.findById as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(mockUser));
 
       const result = await UserDAO.readMutedUsers(userId);
 
@@ -1024,14 +1024,10 @@ describe('UserDAO', () => {
           mutedOrgIds: [orgId],
         }),
       };
-      const mockOrganization = {organizationId: orgId};
+      const mockOrganization = { organizationId: orgId };
 
-      (User.findById as jest.Mock).mockReturnValue(
-        createMockSuccessMongooseQuery(mockUser),
-      );
-      (Organization.findById as jest.Mock).mockReturnValue(
-        createMockSuccessMongooseQuery(mockOrganization),
-      );
+      (User.findById as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(mockUser));
+      (Organization.findById as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(mockOrganization));
 
       const result = await UserDAO.muteOrganization(userId, orgId);
 
@@ -1056,14 +1052,10 @@ describe('UserDAO', () => {
           mutedOrgIds: [orgId],
         }),
       };
-      const mockOrganization = {organizationId: orgId};
+      const mockOrganization = { organizationId: orgId };
 
-      (User.findById as jest.Mock).mockReturnValue(
-        createMockSuccessMongooseQuery(mockUser),
-      );
-      (Organization.findById as jest.Mock).mockReturnValue(
-        createMockSuccessMongooseQuery(mockOrganization),
-      );
+      (User.findById as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(mockUser));
+      (Organization.findById as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(mockOrganization));
 
       const result = await UserDAO.muteOrganization(userId, orgId);
 
@@ -1076,7 +1068,7 @@ describe('UserDAO', () => {
 
     it('should throw NOT_FOUND when user does not exist', async () => {
       (User.findById as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(null));
-      (Organization.findById as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery({organizationId: 'org1'}));
+      (Organization.findById as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery({ organizationId: 'org1' }));
 
       await expect(UserDAO.muteOrganization('nonExistingId', 'orgId')).rejects.toThrow(
         CustomError(ERROR_MESSAGES.NOT_FOUND('User', 'ID', 'nonExistingId'), ErrorTypes.NOT_FOUND),
@@ -1084,7 +1076,7 @@ describe('UserDAO', () => {
     });
 
     it('should throw NOT_FOUND when organization does not exist', async () => {
-      const mockUser = {userId: 'userId', mutedOrgIds: []};
+      const mockUser = { userId: 'userId', mutedOrgIds: [] };
       (User.findById as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(mockUser));
       (Organization.findById as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(null));
 
@@ -1115,9 +1107,7 @@ describe('UserDAO', () => {
         }),
       };
 
-      (User.findById as jest.Mock).mockReturnValue(
-        createMockSuccessMongooseQuery(mockUser),
-      );
+      (User.findById as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(mockUser));
 
       const result = await UserDAO.unmuteOrganization(userId, orgId);
 
@@ -1154,9 +1144,7 @@ describe('UserDAO', () => {
         mutedOrgIds,
       };
 
-      (User.findById as jest.Mock).mockReturnValue(
-        createMockSuccessMongooseQuery(mockUser),
-      );
+      (User.findById as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(mockUser));
 
       const result = await UserDAO.readMutedOrganizationIds(userId);
 
@@ -1171,9 +1159,7 @@ describe('UserDAO', () => {
         mutedOrgIds: undefined,
       };
 
-      (User.findById as jest.Mock).mockReturnValue(
-        createMockSuccessMongooseQuery(mockUser),
-      );
+      (User.findById as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(mockUser));
 
       const result = await UserDAO.readMutedOrganizationIds(userId);
 

@@ -1,7 +1,7 @@
 import DataLoader from 'dataloader';
-import {User as UserModel} from '@/mongodb/models';
-import type {User} from '@ntlango/commons/types';
-import {logger} from '@/utils/logger';
+import { User as UserModel } from '@/mongodb/models';
+import type { User } from '@ntlango/commons/types';
+import { logger } from '@/utils/logger';
 
 /**
  * Creates a per-request DataLoader for batching User lookups by ID.
@@ -13,7 +13,7 @@ export const createUserLoader = () =>
       const uniqueKeys = Array.from(new Set(keys.map((k) => k.toString())));
       logger.debug(`UserLoader batching ${uniqueKeys.length} user IDs`);
 
-      const users = await UserModel.find({_id: {$in: uniqueKeys}})
+      const users = await UserModel.find({ _id: { $in: uniqueKeys } })
         .lean()
         .exec();
 

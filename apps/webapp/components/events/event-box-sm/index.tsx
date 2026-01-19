@@ -40,9 +40,10 @@ export default function EventBoxSm({ event, href }: { event: EventPreview; href?
   })();
 
   // TODO: This placeholder image is just for development purposes
-  const imageUrl = heroImage
-    || media?.featuredImageUrl
-    || 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=80';
+  const imageUrl =
+    heroImage ||
+    media?.featuredImageUrl ||
+    'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=80';
 
   const cityLabel = location?.address?.city || 'Featured';
   const locationLabel = location?.address ? `${location.address.country}, ${location.address.city}` : 'Location TBA';
@@ -151,7 +152,7 @@ export default function EventBoxSm({ event, href }: { event: EventPreview; href?
                 '& .MuiAvatar-root': { width: 26, height: 26, fontSize: '0.7rem' },
               }}
             >
-              {visibleParticipants.map(participant => (
+              {visibleParticipants.map((participant) => (
                 <Tooltip
                   key={participant.participantId}
                   title={`${getParticipantLabel(participant)} · ${participant.status}`}
@@ -166,12 +167,7 @@ export default function EventBoxSm({ event, href }: { event: EventPreview; href?
 
           {/* Action buttons */}
           <Stack direction="row" spacing={0.5} sx={{ mt: 'auto' }}>
-            <RsvpButton
-              eventId={event.eventId}
-              currentStatus={rsvpStatus}
-              size="small"
-              onRsvpChange={setRsvpStatus}
-            />
+            <RsvpButton eventId={event.eventId} currentStatus={rsvpStatus} size="small" onRsvpChange={setRsvpStatus} />
             <SaveEventButton
               eventId={event.eventId}
               isSaved={isSaved}

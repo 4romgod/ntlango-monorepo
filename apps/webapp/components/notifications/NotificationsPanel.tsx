@@ -101,12 +101,7 @@ export default function NotificationsPage() {
             Notifications
           </Typography>
           <Box sx={{ display: 'flex', gap: 1 }}>
-            <Button
-              size="small"
-              startIcon={<RefreshIcon />}
-              onClick={handleRefresh}
-              disabled={isRefreshing}
-            >
+            <Button size="small" startIcon={<RefreshIcon />} onClick={handleRefresh} disabled={isRefreshing}>
               {isRefreshing ? 'Refreshing...' : 'Refresh'}
             </Button>
             {unreadCount > 0 && (
@@ -169,7 +164,7 @@ export default function NotificationsPage() {
                     </React.Fragment>
                   ))}
                 </List>
-                
+
                 {hasMore && (
                   <Box sx={{ p: 2, textAlign: 'center' }}>
                     <Button

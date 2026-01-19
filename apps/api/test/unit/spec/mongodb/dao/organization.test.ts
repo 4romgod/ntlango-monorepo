@@ -1,11 +1,16 @@
-import {GraphQLError} from 'graphql';
-import {OrganizationDAO} from '@/mongodb/dao';
-import {Organization as OrganizationModel} from '@/mongodb/models';
-import type {CreateOrganizationInput, Organization, QueryOptionsInput, UpdateOrganizationInput} from '@ntlango/commons/types';
-import {OrganizationTicketAccess} from '@ntlango/commons/types';
-import {CustomError, ErrorTypes, transformOptionsToQuery} from '@/utils';
-import {MockMongoError} from '@/test/utils';
-import {ERROR_MESSAGES} from '@/validation';
+import { GraphQLError } from 'graphql';
+import { OrganizationDAO } from '@/mongodb/dao';
+import { Organization as OrganizationModel } from '@/mongodb/models';
+import type {
+  CreateOrganizationInput,
+  Organization,
+  QueryOptionsInput,
+  UpdateOrganizationInput,
+} from '@ntlango/commons/types';
+import { OrganizationTicketAccess } from '@ntlango/commons/types';
+import { CustomError, ErrorTypes, transformOptionsToQuery } from '@/utils';
+import { MockMongoError } from '@/test/utils';
+import { ERROR_MESSAGES } from '@/validation';
 
 jest.mock('@/mongodb/models', () => ({
   Organization: {
@@ -126,7 +131,7 @@ describe('OrganizationDAO', () => {
 
       const result = await OrganizationDAO.readOrganizationBySlug('test-org');
 
-      expect(OrganizationModel.findOne).toHaveBeenCalledWith({slug: 'test-org'});
+      expect(OrganizationModel.findOne).toHaveBeenCalledWith({ slug: 'test-org' });
       expect(result).toEqual(mockOrganization);
     });
 
@@ -156,7 +161,7 @@ describe('OrganizationDAO', () => {
       ]);
       (transformOptionsToQuery as jest.Mock).mockReturnValue(queryResult);
 
-      const options: QueryOptionsInput = {pagination: {limit: 5, skip: 0}};
+      const options: QueryOptionsInput = { pagination: { limit: 5, skip: 0 } };
       const result = await OrganizationDAO.readOrganizations(options);
 
       expect(transformOptionsToQuery).toHaveBeenCalledWith(OrganizationModel, options);
@@ -166,13 +171,15 @@ describe('OrganizationDAO', () => {
     it('wraps errors', async () => {
       (OrganizationModel.find as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(new MockMongoError(0)));
 
-      await expect(OrganizationDAO.readOrganizations()).rejects.toThrow(CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR));
+      await expect(OrganizationDAO.readOrganizations()).rejects.toThrow(
+        CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR),
+      );
     });
   });
 
   describe('updateOrganization', () => {
     it('updates organization', async () => {
-      const mockSave = jest.fn().mockResolvedValue({toObject: () => mockOrganization});
+      const mockSave = jest.fn().mockResolvedValue({ toObject: () => mockOrganization });
       (OrganizationModel.findById as jest.Mock).mockReturnValue(
         createMockSuccessMongooseQuery({
           ...mockOrganization,
@@ -196,7 +203,7 @@ describe('OrganizationDAO', () => {
     it('throws not found error', async () => {
       (OrganizationModel.findById as jest.Mock).mockReturnValue(createMockSuccessMongooseQuery(null));
 
-      await expect(OrganizationDAO.updateOrganization({orgId: 'missing'})).rejects.toThrow(
+      await expect(OrganizationDAO.updateOrganization({ orgId: 'missing' })).rejects.toThrow(
         CustomError('Organization with id missing not found', ErrorTypes.NOT_FOUND),
       );
     });
@@ -204,7 +211,7 @@ describe('OrganizationDAO', () => {
     it('wraps unknown errors', async () => {
       (OrganizationModel.findById as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(new MockMongoError(0)));
 
-      await expect(OrganizationDAO.updateOrganization({orgId: 'org-1'})).rejects.toThrow(
+      await expect(OrganizationDAO.updateOrganization({ orgId: 'org-1' })).rejects.toThrow(
         CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR),
       );
     });
@@ -233,7 +240,9 @@ describe('OrganizationDAO', () => {
     });
 
     it('wraps unknown errors', async () => {
-      (OrganizationModel.findByIdAndDelete as jest.Mock).mockReturnValue(createMockFailedMongooseQuery(new MockMongoError(0)));
+      (OrganizationModel.findByIdAndDelete as jest.Mock).mockReturnValue(
+        createMockFailedMongooseQuery(new MockMongoError(0)),
+      );
 
       await expect(OrganizationDAO.deleteOrganizationById('org-1')).rejects.toThrow(
         CustomError(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, ErrorTypes.INTERNAL_SERVER_ERROR),

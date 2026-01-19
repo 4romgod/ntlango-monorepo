@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import {Arg, Authorized, Ctx, FieldResolver, ID, Mutation, Query, Resolver, Root} from 'type-graphql';
+import { Arg, Authorized, Ctx, FieldResolver, ID, Mutation, Query, Resolver, Root } from 'type-graphql';
 import {
   CreateFollowInput,
   Follow,
@@ -10,19 +10,17 @@ import {
   SocialVisibility,
   Event,
 } from '@ntlango/commons/types';
-import {
-  CreateFollowInputSchema,
-} from '@/validation/zod';
-import {validateInput} from '@/validation';
-import {FollowDAO, UserDAO, OrganizationDAO} from '@/mongodb/dao';
-import type {ServerContext} from '@/graphql';
-import {RESOLVER_DESCRIPTIONS} from '@/constants';
-import {getAuthenticatedUser} from '@/utils';
-import {FollowService} from '@/services';
+import { CreateFollowInputSchema } from '@/validation/zod';
+import { validateInput } from '@/validation';
+import { FollowDAO, UserDAO, OrganizationDAO } from '@/mongodb/dao';
+import type { ServerContext } from '@/graphql';
+import { RESOLVER_DESCRIPTIONS } from '@/constants';
+import { getAuthenticatedUser } from '@/utils';
+import { FollowService } from '@/services';
 
 @Resolver(() => Follow)
 export class FollowResolver {
-  @FieldResolver(() => User, {nullable: true})
+  @FieldResolver(() => User, { nullable: true })
   async follower(@Root() follow: Follow, @Ctx() context: ServerContext): Promise<User | null> {
     const user = await context.loaders.user.load(follow.followerUserId);
     if (!user) {
@@ -31,7 +29,7 @@ export class FollowResolver {
     return user;
   }
 
-  @FieldResolver(() => User, {nullable: true})
+  @FieldResolver(() => User, { nullable: true })
   async targetUser(@Root() follow: Follow, @Ctx() context: ServerContext): Promise<User | null> {
     if (follow.targetType !== FollowTargetType.User) {
       return null;
@@ -39,7 +37,7 @@ export class FollowResolver {
     return context.loaders.user.load(follow.targetId);
   }
 
-  @FieldResolver(() => Organization, {nullable: true})
+  @FieldResolver(() => Organization, { nullable: true })
   async targetOrganization(@Root() follow: Follow, @Ctx() context: ServerContext): Promise<Organization | null> {
     if (follow.targetType !== FollowTargetType.Organization) {
       return null;
@@ -47,7 +45,7 @@ export class FollowResolver {
     return context.loaders.organization.load(follow.targetId);
   }
 
-  @FieldResolver(() => Event, {nullable: true})
+  @FieldResolver(() => Event, { nullable: true })
   async targetEvent(@Root() follow: Follow, @Ctx() context: ServerContext): Promise<Event | null> {
     if (follow.targetType !== FollowTargetType.Event) {
       return null;
@@ -56,44 +54,53 @@ export class FollowResolver {
   }
 
   @Authorized([UserRole.Admin, UserRole.Host, UserRole.User])
-  @Mutation(() => Follow, {description: RESOLVER_DESCRIPTIONS.FOLLOW.follow})
-  async follow(@Arg('input', () => CreateFollowInput) input: CreateFollowInput, @Ctx() context: ServerContext): Promise<Follow> {
+  @Mutation(() => Follow, { description: RESOLVER_DESCRIPTIONS.FOLLOW.follow })
+  async follow(
+    @Arg('input', () => CreateFollowInput) input: CreateFollowInput,
+    @Ctx() context: ServerContext,
+  ): Promise<Follow> {
     validateInput(CreateFollowInputSchema, input);
     const user = getAuthenticatedUser(context);
 
-    return FollowService.follow({...input, followerUserId: user.userId});
+    return FollowService.follow({ ...input, followerUserId: user.userId });
   }
 
   @Authorized([UserRole.Admin, UserRole.Host, UserRole.User])
-  @Mutation(() => Boolean, {description: RESOLVER_DESCRIPTIONS.FOLLOW.unfollow})
+  @Mutation(() => Boolean, { description: RESOLVER_DESCRIPTIONS.FOLLOW.unfollow })
   async unfollow(
     @Arg('targetType', () => FollowTargetType) targetType: FollowTargetType,
     @Arg('targetId', () => ID) targetId: string,
     @Ctx() context: ServerContext,
   ): Promise<boolean> {
     const user = getAuthenticatedUser(context);
-    return FollowService.unfollow({followerUserId: user.userId, targetType, targetId});
+    return FollowService.unfollow({ followerUserId: user.userId, targetType, targetId });
   }
 
   @Authorized([UserRole.Admin, UserRole.Host, UserRole.User])
-  @Mutation(() => Follow, {description: RESOLVER_DESCRIPTIONS.FOLLOW.acceptFollowRequest})
-  async acceptFollowRequest(@Arg('followId', () => ID) followId: string, @Ctx() context: ServerContext): Promise<Follow> {
+  @Mutation(() => Follow, { description: RESOLVER_DESCRIPTIONS.FOLLOW.acceptFollowRequest })
+  async acceptFollowRequest(
+    @Arg('followId', () => ID) followId: string,
+    @Ctx() context: ServerContext,
+  ): Promise<Follow> {
     const user = getAuthenticatedUser(context);
     return FollowService.acceptFollowRequest(followId, user.userId);
   }
 
   @Authorized([UserRole.Admin, UserRole.Host, UserRole.User])
-  @Mutation(() => Boolean, {description: RESOLVER_DESCRIPTIONS.FOLLOW.rejectFollowRequest})
-  async rejectFollowRequest(@Arg('followId', () => ID) followId: string, @Ctx() context: ServerContext): Promise<boolean> {
+  @Mutation(() => Boolean, { description: RESOLVER_DESCRIPTIONS.FOLLOW.rejectFollowRequest })
+  async rejectFollowRequest(
+    @Arg('followId', () => ID) followId: string,
+    @Ctx() context: ServerContext,
+  ): Promise<boolean> {
     const user = getAuthenticatedUser(context);
     return FollowService.rejectFollowRequest(followId, user.userId);
   }
 
   @Authorized([UserRole.Admin, UserRole.Host, UserRole.User])
-  @Mutation(() => Boolean, {description: RESOLVER_DESCRIPTIONS.FOLLOW.removeFollower})
+  @Mutation(() => Boolean, { description: RESOLVER_DESCRIPTIONS.FOLLOW.removeFollower })
   async removeFollower(
     @Arg('followerUserId', () => ID) followerUserId: string,
-    @Arg('targetType', () => FollowTargetType, {defaultValue: FollowTargetType.User}) targetType: FollowTargetType,
+    @Arg('targetType', () => FollowTargetType, { defaultValue: FollowTargetType.User }) targetType: FollowTargetType,
     @Ctx() context: ServerContext,
   ): Promise<boolean> {
     const user = getAuthenticatedUser(context);
@@ -101,14 +108,14 @@ export class FollowResolver {
   }
 
   @Authorized([UserRole.Admin, UserRole.Host, UserRole.User])
-  @Query(() => [Follow], {description: RESOLVER_DESCRIPTIONS.FOLLOW.readFollowing})
+  @Query(() => [Follow], { description: RESOLVER_DESCRIPTIONS.FOLLOW.readFollowing })
   async readFollowing(@Ctx() context: ServerContext): Promise<Follow[]> {
     const user = getAuthenticatedUser(context);
     return FollowDAO.readFollowingForUser(user.userId);
   }
 
   @Authorized([UserRole.Admin, UserRole.Host, UserRole.User])
-  @Query(() => [Follow], {description: RESOLVER_DESCRIPTIONS.FOLLOW.readPendingFollowRequests})
+  @Query(() => [Follow], { description: RESOLVER_DESCRIPTIONS.FOLLOW.readPendingFollowRequests })
   async readPendingFollowRequests(
     @Arg('targetType', () => FollowTargetType) targetType: FollowTargetType,
     @Ctx() context: ServerContext,
@@ -118,7 +125,9 @@ export class FollowResolver {
   }
 
   @Authorized([UserRole.Admin, UserRole.Host, UserRole.User])
-  @Query(() => [Follow], {description: 'Get all follow requests for the authenticated user, including accepted and rejected'})
+  @Query(() => [Follow], {
+    description: 'Get all follow requests for the authenticated user, including accepted and rejected',
+  })
   async readFollowRequests(
     @Arg('targetType', () => FollowTargetType) targetType: FollowTargetType,
     @Ctx() context: ServerContext,
@@ -127,7 +136,7 @@ export class FollowResolver {
     return FollowDAO.readFollowRequests(user.userId, targetType);
   }
 
-  @Query(() => [Follow], {description: RESOLVER_DESCRIPTIONS.FOLLOW.readFollowers})
+  @Query(() => [Follow], { description: RESOLVER_DESCRIPTIONS.FOLLOW.readFollowers })
   async readFollowers(
     @Arg('targetType', () => FollowTargetType) targetType: FollowTargetType,
     @Arg('targetId', () => ID) targetId: string,
@@ -170,7 +179,7 @@ export class FollowResolver {
         }
       }
     }
-    
+
     return FollowDAO.readFollowers(targetType, targetId);
   }
 
@@ -179,18 +188,15 @@ export class FollowResolver {
   // ============================================================================
 
   @Authorized([UserRole.Admin, UserRole.Host, UserRole.User])
-  @Query(() => [Follow], {description: 'Get all saved events for the authenticated user'})
+  @Query(() => [Follow], { description: 'Get all saved events for the authenticated user' })
   async readSavedEvents(@Ctx() context: ServerContext): Promise<Follow[]> {
     const user = getAuthenticatedUser(context);
     return FollowDAO.readSavedEventsForUser(user.userId);
   }
 
   @Authorized([UserRole.Admin, UserRole.Host, UserRole.User])
-  @Query(() => Boolean, {description: 'Check if the authenticated user has saved a specific event'})
-  async isEventSaved(
-    @Arg('eventId', () => ID) eventId: string,
-    @Ctx() context: ServerContext,
-  ): Promise<boolean> {
+  @Query(() => Boolean, { description: 'Check if the authenticated user has saved a specific event' })
+  async isEventSaved(@Arg('eventId', () => ID) eventId: string, @Ctx() context: ServerContext): Promise<boolean> {
     const user = getAuthenticatedUser(context);
     return FollowDAO.isEventSavedByUser(eventId, user.userId);
   }

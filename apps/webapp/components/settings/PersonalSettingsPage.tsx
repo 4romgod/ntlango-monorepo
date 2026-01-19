@@ -75,7 +75,7 @@ export default function PersonalSettingsPage({ user }: { user: User }) {
   }, [session?.user]);
 
   const handleBooleanToggle = (name: 'shareRSVPByDefault' | 'shareCheckinsByDefault') => {
-    setSettings(prev => ({
+    setSettings((prev) => ({
       ...prev,
       [name]: !prev[name],
     }));
@@ -83,7 +83,7 @@ export default function PersonalSettingsPage({ user }: { user: User }) {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setSettings(prev => ({
+    setSettings((prev) => ({
       ...prev,
       [name]: value,
     }));
@@ -103,7 +103,7 @@ export default function PersonalSettingsPage({ user }: { user: User }) {
 
     if (formState.data && session?.user?.token) {
       const updatedUser = formState.data as User;
-      
+
       // Update local state immediately with the returned data
       setSettings({
         birthdate: updatedUser.birthdate,
@@ -116,14 +116,14 @@ export default function PersonalSettingsPage({ user }: { user: User }) {
         shareRSVPByDefault: updatedUser.shareRSVPByDefault ?? true,
         shareCheckinsByDefault: updatedUser.shareCheckinsByDefault ?? true,
       });
-      
+
       // Refresh the session with updated user data
       signIn('refresh-session', {
         userData: JSON.stringify(updatedUser),
         token: session.user.token,
         redirect: false,
       });
-      
+
       setToastProps({
         ...toastProps,
         open: true,
@@ -157,7 +157,7 @@ export default function PersonalSettingsPage({ user }: { user: User }) {
           <input type="hidden" name="shareRSVPByDefault" value={String(settings.shareRSVPByDefault)} />
           <input type="hidden" name="shareCheckinsByDefault" value={String(settings.shareCheckinsByDefault)} />
           <input type="hidden" name="phone_number" value={settings.phone_number} />
-          
+
           {/* Personal Details */}
           <Card
             elevation={0}
@@ -181,7 +181,7 @@ export default function PersonalSettingsPage({ user }: { user: User }) {
                       name="birthdate"
                       value={dayjs(settings.birthdate)}
                       onChange={(newValue) => {
-                        setSettings(prev => ({
+                        setSettings((prev) => ({
                           ...prev,
                           birthdate: newValue ? newValue.format('YYYY-MM-DD') : prev.birthdate,
                         }));
@@ -198,17 +198,19 @@ export default function PersonalSettingsPage({ user }: { user: User }) {
               </Grid>
               <Grid size={{ xs: 12, sm: 6 }}>
                 <FormControl fullWidth variant="outlined">
-                  <InputLabel id="personal-gender-label" color="secondary">Gender</InputLabel>
+                  <InputLabel id="personal-gender-label" color="secondary">
+                    Gender
+                  </InputLabel>
                   <Select
                     id="personal-gender"
                     labelId="personal-gender-label"
                     name="gender"
                     value={settings.gender || ''}
-                    onChange={e => handleInputChange(e as React.ChangeEvent<HTMLInputElement>)}
+                    onChange={(e) => handleInputChange(e as React.ChangeEvent<HTMLInputElement>)}
                     label="Gender"
                     color="secondary"
                   >
-                    {Object.values(Gender).map(gender => (
+                    {Object.values(Gender).map((gender) => (
                       <MenuItem key={gender} value={gender}>
                         {gender}
                       </MenuItem>
@@ -223,7 +225,7 @@ export default function PersonalSettingsPage({ user }: { user: User }) {
                   label="Phone Number"
                   name="phone_number"
                   value={settings.phone_number}
-                  onChange={e => setSettings(prev => ({ ...prev, phone_number: e.target.value }))}
+                  onChange={(e) => setSettings((prev) => ({ ...prev, phone_number: e.target.value }))}
                   variant="outlined"
                   color="secondary"
                   placeholder="+27 12 345 6789"
@@ -252,7 +254,7 @@ export default function PersonalSettingsPage({ user }: { user: User }) {
                     <Switch
                       checked={settings.followPolicy === FollowPolicy.RequireApproval}
                       onChange={() =>
-                        setSettings(prev => ({
+                        setSettings((prev) => ({
                           ...prev,
                           followPolicy:
                             prev.followPolicy === FollowPolicy.Public
@@ -280,14 +282,16 @@ export default function PersonalSettingsPage({ user }: { user: User }) {
               {/* Default Activity Visibility */}
               <Box sx={{ py: 1 }}>
                 <FormControl fullWidth variant="outlined">
-                  <InputLabel id="default-visibility-label" color="secondary">Default Activity Visibility</InputLabel>
+                  <InputLabel id="default-visibility-label" color="secondary">
+                    Default Activity Visibility
+                  </InputLabel>
                   <Select
                     id="default-visibility"
                     labelId="default-visibility-label"
                     name="defaultVisibility"
                     value={settings.defaultVisibility}
-                    onChange={e =>
-                      setSettings(prev => ({
+                    onChange={(e) =>
+                      setSettings((prev) => ({
                         ...prev,
                         defaultVisibility: e.target.value as SocialVisibility,
                       }))
@@ -326,14 +330,16 @@ export default function PersonalSettingsPage({ user }: { user: User }) {
               {/* Followers List Visibility */}
               <Box sx={{ py: 1 }}>
                 <FormControl fullWidth variant="outlined">
-                  <InputLabel id="followers-visibility-label" color="secondary">Who can see your followers</InputLabel>
+                  <InputLabel id="followers-visibility-label" color="secondary">
+                    Who can see your followers
+                  </InputLabel>
                   <Select
                     id="followers-visibility"
                     labelId="followers-visibility-label"
                     name="followersListVisibility"
                     value={settings.followersListVisibility}
-                    onChange={e =>
-                      setSettings(prev => ({
+                    onChange={(e) =>
+                      setSettings((prev) => ({
                         ...prev,
                         followersListVisibility: e.target.value as SocialVisibility,
                       }))
@@ -372,14 +378,16 @@ export default function PersonalSettingsPage({ user }: { user: User }) {
               {/* Following List Visibility */}
               <Box sx={{ py: 1 }}>
                 <FormControl fullWidth variant="outlined">
-                  <InputLabel id="following-visibility-label" color="secondary">Who can see who you follow</InputLabel>
+                  <InputLabel id="following-visibility-label" color="secondary">
+                    Who can see who you follow
+                  </InputLabel>
                   <Select
                     id="following-visibility"
                     labelId="following-visibility-label"
                     name="followingListVisibility"
                     value={settings.followingListVisibility}
-                    onChange={e =>
-                      setSettings(prev => ({
+                    onChange={(e) =>
+                      setSettings((prev) => ({
                         ...prev,
                         followingListVisibility: e.target.value as SocialVisibility,
                       }))

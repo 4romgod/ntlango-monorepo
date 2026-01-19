@@ -115,9 +115,7 @@ export default function RsvpButton({
     }
   };
 
-  const tooltipText = hasRsvpd
-    ? isGoing ? 'Going' : 'Interested'
-    : 'RSVP to this event';
+  const tooltipText = hasRsvpd ? (isGoing ? 'Going' : 'Interested') : 'RSVP to this event';
 
   const button = (
     <IconButton
@@ -158,27 +156,24 @@ export default function RsvpButton({
         anchorEl={anchorRef.current}
         open={menuOpen}
         onClose={handleMenuClose}
-        onClick={(e) => { e.stopPropagation(); e.preventDefault(); }}
+        onClick={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+        }}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
         slotProps={{
           paper: {
-            sx: { minWidth: 140 }
-          }
+            sx: { minWidth: 140 },
+          },
         }}
       >
-        <MenuItem
-          onClick={(e) => handleRsvp(ParticipantStatus.Going, e)}
-          selected={isGoing}
-        >
+        <MenuItem onClick={(e) => handleRsvp(ParticipantStatus.Going, e)} selected={isGoing}>
           <EventAvailable sx={{ mr: 1, fontSize: 18 }} />
           Going
           {isGoing && <Check sx={{ ml: 'auto', fontSize: 18 }} color="success" />}
         </MenuItem>
-        <MenuItem
-          onClick={(e) => handleRsvp(ParticipantStatus.Interested, e)}
-          selected={isInterested}
-        >
+        <MenuItem onClick={(e) => handleRsvp(ParticipantStatus.Interested, e)} selected={isInterested}>
           <Star sx={{ mr: 1, fontSize: 18 }} />
           Interested
           {isInterested && <Check sx={{ ml: 'auto', fontSize: 18 }} color="success" />}

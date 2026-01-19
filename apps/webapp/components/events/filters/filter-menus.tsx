@@ -1,7 +1,21 @@
-"use client";
+'use client';
 
 import { useState, useEffect } from 'react';
-import { Menu, MenuItem, Checkbox, ListItemText, ListItemIcon, Popover, Box, TextField, Button, Stack, Typography, Slider, Divider } from '@mui/material';
+import {
+  Menu,
+  MenuItem,
+  Checkbox,
+  ListItemText,
+  ListItemIcon,
+  Popover,
+  Box,
+  TextField,
+  Button,
+  Stack,
+  Typography,
+  Slider,
+  Divider,
+} from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
@@ -43,8 +57,8 @@ export function CategoryMenu({ anchorEl, categories, selectedCategories, onClose
         const IconComponent = getEventCategoryIcon(category.iconName);
         const isSelected = selectedCategories.includes(category.name);
         return (
-          <MenuItem 
-            key={category.eventCategoryId} 
+          <MenuItem
+            key={category.eventCategoryId}
             onClick={() => onToggle(category.name)}
             sx={{
               '&:hover': {
@@ -52,18 +66,11 @@ export function CategoryMenu({ anchorEl, categories, selectedCategories, onClose
               },
             }}
           >
-            <Checkbox 
-              checked={isSelected} 
-              size="small"
-              color="primary"
-            />
+            <Checkbox checked={isSelected} size="small" color="primary" />
             <ListItemIcon sx={{ minWidth: 36 }}>
               <IconComponent color={category.color || ''} height={20} width={20} />
             </ListItemIcon>
-            <ListItemText 
-              primary={category.name}
-              sx={{ color: 'inherit' }}
-            />
+            <ListItemText primary={category.name} sx={{ color: 'inherit' }} />
           </MenuItem>
         );
       })}
@@ -98,8 +105,8 @@ export function StatusMenu({ anchorEl, statuses, selectedStatuses, onClose, onTo
       {statuses.map((status) => {
         const isSelected = selectedStatuses.includes(status);
         return (
-          <MenuItem 
-            key={status} 
+          <MenuItem
+            key={status}
             onClick={() => onToggle(status)}
             sx={{
               '&:hover': {
@@ -107,15 +114,8 @@ export function StatusMenu({ anchorEl, statuses, selectedStatuses, onClose, onTo
               },
             }}
           >
-            <Checkbox 
-              checked={isSelected} 
-              size="small"
-              color="secondary"
-            />
-            <ListItemText 
-              primary={status}
-              sx={{ color: 'inherit' }}
-            />
+            <Checkbox checked={isSelected} size="small" color="secondary" />
+            <ListItemText primary={status} sx={{ color: 'inherit' }} />
           </MenuItem>
         );
       })}
@@ -134,12 +134,12 @@ interface DateMenuProps {
   onCustomDateClose: () => void;
 }
 
-export function DateMenu({ 
-  anchorEl, 
-  dateOptions, 
-  selectedOption, 
+export function DateMenu({
+  anchorEl,
+  dateOptions,
+  selectedOption,
   customDateAnchor,
-  onClose, 
+  onClose,
   onSelect,
   onCustomDateChange,
   onCustomDateClose,
@@ -164,7 +164,7 @@ export function DateMenu({
           const isSelected = selectedOption === option;
           const label = DATE_FILTER_LABELS[option as keyof typeof DATE_FILTER_LABELS] || option;
           return (
-            <MenuItem 
+            <MenuItem
               key={option}
               onClick={(e) => onSelect(option, e)}
               sx={{
@@ -234,7 +234,7 @@ export function DateMenu({
 
 /**
  * Location filter menu component.
- * 
+ *
  * Note: This is a controlled component. The parent is responsible for closing
  * the menu (setting anchorEl to null) after handling onApply/onClear callbacks.
  * This ensures parent state is updated before the menu closes, preventing
@@ -248,13 +248,7 @@ interface LocationMenuProps {
   onClear: () => void;
 }
 
-export function LocationMenu({ 
-  anchorEl, 
-  currentLocation,
-  onClose, 
-  onApply,
-  onClear,
-}: LocationMenuProps) {
+export function LocationMenu({ anchorEl, currentLocation, onClose, onApply, onClear }: LocationMenuProps) {
   const { setToastProps, toastProps } = useAppContext();
   const [city, setCity] = useState(currentLocation.city || '');
   const [state, setState] = useState(currentLocation.state || '');
@@ -263,9 +257,9 @@ export function LocationMenu({
   const [useMyLocation, setUseMyLocation] = useState(!!currentLocation.latitude);
   const [gettingLocation, setGettingLocation] = useState(false);
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(
-    currentLocation.latitude && currentLocation.longitude 
+    currentLocation.latitude && currentLocation.longitude
       ? { lat: currentLocation.latitude, lng: currentLocation.longitude }
-      : null
+      : null,
   );
 
   // Sync internal state when currentLocation prop changes (e.g., filters cleared externally)
@@ -278,7 +272,7 @@ export function LocationMenu({
     setCoords(
       currentLocation.latitude && currentLocation.longitude
         ? { lat: currentLocation.latitude, lng: currentLocation.longitude }
-        : null
+        : null,
     );
   }, [currentLocation]);
 
@@ -311,23 +305,23 @@ export function LocationMenu({
         console.error('Error getting location:', error);
         showError('Unable to get your location. Please check your browser permissions.');
         setGettingLocation(false);
-      }
+      },
     );
   };
 
   const handleApply = () => {
     const location: LocationFilter = {};
-    
+
     if (city.trim()) location.city = city.trim();
     if (state.trim()) location.state = state.trim();
     if (country.trim()) location.country = country.trim();
-    
+
     if (useMyLocation && coords) {
       location.latitude = coords.lat;
       location.longitude = coords.lng;
       location.radiusKm = radiusKm;
     }
-    
+
     // Let parent handle closing after state update to avoid race condition
     onApply(location);
   };
@@ -408,7 +402,7 @@ export function LocationMenu({
 
         <Box>
           <Button
-            variant={useMyLocation ? "contained" : "outlined"}
+            variant={useMyLocation ? 'contained' : 'outlined'}
             size="small"
             fullWidth
             startIcon={<MyLocationIcon />}
@@ -418,7 +412,7 @@ export function LocationMenu({
           >
             {gettingLocation ? 'Getting location...' : useMyLocation ? 'Using my location' : 'Use my location'}
           </Button>
-          
+
           {useMyLocation && coords && (
             <Box sx={{ px: 1 }}>
               <Typography variant="caption" color="text.secondary" gutterBottom>
@@ -441,11 +435,7 @@ export function LocationMenu({
                 size="small"
               />
               {radiusKm > 100 && (
-                <Typography 
-                  variant="caption" 
-                  color="warning.main" 
-                  sx={{ display: 'block', mt: 0.5 }}
-                >
+                <Typography variant="caption" color="warning.main" sx={{ display: 'block', mt: 0.5 }}>
                   Large radius may include less precise results
                 </Typography>
               )}
@@ -454,20 +444,10 @@ export function LocationMenu({
         </Box>
 
         <Stack direction="row" spacing={1} justifyContent="flex-end">
-          <Button 
-            variant="text" 
-            size="small" 
-            onClick={handleClear}
-            disabled={!hasValues}
-          >
+          <Button variant="text" size="small" onClick={handleClear} disabled={!hasValues}>
             Clear
           </Button>
-          <Button 
-            variant="contained" 
-            size="small" 
-            onClick={handleApply}
-            disabled={!hasValues}
-          >
+          <Button variant="contained" size="small" onClick={handleApply} disabled={!hasValues}>
             Apply
           </Button>
         </Stack>

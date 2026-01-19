@@ -1,7 +1,7 @@
 import 'reflect-metadata';
-import {getModelForClass, pre} from '@typegoose/typegoose';
-import {kebabCase} from 'lodash';
-import {EventCategory as EventCategoryEntity} from '@ntlango/commons/types';
+import { getModelForClass, pre } from '@typegoose/typegoose';
+import { kebabCase } from 'lodash';
+import { EventCategory as EventCategoryEntity } from '@ntlango/commons/types';
 
 @pre<EventCategoryModel>('validate', function (next) {
   try {
@@ -19,7 +19,7 @@ import {EventCategory as EventCategoryEntity} from '@ntlango/commons/types';
 class EventCategoryModel extends EventCategoryEntity {}
 
 const EventCategory = getModelForClass(EventCategoryModel, {
-  options: {customName: 'EventCategory'},
+  options: { customName: 'EventCategory' },
 });
 
 export default EventCategory;

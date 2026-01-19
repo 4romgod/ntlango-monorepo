@@ -61,7 +61,7 @@ export default function StatusFilter({ sxProps }: StatusFilterProps) {
           multiple
           value={filters.statuses}
           onChange={handleStatusChange}
-          renderValue={selected => (
+          renderValue={(selected) => (
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
               {selected.map((value: EventStatus) => (
                 <Chip
@@ -85,7 +85,7 @@ export default function StatusFilter({ sxProps }: StatusFilterProps) {
             },
           }}
         >
-          {Object.values(EventStatus).map(status => {
+          {Object.values(EventStatus).map((status) => {
             const isSelected = filters.statuses.includes(status);
             return (
               <MenuItem key={status} value={status}>

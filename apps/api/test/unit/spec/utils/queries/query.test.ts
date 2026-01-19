@@ -1,32 +1,32 @@
-import type {Model, Query} from 'mongoose';
-import {addSortToQuery, addPaginationToQuery, addFiltersToQuery, transformOptionsToQuery} from '@/utils';
-import type {FilterInput, SortInput} from '@ntlango/commons/types';
-import {FilterOperatorInput, SortOrderInput} from '@ntlango/commons/types';
+import type { Model, Query } from 'mongoose';
+import { addSortToQuery, addPaginationToQuery, addFiltersToQuery, transformOptionsToQuery } from '@/utils';
+import type { FilterInput, SortInput } from '@ntlango/commons/types';
+import { FilterOperatorInput, SortOrderInput } from '@ntlango/commons/types';
 
 describe('Query', () => {
   describe('addSortToQuery', () => {
     it('should add sorting to the query', () => {
-      const mockQuery = {sort: jest.fn()} as unknown as Query<any, any>;
+      const mockQuery = { sort: jest.fn() } as unknown as Query<any, any>;
       const sortInput: SortInput[] = [
-        {field: 'name', order: SortOrderInput.asc},
-        {field: 'age', order: SortOrderInput.desc},
+        { field: 'name', order: SortOrderInput.asc },
+        { field: 'age', order: SortOrderInput.desc },
       ];
       addSortToQuery(mockQuery, sortInput);
-      expect(mockQuery.sort).toHaveBeenCalledWith({name: 1, age: -1});
+      expect(mockQuery.sort).toHaveBeenCalledWith({ name: 1, age: -1 });
     });
   });
 
   describe('addPaginationToQuery', () => {
     it('should add skip and limit to the query', () => {
-      const mockQuery = {skip: jest.fn(), limit: jest.fn()} as unknown as Query<any, any>;
-      const paginationInput = {skip: 10, limit: 20};
+      const mockQuery = { skip: jest.fn(), limit: jest.fn() } as unknown as Query<any, any>;
+      const paginationInput = { skip: 10, limit: 20 };
       addPaginationToQuery(mockQuery, paginationInput);
       expect(mockQuery.skip).toHaveBeenCalledWith(10);
       expect(mockQuery.limit).toHaveBeenCalledWith(20);
     });
 
     it('should handle missing skip and limit values', () => {
-      const mockQuery = {skip: jest.fn(), limit: jest.fn()} as unknown as Query<any, any>;
+      const mockQuery = { skip: jest.fn(), limit: jest.fn() } as unknown as Query<any, any>;
       const paginationInput = {};
       addPaginationToQuery(mockQuery, paginationInput);
       expect(mockQuery.skip).not.toHaveBeenCalled();
@@ -36,7 +36,10 @@ describe('Query', () => {
 
   describe('addFiltersToQuery', () => {
     it('should add "equality" filter to the query', () => {
-      const mockQuery = {where: jest.fn().mockReturnThis(), equals: jest.fn().mockReturnThis()} as unknown as Query<any, any>;
+      const mockQuery = { where: jest.fn().mockReturnThis(), equals: jest.fn().mockReturnThis() } as unknown as Query<
+        any,
+        any
+      >;
       const filters: FilterInput[] = [
         {
           field: 'status',
@@ -50,7 +53,10 @@ describe('Query', () => {
     });
 
     it('should add "not equal" than filter to the query', () => {
-      const mockQuery = {where: jest.fn().mockReturnThis(), ne: jest.fn().mockReturnThis()} as unknown as Query<any, any>;
+      const mockQuery = { where: jest.fn().mockReturnThis(), ne: jest.fn().mockReturnThis() } as unknown as Query<
+        any,
+        any
+      >;
       const filters: FilterInput[] = [
         {
           field: 'capacity',
@@ -64,7 +70,7 @@ describe('Query', () => {
     });
 
     it('should add "greater than" filter to the query', () => {
-      const mockQuery = {gt: jest.fn().mockReturnThis()} as unknown as Query<any, any>;
+      const mockQuery = { gt: jest.fn().mockReturnThis() } as unknown as Query<any, any>;
       const filters: FilterInput[] = [
         {
           field: 'capacity',
@@ -77,7 +83,7 @@ describe('Query', () => {
     });
 
     it('should add "greater than or equal" filter to the query', () => {
-      const mockQuery = {gte: jest.fn().mockReturnThis()} as unknown as Query<any, any>;
+      const mockQuery = { gte: jest.fn().mockReturnThis() } as unknown as Query<any, any>;
       const filters: FilterInput[] = [
         {
           field: 'capacity',
@@ -90,7 +96,7 @@ describe('Query', () => {
     });
 
     it('should add "less than" filter to the query', () => {
-      const mockQuery = {lt: jest.fn().mockReturnThis()} as unknown as Query<any, any>;
+      const mockQuery = { lt: jest.fn().mockReturnThis() } as unknown as Query<any, any>;
       const filters: FilterInput[] = [
         {
           field: 'capacity',
@@ -103,7 +109,7 @@ describe('Query', () => {
     });
 
     it('should add "less than or equal" filter to the query', () => {
-      const mockQuery = {lte: jest.fn().mockReturnThis()} as unknown as Query<any, any>;
+      const mockQuery = { lte: jest.fn().mockReturnThis() } as unknown as Query<any, any>;
       const filters: FilterInput[] = [
         {
           field: 'capacity',
@@ -116,7 +122,10 @@ describe('Query', () => {
     });
 
     it('should add "default (equality)" filter to the query', () => {
-      const mockQuery = {where: jest.fn().mockReturnThis(), equals: jest.fn().mockReturnThis()} as unknown as Query<any, any>;
+      const mockQuery = { where: jest.fn().mockReturnThis(), equals: jest.fn().mockReturnThis() } as unknown as Query<
+        any,
+        any
+      >;
       const filters: FilterInput[] = [
         {
           field: 'status',
@@ -142,7 +151,7 @@ describe('Query', () => {
       limit: jest.fn().mockReturnThis(),
     });
     const find = jest.fn().mockReturnValue(createMockSuccessMongooseQuery({}));
-    const mockModel = {find} as unknown as Model<any>;
+    const mockModel = { find } as unknown as Model<any>;
 
     it('should add filters, sort, and pagination to the query', () => {
       const options = {
@@ -159,7 +168,7 @@ describe('Query', () => {
             order: SortOrderInput.asc,
           },
         ],
-        pagination: {skip: 10, limit: 20},
+        pagination: { skip: 10, limit: 20 },
       };
 
       transformOptionsToQuery(mockModel, options);

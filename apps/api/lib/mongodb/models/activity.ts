@@ -1,6 +1,6 @@
 import 'reflect-metadata';
-import {getModelForClass, pre} from '@typegoose/typegoose';
-import {Activity as ActivityEntity} from '@ntlango/commons/types';
+import { getModelForClass, pre } from '@typegoose/typegoose';
+import { Activity as ActivityEntity } from '@ntlango/commons/types';
 
 @pre<ActivityModel>('validate', function (next) {
   try {
@@ -15,7 +15,7 @@ import {Activity as ActivityEntity} from '@ntlango/commons/types';
 class ActivityModel extends ActivityEntity {}
 
 const Activity = getModelForClass(ActivityModel, {
-  options: {customName: 'Activity'},
+  options: { customName: 'Activity' },
 });
 
 export default Activity;

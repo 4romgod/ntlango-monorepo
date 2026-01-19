@@ -1,13 +1,13 @@
-import {AWS_REGION, JWT_SECRET, MONGO_DB_URL, STAGE, NTLANGO_SECRET_ARN, SECRET_KEYS} from '@/constants';
-import {SecretsManagerClient, GetSecretValueCommand} from '@aws-sdk/client-secrets-manager';
-import {APPLICATION_STAGES} from '@ntlango/commons';
-import {logger} from '@/utils/logger';
+import { AWS_REGION, JWT_SECRET, MONGO_DB_URL, STAGE, NTLANGO_SECRET_ARN, SECRET_KEYS } from '@/constants';
+import { SecretsManagerClient, GetSecretValueCommand } from '@aws-sdk/client-secrets-manager';
+import { APPLICATION_STAGES } from '@ntlango/commons';
+import { logger } from '@/utils/logger';
 
 let secretsManagerClient: SecretsManagerClient;
 
 function getSecretsManagerClient(): SecretsManagerClient {
   if (!secretsManagerClient) {
-    secretsManagerClient = new SecretsManagerClient({region: AWS_REGION});
+    secretsManagerClient = new SecretsManagerClient({ region: AWS_REGION });
   }
   return secretsManagerClient;
 }
@@ -24,7 +24,7 @@ async function getSecretValue(secretKey: string): Promise<string> {
     return cachedSecrets[secretKey];
   }
 
-  const command = new GetSecretValueCommand({SecretId: NTLANGO_SECRET_ARN});
+  const command = new GetSecretValueCommand({ SecretId: NTLANGO_SECRET_ARN });
 
   try {
     const data = await getSecretsManagerClient().send(command);

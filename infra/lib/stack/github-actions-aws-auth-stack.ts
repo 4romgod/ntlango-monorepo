@@ -1,6 +1,6 @@
-import {Construct} from 'constructs';
-import {CfnOutput, Duration, StackProps, Stack, Tags} from 'aws-cdk-lib';
-import {OpenIdConnectProvider, Conditions, ManagedPolicy, Role, WebIdentityPrincipal} from 'aws-cdk-lib/aws-iam';
+import { Construct } from 'constructs';
+import { CfnOutput, Duration, StackProps, Stack, Tags } from 'aws-cdk-lib';
+import { OpenIdConnectProvider, Conditions, ManagedPolicy, Role, WebIdentityPrincipal } from 'aws-cdk-lib/aws-iam';
 
 export interface GitHubRepositoryConfigProps {
   owner: string;
@@ -24,7 +24,9 @@ export class GitHubActionsAwsAuthStack extends Stack {
       clientIds: [stsService],
     });
 
-    const iamRepoDeployAccess = props.repositoryConfig.map((repo) => `repo:${repo.owner}/${repo.repo}:${repo.filter ?? '*'}`);
+    const iamRepoDeployAccess = props.repositoryConfig.map(
+      (repo) => `repo:${repo.owner}/${repo.repo}:${repo.filter ?? '*'}`,
+    );
 
     const conditions: Conditions = {
       StringLike: {

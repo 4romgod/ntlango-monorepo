@@ -1,12 +1,12 @@
 import request from 'supertest';
-import {Types} from 'mongoose';
-import type {IntegrationServer} from '@/test/integration/utils/server';
-import {startIntegrationServer, stopIntegrationServer} from '@/test/integration/utils/server';
-import {EventCategoryDAO, EventCategoryGroupDAO} from '@/mongodb/dao';
-import {usersMockData} from '@/mongodb/mockData';
-import {generateToken} from '@/utils/auth';
-import type {User, UserWithToken, QueryOptionsInput} from '@ntlango/commons/types';
-import {UserRole} from '@ntlango/commons/types';
+import { Types } from 'mongoose';
+import type { IntegrationServer } from '@/test/integration/utils/server';
+import { startIntegrationServer, stopIntegrationServer } from '@/test/integration/utils/server';
+import { EventCategoryDAO, EventCategoryGroupDAO } from '@/mongodb/dao';
+import { usersMockData } from '@/mongodb/mockData';
+import { generateToken } from '@/utils/auth';
+import type { User, UserWithToken, QueryOptionsInput } from '@ntlango/commons/types';
+import { UserRole } from '@ntlango/commons/types';
 import {
   getCreateEventCategoryGroupMutation,
   getReadEventCategoryGroupBySlugQuery,
@@ -14,7 +14,7 @@ import {
   getReadEventCategoryGroupsWithOptionsQuery,
   getUpdateEventCategoryGroupMutation,
 } from '@/test/utils';
-import type {EventCategoryGroup} from '@ntlango/commons/types';
+import type { EventCategoryGroup } from '@ntlango/commons/types';
 
 const TEST_PORT = 5004;
 
@@ -26,7 +26,7 @@ describe('EventCategoryGroup Resolver', () => {
   const uniqueGroupName = (base: string) => `${base}-${new Types.ObjectId().toString().slice(-6)}`;
 
   beforeAll(async () => {
-    server = await startIntegrationServer({port: TEST_PORT});
+    server = await startIntegrationServer({ port: TEST_PORT });
     url = server.url;
     const user = {
       ...usersMockData[0],
@@ -93,7 +93,9 @@ describe('EventCategoryGroup Resolver', () => {
       expect(readResponse.body.data.readEventCategoryGroupBySlug.slug).toBe(createdGroup.slug);
 
       const listResponse = await request(url).post('').send(getReadEventCategoryGroupsQuery());
-      const found = listResponse.body.data.readEventCategoryGroups.find((group: any) => group.slug === createdGroup.slug);
+      const found = listResponse.body.data.readEventCategoryGroups.find(
+        (group: any) => group.slug === createdGroup.slug,
+      );
       expect(found).toBeTruthy();
 
       await EventCategoryGroupDAO.deleteEventCategoryGroupBySlug(createdGroup.slug).catch(() => {});
@@ -152,7 +154,7 @@ describe('EventCategoryGroup Resolver', () => {
     it('reads groups with options', async () => {
       const filterGroupName = uniqueGroupName('Filter Group');
       const createdGroup = await createGroup(filterGroupName);
-      const options: QueryOptionsInput = {filters: [{field: 'name', value: filterGroupName}]};
+      const options: QueryOptionsInput = { filters: [{ field: 'name', value: filterGroupName }] };
       const response = await request(url).post('').send(getReadEventCategoryGroupsWithOptionsQuery(options));
       expect(response.status).toBe(200);
       const found = response.body.data.readEventCategoryGroups.find((group: any) => group.slug === createdGroup.slug);

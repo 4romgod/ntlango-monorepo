@@ -1,6 +1,6 @@
-import {EventSchema, CreateEventInputSchema, UpdateEventInputSchema} from '@/validation';
+import { EventSchema, CreateEventInputSchema, UpdateEventInputSchema } from '@/validation';
 import mongoose from 'mongoose';
-import {EventStatus} from '@ntlango/commons/types/event';
+import { EventStatus } from '@ntlango/commons/types/event';
 
 describe('Event', () => {
   const mockID = new mongoose.Types.ObjectId().toString();
@@ -21,11 +21,11 @@ describe('Event', () => {
         status: EventStatus.Cancelled,
         capacity: 100,
         eventCategories: [mockID],
-        organizers: [{user: mockID, role: 'Host'}],
-        tags: {tag1: 'value1'},
-        media: {featuredImageUrl: 'https://example.com/image.jpg'},
-        additionalDetails: {detail1: 'value1'},
-        comments: {comment1: 'comment'},
+        organizers: [{ user: mockID, role: 'Host' }],
+        tags: { tag1: 'value1' },
+        media: { featuredImageUrl: 'https://example.com/image.jpg' },
+        additionalDetails: { detail1: 'value1' },
+        comments: { comment1: 'comment' },
         privacySetting: 'Public',
         eventLink: 'https://example.com/event',
       };
@@ -54,11 +54,11 @@ describe('Event', () => {
         status: EventStatus.Cancelled,
         capacity: 100,
         eventCategories: [mockID],
-        organizers: [{user: mockID, role: 'Host'}],
-        tags: {tag1: 'value1'},
-        media: {featuredImageUrl: 'https://example.com/image.jpg'},
-        additionalDetails: {detail1: 'value1'},
-        comments: {comment1: 'comment'},
+        organizers: [{ user: mockID, role: 'Host' }],
+        tags: { tag1: 'value1' },
+        media: { featuredImageUrl: 'https://example.com/image.jpg' },
+        additionalDetails: { detail1: 'value1' },
+        comments: { comment1: 'comment' },
         privacySetting: 'Public',
         eventLink: 'https://example.com/event',
       };

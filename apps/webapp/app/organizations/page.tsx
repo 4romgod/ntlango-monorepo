@@ -76,12 +76,9 @@ export default async function OrganizationsPage() {
             >
               Community spaces on Ntlango
             </Typography>
-            <Typography
-              variant="body1"
-              color="text.secondary"
-              sx={{ mb: 4, fontSize: '1.125rem', lineHeight: 1.7 }}
-            >
-              Discover and connect with creative collectives, event organizers, and community spaces. Join organizations to stay updated on their latest events and activities.
+            <Typography variant="body1" color="text.secondary" sx={{ mb: 4, fontSize: '1.125rem', lineHeight: 1.7 }}>
+              Discover and connect with creative collectives, event organizers, and community spaces. Join organizations
+              to stay updated on their latest events and activities.
             </Typography>
             <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
               <Button
@@ -128,7 +125,7 @@ export default async function OrganizationsPage() {
       <Container sx={{ py: 6 }}>
         {organizations.length > 0 ? (
           <Grid container spacing={3}>
-            {organizations.map(organization => (
+            {organizations.map((organization) => (
               <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={organization.orgId}>
                 <OrganizationCard {...organization} />
               </Grid>

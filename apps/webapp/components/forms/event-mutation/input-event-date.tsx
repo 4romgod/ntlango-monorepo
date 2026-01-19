@@ -53,7 +53,7 @@ export default function EventDateInput({ onChange }: EventDateInputProps) {
         interval,
         dtstart: startDateTime.toDate(),
         until: endDateTime.toDate(),
-        byweekday: daysOfWeek.map(d => Weekday.fromStr(d)),
+        byweekday: daysOfWeek.map((d) => Weekday.fromStr(d)),
       });
       result = rule.toString();
     }
@@ -63,7 +63,7 @@ export default function EventDateInput({ onChange }: EventDateInputProps) {
 
   const handleDayChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value, checked } = event.target;
-    setDaysOfWeek(prev => (checked ? [...prev, value as WeekdayStr] : prev.filter(day => day !== value)));
+    setDaysOfWeek((prev) => (checked ? [...prev, value as WeekdayStr] : prev.filter((day) => day !== value)));
   };
 
   return (
@@ -110,7 +110,7 @@ export default function EventDateInput({ onChange }: EventDateInputProps) {
                   <InputLabel color="secondary">Frequency</InputLabel>
                   <Select
                     value={frequency}
-                    onChange={e => setFrequency(Number(e.target.value) as Frequency)}
+                    onChange={(e) => setFrequency(Number(e.target.value) as Frequency)}
                     color="secondary"
                     sx={{ borderRadius: 2 }}
                   >
@@ -127,7 +127,7 @@ export default function EventDateInput({ onChange }: EventDateInputProps) {
                   label="Interval"
                   type="number"
                   value={interval}
-                  onChange={e => setInterval(parseInt(e.target.value))}
+                  onChange={(e) => setInterval(parseInt(e.target.value))}
                   color="secondary"
                   sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
                 />
@@ -139,7 +139,7 @@ export default function EventDateInput({ onChange }: EventDateInputProps) {
                     Days of the Week
                   </Typography>
                   <Grid container spacing={1}>
-                    {ALL_WEEKDAYS.map(day => (
+                    {ALL_WEEKDAYS.map((day) => (
                       <Grid key={day}>
                         <FormControlLabel
                           control={
