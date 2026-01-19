@@ -4,6 +4,7 @@ import {CancelEventParticipantInput, EventParticipant, UpsertEventParticipantInp
 import {EventParticipantDAO} from '@/mongodb/dao';
 import {validateMongodbId} from '@/validation';
 import type {ServerContext} from '@/graphql';
+import {EventParticipantService} from '@/services';
 
 @Resolver(() => EventParticipant)
 export class EventParticipantResolver {
@@ -12,7 +13,7 @@ export class EventParticipantResolver {
   async upsertEventParticipant(@Arg('input', () => UpsertEventParticipantInput) input: UpsertEventParticipantInput): Promise<EventParticipant> {
     validateMongodbId(input.eventId);
     validateMongodbId(input.userId);
-    return EventParticipantDAO.upsert(input);
+    return EventParticipantService.rsvp(input);
   }
 
   @Authorized([UserRole.Admin, UserRole.Host, UserRole.User])
@@ -20,7 +21,7 @@ export class EventParticipantResolver {
   async cancelEventParticipant(@Arg('input', () => CancelEventParticipantInput) input: CancelEventParticipantInput): Promise<EventParticipant> {
     validateMongodbId(input.eventId);
     validateMongodbId(input.userId);
-    return EventParticipantDAO.cancel(input);
+    return EventParticipantService.cancel(input);
   }
 
   @Authorized([UserRole.Admin, UserRole.Host, UserRole.User])

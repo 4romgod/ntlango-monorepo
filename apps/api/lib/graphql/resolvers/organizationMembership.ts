@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import {Arg, Mutation, Resolver, Query, Authorized} from 'type-graphql';
+import {Arg, Mutation, Resolver, Query, Authorized, Ctx} from 'type-graphql';
 import {
   CreateOrganizationMembershipInput,
   DeleteOrganizationMembershipInput,
@@ -16,6 +16,9 @@ import {
   UpdateOrganizationMembershipInputSchema,
 } from '@/validation/zod';
 import {ERROR_MESSAGES} from '@/validation';
+import {OrganizationMembershipService} from '@/services';
+import type {ServerContext} from '@/graphql';
+import {getAuthenticatedUser} from '@/utils';
 
 @Resolver(() => OrganizationMembership)
 export class OrganizationMembershipResolver {
@@ -25,9 +28,11 @@ export class OrganizationMembershipResolver {
   })
   async createOrganizationMembership(
     @Arg('input', () => CreateOrganizationMembershipInput) input: CreateOrganizationMembershipInput,
+    @Ctx() context: ServerContext,
   ): Promise<OrganizationMembership> {
     validateInput<CreateOrganizationMembershipInput>(CreateOrganizationMembershipInputSchema, input);
-    return OrganizationMembershipDAO.create(input);
+    const user = getAuthenticatedUser(context);
+    return OrganizationMembershipService.addMember(input, user.userId);
   }
 
   @Authorized([UserRole.Admin])
@@ -36,10 +41,12 @@ export class OrganizationMembershipResolver {
   })
   async updateOrganizationMembership(
     @Arg('input', () => UpdateOrganizationMembershipInput) input: UpdateOrganizationMembershipInput,
+    @Ctx() context: ServerContext,
   ): Promise<OrganizationMembership> {
     validateInput<UpdateOrganizationMembershipInput>(UpdateOrganizationMembershipInputSchema, input);
     validateMongodbId(input.membershipId, ERROR_MESSAGES.NOT_FOUND('Organization membership', 'ID', input.membershipId));
-    return OrganizationMembershipDAO.update(input);
+    const user = getAuthenticatedUser(context);
+    return OrganizationMembershipService.updateMemberRole(input, user.userId);
   }
 
   @Authorized([UserRole.Admin])
@@ -51,7 +58,7 @@ export class OrganizationMembershipResolver {
   ): Promise<OrganizationMembership> {
     validateInput<DeleteOrganizationMembershipInput>(DeleteOrganizationMembershipInputSchema, input);
     validateMongodbId(input.membershipId, ERROR_MESSAGES.NOT_FOUND('Organization membership', 'ID', input.membershipId));
-    return OrganizationMembershipDAO.delete(input.membershipId);
+    return OrganizationMembershipService.removeMember(input.membershipId);
   }
 
   @Query(() => OrganizationMembership, {

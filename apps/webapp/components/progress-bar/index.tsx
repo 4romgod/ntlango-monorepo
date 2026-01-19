@@ -1,12 +1,21 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import NProgress from 'nprogress';
 
 export default function TopProgressBar() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  // Use ref to access current pathname in click handler without re-adding listeners
+  const pathnameRef = useRef(pathname);
+  const searchParamsRef = useRef(searchParams);
+
+  // Keep refs updated
+  useEffect(() => {
+    pathnameRef.current = pathname;
+    searchParamsRef.current = searchParams;
+  }, [pathname, searchParams]);
 
   useEffect(() => {
     NProgress.configure({ 
@@ -46,6 +55,20 @@ export default function TopProgressBar() {
         !event.shiftKey &&
         !event.defaultPrevented
       ) {
+        // Parse the clicked href to compare with current location
+        const url = new URL(href, window.location.origin);
+        const clickedPath = url.pathname;
+        const clickedSearch = url.search;
+
+        // Build current search string from searchParams
+        const currentSearch = searchParamsRef.current?.toString();
+        const currentSearchString = currentSearch ? `?${currentSearch}` : '';
+
+        // Don't start progress bar if navigating to the same page
+        if (clickedPath === pathnameRef.current && clickedSearch === currentSearchString) {
+          return;
+        }
+
         NProgress.start();
       }
     };

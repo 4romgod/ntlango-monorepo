@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import {OrganizationMembershipResolver} from '@/graphql/resolvers/organizationMembership';
 import {OrganizationMembershipDAO} from '@/mongodb/dao';
+import {OrganizationMembershipService} from '@/services';
 import type {
   CreateOrganizationMembershipInput,
   DeleteOrganizationMembershipInput,
@@ -9,6 +10,7 @@ import type {
 } from '@ntlango/commons/types';
 import {OrganizationRole} from '@ntlango/commons/types';
 import * as validation from '@/validation';
+import type {ServerContext} from '@/graphql';
 
 jest.mock('@/mongodb/dao', () => ({
   OrganizationMembershipDAO: {
@@ -17,6 +19,14 @@ jest.mock('@/mongodb/dao', () => ({
     delete: jest.fn(),
     readMembershipById: jest.fn(),
     readMembershipsByOrgId: jest.fn(),
+  },
+}));
+
+jest.mock('@/services', () => ({
+  OrganizationMembershipService: {
+    addMember: jest.fn(),
+    updateMemberRole: jest.fn(),
+    removeMember: jest.fn(),
   },
 }));
 
@@ -46,6 +56,10 @@ describe('OrganizationMembershipResolver', () => {
     joinedAt: new Date(),
   };
 
+  const mockContext = {
+    user: {userId: 'admin-user-001', email: 'admin@test.com'},
+  } as ServerContext;
+
   beforeEach(() => {
     resolver = new OrganizationMembershipResolver();
     jest.clearAllMocks();
@@ -60,13 +74,13 @@ describe('OrganizationMembershipResolver', () => {
       role: mockMembership.role,
     };
 
-    it('validates input and creates membership', async () => {
-      (OrganizationMembershipDAO.create as jest.Mock).mockResolvedValue(mockMembership);
+    it('validates input and creates membership via service', async () => {
+      (OrganizationMembershipService.addMember as jest.Mock).mockResolvedValue(mockMembership);
 
-      const result = await resolver.createOrganizationMembership(createInput);
+      const result = await resolver.createOrganizationMembership(createInput, mockContext);
 
       expect(validation.validateInput).toHaveBeenCalled();
-      expect(OrganizationMembershipDAO.create).toHaveBeenCalledWith(createInput);
+      expect(OrganizationMembershipService.addMember).toHaveBeenCalledWith(createInput, 'admin-user-001');
       expect(result).toEqual(mockMembership);
     });
   });
@@ -77,17 +91,17 @@ describe('OrganizationMembershipResolver', () => {
       role: OrganizationRole.Host,
     };
 
-    it('validates id before updating', async () => {
-      (OrganizationMembershipDAO.update as jest.Mock).mockResolvedValue({
+    it('validates id before updating via service', async () => {
+      (OrganizationMembershipService.updateMemberRole as jest.Mock).mockResolvedValue({
         ...mockMembership,
         role: OrganizationRole.Host,
       });
 
-      const result = await resolver.updateOrganizationMembership(updateInput);
+      const result = await resolver.updateOrganizationMembership(updateInput, mockContext);
 
       expect(validation.validateInput).toHaveBeenCalled();
       expect(validation.validateMongodbId).toHaveBeenCalledWith(updateInput.membershipId, expect.any(String));
-      expect(OrganizationMembershipDAO.update).toHaveBeenCalledWith(updateInput);
+      expect(OrganizationMembershipService.updateMemberRole).toHaveBeenCalledWith(updateInput, 'admin-user-001');
       expect(result.role).toBe(OrganizationRole.Host);
     });
   });
@@ -97,14 +111,14 @@ describe('OrganizationMembershipResolver', () => {
       membershipId: mockMembership.membershipId,
     };
 
-    it('validates id before deleting', async () => {
-      (OrganizationMembershipDAO.delete as jest.Mock).mockResolvedValue(mockMembership);
+    it('validates id before deleting via service', async () => {
+      (OrganizationMembershipService.removeMember as jest.Mock).mockResolvedValue(mockMembership);
 
       const result = await resolver.deleteOrganizationMembership(deleteInput);
 
       expect(validation.validateInput).toHaveBeenCalled();
       expect(validation.validateMongodbId).toHaveBeenCalledWith(deleteInput.membershipId, expect.any(String));
-      expect(OrganizationMembershipDAO.delete).toHaveBeenCalledWith(deleteInput.membershipId);
+      expect(OrganizationMembershipService.removeMember).toHaveBeenCalledWith(deleteInput.membershipId);
       expect(result).toEqual(mockMembership);
     });
   });

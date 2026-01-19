@@ -18,8 +18,7 @@ import { ROUTES } from '@/lib/constants';
 import NavLinksList from '@/components/navigation/main/nav-links-list';
 import { getAvatarSrc } from '@/lib/utils';
 import { useSession } from 'next-auth/react';
-import { useFollowRequests } from '@/hooks';
-import { FollowTargetType, FollowApprovalStatus } from '@/data/graphql/types/graphql';
+import { useUnreadNotificationCount } from '@/hooks';
 import Logo from '@/components/logo';
 
 type MainNavigationProps = {
@@ -32,9 +31,8 @@ type MainNavigationProps = {
 export default function MainNavigation({ isAuthN }: MainNavigationProps) {
   const { data: session } = useSession();
 
-  // Get pending follow requests count for notification badge (only count pending, not accepted/rejected)
-  const { requests: followRequests } = useFollowRequests(FollowTargetType.User);
-  const pendingCount = followRequests?.filter(req => req.approvalStatus === FollowApprovalStatus.Pending).length || 0;
+  // Get unread notification count for badge (polls every 30s for near-realtime updates)
+  const { unreadCount } = useUnreadNotificationCount(isAuthN ? 30000 : undefined);
 
   const theme = useTheme();
   const isMdUp = useMediaQuery(theme.breakpoints.up('md'));
@@ -175,7 +173,7 @@ export default function MainNavigation({ isAuthN }: MainNavigationProps) {
                 }}
               >
                 <Badge
-                  badgeContent={pendingCount}
+                  badgeContent={unreadCount}
                   color="error"
                   sx={{
                     '& .MuiBadge-badge': {

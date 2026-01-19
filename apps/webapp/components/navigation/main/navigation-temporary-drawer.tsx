@@ -23,20 +23,14 @@ import NavLinksList from '@/components/navigation/main/nav-links-list';
 import { logoutUserAction } from '@/data/actions/server/auth/logout';
 import { ROUTES } from '@/lib/constants';
 import { getDisplayName, getAvatarSrc } from '@/lib/utils';
-import { useFollowRequests } from '@/hooks';
-import { FollowTargetType, FollowApprovalStatus } from '@/data/graphql/types/graphql';
+import { useUnreadNotificationCount } from '@/hooks';
 
 export default function TemporaryDrawer({ isAuthN }: { isAuthN: boolean }) {
   const [open, setOpen] = useState(false);
   const { data: session } = useSession();
 
-  // Get pending follow requests count for notification badge (only count pending, not accepted/rejected)
-  // Hook is always called but query is skipped internally when not authenticated
-  const { requests: followRequests } = useFollowRequests(FollowTargetType.User);
-  const pendingCount =
-    followRequests?.filter(
-      (req) => req.approvalStatus === FollowApprovalStatus.Pending
-    ).length || 0;
+  // Get unread notification count for badge (polls every 30s for near-realtime updates)
+  const { unreadCount } = useUnreadNotificationCount(isAuthN ? 30000 : undefined);
 
   const toggleDrawer = (newOpen: boolean) => () => {
     setOpen(newOpen);
@@ -123,7 +117,7 @@ export default function TemporaryDrawer({ isAuthN }: { isAuthN: boolean }) {
                 <ListItemButton>
                   <ListItemIcon>
                     <Badge
-                      badgeContent={pendingCount}
+                      badgeContent={unreadCount}
                       color="error"
                       sx={{
                         '& .MuiBadge-badge': {

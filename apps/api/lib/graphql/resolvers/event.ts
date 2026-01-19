@@ -104,6 +104,38 @@ export class EventResolver {
   }
 
   /**
+   * Field resolver to get participants for this event.
+   * If already populated via aggregation pipeline, returns as-is.
+   * Otherwise fetches from EventParticipant collection (fallback for mutations).
+   */
+  @FieldResolver(() => [EventParticipant], {nullable: true, description: 'Participants who have RSVP\'d to this event'})
+  async participants(@Root() event: Event, @Ctx() context: ServerContext): Promise<EventParticipant[]> {
+    // If already populated (from aggregation pipeline), return as-is
+    if (event.participants && Array.isArray(event.participants) && event.participants.length > 0) {
+      const first = event.participants[0];
+      if (typeof first === 'object' && first !== null && 'participantId' in first) {
+        return event.participants as EventParticipant[];
+      }
+    }
+
+    // Otherwise fetch from EventParticipant collection
+    const participants = await EventParticipantDAO.readByEvent(event.eventId);
+    
+    // Enrich with user data via DataLoader
+    const enrichedParticipants = await Promise.all(
+      participants.map(async (participant) => {
+        const user = await context.loaders.user.load(participant.userId);
+        return {
+          ...participant,
+          user: user || undefined,
+        };
+      }),
+    );
+
+    return enrichedParticipants as EventParticipant[];
+  }
+
+  /**
    * Field resolver to get the count of users who have saved this event.
    */
   @FieldResolver(() => Int, {description: 'Number of users who have saved this event'})

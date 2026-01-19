@@ -6,8 +6,6 @@ import {
   FollowTargetType,
   User,
   UserRole,
-  FollowApprovalStatus,
-  FollowPolicy,
   Organization,
   SocialVisibility,
   Event,
@@ -16,10 +14,11 @@ import {
   CreateFollowInputSchema,
 } from '@/validation/zod';
 import {validateInput} from '@/validation';
-import {FollowDAO, UserDAO, OrganizationDAO, EventDAO} from '@/mongodb/dao';
+import {FollowDAO, UserDAO, OrganizationDAO} from '@/mongodb/dao';
 import type {ServerContext} from '@/graphql';
 import {RESOLVER_DESCRIPTIONS} from '@/constants';
-import {getAuthenticatedUser, CustomError, ErrorTypes} from '@/utils';
+import {getAuthenticatedUser} from '@/utils';
+import {FollowService} from '@/services';
 
 @Resolver(() => Follow)
 export class FollowResolver {
@@ -62,37 +61,7 @@ export class FollowResolver {
     validateInput(CreateFollowInputSchema, input);
     const user = getAuthenticatedUser(context);
 
-    let approvalStatus = FollowApprovalStatus.Pending;
-
-    if (input.targetType === FollowTargetType.User) {
-      const targetUser = await UserDAO.readUserById(input.targetId);
-      
-      // Check if the target user has blocked the follower
-      if (targetUser.blockedUserIds && targetUser.blockedUserIds.includes(user.userId)) {
-        throw CustomError('You cannot follow this user', ErrorTypes.UNAUTHORIZED);
-      }
-      
-      // Check if the follower has blocked the target user
-      const followerUser = await UserDAO.readUserById(user.userId);
-      if (followerUser.blockedUserIds && followerUser.blockedUserIds.includes(input.targetId)) {
-        throw CustomError('You cannot follow a blocked user', ErrorTypes.UNAUTHORIZED);
-      }
-      
-      approvalStatus = (targetUser.followPolicy ?? FollowPolicy.Public) === FollowPolicy.Public
-        ? FollowApprovalStatus.Accepted
-        : FollowApprovalStatus.Pending;
-    } else if (input.targetType === FollowTargetType.Organization) {
-      const targetOrg = await OrganizationDAO.readOrganizationById(input.targetId);
-      approvalStatus = (targetOrg.followPolicy ?? FollowPolicy.Public) === FollowPolicy.Public
-        ? FollowApprovalStatus.Accepted
-        : FollowApprovalStatus.Pending;
-    } else if (input.targetType === FollowTargetType.Event) {
-      await EventDAO.readEventById(input.targetId);
-      // Events are always publicly saveable - no approval needed
-      approvalStatus = FollowApprovalStatus.Accepted;
-    }
-
-    return FollowDAO.upsert({...input, followerUserId: user.userId, approvalStatus});
+    return FollowService.follow({...input, followerUserId: user.userId});
   }
 
   @Authorized([UserRole.Admin, UserRole.Host, UserRole.User])
@@ -103,22 +72,21 @@ export class FollowResolver {
     @Ctx() context: ServerContext,
   ): Promise<boolean> {
     const user = getAuthenticatedUser(context);
-    return FollowDAO.remove({followerUserId: user.userId, targetType, targetId});
+    return FollowService.unfollow({followerUserId: user.userId, targetType, targetId});
   }
 
   @Authorized([UserRole.Admin, UserRole.Host, UserRole.User])
   @Mutation(() => Follow, {description: RESOLVER_DESCRIPTIONS.FOLLOW.acceptFollowRequest})
   async acceptFollowRequest(@Arg('followId', () => ID) followId: string, @Ctx() context: ServerContext): Promise<Follow> {
     const user = getAuthenticatedUser(context);
-    return FollowDAO.updateApprovalStatus(followId, user.userId, FollowApprovalStatus.Accepted);
+    return FollowService.acceptFollowRequest(followId, user.userId);
   }
 
   @Authorized([UserRole.Admin, UserRole.Host, UserRole.User])
   @Mutation(() => Boolean, {description: RESOLVER_DESCRIPTIONS.FOLLOW.rejectFollowRequest})
   async rejectFollowRequest(@Arg('followId', () => ID) followId: string, @Ctx() context: ServerContext): Promise<boolean> {
     const user = getAuthenticatedUser(context);
-    await FollowDAO.updateApprovalStatus(followId, user.userId, FollowApprovalStatus.Rejected);
-    return true;
+    return FollowService.rejectFollowRequest(followId, user.userId);
   }
 
   @Authorized([UserRole.Admin, UserRole.Host, UserRole.User])
@@ -129,7 +97,7 @@ export class FollowResolver {
     @Ctx() context: ServerContext,
   ): Promise<boolean> {
     const user = getAuthenticatedUser(context);
-    return FollowDAO.removeFollower(user.userId, followerUserId, targetType);
+    return FollowService.removeFollower(user.userId, followerUserId, targetType);
   }
 
   @Authorized([UserRole.Admin, UserRole.Host, UserRole.User])

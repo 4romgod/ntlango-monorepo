@@ -220,6 +220,91 @@ Activities capture actions taken by actors (users/orgs) so the feed knows what h
 - List queries accept `QueryOptionsInput` (`pagination`, `sort`, `filters`) and are translated into Mongo aggregation pipelines.
 - Ownership checks for sensitive mutations live in `apps/api/lib/utils/auth.ts` and rely on `OPERATION_NAMES` for enforcement.
 
+## Field Resolution Strategy (Hybrid Approach)
+
+The API uses a **hybrid approach** combining MongoDB aggregation pipelines with GraphQL field resolvers to balance performance and flexibility.
+
+### The Problem: N+1 Queries
+Without optimization, fetching 20 events with their participants would execute:
+- 1 query for events
+- 20 queries for participants (one per event)
+- 20+ queries for user data on each participant
+
+### The Solution: Aggregation + Field Resolver Fallback
+
+#### 1. Aggregation Pipeline (for Read Queries)
+Read operations (`readEvents`, `readEventById`, `readEventBySlug`) use MongoDB `$lookup` to join related data in a single database round-trip:
+
+```typescript
+// apps/api/lib/utils/queries/aggregate/lookup.ts
+export const createEventLookupStages = (): PipelineStage[] => [
+  // Join eventCategories
+  { $lookup: { from: 'eventcategories', localField: 'eventCategories', ... } },
+  
+  // Join organizers.user
+  { $lookup: { from: 'users', let: {organizerUserIds: '$organizers.user'}, ... } },
+  
+  // Join participants from EventParticipant collection
+  { $lookup: { from: 'eventparticipants', localField: 'eventId', foreignField: 'eventId', as: 'participants' } },
+  
+  // Enrich participants with user data
+  { $lookup: { from: 'users', let: {participantUserIds: '$participants.userId'}, ... } },
+];
+```
+
+#### 2. Field Resolvers (Fallback for Mutations)
+Mutations (`createEvent`, `updateEvent`, `deleteEvent`) return raw documents without `$lookup`. Field resolvers detect this and fetch data on-demand using DataLoaders:
+
+```typescript
+// apps/api/lib/graphql/resolvers/event.ts
+@FieldResolver(() => [EventParticipant], {nullable: true})
+async participants(@Root() event: Event, @Ctx() context: ServerContext) {
+  // Fast path: already populated from aggregation
+  if (event.participants?.[0]?.participantId) {
+    return event.participants;
+  }
+  
+  // Fallback: fetch and enrich via DataLoader
+  const participants = await EventParticipantDAO.readByEvent(event.eventId);
+  return Promise.all(participants.map(async (p) => ({
+    ...p,
+    user: await context.loaders.user.load(p.userId),
+  })));
+}
+```
+
+#### 3. DataLoaders (Batching for Field Resolvers)
+When field resolvers need to fetch related data, DataLoaders batch multiple requests into single queries:
+
+```typescript
+// If 20 participants need user data, DataLoader batches into 1 query:
+// SELECT * FROM users WHERE userId IN ('u1', 'u2', ..., 'u20')
+const user = await context.loaders.user.load(participant.userId);
+```
+
+### Resolution Flow by Operation Type
+
+| Operation | Uses $lookup? | Field Resolver Behavior |
+|-----------|--------------|------------------------|
+| `readEvents` | ✅ Yes | Returns pre-populated data |
+| `readEventById` | ✅ Yes | Returns pre-populated data |
+| `readEventBySlug` | ✅ Yes | Returns pre-populated data |
+| `createEvent` | ❌ No | Fetches via DAO + DataLoader |
+| `updateEvent` | ❌ No | Fetches via DAO + DataLoader |
+| `deleteEvent` | ❌ No | Fetches via DAO + DataLoader |
+
+### Key Files
+- **Lookup stages:** `apps/api/lib/utils/queries/aggregate/lookup.ts`
+- **Pipeline builder:** `apps/api/lib/utils/queries/aggregate/eventsPipeline.ts`
+- **Field resolvers:** `apps/api/lib/graphql/resolvers/event.ts`
+- **DataLoaders:** `apps/api/lib/graphql/context/loaders.ts`
+
+### Why This Pattern?
+1. **Performance:** Aggregation minimizes DB round-trips for common read paths
+2. **Flexibility:** Field resolvers handle edge cases (mutations, partial data)
+3. **Consistency:** Same field always returns the same shape regardless of source
+4. **Maintainability:** Business logic stays in one place (field resolver)
+
 ## Feed & FOMO Flow
 1) User follows User/Organization → `Follow` created, `Activity: Followed`.
 2) User marks Going/Interested → `Intent` created/updated; if RSVP/ticketed, `EventParticipant` is upserted.
