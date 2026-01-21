@@ -27,6 +27,7 @@ export const ROUTES = {
     ROOT: '/users',
   },
   ROOT: '/',
+  HOME: '/home',
   ORGANIZATIONS: {
     ROOT: '/organizations',
     ORG: (slug: string) => `/organizations/${slug}`,

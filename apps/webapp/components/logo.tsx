@@ -3,12 +3,15 @@
 import Link from 'next/link';
 import { Box, Typography } from '@mui/material';
 import { spaceGrotesk } from '@/components/theme/fonts';
+import { ROUTES } from '@/lib/constants';
+import { useIsAuthenticated } from '@/hooks/useIsAuthenticated';
 
 export default function Logo() {
+  const isAuth = useIsAuthenticated();
   return (
     <Box
       component={Link}
-      href="/"
+      href={isAuth ? ROUTES.HOME : ROUTES.ROOT}
       aria-label="Ntlango home"
       sx={{
         display: 'flex',

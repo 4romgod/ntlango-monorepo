@@ -1,6 +1,8 @@
 import 'reflect-metadata';
 import { Field, ID, InputType, ObjectType, registerEnumType } from 'type-graphql';
 import { index, modelOptions, prop, Severity } from '@typegoose/typegoose';
+import { Event } from './event';
+import { User } from './user';
 
 export enum ParticipantStatus {
   Interested = 'Interested',
@@ -62,6 +64,14 @@ export class EventParticipant {
   @prop({ type: () => Date })
   @Field(() => Date, { nullable: true })
   checkedInAt?: Date;
+
+  // GraphQL-only field resolved via field resolvers
+  @Field(() => Event, { nullable: true })
+  event?: Event;
+
+  // GraphQL-only field resolved via field resolvers
+  @Field(() => User, { nullable: true })
+  user?: User;
 }
 
 @InputType('UpsertEventParticipantInput')

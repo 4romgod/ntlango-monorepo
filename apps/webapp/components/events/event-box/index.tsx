@@ -11,6 +11,7 @@ import { RRule } from 'rrule';
 import { SaveEventButton, RsvpButton } from '@/components/events';
 import { useState, useEffect } from 'react';
 import { ParticipantStatus } from '@/data/graphql/types/graphql';
+import { RANDOM_IMAGE_LINK } from '@/lib/constants';
 
 export default function EventBox({ event }: { event: EventPreview }) {
   const theme = useTheme();
@@ -31,10 +32,7 @@ export default function EventBox({ event }: { event: EventPreview }) {
 
   const recurrenceText = RRule.fromString(recurrenceRule).toText();
   // TODO This placeholder image is just for development purposes
-  const imageUrl =
-    heroImage ||
-    media?.featuredImageUrl ||
-    'https://images.unsplash.com/photo-1525286116112-b59af11adad1?auto=format&fit=crop&w=1200&q=80';
+  const imageUrl = heroImage || media?.featuredImageUrl || RANDOM_IMAGE_LINK;
   const participantCount = participants?.length ?? 0;
   const participantList = (participants ?? []) as EventParticipantPreview[];
   const visibleParticipants = participantList.slice(0, 3);

@@ -27,8 +27,7 @@ export default async function EventCategoryBox({ eventCategory }: { eventCategor
         boxShadow: '0 10px 28px rgba(0,0,0,0.08)',
         transition: 'transform 0.3s, box-shadow 0.3s, border-color 0.3s',
         '&:hover': {
-          transform: 'translateY(-6px)',
-          boxShadow: '0 20px 35px rgba(0,0,0,0.12)',
+          boxShadow: '0 10px 15px rgba(0,0,0,0.12)',
           borderColor: 'secondary.main',
         },
         p: 1.5,

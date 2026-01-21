@@ -16,6 +16,11 @@ export default auth(async (req) => {
   const isPublicRoute = publicRoutes.includes(nextUrl.pathname) || isPublicDynamicRoute(nextUrl.pathname);
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
 
+  // 0. Block access to '/' for authenticated users, redirect to '/home'
+  if (isLoggedIn && nextUrl.pathname === ROUTES.ROOT) {
+    return NextResponse.redirect(new URL(ROUTES.HOME, nextUrl));
+  }
+
   // 1. Allow all API auth routes
   if (isApiAuthRoute) {
     return NextResponse.next();

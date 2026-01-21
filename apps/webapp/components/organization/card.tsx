@@ -5,9 +5,9 @@ import { ROUTES } from '@/lib/constants';
 export type OrganizationCardProps = {
   name?: string;
   slug?: string;
-  description?: string;
-  logo?: string;
-  tags?: string[];
+  description?: string | null;
+  logo?: string | null;
+  tags?: string[] | null;
   followersCount?: number;
   isFollowable?: boolean;
 };

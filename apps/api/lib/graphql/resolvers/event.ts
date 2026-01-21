@@ -141,21 +141,16 @@ export class EventResolver {
       }
     }
 
-    // Otherwise fetch from EventParticipant collection
-    const participants = await EventParticipantDAO.readByEvent(event.eventId);
+    // Use DataLoader to batch all event participant loads for this request
+    const participants = await context.loaders.eventParticipantsByEvent.load(event.eventId);
 
-    // Enrich with user data via DataLoader
-    const enrichedParticipants = await Promise.all(
-      participants.map(async (participant) => {
-        const user = await context.loaders.user.load(participant.userId);
-        return {
-          ...participant,
-          user: user || undefined,
-        };
-      }),
-    );
-
-    return enrichedParticipants as EventParticipant[];
+    // Enrich with user data via DataLoader (batched per participant)
+    const userIds = participants.map((p) => p.userId);
+    const users = await Promise.all(userIds.map((id) => context.loaders.user.load(id)));
+    return participants.map((participant, i) => ({
+      ...participant,
+      user: users[i] || undefined,
+    })) as EventParticipant[];
   }
 
   /**

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef, useState, useEffect, useCallback } from 'react';
-import { Box, Typography, IconButton, useMediaQuery, useTheme, Paper, Stack, Button } from '@mui/material';
+import { Box, Typography, IconButton, useMediaQuery, useTheme, Paper, Stack, Button, alpha } from '@mui/material';
 import EventBoxSm from '@/components/events/event-box-sm';
 import { EventPreview } from '@/data/graphql/query/Event/types';
 import { ChevronLeft, ChevronRight, ArrowForward } from '@mui/icons-material';
@@ -171,8 +171,8 @@ export default function EventCarousel({
                   overflow: 'hidden',
                   transition: 'transform 0.2s, box-shadow 0.2s',
                   '&:hover': {
-                    transform: 'translateY(-4px)',
-                    boxShadow: 3,
+                    borderColor: 'primary.main',
+                    boxShadow: theme.shadows[4],
                   },
                 }}
               >

@@ -9,6 +9,8 @@ import {
   createEventCategoryLoader,
   createEventLoader,
   createOrganizationLoader,
+  createEventParticipantLoader,
+  createEventParticipantsByEventLoader,
 } from '@/graphql/loaders';
 import { verifyToken } from '@/utils/auth';
 import type { User } from '@ntlango/commons';
@@ -76,6 +78,8 @@ async function initializeResources() {
               eventCategory: createEventCategoryLoader(),
               event: createEventLoader(),
               organization: createOrganizationLoader(),
+              eventParticipant: createEventParticipantLoader(),
+              eventParticipantsByEvent: createEventParticipantsByEventLoader(),
             },
           };
         },

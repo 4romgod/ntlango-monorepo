@@ -12,6 +12,8 @@ import {
   createEventCategoryLoader,
   createEventLoader,
   createOrganizationLoader,
+  createEventParticipantLoader,
+  createEventParticipantsByEventLoader,
 } from '@/graphql/loaders';
 import type { Server } from 'http';
 import { logger } from '@/utils/logger';
@@ -75,6 +77,8 @@ export const startExpressApolloServer = async (listenOptions: ListenOptions = { 
             eventCategory: createEventCategoryLoader(),
             event: createEventLoader(),
             organization: createOrganizationLoader(),
+            eventParticipant: createEventParticipantLoader(),
+            eventParticipantsByEvent: createEventParticipantsByEventLoader(),
           },
         };
       },

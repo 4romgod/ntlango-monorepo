@@ -37,7 +37,7 @@ export const apiAuthPrefix: string = ROUTES.API_AUTH_PREFIX;
  * The default redirect path after authenticating
  * @type {string}
  */
-export const DEFAULT_LOGIN_REDIRECT: string = ROUTES.ACCOUNT.PROFILE;
+export const DEFAULT_LOGIN_REDIRECT: string = ROUTES.HOME;
 
 /**
  * Helper function to determine if a route is a dynamic route

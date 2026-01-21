@@ -7,7 +7,7 @@ interface FeaturedEventsProps {
   title?: string;
 }
 
-export default function FeaturedEvents({ events, title = 'Upcoming Events' }: FeaturedEventsProps) {
+export default function FeaturedEvents({ events = [], title = 'Upcoming Events' }: FeaturedEventsProps) {
   if (events.length === 0) {
     return null;
   }
