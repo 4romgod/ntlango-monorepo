@@ -114,7 +114,7 @@ export default async function HomePage() {
 
   // Fetch categories
   const { data } = await getClient().query({ query: GetAllEventCategoriesDocument });
-  const eventCategories = data.readEventCategories?.slice(0, 6) ?? [];
+  const eventCategories = data.readEventCategories ?? [];
 
   const featuredEvents = eventList.slice(0, 8);
   const heroEvent = eventList[0] ?? null;

@@ -1,4 +1,5 @@
 import DataLoader from 'dataloader';
+import { EventParticipantDAO } from '@/mongodb/dao';
 import type { User, EventCategory, Event, Organization } from '@ntlango/commons/types';
 import type { ServerContext } from '@/graphql';
 
@@ -31,6 +32,22 @@ export const createMockContext = (
     return keys.map((key) => mockData?.organizations?.get(key) ?? null);
   });
 
+  const eventParticipantLoader = new DataLoader<string, any>(async (keys) => {
+    return keys.map(() => null);
+  });
+
+  const eventParticipantsByEventLoader = new DataLoader<string, any[]>(async (eventIds) => {
+    const allParticipants = await EventParticipantDAO.readByEvents([...eventIds]);
+    const map = new Map<string, any[]>();
+    for (const id of eventIds) map.set(id, []);
+    for (const participant of allParticipants) {
+      if (participant && map.has(participant.eventId)) {
+        map.get(participant.eventId)!.push(participant);
+      }
+    }
+    return eventIds.map(id => map.get(id) ?? []);
+  });
+
   return {
     token: undefined,
     req: undefined,
@@ -40,6 +57,8 @@ export const createMockContext = (
       eventCategory: categoryLoader,
       event: eventLoader,
       organization: organizationLoader,
+      eventParticipant: eventParticipantLoader,
+      eventParticipantsByEvent: eventParticipantsByEventLoader,
     },
     ...overrides,
   };

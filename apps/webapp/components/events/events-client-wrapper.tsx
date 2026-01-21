@@ -1,17 +1,15 @@
 'use client';
 
-import { useMemo, useState, useEffect } from 'react';
-import { Box, Grid } from '@mui/material';
+import { useMemo } from 'react';
+import { Box, Button, Grid } from '@mui/material';
 import dayjs from 'dayjs';
 import { EventPreview } from '@/data/graphql/query/Event/types';
 import { EventCategory, EventStatus } from '@/data/graphql/types/graphql';
-import { DATE_FILTER_OPTIONS, DATE_FILTER_LABELS, type DateFilterOption } from '@/lib/constants/date-filters';
+import { DATE_FILTER_OPTIONS, DATE_FILTER_LABELS } from '@/lib/constants/date-filters';
 import { EventFilterProvider } from '@/components/events/filters/event-filter-context';
-import CustomContainer from '@/components/custom-container';
 import { useFilteredEvents } from '@/hooks/useFilteredEvents';
 import { useEventFilters } from '@/hooks/useEventFilters';
 import EventsHeader from '@/components/events/filters/events-header';
-import FilterButtons from '@/components/events/filters/filter-buttons';
 import ActiveFiltersPills from '@/components/events/filters/active-filters-pills';
 import { CategoryMenu, StatusMenu, DateMenu, LocationMenu } from '@/components/events/filters/filter-menus';
 import EventsList from '@/components/events/filters/events-list';
@@ -33,6 +31,8 @@ interface EventsClientWrapperProps {
 }
 
 function EventsContent({ categories, initialEvents, popularOrganization, stats }: EventsContentProps) {
+  // No anchor state needed; menus manage their own open/close state
+
   const {
     filters,
     setSearchQuery,
@@ -48,41 +48,6 @@ function EventsContent({ categories, initialEvents, popularOrganization, stats }
   } = useEventFilters();
   const { events: serverEvents, loading, error } = useFilteredEvents(filters, initialEvents);
 
-  const [categoryAnchor, setCategoryAnchor] = useState<null | HTMLElement>(null);
-  const [statusAnchor, setStatusAnchor] = useState<null | HTMLElement>(null);
-  const [dateAnchor, setDateAnchor] = useState<null | HTMLElement>(null);
-  const [locationAnchor, setLocationAnchor] = useState<null | HTMLElement>(null);
-  const [selectedDateOption, setSelectedDateOption] = useState<string | null>(null);
-  const [customDateAnchor, setCustomDateAnchor] = useState<null | HTMLElement>(null);
-  const [customDateValue, setCustomDateValue] = useState<Date | null>(null);
-
-  // Compute location label from filter state
-  const locationLabel = useMemo(() => {
-    const { location } = filters;
-    if (!location) return null;
-
-    // If using geolocation (lat/lng), show "Near me" with radius
-    if (location.latitude && location.longitude) {
-      return `Near me (${location.radiusKm || 50}km)`;
-    }
-
-    // Build label from city/state/country
-    const parts: string[] = [];
-    if (location.city) parts.push(location.city);
-    if (location.state) parts.push(location.state);
-    if (location.country) parts.push(location.country);
-
-    return parts.length > 0 ? parts.join(', ') : null;
-  }, [filters.location]);
-
-  // Sync selectedDateOption with filter state - clear when filters are reset
-  useEffect(() => {
-    if (!filters.dateRange.start && !filters.dateRange.end) {
-      setSelectedDateOption(null);
-      setCustomDateValue(null);
-    }
-  }, [filters.dateRange.start, filters.dateRange.end]);
-
   const filteredEvents = useMemo(() => {
     const query = filters.searchQuery.trim().toLowerCase();
     if (!query) {
@@ -96,154 +61,144 @@ function EventsContent({ categories, initialEvents, popularOrganization, stats }
     );
   }, [serverEvents, filters.searchQuery]);
 
-  const handleCategoryToggle = (categoryName: string) => {
-    const newCategories = filters.categories.includes(categoryName)
-      ? filters.categories.filter((c) => c !== categoryName)
-      : [...filters.categories, categoryName];
-    setCategories(newCategories);
-  };
-
-  const handleStatusToggle = (status: EventStatus) => {
-    const newStatuses = filters.statuses.includes(status)
-      ? filters.statuses.filter((s) => s !== status)
-      : [...filters.statuses, status];
-    setStatuses(newStatuses);
-  };
-
-  const handleDateSelect = (option: string, event?: React.MouseEvent<HTMLElement>) => {
-    if (option === DATE_FILTER_OPTIONS.CUSTOM) {
-      // Keep menu open and show date picker anchored to the menu
-      setCustomDateAnchor(dateAnchor);
-      // Don't set selectedDateOption yet - wait for actual date selection
-    } else {
-      // Close menu for predefined options
-      setDateAnchor(null);
-      // Display the label for the selected option
-      const label = DATE_FILTER_LABELS[option as DateFilterOption] || option;
-      setSelectedDateOption(label);
-      // Apply date range filter - backend will calculate the actual dates
-      // Just store dummy dates for UI display purposes
-      const now = dayjs();
-      setDateRange(now, now, option);
-    }
-  };
-
-  const handleCustomDateClose = () => {
-    setCustomDateAnchor(null);
-    setDateAnchor(null);
-  };
-
-  const handleLocationApply = (location: {
-    city?: string;
-    state?: string;
-    country?: string;
-    latitude?: number;
-    longitude?: number;
-    radiusKm?: number;
-  }) => {
-    setLocation(location);
-    setLocationAnchor(null);
-  };
-
-  const handleLocationClear = () => {
-    clearLocation();
-    setLocationAnchor(null);
-  };
-
-  const handleCustomDateChange = (date: any) => {
-    if (date) {
-      const jsDate = date.toDate();
-      setCustomDateValue(jsDate);
-      // Format the date for display
-      const formattedDate = jsDate.toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-      });
-      setSelectedDateOption(formattedDate);
-      // Apply custom date filter - store the actual date
-      // Use CUSTOM as filterOption internally to distinguish from predefined options
-      setDateRange(date, date, DATE_FILTER_OPTIONS.CUSTOM);
-    }
-    handleCustomDateClose();
-  };
-
   const statuses = Object.values(EventStatus);
   const dateOptions = Object.values(DATE_FILTER_OPTIONS);
+
+  // Helper to get date range for a given filter option
+  function getDateRangeForOption(option: string) {
+    const today = dayjs().startOf('day');
+    switch (option) {
+      case DATE_FILTER_OPTIONS.TODAY:
+        return { start: today, end: today, filterOption: option };
+      case DATE_FILTER_OPTIONS.TOMORROW:
+        return { start: today.add(1, 'day'), end: today.add(1, 'day'), filterOption: option };
+      case DATE_FILTER_OPTIONS.THIS_WEEK:
+        return { start: today.startOf('week'), end: today.endOf('week'), filterOption: option };
+      case DATE_FILTER_OPTIONS.THIS_WEEKEND:
+        // Assume weekend is Saturday and Sunday
+        const saturday = today.day(6);
+        const sunday = today.day(0).add(1, 'week');
+        return { start: saturday, end: sunday, filterOption: option };
+      case DATE_FILTER_OPTIONS.THIS_MONTH:
+        return { start: today.startOf('month'), end: today.endOf('month'), filterOption: option };
+      default:
+        return { start: null, end: null, filterOption: option };
+    }
+  }
 
   const eventTitles = filteredEvents.map((item) => item.title).filter((title): title is string => !!title);
 
   return (
     <Box component="main" sx={{ minHeight: '100vh', py: 4 }}>
       <Grid container spacing={3}>
-        {/* Main Content - Events List */}
         <Grid size={{ xs: 12, lg: 8 }}>
           <EventsHeader eventCount={filteredEvents.length} eventTitles={eventTitles} onSearch={setSearchQuery} />
 
-          <FilterButtons
-            categoryCount={filters.categories.length}
-            statusCount={filters.statuses.length}
-            selectedDateOption={selectedDateOption}
-            locationLabel={locationLabel}
-            hasActiveFilters={hasActiveFilters}
-            onCategoryClick={(e) => setCategoryAnchor(e.currentTarget)}
-            onStatusClick={(e) => setStatusAnchor(e.currentTarget)}
-            onDateClick={(e) => setDateAnchor(e.currentTarget)}
-            onLocationClick={(e) => setLocationAnchor(e.currentTarget)}
-            onClearAll={resetFilters}
+          {/* Clear Filters Button */}
+          {hasActiveFilters && (
+            <Box sx={{ mb: 2 }}>
+                <Button
+                  onClick={resetFilters}
+                  sx={(theme) => ({
+                    background: theme.palette.action.selected,
+                    color: theme.palette.text.primary,
+                    border: '1px solid',
+                    borderColor: theme.palette.divider,
+                    borderRadius: 20,
+                    fontWeight: 600,
+                    fontSize: '0.95rem',
+                    cursor: 'pointer',
+                    transition: 'background 0.2s',
+                    '&:hover': {
+                      background: theme.palette.action.hover,
+                    },
+                  })}
+                >
+                  Clear filters
+                </Button>
+            </Box>
+          )}
+
+          <CategoryMenu
+            categories={categories}
+            selectedCategories={filters.categories}
+            onToggle={(category) => {
+              if (filters.categories.includes(category)) {
+                setCategories(filters.categories.filter((c) => c !== category));
+              } else {
+                setCategories([...filters.categories, category]);
+              }
+            }}
           />
+          <StatusMenu
+            statuses={statuses}
+            selectedStatuses={filters.statuses}
+            onToggle={(status) => {
+              if (filters.statuses.includes(status)) {
+                setStatuses(filters.statuses.filter((s) => s !== status));
+              } else {
+                setStatuses([...filters.statuses, status]);
+              }
+            }}
+          />
+          <DateMenu
+            dateOptions={dateOptions}
+            selectedOption={filters.dateRange?.filterOption || null}
+            onChange={(option) => {
+              if (option === DATE_FILTER_OPTIONS.CUSTOM) {
+                setDateRange(null, null, option);
+              } else {
+                const { start, end, filterOption } = getDateRangeForOption(option);
+                setDateRange(start, end, filterOption);
+              }
+            }}
+            onCustomDateChange={(date) => {
+              if (date) {
+                setDateRange(date, date, DATE_FILTER_OPTIONS.CUSTOM);
+              } else {
+                setDateRange(null, null, DATE_FILTER_OPTIONS.CUSTOM);
+              }
+            }}
+          />
+          <LocationMenu currentLocation={filters.location} onApply={setLocation} onClear={clearLocation} />
 
           {hasActiveFilters && (
             <ActiveFiltersPills
               categories={filters.categories}
               statuses={filters.statuses}
-              dateLabel={selectedDateOption}
-              locationLabel={locationLabel}
+              dateLabel={(() => {
+                if (
+                  filters.dateRange &&
+                  filters.dateRange.filterOption === DATE_FILTER_OPTIONS.CUSTOM &&
+                  filters.dateRange.start &&
+                  filters.dateRange.end &&
+                  filters.dateRange.start.isSame(filters.dateRange.end, 'day')
+                ) {
+                  // Show the selected custom date
+                  return filters.dateRange.start.format('MMM D, YYYY');
+                } else if (filters.dateRange && filters.dateRange.filterOption) {
+                  return (
+                    DATE_FILTER_LABELS[filters.dateRange.filterOption as keyof typeof DATE_FILTER_LABELS] ||
+                    filters.dateRange.filterOption
+                  );
+                } else if (filters.dateRange && filters.dateRange.start && filters.dateRange.end) {
+                  return `${filters.dateRange.start.format('MMM D')} - ${filters.dateRange.end.format('MMM D')}`;
+                }
+                return null;
+              })()}
+              locationLabel={
+                filters.location && (filters.location.city || filters.location.state || filters.location.country)
+                  ? [filters.location.city, filters.location.state, filters.location.country].filter(Boolean).join(', ')
+                  : filters.location && filters.location.latitude && filters.location.longitude
+                    ? 'Near me'
+                    : null
+              }
               onRemoveCategory={removeCategory}
               onRemoveStatus={removeStatus}
-              onRemoveDate={() => {
-                setDateRange(null, null);
-                setSelectedDateOption(null);
-                setCustomDateValue(null);
-              }}
+              onRemoveDate={() => setDateRange(null, null)}
               onRemoveLocation={clearLocation}
             />
           )}
-
-          <CategoryMenu
-            anchorEl={categoryAnchor}
-            categories={categories}
-            selectedCategories={filters.categories}
-            onClose={() => setCategoryAnchor(null)}
-            onToggle={handleCategoryToggle}
-          />
-
-          <StatusMenu
-            anchorEl={statusAnchor}
-            statuses={statuses}
-            selectedStatuses={filters.statuses}
-            onClose={() => setStatusAnchor(null)}
-            onToggle={handleStatusToggle}
-          />
-
-          <DateMenu
-            anchorEl={dateAnchor}
-            dateOptions={dateOptions}
-            selectedOption={selectedDateOption}
-            customDateAnchor={customDateAnchor}
-            onClose={() => setDateAnchor(null)}
-            onSelect={handleDateSelect}
-            onCustomDateChange={handleCustomDateChange}
-            onCustomDateClose={handleCustomDateClose}
-          />
-
-          <LocationMenu
-            anchorEl={locationAnchor}
-            currentLocation={filters.location || undefined}
-            onClose={() => setLocationAnchor(null)}
-            onApply={handleLocationApply}
-            onClear={handleLocationClear}
-          />
 
           <EventsList
             events={filteredEvents}
@@ -264,7 +219,7 @@ function EventsContent({ categories, initialEvents, popularOrganization, stats }
           <Box
             sx={{
               position: 'sticky',
-              top: 80, // Account for header height
+              top: 80,
               maxHeight: 'calc(100vh - 96px)', // Prevent sidebar from being taller than viewport
               overflowY: 'auto',
               '&::-webkit-scrollbar': {

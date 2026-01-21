@@ -6,6 +6,7 @@ import {
   UpsertEventParticipantInput,
   User,
   UserRole,
+  Event,
 } from '@ntlango/commons/types';
 import { EventParticipantDAO } from '@/mongodb/dao';
 import { validateMongodbId } from '@/validation';
@@ -36,9 +37,12 @@ export class EventParticipantResolver {
 
   @Authorized([UserRole.Admin, UserRole.Host, UserRole.User])
   @Query(() => [EventParticipant])
-  async readEventParticipants(@Arg('eventId', () => String) eventId: string): Promise<EventParticipant[]> {
+  async readEventParticipants(
+    @Arg('eventId', () => String) eventId: string,
+    @Ctx() context: ServerContext,
+  ): Promise<EventParticipant[]> {
     validateMongodbId(eventId);
-    return EventParticipantDAO.readByEvent(eventId);
+    return context.loaders.eventParticipantsByEvent.load(eventId);
   }
 
   /**
@@ -55,6 +59,8 @@ export class EventParticipantResolver {
     if (!context.user?.userId) {
       return null;
     }
+    // TODO Use the DataLoader if you have the participantId, otherwise fallback to DAO
+    // Here, we still need to query by eventId+userId, so use DAO
     return EventParticipantDAO.readByEventAndUser(eventId, context.user.userId);
   }
 
@@ -71,24 +77,25 @@ export class EventParticipantResolver {
     if (!context.user?.userId) {
       return [];
     }
+    // TODO Still need to query by userId, so use DAO for now
     return EventParticipantDAO.readByUser(context.user.userId, !includeCancelled);
   }
 
   @FieldResolver(() => User, { nullable: true })
   async user(@Root() participant: EventParticipant, @Ctx() context: ServerContext): Promise<User | null> {
-    if (!participant.userId) {
-      return null;
-    }
-
-    // If already populated (check on participant object which may have user field from population)
-    const participantAny = participant as any;
-    if (participantAny.user && typeof participantAny.user === 'object' && 'userId' in participantAny.user) {
-      return participantAny.user as User;
-    }
-
-    // Batch-load via DataLoader
+    if (!participant.userId) return null;
     try {
       return await context.loaders.user.load(participant.userId);
+    } catch {
+      return null;
+    }
+  }
+
+  @FieldResolver(() => Event, { nullable: true })
+  async event(@Root() participant: EventParticipant, @Ctx() context: ServerContext): Promise<Event | null> {
+    if (!participant.eventId) return null;
+    try {
+      return await context.loaders.event.load(participant.eventId);
     } catch {
       return null;
     }

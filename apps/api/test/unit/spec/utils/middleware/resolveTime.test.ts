@@ -6,37 +6,46 @@ import { ResolveTime } from '@/utils/middleware';
 import { logger } from '@/utils/logger';
 import { createMockContext } from '../../../../utils/mockContext';
 
-jest.mock('@/constants', () => ({
-  HTTP_METHOD_COLOR_MAP: {
-    GET: '\x1b[32m',
-    POST: '\x1b[33m',
-  },
-  RESOLVE_TIME_COLOR_MAP: [
-    { threshold: 100, color: '\x1b[32m' },
-    { threshold: 500, color: '\x1b[33m' },
-  ],
-  GRAPHQL_API_PATH: '/graphql',
-  ANSI_COLOR_CODES: {
-    RED: '\x1b[31m',
-    GREEN: '\x1b[32m',
-    GRAY: '\x1b[90m',
-    BLUE: '\x1b[34m',
-    WHITE: '\x1b[37m',
-  },
-}));
+jest.mock('@/constants', () => {
+  const actualConstants = jest.requireActual('@/constants');
+  return {
+    ...actualConstants,
+    HTTP_METHOD_COLOR_MAP: {
+      GET: '\x1b[32m',
+      POST: '\x1b[33m',
+    },
+    RESOLVE_TIME_COLOR_MAP: [
+      { threshold: 100, color: '\x1b[32m' },
+      { threshold: 500, color: '\x1b[33m' },
+    ],
+    GRAPHQL_API_PATH: '/graphql',
+    ANSI_COLOR_CODES: {
+      RED: '\x1b[31m',
+      GREEN: '\x1b[32m',
+      GRAY: '\x1b[90m',
+      BLUE: '\x1b[34m',
+      WHITE: '\x1b[37m',
+    },
+  };
+});
 
 jest.mock('@/utils', () => ({
   getStatusCodeColor: jest.fn().mockReturnValue('\x1b[32m'),
 }));
 
-jest.mock('@/utils/logger', () => ({
-  logger: {
-    debug: jest.fn(),
-    info: jest.fn(),
-    warn: jest.fn(),
-    error: jest.fn(),
-  },
-}));
+jest.mock('@/utils/logger', () => {
+  const actualLogger = jest.requireActual('@/utils/logger');
+  return {
+    ...actualLogger,
+    logger: {
+      debug: jest.fn(),
+      info: jest.fn(),
+      warn: jest.fn(),
+      error: jest.fn(),
+      graphql: jest.fn(),
+    },
+  };
+});
 
 describe('ResolveTime Middleware', () => {
   let context: ServerContext;

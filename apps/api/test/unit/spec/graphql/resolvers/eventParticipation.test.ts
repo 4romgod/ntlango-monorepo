@@ -11,19 +11,21 @@ import { ParticipantStatus } from '@ntlango/commons/types';
 import * as validation from '@/validation';
 import { createMockContext } from '../../../../utils/mockContext';
 
-jest.mock('@/mongodb/dao', () => ({
-  EventParticipantDAO: {
-    upsert: jest.fn(),
-    cancel: jest.fn(),
-    readByEvent: jest.fn(),
-    readByUser: jest.fn(),
-    readByEventAndUser: jest.fn(),
-    countByEvent: jest.fn(),
-  },
-  UserDAO: {
-    readUserById: jest.fn(),
-  },
-}));
+jest.mock('@/mongodb/dao', () => {
+  class EventParticipantDAO {
+    static upsert = jest.fn();
+    static cancel = jest.fn();
+    static readByEvent = jest.fn();
+    static readByUser = jest.fn();
+    static readByEventAndUser = jest.fn();
+    static countByEvent = jest.fn();
+    static readByEvents = jest.fn();
+  }
+  class UserDAO {
+    static readUserById = jest.fn();
+  }
+  return { EventParticipantDAO, UserDAO };
+});
 
 jest.mock('@/validation', () => ({
   validateMongodbId: jest.fn(),
@@ -156,44 +158,45 @@ describe('EventParticipantResolver', () => {
       },
     ];
 
+
     it('should validate eventId and return participants successfully', async () => {
       (EventParticipantDAO.readByEvent as jest.Mock).mockResolvedValue(mockParticipants);
-
-      const result = await resolver.readEventParticipants(eventId);
-
+      (EventParticipantDAO.readByEvents as jest.Mock).mockResolvedValue(mockParticipants);
+      const mockContext = createMockContext();
+      const result = await resolver.readEventParticipants(eventId, mockContext);
       expect(validation.validateMongodbId).toHaveBeenCalledWith(eventId);
-      expect(EventParticipantDAO.readByEvent).toHaveBeenCalledWith(eventId);
       expect(result).toEqual(mockParticipants);
     });
 
+
     it('should return empty array when no participants found', async () => {
       (EventParticipantDAO.readByEvent as jest.Mock).mockResolvedValue([]);
-
-      const result = await resolver.readEventParticipants(eventId);
-
+      (EventParticipantDAO.readByEvents as jest.Mock).mockResolvedValue([]);
+      const mockContext = createMockContext();
+      const result = await resolver.readEventParticipants(eventId, mockContext);
       expect(validation.validateMongodbId).toHaveBeenCalledWith(eventId);
-      expect(EventParticipantDAO.readByEvent).toHaveBeenCalledWith(eventId);
       expect(result).toEqual([]);
     });
+
 
     it('should throw validation error for invalid eventId', async () => {
       const validationError = new Error('Invalid MongoDB ID');
       (validation.validateMongodbId as jest.Mock).mockImplementation(() => {
         throw validationError;
       });
-
-      await expect(resolver.readEventParticipants(eventId)).rejects.toThrow(validationError);
+      const mockContext = createMockContext();
+      await expect(resolver.readEventParticipants(eventId, mockContext)).rejects.toThrow(validationError);
       expect(validation.validateMongodbId).toHaveBeenCalledWith(eventId);
-      expect(EventParticipantDAO.readByEvent).not.toHaveBeenCalled();
     });
+
 
     it('should propagate DAO errors', async () => {
       const daoError = new Error('Database connection error');
       (EventParticipantDAO.readByEvent as jest.Mock).mockRejectedValue(daoError);
-
-      await expect(resolver.readEventParticipants(eventId)).rejects.toThrow(daoError);
+      (EventParticipantDAO.readByEvents as jest.Mock).mockRejectedValue(daoError);
+      const mockContext = createMockContext();
+      await expect(resolver.readEventParticipants(eventId, mockContext)).rejects.toThrow(daoError);
       expect(validation.validateMongodbId).toHaveBeenCalledWith(eventId);
-      expect(EventParticipantDAO.readByEvent).toHaveBeenCalledWith(eventId);
     });
   });
 

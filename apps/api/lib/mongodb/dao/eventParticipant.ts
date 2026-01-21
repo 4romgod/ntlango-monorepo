@@ -10,6 +10,20 @@ import { CustomError, ErrorTypes, KnownCommonError } from '@/utils';
 import { logger } from '@/utils/logger';
 
 class EventParticipantDAO {
+  /**
+   * Batch fetch all participants for multiple eventIds.
+   * Returns a flat array of participants for all given eventIds.
+   * Used for DataLoader batching by eventId.
+   */
+  static async readByEvents(eventIds: string[]): Promise<EventParticipantEntity[]> {
+    try {
+      const participants = await EventParticipant.find({ eventId: { $in: eventIds } }).exec();
+      return participants.map((p) => p.toObject());
+    } catch (error) {
+      logger.error('Error reading participants by events', error);
+      throw KnownCommonError(error);
+    }
+  }
   static async upsert(input: UpsertEventParticipantInput): Promise<EventParticipantEntity> {
     try {
       const { eventId, userId, status = ParticipantStatus.Going, quantity, invitedBy, sharedVisibility } = input;

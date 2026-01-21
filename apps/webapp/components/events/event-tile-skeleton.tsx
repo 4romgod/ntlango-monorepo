@@ -35,11 +35,12 @@ function EventTileSkeleton() {
       >
         <Skeleton variant="rectangular" width="100%" height="100%" animation="wave" />
         <Box
-          sx={{
+          sx={(theme) => ({
             position: 'absolute',
             inset: 0,
-            background: 'linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.6) 100%)',
-          }}
+            background: `linear-gradient(180deg, ${theme.palette.background.paper} 0%, ${theme.palette.background.default} 100%)`,
+            opacity: 0.5,
+          })}
         />
       </Box>
 

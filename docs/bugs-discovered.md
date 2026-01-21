@@ -1,3 +1,48 @@
+---
+
+## BUG-00X: Missing Token in Apollo Context Causes Incorrect User-Specific Fields
+
+**Date Discovered:** January 21, 2026  
+**Severity:** Medium  
+**Status:** 🚩 Open
+
+### Symptoms
+
+- Fields like `isSavedByMe`, `isRsvpedByMe`, or other user-context-dependent attributes are always false or missing, even when the user is authenticated.
+- UI does not reflect the user's actual state for events, organizations, etc.
+- Some queries (e.g., get all events) do not show personalized data.
+
+### Root Cause
+
+When making Apollo Client queries that return context-based fields, the user's token must be passed in the context (usually via headers). If the token is omitted, the backend cannot resolve user-specific fields, leading to incorrect or missing data in the response.
+
+#### Example (broken):
+
+```typescript
+const { data } = useQuery(GetAllEventsDocument, {
+  variables: { options: {} },
+  // context: { headers: getAuthHeader(token) }  // <-- missing!
+});
+```
+
+#### Example (correct):
+
+```typescript
+const { data } = useQuery(GetAllEventsDocument, {
+  variables: { options: {} },
+  context: { headers: getAuthHeader(token) }
+});
+```
+
+### Resolution
+
+- Always pass the user's token in the Apollo context for queries/mutations that return user-specific or context-dependent fields.
+- Use a utility (e.g., `getAuthHeader`) to inject the token from the session into the Apollo context for all relevant queries.
+
+### Prevention
+
+- Review all data-fetching hooks/components to ensure the token is included where needed.
+- Consider centralizing Apollo Client setup or using a custom hook to always attach the token when available.
 # Bugs Discovered & Fixed
 
 This document tracks bugs discovered during development and testing, along with their root causes and fixes. It serves
