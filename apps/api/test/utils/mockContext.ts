@@ -45,7 +45,7 @@ export const createMockContext = (
         map.get(participant.eventId)!.push(participant);
       }
     }
-    return eventIds.map(id => map.get(id) ?? []);
+    return eventIds.map((id) => map.get(id) ?? []);
   });
 
   return {

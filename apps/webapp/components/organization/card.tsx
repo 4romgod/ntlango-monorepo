@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Box, Button, Card, CardActions, CardContent, Chip, Stack, Typography } from '@mui/material';
 import { ROUTES } from '@/lib/constants';
+import Surface from '@/components/core/Surface';
 
 export type OrganizationCardProps = {
   name?: string;
@@ -22,15 +23,13 @@ const OrganizationCard = ({
   isFollowable,
 }: OrganizationCardProps) => {
   return (
-    <Card
-      elevation={0}
+    <Surface
+      component={Card}
       sx={{
         borderRadius: 3,
         minHeight: 220,
         display: 'flex',
         flexDirection: 'column',
-        border: '1px solid',
-        borderColor: 'divider',
         transition: 'all 0.2s ease',
         '&:hover': {
           borderColor: 'primary.main',
@@ -100,7 +99,7 @@ const OrganizationCard = ({
           View
         </Button>
       </CardActions>
-    </Card>
+    </Surface>
   );
 };
 

@@ -11,11 +11,11 @@ import { MailOutline, NotificationsOutlined, ControlPointOutlined } from '@mui/i
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Avatar from '@mui/material/Avatar';
-import ProfilesMenu from '@/components/navigation/main/navigation-profiles-items';
-import TemporaryDrawer from '@/components/navigation/main/navigation-temporary-drawer';
+import ProfilesMenu from '@/components/navigation/main/NavigationProfileItems';
+import TemporaryDrawer from '@/components/navigation/main/NavigationTemporaryDrawer';
 import { Button } from '@mui/material';
 import { ROUTES } from '@/lib/constants';
-import NavLinksList from '@/components/navigation/main/nav-links-list';
+import NavLinksList from '@/components/navigation/main/NavLinksList';
 import { getAvatarSrc } from '@/lib/utils';
 import { useSession } from 'next-auth/react';
 import { useUnreadNotificationCount } from '@/hooks';

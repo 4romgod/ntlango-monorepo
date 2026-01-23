@@ -1,5 +1,5 @@
 import { buildFilterInputs, buildDateFilterParams, buildLocationFilter } from '@/hooks/useFilteredEvents';
-import { EventFilters, LocationFilter } from '@/components/events/filters/event-filter-context';
+import { EventFilters, LocationFilter } from '@/components/events/filters/EventFilterContext';
 import { FilterOperatorInput, EventStatus } from '@/data/graphql/types/graphql';
 import { DATE_FILTER_OPTIONS } from '@/lib/constants/date-filters';
 import dayjs from 'dayjs';

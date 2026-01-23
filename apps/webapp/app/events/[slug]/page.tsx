@@ -16,13 +16,13 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import EventCategoryChip from '@/components/events/category/chip';
+import EventCategoryBadge from '@/components/events/category/EventCategoryBadge';
 import { getFullUrl } from '@/lib/utils/url';
 import { RRule } from 'rrule';
 import { upperFirst } from 'lodash';
 import { CalendarMonth, LocationOn, Share, ConfirmationNumber, Groups, Language, ArrowBack } from '@mui/icons-material';
 import type { Metadata } from 'next';
-import CopyLinkButton from '@/components/events/copy-link-button';
+import CopyLinkButton from '@/components/events/CopyLinkButton';
 import EventDetailActions from '@/components/events/EventDetailActions';
 import { auth } from '@/auth';
 import { getAuthHeader, logger } from '@/lib/utils';
@@ -600,7 +600,7 @@ export default async function Page(props: Props) {
                     </Typography>
                     <Stack direction="row" flexWrap="wrap" gap={1}>
                       {eventCategories.map((category, index) => (
-                        <EventCategoryChip key={`${category.name}.${index}`} category={category} />
+                        <EventCategoryBadge key={`${category.name}.${index}`} category={category} />
                       ))}
                     </Stack>
                   </CardContent>

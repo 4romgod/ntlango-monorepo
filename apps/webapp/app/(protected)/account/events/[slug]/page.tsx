@@ -18,8 +18,8 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import EventCategoryChip from '@/components/events/category/chip';
-import EventOperationsModal from '@/components/modal/event-operations';
+import EventCategoryBadge from '@/components/events/category/EventCategoryBadge';
+import EventOperationsModal from '@/components/core/modal/EventOperationsModal';
 import { getFullUrl } from '@/lib/utils/url';
 import { RRule } from 'rrule';
 import { upperFirst } from 'lodash';
@@ -35,7 +35,7 @@ import {
 } from '@mui/icons-material';
 import { EventDetail } from '@/data/graphql/query/Event/types';
 import { ROUTES } from '@/lib/constants';
-import CopyLinkButton from '@/components/events/copy-link-button';
+import CopyLinkButton from '@/components/events/CopyLinkButton';
 import { auth } from '@/auth';
 
 interface Props {
@@ -589,7 +589,7 @@ export default async function Page(props: Props) {
                     </Typography>
                     <Stack direction="row" flexWrap="wrap" gap={1}>
                       {eventCategories.map((category, index) => (
-                        <EventCategoryChip key={`${category.name}.${index}`} category={category} />
+                        <EventCategoryBadge key={`${category.name}.${index}`} category={category} />
                       ))}
                     </Stack>
                   </CardContent>

@@ -1,6 +1,6 @@
 import { Box, Container, Paper, Typography } from '@mui/material';
 import Logo from '@/components/logo';
-import ForgotPasswordForm from '@/components/forms/auth/forgot-password';
+import ForgotPasswordForm from '@/components/forms/auth/ForgotPassword';
 
 export default function ForgotPasswordPage() {
   return (

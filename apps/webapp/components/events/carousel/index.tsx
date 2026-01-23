@@ -2,7 +2,7 @@
 
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { Box, Typography, IconButton, useMediaQuery, useTheme, Paper, Stack, Button, alpha } from '@mui/material';
-import EventBoxSm from '@/components/events/event-box-sm';
+import EventBoxSm from '@/components/events/eventBoxSm';
 import { EventPreview } from '@/data/graphql/query/Event/types';
 import { ChevronLeft, ChevronRight, ArrowForward } from '@mui/icons-material';
 import Link from 'next/link';

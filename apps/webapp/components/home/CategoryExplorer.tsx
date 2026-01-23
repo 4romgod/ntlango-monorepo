@@ -1,5 +1,5 @@
 import { Box, Container, Typography, Stack } from '@mui/material';
-import EventCategoryBox from '@/components/events/category/box';
+import EventCategoryCard from '@/components/events/category/EventCategoryCard';
 import { SECTION_TITLE_STYLES, SPACING } from '@/lib/constants';
 import { EventCategory } from '@/data/graphql/types/graphql';
 
@@ -49,7 +49,7 @@ export default function CategoryExplorer({ categories = [] }: CategoryExplorerPr
           <Stack direction="row" spacing={2} sx={{ minWidth: 0 }}>
             {categories.map((category, index) => (
               <Box key={index} sx={{ minWidth: 120, flex: '0 0 auto' }}>
-                <EventCategoryBox eventCategory={category} />
+                <EventCategoryCard eventCategory={category} />
               </Box>
             ))}
           </Stack>

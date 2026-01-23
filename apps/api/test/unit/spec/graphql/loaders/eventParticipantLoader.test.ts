@@ -1,8 +1,7 @@
-
 import { createEventParticipantLoader, createEventParticipantsByEventLoader } from '@/graphql/loaders';
 import { EventParticipant as EventParticipantModel } from '@/mongodb/models';
 import { EventParticipantDAO } from '@/mongodb/dao';
-import { EventParticipant } from '@ntlango/commons/types';
+import type { EventParticipant } from '@ntlango/commons/types';
 
 jest.mock('@/mongodb/models', () => ({
   EventParticipant: {
@@ -12,7 +11,7 @@ jest.mock('@/mongodb/models', () => ({
 jest.mock('@/mongodb/dao', () => ({
   EventParticipantDAO: {
     readByEvents: jest.fn(),
-},
+  },
 }));
 
 describe('EventParticipantLoader', () => {
@@ -48,7 +47,9 @@ describe('EventParticipantLoader', () => {
         loader.load('participant3'),
       ]);
       expect(EventParticipantModel.find).toHaveBeenCalledTimes(1);
-      expect(EventParticipantModel.find).toHaveBeenCalledWith({ _id: { $in: ['participant1', 'participant2', 'participant3'] } });
+      expect(EventParticipantModel.find).toHaveBeenCalledWith({
+        _id: { $in: ['participant1', 'participant2', 'participant3'] },
+      });
       expect(results[0]).toEqual(mockParticipants[0]);
       expect(results[1]).toEqual(mockParticipants[1]);
       expect(results[2]).toBeNull();
@@ -131,9 +132,7 @@ describe('EventParticipantLoader', () => {
         { participantId: 'p1', eventId: 'event1', userId: 'user1' },
         { participantId: 'p2', eventId: 'event1', userId: 'user2' },
       ]);
-      expect(results[1]).toEqual([
-        { participantId: 'p3', eventId: 'event2', userId: 'user3' },
-      ]);
+      expect(results[1]).toEqual([{ participantId: 'p3', eventId: 'event2', userId: 'user3' }]);
       expect(results[2]).toEqual([]); // event3 has no participants
     });
 

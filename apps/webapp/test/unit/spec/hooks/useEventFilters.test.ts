@@ -36,7 +36,7 @@ const mockContextValue = {
 
 let mockContext: typeof mockContextValue | undefined = mockContextValue;
 
-jest.mock('@/components/events/filters/event-filter-context', () => ({
+jest.mock('@/components/events/filters/EventFilterContext', () => ({
   EventFilterContext: {
     Provider: ({ children }: { children: React.ReactNode }) => children,
   },

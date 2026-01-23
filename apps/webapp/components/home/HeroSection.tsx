@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { Explore } from '@mui/icons-material';
 import { Box, Button, Card, Chip, Grid, Typography } from '@mui/material';
-import CustomContainer from '@/components/custom-container';
+import CustomContainer from '@/components/core/layout/CustomContainer';
 import { ROUTES, BUTTON_STYLES, BUTTON_PRIMARY_STYLES } from '@/lib/constants';
 import { RRule } from 'rrule';
 import { EventPreview } from '@/data/graphql/query/Event/types';

@@ -22,7 +22,7 @@ import { Save as SaveIcon, Block as BlockIcon } from '@mui/icons-material';
 import { Gender, User, FollowPolicy, SocialVisibility } from '@/data/graphql/types/graphql';
 import { updateUserProfileAction } from '@/data/actions/server/user/update-user-profile';
 import { useAppContext } from '@/hooks/useAppContext';
-import { BlockedUsersList } from '@/components/users/blocked-users-list';
+import { BlockedUsersList } from '@/components/users/BlockedUsersList';
 import dayjs from 'dayjs';
 import { BUTTON_STYLES, SECTION_TITLE_STYLES } from '@/lib/constants';
 import { signIn, useSession } from 'next-auth/react';

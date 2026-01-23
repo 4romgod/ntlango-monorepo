@@ -20,7 +20,7 @@ export default function FriendsGoingSection() {
     },
   });
 
-  const friends = following.filter(f => f?.targetUser).map(f => f.targetUser);
+  const friends = following.filter((f) => f?.targetUser).map((f) => f.targetUser);
 
   return (
     <Box sx={{ mt: { xs: 2, md: 4 }, mb: { xs: 1, md: 2 } }}>
@@ -50,7 +50,7 @@ export default function FriendsGoingSection() {
       ) : (
         <Stack gap={{ xs: 1.5, md: 2 }}>
           {friends
-            .filter(f => !!f)
+            .filter((f) => !!f)
             .slice(0, 5)
             .map((friend, idx: number) => (
               <Card key={friend.userId ?? idx} variant="outlined" sx={{ borderRadius: 3, p: { xs: 1.5, md: 3 } }}>

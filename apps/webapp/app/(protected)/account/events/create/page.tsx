@@ -4,7 +4,7 @@ import { Box, Container, Paper, Typography, Button, Stack } from '@mui/material'
 import { ArrowBack, AddCircleOutline } from '@mui/icons-material';
 import { getClient } from '@/data/graphql';
 import { GetAllEventCategoriesDocument } from '@/data/graphql/types/graphql';
-import EventMutationForm from '@/components/forms/event-mutation';
+import EventMutationForm from '@/components/forms/eventMutation';
 import { ROUTES } from '@/lib/constants';
 import Link from 'next/link';
 

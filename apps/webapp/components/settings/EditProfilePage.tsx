@@ -18,8 +18,8 @@ import { UpdateUserInput, User, UserLocationInput } from '@/data/graphql/types/g
 import { useActionState } from 'react';
 import { updateUserProfileAction } from '@/data/actions/server/user/update-user-profile';
 import { useAppContext } from '@/hooks/useAppContext';
-import { FormErrors } from '@/components/form-errors';
-import LocationForm from '@/components/forms/input-location';
+import { FormErrors } from '@/components/FormErrors';
+import LocationInput from '@/components/forms/LocationInput';
 import { BUTTON_STYLES, SECTION_TITLE_STYLES } from '@/lib/constants';
 import { signIn, useSession } from 'next-auth/react';
 
@@ -292,7 +292,7 @@ export default function EditProfilePage({ user }: { user: User }) {
             Location
           </Typography>
 
-          <LocationForm
+          <LocationInput
             value={profile.location}
             onChange={handleLocationChange}
             disabled={!isEditing}

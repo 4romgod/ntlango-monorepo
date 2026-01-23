@@ -1,0 +1,652 @@
+'use client';
+
+import React, { FormEvent, useState } from 'react';
+import {
+  TextField,
+  Button,
+  Grid,
+  Typography,
+  MenuItem,
+  Select,
+  InputLabel,
+  FormControl,
+  Box,
+  SelectChangeEvent,
+  Card,
+  Stack,
+  FormControlLabel,
+  Switch,
+  Alert,
+  InputAdornment,
+} from '@mui/material';
+import {
+  Event as EventIcon,
+  Description,
+  Category,
+  Settings,
+  Image as ImageIcon,
+  People,
+  Link as LinkIcon,
+  Save,
+} from '@mui/icons-material';
+import {
+  CreateEventInput,
+  EventPrivacySetting,
+  EventStatus,
+  EventVisibility,
+  EventLifecycleStatus,
+  Location,
+} from '@/data/graphql/types/graphql';
+import { EventMutationFormProps, BUTTON_STYLES, SECTION_TITLE_STYLES } from '@/lib/constants';
+import CategoryFilter from '@/components/events/filters/category';
+import EventLocationInput from './EventLocationInput';
+import EventDateInput from './EventDateInput';
+
+export default function EventMutationForm({ categoryList, event }: EventMutationFormProps) {
+  const isEditMode = !!event;
+
+  const [eventData, setEventData] = useState<CreateEventInput>({
+    title: event?.title ?? '',
+    summary: event?.summary ?? '',
+    description: event?.description ?? '',
+    location: event?.location ?? {},
+    recurrenceRule: event?.recurrenceRule ?? '',
+    status: event?.status ?? EventStatus.Upcoming,
+    lifecycleStatus: event?.lifecycleStatus ?? EventLifecycleStatus.Draft,
+    visibility: event?.visibility ?? EventVisibility.Public,
+    capacity: event?.capacity ?? 100,
+    rsvpLimit: undefined,
+    waitlistEnabled: false,
+    allowGuestPlusOnes: false,
+    remindersEnabled: true,
+    showAttendees: true,
+    eventCategories: event?.eventCategories?.map((c) => c.eventCategoryId) ?? [],
+    organizers: event?.organizers?.map((o) => o.user.userId) ?? [],
+    tags: event?.tags ?? {},
+    media: event?.media ?? {},
+    mediaAssets: [],
+    additionalDetails: {},
+    comments: {},
+    privacySetting: event?.privacySetting ?? EventPrivacySetting.Public,
+    eventLink: event?.eventLink ?? '',
+    heroImage: event?.heroImage ?? '',
+    orgId: undefined,
+    venueId: undefined,
+    locationSnapshot: undefined,
+    primarySchedule: undefined,
+  });
+
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const handleLocationChange = (newLocation: Location) => {
+    setEventData({ ...eventData, location: newLocation });
+  };
+
+  const handleEventDateChange = (rrule: string) => {
+    setEventData({ ...eventData, recurrenceRule: rrule });
+  };
+
+  const handleStatusChange = (event: SelectChangeEvent<EventStatus>) => {
+    setEventData({ ...eventData, status: event.target.value as EventStatus });
+  };
+
+  const handleVisibilityChange = (event: SelectChangeEvent<EventVisibility>) => {
+    setEventData({ ...eventData, visibility: event.target.value as EventVisibility });
+  };
+
+  const handlePrivacyChange = (event: SelectChangeEvent<EventPrivacySetting>) => {
+    setEventData({ ...eventData, privacySetting: event.target.value as EventPrivacySetting });
+  };
+
+  const handleEventCategoryListChange = (eventCategories: string[]) => {
+    setEventData({ ...eventData, eventCategories });
+  };
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setEventData({ ...eventData, [name]: value });
+  };
+
+  const handleNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setEventData({ ...eventData, [name]: value ? parseInt(value, 10) : undefined });
+  };
+
+  const handleSwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, checked } = event.target;
+    setEventData({ ...eventData, [name]: checked });
+  };
+
+  const validateForm = (): boolean => {
+    const newErrors: Record<string, string> = {};
+
+    if (!eventData.title?.trim()) newErrors.title = 'Title is required';
+    if (!eventData.summary?.trim()) newErrors.summary = 'Summary is required';
+    if (!eventData.description?.trim()) newErrors.description = 'Description is required';
+    if (!eventData.recurrenceRule) newErrors.recurrenceRule = 'Event date is required';
+    if (eventData.eventCategories.length === 0) newErrors.categories = 'Select at least one category';
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
+    // TODO: Add your form submission logic here
+    console.log('eventData', eventData);
+  };
+
+  return (
+    <Box component="form" onSubmit={handleSubmit}>
+      <Stack spacing={3}>
+        <Box sx={{ mb: 1 }}>
+          <Typography
+            variant="overline"
+            sx={{
+              color: 'primary.main',
+              fontWeight: 700,
+              fontSize: '0.75rem',
+              letterSpacing: '0.1em',
+            }}
+          >
+            {isEditMode ? 'UPDATE EVENT' : 'NEW EVENT'}
+          </Typography>
+          <Typography variant="h4" sx={{ ...SECTION_TITLE_STYLES, fontSize: { xs: '1.5rem', sm: '2rem' } }}>
+            {isEditMode ? 'Update Event Details' : 'Create Your Event'}
+          </Typography>
+          <Typography variant="body1" color="text.secondary" sx={{ mt: 1, lineHeight: 1.6 }}>
+            {isEditMode
+              ? 'Make changes to your event information below'
+              : 'Fill in the details below to create an amazing event that people will love to attend'}
+          </Typography>
+        </Box>
+
+        {Object.keys(errors).length > 0 && (
+          <Alert severity="error" sx={{ borderRadius: 2 }}>
+            Please fix the errors below before submitting
+          </Alert>
+        )}
+
+        <Card elevation={0} sx={{ borderRadius: 3, p: 3 }}>
+          <Stack spacing={3}>
+            <Stack direction="row" spacing={1.5} alignItems="center">
+              <Box
+                sx={{
+                  p: 1,
+                  borderRadius: 2,
+                  bgcolor: 'primary.lighter',
+                  color: 'primary.main',
+                  display: 'flex',
+                }}
+              >
+                <EventIcon />
+              </Box>
+              <Typography variant="h6" sx={SECTION_TITLE_STYLES}>
+                Basic Information
+              </Typography>
+            </Stack>
+
+            <Box>
+              <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 0.5 }}>
+                Event Title *
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
+                Choose a clear, informative title that tells people exactly what your event is about
+              </Typography>
+              <TextField
+                required
+                fullWidth
+                placeholder="e.g., Summer Music Festival 2026"
+                name="title"
+                size="medium"
+                color="secondary"
+                value={eventData.title}
+                onChange={handleChange}
+                error={!!errors.title}
+                helperText={errors.title}
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+              />
+            </Box>
+
+            <Box>
+              <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 0.5 }}>
+                Summary *
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
+                Write a short, attention-grabbing description (shown in event listings)
+              </Typography>
+              <TextField
+                required
+                fullWidth
+                placeholder="A brief overview of your event..."
+                name="summary"
+                size="medium"
+                color="secondary"
+                multiline
+                rows={3}
+                value={eventData.summary}
+                onChange={handleChange}
+                error={!!errors.summary}
+                helperText={errors.summary}
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+              />
+            </Box>
+
+            <Box>
+              <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 0.5 }}>
+                Full Description *
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
+                Provide detailed information about your event, what to expect, and what guests need to know
+              </Typography>
+              <TextField
+                required
+                fullWidth
+                placeholder="Tell people all about your event..."
+                name="description"
+                size="medium"
+                color="secondary"
+                multiline
+                rows={6}
+                value={eventData.description}
+                onChange={handleChange}
+                error={!!errors.description}
+                helperText={errors.description}
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+              />
+            </Box>
+          </Stack>
+        </Card>
+
+        {/* Date and Location */}
+        <Card elevation={0} sx={{ borderRadius: 3, p: 3 }}>
+          <Stack spacing={3}>
+            <Stack direction="row" spacing={1.5} alignItems="center">
+              <Box
+                sx={{
+                  p: 1,
+                  borderRadius: 2,
+                  bgcolor: 'primary.lighter',
+                  color: 'primary.main',
+                  display: 'flex',
+                }}
+              >
+                <Description />
+              </Box>
+              <Typography variant="h6" sx={SECTION_TITLE_STYLES}>
+                Date & Location
+              </Typography>
+            </Stack>
+
+            <Box>
+              <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 1.5 }}>
+                When is your event? *
+              </Typography>
+              <EventDateInput onChange={handleEventDateChange} />
+              {errors.recurrenceRule && (
+                <Typography variant="caption" color="error" sx={{ mt: 1, display: 'block' }}>
+                  {errors.recurrenceRule}
+                </Typography>
+              )}
+            </Box>
+
+            <Box>
+              <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 1.5 }}>
+                Where is it happening? *
+              </Typography>
+              <EventLocationInput onChange={handleLocationChange} />
+            </Box>
+          </Stack>
+        </Card>
+
+        {/* Categories & Media */}
+        <Card elevation={0} sx={{ borderRadius: 3, p: 3 }}>
+          <Stack spacing={3}>
+            <Stack direction="row" spacing={1.5} alignItems="center">
+              <Box
+                sx={{
+                  p: 1,
+                  borderRadius: 2,
+                  bgcolor: 'primary.lighter',
+                  color: 'primary.main',
+                  display: 'flex',
+                }}
+              >
+                <Category />
+              </Box>
+              <Typography variant="h6" sx={SECTION_TITLE_STYLES}>
+                Categories & Media
+              </Typography>
+            </Stack>
+
+            <Box>
+              <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 0.5 }}>
+                Event Categories *
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
+                Help people find your event by selecting relevant categories
+              </Typography>
+              <CategoryFilter categoryList={categoryList} onChange={handleEventCategoryListChange} />
+              {errors.categories && (
+                <Typography variant="caption" color="error" sx={{ mt: 1, display: 'block' }}>
+                  {errors.categories}
+                </Typography>
+              )}
+            </Box>
+
+            <Box>
+              <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 0.5 }}>
+                Hero Image URL
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
+                Add a stunning cover image for your event
+              </Typography>
+              <TextField
+                fullWidth
+                placeholder="https://example.com/image.jpg"
+                name="heroImage"
+                size="medium"
+                color="secondary"
+                value={eventData.heroImage}
+                onChange={handleChange}
+                slotProps={{
+                  input: {
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <ImageIcon color="action" />
+                      </InputAdornment>
+                    ),
+                  },
+                }}
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+              />
+            </Box>
+
+            <Box>
+              <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 0.5 }}>
+                Event Link
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
+                Add a link to your event website or ticketing page
+              </Typography>
+              <TextField
+                fullWidth
+                placeholder="https://your-event-website.com"
+                name="eventLink"
+                size="medium"
+                color="secondary"
+                value={eventData.eventLink}
+                onChange={handleChange}
+                slotProps={{
+                  input: {
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <LinkIcon color="action" />
+                      </InputAdornment>
+                    ),
+                  },
+                }}
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+              />
+            </Box>
+          </Stack>
+        </Card>
+
+        {/* Capacity & Attendees */}
+        <Card elevation={0} sx={{ borderRadius: 3, p: 3 }}>
+          <Stack spacing={3}>
+            <Stack direction="row" spacing={1.5} alignItems="center">
+              <Box
+                sx={{
+                  p: 1,
+                  borderRadius: 2,
+                  bgcolor: 'primary.lighter',
+                  color: 'primary.main',
+                  display: 'flex',
+                }}
+              >
+                <People />
+              </Box>
+              <Typography variant="h6" sx={SECTION_TITLE_STYLES}>
+                Capacity & Attendee Settings
+              </Typography>
+            </Stack>
+
+            <Grid container spacing={3}>
+              <Grid size={{ xs: 12, sm: 6 }}>
+                <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 0.5 }}>
+                  Event Capacity
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
+                  Maximum number of attendees
+                </Typography>
+                <TextField
+                  fullWidth
+                  placeholder="100"
+                  name="capacity"
+                  type="number"
+                  size="medium"
+                  color="secondary"
+                  value={eventData.capacity || ''}
+                  onChange={handleNumberChange}
+                  InputProps={{ inputProps: { min: 1 } }}
+                  sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                />
+              </Grid>
+
+              <Grid size={{ xs: 12, sm: 6 }}>
+                <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 0.5 }}>
+                  RSVP Limit
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
+                  Optional RSVP limit (leave empty for no limit)
+                </Typography>
+                <TextField
+                  fullWidth
+                  placeholder="Optional"
+                  name="rsvpLimit"
+                  type="number"
+                  size="medium"
+                  color="secondary"
+                  value={eventData.rsvpLimit || ''}
+                  onChange={handleNumberChange}
+                  InputProps={{ inputProps: { min: 1 } }}
+                  sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                />
+              </Grid>
+            </Grid>
+
+            <Stack spacing={2}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    name="waitlistEnabled"
+                    checked={eventData.waitlistEnabled || false}
+                    onChange={handleSwitchChange}
+                    color="primary"
+                  />
+                }
+                label={
+                  <Box>
+                    <Typography variant="body2" fontWeight={600}>
+                      Enable Waitlist
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      Allow people to join a waitlist when event is full
+                    </Typography>
+                  </Box>
+                }
+              />
+
+              <FormControlLabel
+                control={
+                  <Switch
+                    name="allowGuestPlusOnes"
+                    checked={eventData.allowGuestPlusOnes || false}
+                    onChange={handleSwitchChange}
+                    color="primary"
+                  />
+                }
+                label={
+                  <Box>
+                    <Typography variant="body2" fontWeight={600}>
+                      Allow Plus Ones
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      Let attendees bring a guest
+                    </Typography>
+                  </Box>
+                }
+              />
+
+              <FormControlLabel
+                control={
+                  <Switch
+                    name="showAttendees"
+                    checked={eventData.showAttendees !== false}
+                    onChange={handleSwitchChange}
+                    color="primary"
+                  />
+                }
+                label={
+                  <Box>
+                    <Typography variant="body2" fontWeight={600}>
+                      Show Attendee List
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      Display who's attending on the event page
+                    </Typography>
+                  </Box>
+                }
+              />
+
+              <FormControlLabel
+                control={
+                  <Switch
+                    name="remindersEnabled"
+                    checked={eventData.remindersEnabled !== false}
+                    onChange={handleSwitchChange}
+                    color="primary"
+                  />
+                }
+                label={
+                  <Box>
+                    <Typography variant="body2" fontWeight={600}>
+                      Send Reminders
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      Automatically remind attendees before the event
+                    </Typography>
+                  </Box>
+                }
+              />
+            </Stack>
+          </Stack>
+        </Card>
+
+        {/* Settings */}
+        <Card elevation={0} sx={{ borderRadius: 3, p: 3 }}>
+          <Stack spacing={3}>
+            <Stack direction="row" spacing={1.5} alignItems="center">
+              <Box
+                sx={{
+                  p: 1,
+                  borderRadius: 2,
+                  bgcolor: 'primary.lighter',
+                  color: 'primary.main',
+                  display: 'flex',
+                }}
+              >
+                <Settings />
+              </Box>
+              <Typography variant="h6" sx={SECTION_TITLE_STYLES}>
+                Event Settings
+              </Typography>
+            </Stack>
+
+            <Grid container spacing={3}>
+              <Grid size={{ xs: 12, sm: 4 }}>
+                <FormControl fullWidth size="medium">
+                  <InputLabel color="secondary">Status</InputLabel>
+                  <Select
+                    name="status"
+                    value={eventData.status}
+                    onChange={handleStatusChange}
+                    color="secondary"
+                    label="Status"
+                    sx={{ borderRadius: 2 }}
+                  >
+                    {Object.values(EventStatus).map((status) => (
+                      <MenuItem key={status} value={status}>
+                        {status}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+
+              <Grid size={{ xs: 12, sm: 4 }}>
+                <FormControl fullWidth size="medium">
+                  <InputLabel color="secondary">Visibility</InputLabel>
+                  <Select
+                    name="visibility"
+                    value={eventData.visibility || ''}
+                    onChange={handleVisibilityChange}
+                    color="secondary"
+                    label="Visibility"
+                    sx={{ borderRadius: 2 }}
+                  >
+                    {Object.values(EventVisibility).map((visibility) => (
+                      <MenuItem key={visibility} value={visibility}>
+                        {visibility}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+
+              <Grid size={{ xs: 12, sm: 4 }}>
+                <FormControl fullWidth size="medium">
+                  <InputLabel color="secondary">Privacy</InputLabel>
+                  <Select
+                    name="privacySetting"
+                    value={eventData.privacySetting || ''}
+                    onChange={handlePrivacyChange}
+                    color="secondary"
+                    label="Privacy"
+                    sx={{ borderRadius: 2 }}
+                  >
+                    {Object.values(EventPrivacySetting).map((privacy) => (
+                      <MenuItem key={privacy} value={privacy}>
+                        {privacy}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+            </Grid>
+          </Stack>
+        </Card>
+
+        {/* Submit */}
+        <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="flex-end" spacing={2} sx={{ mt: 2 }}>
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            size="large"
+            startIcon={<Save />}
+            sx={{ ...BUTTON_STYLES, px: 4 }}
+          >
+            {isEditMode ? 'Save Changes' : 'Create Event'}
+          </Button>
+        </Stack>
+      </Stack>
+    </Box>
+  );
+}

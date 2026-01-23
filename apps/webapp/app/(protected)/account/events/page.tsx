@@ -1,4 +1,4 @@
-import EventBox from '@/components/events/event-box-sm';
+import EventBox from '@/components/events/eventBoxSm';
 import { FilterOperatorInput, GetAllEventsDocument } from '@/data/graphql/types/graphql';
 import { getClient } from '@/data/graphql';
 import { auth } from '@/auth';

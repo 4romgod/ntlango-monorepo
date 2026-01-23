@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import { Stack } from '@mui/material';
 import { SaveEventButton, RsvpButton } from '@/components/events';
 import { ParticipantStatus } from '@/data/graphql/types/graphql';
-import CopyLinkButton from '@/components/events/copy-link-button';
+import CopyLinkButton from '@/components/events/CopyLinkButton';
+import Surface from '@/components/core/Surface';
 
 interface EventDetailActionsProps {
   eventId: string;
@@ -32,16 +33,28 @@ export default function EventDetailActions({ eventId, eventUrl, isSavedByMe, myR
   }, [myRsvpStatus]);
 
   return (
-    <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-      <RsvpButton
-        eventId={eventId}
-        currentStatus={rsvpStatus}
-        size="large"
-        showTooltip={false}
-        onRsvpChange={setRsvpStatus}
-      />
-      <SaveEventButton eventId={eventId} isSaved={isSaved} size="large" showTooltip={false} onSaveChange={setIsSaved} />
-      <CopyLinkButton url={eventUrl} />
-    </Stack>
+    <Surface
+      sx={{
+        p: { xs: 2, sm: 2.5 },
+      }}
+    >
+      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+        <RsvpButton
+          eventId={eventId}
+          currentStatus={rsvpStatus}
+          size="large"
+          showTooltip={false}
+          onRsvpChange={setRsvpStatus}
+        />
+        <SaveEventButton
+          eventId={eventId}
+          isSaved={isSaved}
+          size="large"
+          showTooltip={false}
+          onSaveChange={setIsSaved}
+        />
+        <CopyLinkButton url={eventUrl} />
+      </Stack>
+    </Surface>
   );
 }

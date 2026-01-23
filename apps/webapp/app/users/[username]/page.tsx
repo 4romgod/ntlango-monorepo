@@ -17,13 +17,13 @@ import { differenceInYears, format } from 'date-fns';
 import { GetAllEventsDocument, GetUserByUsernameDocument, GetSavedEventsDocument } from '@/data/graphql/types/graphql';
 import { getClient } from '@/data/graphql';
 import EventsCarousel from '@/components/events/carousel';
-import EventCategoryChip from '@/components/events/category/chip';
+import EventCategoryBadge from '@/components/events/category/EventCategoryBadge';
 import { EventPreview } from '@/data/graphql/query/Event/types';
 import { ROUTES } from '@/lib/constants';
 import { omit } from 'lodash';
 import Link from 'next/link';
-import UserProfileStats from '@/components/users/user-profile-stats';
-import UserProfileActions from '@/components/users/user-profile-actions';
+import UserProfileStats from '@/components/users/UserProfileStats';
+import UserProfileActions from '@/components/users/UserProfileActions';
 import { logger } from '@/lib/utils/logger';
 
 interface Props {
@@ -302,7 +302,7 @@ export default async function UserPage(props: Props) {
                   {interests.length > 0 ? (
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5, pt: 1 }}>
                       {interests.map((category, index) => (
-                        <EventCategoryChip key={index} category={category} />
+                        <EventCategoryBadge key={index} category={category} />
                       ))}
                     </Box>
                   ) : (

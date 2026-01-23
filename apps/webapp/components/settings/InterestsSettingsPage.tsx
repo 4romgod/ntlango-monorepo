@@ -23,7 +23,7 @@ import { Search as SearchIcon, Add as AddIcon, Save as SaveIcon, Close as CloseI
 import { EventCategoryGroup, EventCategory, User } from '@/data/graphql/types/graphql';
 import { updateUserProfileAction } from '@/data/actions/server/user';
 import { signIn, useSession } from 'next-auth/react';
-import EventCategoryChip from '@/components/events/category/chip';
+import EventCategoryBadge from '@/components/events/category/EventCategoryBadge';
 import { useAppContext } from '@/hooks/useAppContext';
 import { BUTTON_STYLES, SECTION_TITLE_STYLES, EMPTY_STATE_STYLES, EMPTY_STATE_ICON_STYLES } from '@/lib/constants';
 
@@ -180,7 +180,7 @@ export default function InterestsSettingsPage({ user, eventCategoryGroups }: Int
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5 }}>
               {selectedInterests.map((interest) => (
                 <Box key={interest.eventCategoryId} sx={{ position: 'relative', display: 'inline-flex' }}>
-                  <EventCategoryChip category={interest} />
+                  <EventCategoryBadge category={interest} />
                 </Box>
               ))}
             </Box>

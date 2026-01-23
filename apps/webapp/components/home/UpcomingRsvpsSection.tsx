@@ -44,7 +44,7 @@ export default function UpcomingRsvpsSection() {
         <Typography color="text.secondary">No upcoming RSVPs. RSVP to events to see them here!</Typography>
       ) : (
         <Stack gap={{ xs: 1.5, md: 2 }}>
-          <EventCarousel events={rsvpEvents} />          
+          <EventCarousel events={rsvpEvents} />
         </Stack>
       )}
     </Box>

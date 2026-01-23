@@ -2,7 +2,7 @@ import React from 'react';
 import { Metadata } from 'next';
 import { Person, PersonOutlined, ManageAccounts, Password, Interests, Event, PermMedia } from '@mui/icons-material';
 import { Box, Container } from '@mui/material';
-import CustomTabs, { CustomTabsProps } from '@/components/tabs/custom-tabs';
+import CustomTabs, { CustomTabsProps } from '@/components/core/tabs/CustomTabs';
 import EditProfilePage from '@/components/settings/EditProfilePage';
 import PersonalSettingsPage from '@/components/settings/PersonalSettingsPage';
 import InterestsSettingsPage from '@/components/settings/InterestsSettingsPage';

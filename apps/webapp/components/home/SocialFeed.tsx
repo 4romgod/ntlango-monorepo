@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { DynamicFeed, People, PersonAdd, Event as EventIcon, Person, Business } from '@mui/icons-material';
 import { Avatar, Box, Button, Card, Chip, Grid, Stack, Typography } from '@mui/material';
-import CustomContainer from '@/components/custom-container';
+import CustomContainer from '@/components/core/layout/CustomContainer';
 import { ROUTES, CARD_STYLES, BUTTON_PRIMARY_STYLES, SECTION_TITLE_STYLES } from '@/lib/constants';
 import { GetSocialFeedQuery } from '@/data/graphql/types/graphql';
 import { JSX } from 'react';
