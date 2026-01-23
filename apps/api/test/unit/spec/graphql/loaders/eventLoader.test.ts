@@ -32,11 +32,7 @@ describe('EventLoader', () => {
     };
     (EventModel.find as jest.Mock).mockReturnValue(mockQuery);
     const loader = createEventLoader();
-    const results = await Promise.all([
-      loader.load('event1'),
-      loader.load('event2'),
-      loader.load('event3'),
-    ]);
+    const results = await Promise.all([loader.load('event1'), loader.load('event2'), loader.load('event3')]);
     expect(EventModel.find).toHaveBeenCalledTimes(1);
     expect(EventModel.find).toHaveBeenCalledWith({ _id: { $in: ['event1', 'event2', 'event3'] } });
     expect(results[0]).toEqual(mockEvents[0]);
@@ -79,11 +75,7 @@ describe('EventLoader', () => {
     };
     (EventModel.find as jest.Mock).mockReturnValue(mockQuery);
     const loader = createEventLoader();
-    const results = await Promise.all([
-      loader.load('event1'),
-      loader.load('event2'),
-      loader.load('event3'),
-    ]);
+    const results = await Promise.all([loader.load('event1'), loader.load('event2'), loader.load('event3')]);
     expect((results[0] as Partial<Event> & { _id: string })?._id).toBe('event1');
     expect((results[1] as Partial<Event> & { _id: string })?._id).toBe('event2');
     expect((results[2] as Partial<Event> & { _id: string })?._id).toBe('event3');

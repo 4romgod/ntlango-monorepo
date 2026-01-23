@@ -8,7 +8,7 @@ import { GetAllEventsDocument } from '@/data/graphql/query/Event/query';
 import { GetOrganizationBySlugDocument } from '@/data/graphql/query';
 import { GetAllEventsQuery, Organization, SortOrderInput } from '@/data/graphql/types/graphql';
 import { ROUTES } from '@/lib/constants';
-import FollowStatsCard from '@/components/organization/follow-stats-card';
+import FollowStatsCard from '@/components/organization/FollowStatsCard';
 import EventCarousel from '@/components/events/carousel';
 
 interface Props {

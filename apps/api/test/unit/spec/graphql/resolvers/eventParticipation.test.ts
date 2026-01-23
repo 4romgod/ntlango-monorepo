@@ -158,7 +158,6 @@ describe('EventParticipantResolver', () => {
       },
     ];
 
-
     it('should validate eventId and return participants successfully', async () => {
       (EventParticipantDAO.readByEvent as jest.Mock).mockResolvedValue(mockParticipants);
       (EventParticipantDAO.readByEvents as jest.Mock).mockResolvedValue(mockParticipants);
@@ -167,7 +166,6 @@ describe('EventParticipantResolver', () => {
       expect(validation.validateMongodbId).toHaveBeenCalledWith(eventId);
       expect(result).toEqual(mockParticipants);
     });
-
 
     it('should return empty array when no participants found', async () => {
       (EventParticipantDAO.readByEvent as jest.Mock).mockResolvedValue([]);
@@ -178,7 +176,6 @@ describe('EventParticipantResolver', () => {
       expect(result).toEqual([]);
     });
 
-
     it('should throw validation error for invalid eventId', async () => {
       const validationError = new Error('Invalid MongoDB ID');
       (validation.validateMongodbId as jest.Mock).mockImplementation(() => {
@@ -188,7 +185,6 @@ describe('EventParticipantResolver', () => {
       await expect(resolver.readEventParticipants(eventId, mockContext)).rejects.toThrow(validationError);
       expect(validation.validateMongodbId).toHaveBeenCalledWith(eventId);
     });
-
 
     it('should propagate DAO errors', async () => {
       const daoError = new Error('Database connection error');

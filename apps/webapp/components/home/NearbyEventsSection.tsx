@@ -21,9 +21,9 @@ function getThisWeekendRange() {
 }
 
 export default function NearbyEventsSection() {
-    const { data: session } = useSession();
-    const token = session?.user?.token;
-  
+  const { data: session } = useSession();
+  const token = session?.user?.token;
+
   // TODO For demo, use a static location (could use user profile or geolocation API)
   const location = {
     city: undefined,

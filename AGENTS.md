@@ -120,3 +120,19 @@ execute the associated workflow automatically.
 
 For detailed workflow instructions, see
 [.github/prompts/pr-generation.prompt.md](.github/prompts/pr-generation.prompt.md)
+
+## Agent Files & Prompt Library
+
+The per-domain agents and planning prompts live under `.github/` so you can review the tailored guidance before starting
+work.
+
+- **`.github/agents/api.agent.md`** – Backend engineer instructions for TypeGraphQL/MongoDB work inside `apps/api`.
+- **`.github/agents/webapp.agent.md`** – Frontend/UI agent for Next.js/MUI/Tailwind jobs in `apps/webapp`.
+- **`.github/agents/architect.agent.md`** – Strategic architecture leadership guidance for infra, scalability, and
+  roadmap discussions.
+- **`.github/prompts/*.prompt.md`** – Task/plan templates (the `plan-*` files) and aliases (`pr`, etc.). Open the
+  relevant prompt before executing a plan to honor its assumptions.
+
+When you encounter a request that aligns with a specific agent or prompt, cite the file name in your reasoning and
+follow that file's instructions (e.g., start with the `'pr'` prompt above when generating PR materials, or review the
+`plan-*` prompt for multi-step UI/UX work).

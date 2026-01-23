@@ -30,9 +30,9 @@ import { differenceInYears, format } from 'date-fns';
 import { GetAllEventsDocument, GetUserByUsernameDocument, GetSavedEventsDocument } from '@/data/graphql/types/graphql';
 import { getClient } from '@/data/graphql';
 import EventsCarousel from '@/components/events/carousel';
-import EventCategoryChip from '@/components/events/category/chip';
+import EventCategoryBadge from '@/components/events/category/EventCategoryBadge';
 import { EventPreview } from '@/data/graphql/query/Event/types';
-import UserProfileStats from '@/components/users/user-profile-stats';
+import UserProfileStats from '@/components/users/UserProfileStats';
 import {
   ROUTES,
   CARD_STYLES,
@@ -324,7 +324,7 @@ export default async function UserPublicProfile() {
                     {interests.length > 0 ? (
                       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5, pt: 1 }}>
                         {interests.map((category, index) => (
-                          <EventCategoryChip key={index} category={category} />
+                          <EventCategoryBadge key={index} category={category} />
                         ))}
                       </Box>
                     ) : (

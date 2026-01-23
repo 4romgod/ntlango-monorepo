@@ -4,7 +4,7 @@ import { Box, Container, Typography, Button, Stack, Card } from '@mui/material';
 import { ArrowBack, Edit } from '@mui/icons-material';
 import { getClient } from '@/data/graphql';
 import { GetAllEventCategoriesDocument, GetEventBySlugDocument } from '@/data/graphql/types/graphql';
-import EventMutationForm from '@/components/forms/event-mutation';
+import EventMutationForm from '@/components/forms/eventMutation';
 import { EventDetail } from '@/data/graphql/query/Event/types';
 import { ROUTES, BUTTON_STYLES, SECTION_TITLE_STYLES } from '@/lib/constants';
 import Link from 'next/link';

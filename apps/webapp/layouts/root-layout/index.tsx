@@ -3,18 +3,18 @@
 import '@/components/global.css';
 import React, { ReactNode } from 'react';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter';
-import { CustomAppContextProvider } from '@/components/app-context';
+import { CustomAppContextProvider } from '@/components/context/AppContext';
 import { ApolloWrapper } from '@/data/graphql/apollo-wrapper';
 import { SessionProvider } from 'next-auth/react';
-import CustomThemeProvider from '@/components/custom-providers/theme-provider';
-import ToastProvider from '@/components/custom-providers/toast-provider';
+import CustomThemeProvider from '@/components/context/providers/ThemeProvider';
+import ToastProvider from '@/components/context/providers/ToastProvider';
 import MainNavigation from '@/components/navigation/main';
 import Footer from '@/components/footer';
 import { Box } from '@mui/material';
 import dynamic from 'next/dynamic';
 import { Session } from 'next-auth';
 
-const TopProgressBar = dynamic(() => import('@/components/progress-bar'), { ssr: false });
+const TopProgressBar = dynamic(() => import('@/components/core/progress/TopProgressBar'), { ssr: false });
 
 type RootLayoutProps = { children: ReactNode; session: Session | null };
 

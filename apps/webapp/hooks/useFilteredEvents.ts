@@ -9,7 +9,7 @@ import {
   LocationFilterInput,
 } from '@/data/graphql/types/graphql';
 import { EventPreview } from '@/data/graphql/query/Event/types';
-import { EventFilters, LocationFilter } from '@/components/events/filters/event-filter-context';
+import { EventFilters, LocationFilter } from '@/components/events/filters/EventFilterContext';
 import { DATE_FILTER_OPTIONS } from '@/lib/constants/date-filters';
 
 /**

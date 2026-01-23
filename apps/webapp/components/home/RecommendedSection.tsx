@@ -62,7 +62,7 @@ export default function RecommendedSection() {
         </Typography>
       ) : (
         <Stack direction="row" spacing={{ xs: 1.5, md: 2 }} sx={{ overflowX: 'auto', flexWrap: 'nowrap' }}>
-          {orgs.map(org => (
+          {orgs.map((org) => (
             <Box key={org.orgId} sx={{ width: { xs: 220, md: 260 }, minWidth: { xs: 180, md: 220 }, flex: '0 0 auto' }}>
               <OrganizationCard
                 name={org.name}

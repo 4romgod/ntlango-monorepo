@@ -3,10 +3,10 @@ import { GetAllUsersDocument } from '@/data/graphql/types/graphql';
 import { Typography, Grid, Box, Paper } from '@mui/material';
 import { Diversity3, People } from '@mui/icons-material';
 import type { Metadata } from 'next';
-import SearchInput from '@/components/search/search-box';
-import UserBox from '@/components/users/user-box';
-import CustomContainer from '@/components/custom-container';
-import HeroSection from '@/components/users/hero-section';
+import SearchBox from '@/components/search/SearchBox';
+import UserBox from '@/components/users/UserBox';
+import CustomContainer from '@/components/core/layout/CustomContainer';
+import HeroSection from '@/components/users/HeroSection';
 
 export const metadata: Metadata = {
   title: 'Community · Ntlango',
@@ -47,7 +47,7 @@ export default async function Page() {
 
           {/* Search */}
           <Box mb={5}>
-            <SearchInput
+            <SearchBox
               itemList={users
                 .map((user) => {
                   const name = [user.given_name, user.family_name].filter((n) => n && typeof n === 'string').join(' ');

@@ -8,8 +8,8 @@ import {
   GetPopularOrganizationsDocument,
 } from '@/data/graphql/query';
 import { EventPreview } from '@/data/graphql/query/Event/types';
-import { PopularOrganization } from '@/components/events/popular-organizer-box';
-import EventsClientWrapper from '@/components/events/events-client-wrapper';
+import { PopularOrganization } from '@/components/events/PopularOrganizerBox';
+import EventsClientWrapper from '@/components/events/EventsClientWrapper';
 import { auth } from '@/auth';
 import { getAuthHeader } from '@/lib/utils';
 

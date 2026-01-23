@@ -3,7 +3,7 @@ import { Box, Button, Typography, Card, CardContent, Skeleton, Stack } from '@mu
 import Link from 'next/link';
 import { useQuery } from '@apollo/client';
 import { GetAllEventsDocument } from '@/data/graphql/query/Event/query';
-import EventTileGrid from '../events/event-tile-grid';
+import EventTileGrid from '../events/EventTileGrid';
 import { useSession } from 'next-auth/react';
 import { getAuthHeader } from '@/lib/utils';
 

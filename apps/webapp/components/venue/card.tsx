@@ -3,6 +3,7 @@ import { Box, Button, Card, CardActions, CardContent, Chip, Divider, Stack, Typo
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PeopleIcon from '@mui/icons-material/People';
 import { ROUTES } from '@/lib/constants';
+import Surface from '@/components/core/Surface';
 
 export type VenueCardProps = {
   venueId?: string;
@@ -24,15 +25,13 @@ const VenueCard = ({ venueId, name, type, capacity, address, amenities }: VenueC
   const detailsHref = venueId ? `${ROUTES.VENUES.ROOT}/${venueId}` : ROUTES.VENUES.ROOT;
 
   return (
-    <Card
-      elevation={0}
+    <Surface
+      component={Card}
       sx={{
         borderRadius: 3,
         minHeight: 280,
         display: 'flex',
         flexDirection: 'column',
-        border: '1px solid',
-        borderColor: 'divider',
         transition: 'all 0.2s ease',
         '&:hover': {
           borderColor: 'primary.main',
@@ -167,7 +166,7 @@ const VenueCard = ({ venueId, name, type, capacity, address, amenities }: VenueC
           </Button>
         )}
       </CardActions>
-    </Card>
+    </Surface>
   );
 };
 

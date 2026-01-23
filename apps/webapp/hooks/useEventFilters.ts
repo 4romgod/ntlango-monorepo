@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { EventFilterContext, EventFilterContextType } from '@/components/events/filters/event-filter-context';
+import { EventFilterContext, EventFilterContextType } from '@/components/events/filters/EventFilterContext';
 
 export const useEventFilters = (): EventFilterContextType => {
   const context = useContext(EventFilterContext);

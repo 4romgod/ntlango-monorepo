@@ -1,6 +1,6 @@
 import Logo from '@/components/logo';
 import { Box, Container, Paper, Typography } from '@mui/material';
-import RegisterForm from '@/components/forms/auth/register';
+import RegisterForm from '@/components/forms/auth/Register';
 
 export default function RegisterPage() {
   return (
