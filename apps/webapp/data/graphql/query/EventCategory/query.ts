@@ -12,3 +12,16 @@ export const GetAllEventCategoriesDocument = graphql(`
     }
   }
 `);
+
+export const GetEventCategoryBySlugDocument = graphql(`
+  query GetEventCategoryBySlug($slug: String!) {
+    readEventCategoryBySlug(slug: $slug) {
+      eventCategoryId
+      slug
+      name
+      iconName
+      description
+      color
+    }
+  }
+`);

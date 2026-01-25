@@ -4,8 +4,11 @@ import { useQuery } from '@apollo/client';
 import { GetAllEventsDocument } from '@/data/graphql/query/Event/query';
 import { useSession } from 'next-auth/react';
 import { getAuthHeader } from '@/lib/utils';
-import EventCarousel from '@/components/events/carousel';
-import EventCarouselSkeleton from '@/components/events/carousel/EventCarouselSkeleton';
+import Carousel from '@/components/carousel';
+import CarouselSkeleton from '@/components/carousel/CarouselSkeleton';
+import EventBoxSm from '@/components/events/eventBoxSm';
+import EventBoxSmSkeleton from '@/components/events/eventBoxSm/EventBoxSmSkeleton';
+import { ROUTES } from '@/lib/constants';
 
 // Helper: get this weekend's date range
 function getThisWeekendRange() {
@@ -62,14 +65,18 @@ export default function NearbyEventsSection() {
         Nearby / This Weekend
       </Typography>
       {isLoading ? (
-        <EventCarouselSkeleton itemCount={3} />
+        <CarouselSkeleton itemCount={3} renderSkeletonItem={() => <EventBoxSmSkeleton />} />
       ) : error ? (
         <Typography color="error">Failed to load nearby events.</Typography>
       ) : events.length === 0 ? (
         <Typography color="text.secondary">No nearby events this weekend. Check back soon!</Typography>
       ) : (
         <Stack gap={{ xs: 1.5, md: 2 }}>
-          <EventCarousel events={events} />
+          <Carousel
+            items={events}
+            viewAllButton={{ href: ROUTES.EVENTS.ROOT }}
+            renderItem={(event) => <EventBoxSm event={event} />}
+          />
         </Stack>
       )}
     </Box>

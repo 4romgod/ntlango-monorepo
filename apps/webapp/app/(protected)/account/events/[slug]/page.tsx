@@ -18,7 +18,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import EventCategoryBadge from '@/components/events/category/EventCategoryBadge';
+import EventCategoryBadge from '@/components/categories/CategoryBadge';
 import EventOperationsModal from '@/components/core/modal/EventOperationsModal';
 import { getFullUrl } from '@/lib/utils/url';
 import { RRule } from 'rrule';

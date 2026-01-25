@@ -6,6 +6,7 @@ import { useQuery } from '@apollo/client';
 import { GetAllOrganizationsDocument } from '@/data/graphql/query';
 import OrganizationCard from '@/components/organization/organizationBox';
 import OrganizationBoxSkeleton from '@/components/organization/organizationBox/OrganizationBoxSkeleton';
+import Carousel from '@/components/carousel';
 
 const SKELETON_COUNT = 8;
 
@@ -57,13 +58,15 @@ export default function OrganizationsClient() {
           </Button>
         </Box>
       ) : (
-        <Grid container spacing={3}>
-          {organizations.map((organization) => (
-            <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={organization.orgId}>
-              <OrganizationCard {...organization} />
-            </Grid>
-          ))}
-        </Grid>
+        <Carousel
+          items={organizations}
+          title="Featured Organizations"
+          autoplay={true}
+          autoplayInterval={6000}
+          itemWidth={350}
+          showIndicators={true}
+          renderItem={(organization) => <OrganizationCard organization={organization} />}
+        />
       )}
     </Container>
   );

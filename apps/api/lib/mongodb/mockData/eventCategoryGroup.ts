@@ -1,30 +1,57 @@
 import type { CreateEventCategoryGroupInput } from '@ntlango/commons/types';
 
-const eventCategoryGroups: CreateEventCategoryGroupInput[] = [
+import eventCategories from './eventCategory';
+
+type EventCategoryGroupDefinition = {
+  name: string;
+  categoryNames: string[];
+};
+
+const eventCategoryMap = new Map(eventCategories.map((category) => [category.name, category]));
+
+const resolveEventCategory = (categoryName: string) => {
+  const category = eventCategoryMap.get(categoryName);
+  if (!category) {
+    throw new Error(`Event category not found: ${categoryName}`);
+  }
+  return category;
+};
+
+const eventCategoryGroupDefinitions: EventCategoryGroupDefinition[] = [
   {
     name: 'Entertainment',
-    eventCategories: ['Concerts', 'Nightlife', 'Film & Media', 'Gaming', 'Fashion & Beauty', 'Arts & Culture'],
+    categoryNames: ['Concerts', 'Nightlife', 'Film & Media', 'Gaming', 'Fashion & Beauty', 'Arts & Culture'],
   },
   {
     name: 'Professional & Learning',
-    eventCategories: ['Conferences', 'Workshops', 'Networking', 'Technology', 'Startup & Business', 'Education'],
+    categoryNames: ['Conferences', 'Workshops', 'Networking', 'Technology', 'Startup & Business', 'Education'],
   },
   {
     name: 'Health & Wellness',
-    eventCategories: ['Fitness', 'Health & Wellness', 'Family & Kids', 'Religious & Spiritual'],
+    categoryNames: ['Fitness', 'Health & Wellness', 'Family & Kids', 'Religious & Spiritual'],
   },
   {
     name: 'Food & Lifestyle',
-    eventCategories: ['Food & Drink', 'Fashion & Beauty', 'Travel & Adventure', 'Arts & Culture'],
+    categoryNames: ['Food & Drink', 'Fashion & Beauty', 'Travel & Adventure', 'Arts & Culture'],
   },
   {
     name: 'Sports & Outdoors',
-    eventCategories: ['Sports', 'Fitness', 'Travel & Adventure'],
+    categoryNames: ['Sports', 'Fitness', 'Travel & Adventure'],
   },
   {
     name: 'Community & Causes',
-    eventCategories: ['Charity & Causes', 'Religious & Spiritual', 'Family & Kids', 'Education'],
+    categoryNames: ['Charity & Causes', 'Religious & Spiritual', 'Family & Kids', 'Education'],
   },
 ];
 
-export default eventCategoryGroups;
+const eventCategoryGroupMockData: CreateEventCategoryGroupInput[] = eventCategoryGroupDefinitions.map(
+  ({ name, categoryNames }) => ({
+    name,
+    eventCategories: categoryNames.map((categoryName) => {
+      resolveEventCategory(categoryName);
+      return categoryName;
+    }),
+  }),
+);
+
+export default eventCategoryGroupMockData;

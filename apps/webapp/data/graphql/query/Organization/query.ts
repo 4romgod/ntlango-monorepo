@@ -4,6 +4,7 @@ export const GetAllOrganizationsDocument = graphql(`
   query GetOrganizations {
     readOrganizations {
       orgId
+      ownerId
       slug
       name
       description

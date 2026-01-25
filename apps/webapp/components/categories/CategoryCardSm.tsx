@@ -1,9 +1,9 @@
+import Link from 'next/link';
 import { EventCategory } from '@/data/graphql/types/graphql';
 import { getEventCategoryIcon } from '@/lib/constants';
 import { Box, Button, Typography } from '@mui/material';
-import Link from 'next/link';
 
-export default function EventCategoryCard({ eventCategory }: { eventCategory: EventCategory }) {
+export default function CategoryCardSm({ eventCategory }: { eventCategory: EventCategory }) {
   const IconComponent = getEventCategoryIcon(eventCategory.iconName);
 
   return (

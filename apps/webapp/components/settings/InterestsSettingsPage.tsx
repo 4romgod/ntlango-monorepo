@@ -23,7 +23,7 @@ import { Search as SearchIcon, Add as AddIcon, Save as SaveIcon, Close as CloseI
 import { EventCategoryGroup, EventCategory, User } from '@/data/graphql/types/graphql';
 import { updateUserProfileAction } from '@/data/actions/server/user';
 import { signIn, useSession } from 'next-auth/react';
-import EventCategoryBadge from '@/components/events/category/EventCategoryBadge';
+import EventCategoryBadge from '@/components/categories/CategoryBadge';
 import { useAppContext } from '@/hooks/useAppContext';
 import { BUTTON_STYLES, SECTION_TITLE_STYLES, EMPTY_STATE_STYLES, EMPTY_STATE_ICON_STYLES } from '@/lib/constants';
 

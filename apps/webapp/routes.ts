@@ -11,6 +11,7 @@ export const publicRoutes: string[] = [
   ROUTES.USERS.ROOT,
   ROUTES.ORGANIZATIONS.ROOT,
   ROUTES.VENUES.ROOT,
+  ROUTES.CATEGORIES.ROOT,
   '/home',
 ];
 
@@ -45,9 +46,11 @@ export const DEFAULT_LOGIN_REDIRECT: string = ROUTES.HOME;
  * @returns {boolean} - True if the route matches the dynamic pattern, false otherwise
  */
 export const isPublicDynamicRoute = (pathname: string): Boolean => {
-  const startsWithDynamicBase = pathname.startsWith(ROUTES.EVENTS.ROOT)
-  || pathname.startsWith(ROUTES.USERS.ROOT)
-  || pathname.startsWith(ROUTES.ORGANIZATIONS.ROOT)
-  || pathname.startsWith(ROUTES.VENUES.ROOT);
+  const startsWithDynamicBase =
+    pathname.startsWith(ROUTES.EVENTS.ROOT) ||
+    pathname.startsWith(ROUTES.USERS.ROOT) ||
+    pathname.startsWith(ROUTES.ORGANIZATIONS.ROOT) ||
+    pathname.startsWith(ROUTES.VENUES.ROOT) ||
+    pathname.startsWith(ROUTES.CATEGORIES.ROOT);
   return startsWithDynamicBase && pathname.split('/').length === 3;
 };

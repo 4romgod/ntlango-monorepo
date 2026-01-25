@@ -1,9 +1,9 @@
+import Link from 'next/link';
 import { EventCategory } from '@/data/graphql/types/graphql';
 import { getEventCategoryIcon } from '@/lib/constants';
 import { Avatar, Chip, alpha } from '@mui/material';
-import Link from 'next/link';
 
-export default function EventCategoryBadge({ category }: { category: EventCategory }) {
+export default function CategoryBadge({ category }: { category: EventCategory }) {
   const IconComponent = getEventCategoryIcon(category.iconName);
   const categoryColor = category.color ?? 'black';
 

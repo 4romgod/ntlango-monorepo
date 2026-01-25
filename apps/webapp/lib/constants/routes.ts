@@ -22,6 +22,10 @@ export const ROUTES = {
     EVENT: (slug: string) => `/events/${slug}`,
     ROOT: '/events',
   },
+  CATEGORIES: {
+    ROOT: '/categories',
+    CATEGORY: (slug: string) => `/categories/${slug}`,
+  },
   USERS: {
     USER: (username: string) => `/users/${username}`,
     ROOT: '/users',

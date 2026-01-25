@@ -5,7 +5,7 @@ import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import EventIcon from '@mui/icons-material/Event';
 import { EventCategory } from '@/data/graphql/types/graphql';
 import PopularOrganizerBox, { PopularOrganization } from './PopularOrganizerBox';
-import EventCategoryBadge from './category/EventCategoryBadge';
+import EventCategoryBadge from '@/components/categories/CategoryBadge';
 import Surface from '../core/Surface';
 
 /**
