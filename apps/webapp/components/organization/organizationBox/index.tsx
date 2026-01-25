@@ -4,27 +4,15 @@ import Link from 'next/link';
 import { Box, Button, Card, CardActions, CardContent, Chip, Stack, Typography, useTheme } from '@mui/material';
 import { ROUTES } from '@/lib/constants';
 import Surface from '@/components/core/Surface';
+import { Organization } from '@/data/graphql/types/graphql';
 
 export type OrganizationCardProps = {
-  name?: string;
-  slug?: string;
-  description?: string | null;
-  logo?: string | null;
-  tags?: string[] | null;
-  followersCount?: number;
-  isFollowable?: boolean;
+  organization: Organization;
 };
 
-const OrganizationCard = ({
-  name,
-  slug,
-  description,
-  logo,
-  tags,
-  followersCount,
-  isFollowable,
-}: OrganizationCardProps) => {
+const OrganizationCard = ({ organization }: OrganizationCardProps) => {
   const theme = useTheme();
+  const { name, slug, description, logo, tags, followersCount, isFollowable } = organization;
   return (
     <Surface
       component={Card}

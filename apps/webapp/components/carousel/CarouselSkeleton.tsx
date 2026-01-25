@@ -1,17 +1,45 @@
 'use client';
 
-import { Box, Typography, Skeleton, Stack } from '@mui/material';
-import EventBoxSmSkeleton from '@/components/events/eventBoxSm/EventBoxSmSkeleton';
+import React from 'react';
+import { Box, Typography, Stack, Skeleton, Paper } from '@mui/material';
 
-export default function EventCarouselSkeleton({
-  title,
-  itemCount = 3,
-  viewAll = true,
-}: {
+interface CarouselSkeletonProps {
   title?: string;
   itemCount?: number;
   viewAll?: boolean;
-}) {
+  renderSkeletonItem?: (index: number) => React.ReactNode;
+  itemWidth?: number;
+}
+
+const defaultSkeletonItem = () => (
+  <Paper
+    elevation={0}
+    sx={{
+      border: '1px solid',
+      borderColor: 'divider',
+      borderRadius: 2,
+      overflow: 'hidden',
+      px: 2,
+      py: 1,
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 1,
+    }}
+  >
+    <Skeleton variant="rectangular" height={150} />
+    <Skeleton variant="text" width="60%" height={30} />
+    <Skeleton variant="text" width="40%" />
+  </Paper>
+);
+
+export default function CarouselSkeleton({
+  title,
+  itemCount = 3,
+  viewAll = true,
+  renderSkeletonItem,
+  itemWidth = 320,
+}: CarouselSkeletonProps) {
+  const skeletonItem = renderSkeletonItem ?? defaultSkeletonItem;
   return (
     <Box sx={{ width: '100%' }}>
       {(title || viewAll) && (
@@ -26,6 +54,7 @@ export default function EventCarouselSkeleton({
           {viewAll && <Skeleton variant="rounded" width={100} height={32} />}
         </Stack>
       )}
+
       <Box
         sx={{
           display: 'flex',
@@ -45,12 +74,11 @@ export default function EventCarouselSkeleton({
             key={`skeleton-${index}`}
             sx={{
               flex: '0 0 auto',
+              width: { xs: '80%', sm: itemWidth },
               scrollSnapAlign: 'start',
-              width: { xs: '80%', sm: 320 },
-              minWidth: { xs: '80%', sm: 320 },
             }}
           >
-            <EventBoxSmSkeleton />
+            {skeletonItem(index)}
           </Box>
         ))}
       </Box>

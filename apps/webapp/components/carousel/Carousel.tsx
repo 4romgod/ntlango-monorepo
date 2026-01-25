@@ -1,28 +1,44 @@
 'use client';
 
-import React, { useRef, useState, useEffect, useCallback } from 'react';
-import { Box, Typography, IconButton, useMediaQuery, useTheme, Paper, Stack, Button, alpha } from '@mui/material';
-import EventBoxSm from '@/components/events/eventBoxSm';
-import { EventPreview } from '@/data/graphql/query/Event/types';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Box, Typography, IconButton, useMediaQuery, useTheme, Paper, Stack, Button, ButtonProps } from '@mui/material';
 import { ChevronLeft, ChevronRight, ArrowForward } from '@mui/icons-material';
 import Link from 'next/link';
 
-interface EventCarouselProps {
-  events: EventPreview[];
+interface CarouselViewAllButtonProps {
+  href: string;
+  label?: string;
+  color?: ButtonProps['color'];
+  variant?: ButtonProps['variant'];
+  target?: string;
+  rel?: string;
+}
+
+export interface CarouselProps<T> {
+  items: T[];
   title?: string;
   autoplay?: boolean;
   autoplayInterval?: number;
   itemWidth?: number;
   showIndicators?: boolean;
-  viewAllEventsButton?: boolean;
+  viewAllButton?: CarouselViewAllButtonProps;
+  renderItem: (item: T, index: number) => React.ReactNode;
+  itemKey?: (item: T, index: number) => React.Key;
+  itemWrapper?: (content: React.ReactNode, item: T, index: number) => React.ReactNode;
 }
 
-export default function EventCarousel({
-  events,
+export default function Carousel<T>({
+  items,
   title,
+  autoplay = false,
+  autoplayInterval = 4000,
   itemWidth = 350,
-  viewAllEventsButton = true,
-}: EventCarouselProps) {
+  showIndicators = true,
+  viewAllButton,
+  renderItem,
+  itemKey,
+  itemWrapper,
+}: CarouselProps<T>) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const containerRef = useRef<HTMLDivElement>(null);
@@ -30,29 +46,26 @@ export default function EventCarousel({
   const [canScrollRight, setCanScrollRight] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Check scroll position to show/hide arrows and update current index
   const checkScrollPosition = useCallback(() => {
-    if (containerRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = containerRef.current;
-      setCanScrollLeft(scrollLeft > 0);
-      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
+    if (!containerRef.current) return;
+    const { scrollLeft, scrollWidth, clientWidth } = containerRef.current;
+    setCanScrollLeft(scrollLeft > 0);
+    setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
 
-      // Calculate current index based on scroll position (for mobile)
-      if (isMobile) {
-        const index = Math.round(scrollLeft / clientWidth);
-        setCurrentIndex(index);
-      }
+    if (isMobile) {
+      const index = Math.round(scrollLeft / clientWidth);
+      setCurrentIndex(index);
     }
   }, [isMobile]);
 
   useEffect(() => {
     checkScrollPosition();
     const container = containerRef.current;
-    if (container) {
-      container.addEventListener('scroll', checkScrollPosition);
-      return () => container.removeEventListener('scroll', checkScrollPosition);
-    }
-  }, [checkScrollPosition]);
+    if (!container) return undefined;
+
+    container.addEventListener('scroll', checkScrollPosition);
+    return () => container.removeEventListener('scroll', checkScrollPosition);
+  }, [checkScrollPosition, items.length]);
 
   useEffect(() => {
     const handleResize = () => checkScrollPosition();
@@ -60,41 +73,86 @@ export default function EventCarousel({
     return () => window.removeEventListener('resize', handleResize);
   }, [checkScrollPosition]);
 
-  const scroll = (direction: 'left' | 'right') => {
-    if (containerRef.current) {
+  const scroll = useCallback(
+    (direction: 'left' | 'right') => {
+      if (!containerRef.current) return;
       const scrollAmount = isMobile ? containerRef.current.clientWidth : itemWidth + 24;
       containerRef.current.scrollBy({
         left: direction === 'left' ? -scrollAmount : scrollAmount,
         behavior: 'smooth',
       });
-    }
-  };
+    },
+    [isMobile, itemWidth],
+  );
 
-  if (events.length === 0) {
+  useEffect(() => {
+    if (!autoplay || items.length <= 1 || typeof window === 'undefined') return;
+    const intervalId = window.setInterval(() => scroll('right'), autoplayInterval);
+    return () => window.clearInterval(intervalId);
+  }, [autoplay, autoplayInterval, items.length, scroll]);
+
+  if (items.length === 0) {
     return null;
   }
 
+  const defaultItemWrapper: NonNullable<CarouselProps<T>['itemWrapper']> = (
+    content: React.ReactNode,
+    _item?: T,
+    _index?: number,
+  ) => (
+    <Paper
+      elevation={0}
+      sx={{
+        border: '1px solid',
+        borderColor: 'divider',
+        borderRadius: 2,
+        overflow: 'hidden',
+        transition: 'transform 0.2s, box-shadow 0.2s',
+        '&:hover': {
+          borderColor: 'primary.main',
+          boxShadow: theme.shadows[4],
+        },
+      }}
+    >
+      {content}
+    </Paper>
+  );
+
+  const renderWrappedItem = (item: T, index: number) => {
+    const content = renderItem(item, index);
+    const wrapper = itemWrapper ?? defaultItemWrapper;
+    return wrapper(content, item, index);
+  };
+
+  const getKey = (item: T, index: number) => (itemKey ? itemKey(item, index) : index);
+
   return (
     <Box sx={{ width: '100%' }}>
-      {/* Header */}
-      {(title || viewAllEventsButton) && (
+      {(title || viewAllButton) && (
         <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
           {title && (
             <Typography variant="h5" fontWeight={700}>
               {title}
             </Typography>
           )}
-          {viewAllEventsButton && (
-            <Button endIcon={<ArrowForward />} color="secondary" component={Link} href="/events" size="small">
-              View all
+          {viewAllButton && (
+            <Button
+              endIcon={<ArrowForward />}
+              color={viewAllButton.color ?? 'secondary'}
+              variant={viewAllButton.variant ?? 'text'}
+              component={Link}
+              href={viewAllButton.href}
+              target={viewAllButton.target}
+              rel={viewAllButton.rel}
+              size="small"
+            >
+              {viewAllButton.label ?? 'View all'}
             </Button>
           )}
         </Stack>
       )}
 
-      {/* Carousel */}
       <Box sx={{ position: 'relative' }}>
-        {/* Navigation Arrows */}
         {!isMobile && canScrollLeft && (
           <IconButton
             onClick={() => scroll('left')}
@@ -137,7 +195,6 @@ export default function EventCarousel({
           </IconButton>
         )}
 
-        {/* Scrollable Container */}
         <Box
           ref={containerRef}
           sx={{
@@ -153,37 +210,21 @@ export default function EventCarousel({
             msOverflowStyle: 'none',
           }}
         >
-          {events.map((event, index) => (
+          {items.map((item, index) => (
             <Box
-              key={event.eventId || index}
+              key={getKey(item, index)}
               sx={{
                 flex: '0 0 auto',
                 width: isMobile ? '100%' : itemWidth,
                 scrollSnapAlign: 'start',
               }}
             >
-              <Paper
-                elevation={0}
-                sx={{
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  borderRadius: 2,
-                  overflow: 'hidden',
-                  transition: 'transform 0.2s, box-shadow 0.2s',
-                  '&:hover': {
-                    borderColor: 'primary.main',
-                    boxShadow: theme.shadows[4],
-                  },
-                }}
-              >
-                <EventBoxSm event={event} />
-              </Paper>
+              {renderWrappedItem(item, index)}
             </Box>
           ))}
         </Box>
 
-        {/* Indicators for mobile */}
-        {isMobile && events.length > 1 && (
+        {showIndicators && isMobile && items.length > 1 && (
           <Box
             sx={{
               display: 'flex',
@@ -192,7 +233,7 @@ export default function EventCarousel({
               mt: 2,
             }}
           >
-            {events.map((_, index) => (
+            {items.map((_, index) => (
               <Box
                 key={index}
                 sx={{

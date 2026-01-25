@@ -1,5 +1,5 @@
 import { Box, Container, Typography, Stack, Skeleton } from '@mui/material';
-import EventCategoryCard from '@/components/events/category/EventCategoryCard';
+import EventCategoryCard from '@/components/categories/CategoryCardSm';
 import { SECTION_TITLE_STYLES } from '@/lib/constants';
 import { EventCategory } from '@/data/graphql/types/graphql';
 

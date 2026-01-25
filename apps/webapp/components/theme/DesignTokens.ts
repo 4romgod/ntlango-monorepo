@@ -132,10 +132,10 @@ export const getDesignTokens = (mode: PaletteMode): ThemeOptions => ({
     MuiSkeleton: {
       styleOverrides: {
         root: ({ theme }) => {
-          const baseLight = alpha(theme.palette.text.primary, 0.3);
-          const waveLight = alpha(theme.palette.text.primary, 0.3);
-          const baseDark = alpha(theme.palette.common.white, 0.3);
-          const waveDark = alpha(theme.palette.common.white, 0.3);
+          const baseLight = alpha(theme.palette.text.primary, 0.2);
+          const waveLight = alpha(theme.palette.text.primary, 0.2);
+          const baseDark = alpha(theme.palette.common.white, 0.2);
+          const waveDark = alpha(theme.palette.common.white, 0.2);
 
           const background = theme.palette.mode === 'light' ? baseLight : baseDark;
           const wave = theme.palette.mode === 'light' ? waveLight : waveDark;

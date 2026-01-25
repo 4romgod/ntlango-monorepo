@@ -29,8 +29,9 @@ import { auth } from '@/auth';
 import { differenceInYears, format } from 'date-fns';
 import { GetAllEventsDocument, GetUserByUsernameDocument, GetSavedEventsDocument } from '@/data/graphql/types/graphql';
 import { getClient } from '@/data/graphql';
-import EventsCarousel from '@/components/events/carousel';
-import EventCategoryBadge from '@/components/events/category/EventCategoryBadge';
+import Carousel from '@/components/carousel';
+import EventBoxSm from '@/components/events/eventBoxSm';
+import EventCategoryBadge from '@/components/categories/CategoryBadge';
 import { EventPreview } from '@/data/graphql/query/Event/types';
 import UserProfileStats from '@/components/users/UserProfileStats';
 import {
@@ -373,14 +374,14 @@ async function AuthenticatedProfileContent() {
               </Typography>
             </Box>
             {organizedEvents.length > 0 ? (
-              <EventsCarousel
-                events={organizedEvents}
+              <Carousel
+                items={organizedEvents}
                 title=""
                 autoplay={true}
                 autoplayInterval={6000}
                 itemWidth={350}
                 showIndicators={true}
-                viewAllEventsButton={false}
+                renderItem={(event) => <EventBoxSm event={event} />}
               />
             ) : (
               <Card elevation={0} sx={CARD_STYLES}>
@@ -432,14 +433,14 @@ async function AuthenticatedProfileContent() {
               </Typography>
             </Box>
             {rsvpdEvents.length > 0 ? (
-              <EventsCarousel
-                events={rsvpdEvents}
+              <Carousel
+                items={rsvpdEvents}
                 title=""
                 autoplay={true}
                 autoplayInterval={6000}
                 itemWidth={350}
                 showIndicators={true}
-                viewAllEventsButton={false}
+                renderItem={(event) => <EventBoxSm event={event} />}
               />
             ) : (
               <Card elevation={0} sx={CARD_STYLES}>
@@ -491,14 +492,14 @@ async function AuthenticatedProfileContent() {
               </Typography>
             </Box>
             {savedEvents.length > 0 ? (
-              <EventsCarousel
-                events={savedEvents}
+              <Carousel
+                items={savedEvents}
                 title=""
                 autoplay={true}
                 autoplayInterval={6000}
                 itemWidth={350}
                 showIndicators={true}
-                viewAllEventsButton={false}
+                renderItem={(event) => <EventBoxSm event={event} />}
               />
             ) : (
               <Card elevation={0} sx={CARD_STYLES}>

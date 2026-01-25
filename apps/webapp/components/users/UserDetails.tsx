@@ -3,7 +3,7 @@ import { Email, Phone, Public, Visibility, Share, CheckCircle, Cake, Wc } from '
 import { Typography, Avatar, Box, Paper, Chip, Stack, Button } from '@mui/material';
 import { LocationOn as LocationIcon } from '@mui/icons-material';
 import { User, SocialVisibility } from '@/data/graphql/types/graphql';
-import EventCategoryBadge from '@/components/events/category/EventCategoryBadge';
+import EventCategoryBadge from '@/components/categories/CategoryBadge';
 import { differenceInYears, format } from 'date-fns';
 import Link from 'next/link';
 import { ROUTES } from '@/lib/constants';

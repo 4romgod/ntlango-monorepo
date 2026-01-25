@@ -4,9 +4,12 @@ import { useQuery } from '@apollo/client';
 import { Box, Container } from '@mui/material';
 import { GetAllEventCategoriesDocument, GetAllEventsDocument } from '@/data/graphql/types/graphql';
 import { HeroSection, CategoryExplorer } from '@/components/home';
-import EventCarousel from '@/components/events/carousel';
-import EventCarouselSkeleton from '@/components/events/carousel/EventCarouselSkeleton';
+import Carousel from '@/components/carousel';
+import CarouselSkeleton from '@/components/carousel/CarouselSkeleton';
+import EventBoxSm from '@/components/events/eventBoxSm';
+import EventBoxSmSkeleton from '@/components/events/eventBoxSm/EventBoxSmSkeleton';
 import type { EventPreview } from '@/data/graphql/query/Event/types';
+import { ROUTES } from '@/lib/constants';
 
 export default function HomeClient() {
   // TODO: consider implementing pagination or lazy loading for events
@@ -35,19 +38,17 @@ export default function HomeClient() {
       >
         <Container>
           {eventsLoading ? (
-            <EventCarouselSkeleton
-              title="Featured Events"
-              itemCount={5}
-            />
+            <CarouselSkeleton title="Featured Events" itemCount={5} renderSkeletonItem={() => <EventBoxSmSkeleton />} />
           ) : (
-            <EventCarousel
-              events={featuredEvents}
+            <Carousel
+              items={featuredEvents}
               title="Featured Events"
               autoplay={false}
               autoplayInterval={6000}
               itemWidth={260}
               showIndicators
-              viewAllEventsButton
+              viewAllButton={{ href: ROUTES.EVENTS.ROOT }}
+              renderItem={(event) => <EventBoxSm event={event} />}
             />
           )}
         </Container>

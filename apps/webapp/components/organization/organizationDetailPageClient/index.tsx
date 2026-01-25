@@ -9,7 +9,8 @@ import { GetAllEventsDocument } from '@/data/graphql/query/Event/query';
 import { GetOrganizationBySlugDocument } from '@/data/graphql/query';
 import { GetAllEventsQuery, Organization, SortOrderInput } from '@/data/graphql/types/graphql';
 import { ROUTES } from '@/lib/constants';
-import EventCarousel from '@/components/events/carousel';
+import Carousel from '@/components/carousel';
+import EventBoxSm from '@/components/events/eventBoxSm';
 import FollowStatsCard from '@/components/organization/FollowStatsCard';
 import OrganizationPageSkeleton from '@/components/organization/organizationDetailPageClient/OrganizationDetailPageSkeleton';
 
@@ -236,7 +237,7 @@ export default function OrganizationPageClient({ slug }: OrganizationPageClientP
 
             <Card elevation={0} sx={{ mb: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
               <CardContent sx={{ p: 4 }}>
-                <EventCarousel events={events} title="Upcoming Events" viewAllEventsButton={false} />
+                <Carousel items={events} title="Upcoming Events" renderItem={(event) => <EventBoxSm event={event} />} />
               </CardContent>
             </Card>
           </Grid>

@@ -22,7 +22,7 @@ import {
 import { CalendarMonth, LocationOn, Share, ConfirmationNumber, Groups, Language, ArrowBack } from '@mui/icons-material';
 import { GetEventBySlugDocument, GetEventBySlugQuery, Location, ParticipantStatus } from '@/data/graphql/types/graphql';
 import { getAuthHeader } from '@/lib/utils/auth';
-import EventCategoryBadge from '@/components/events/category/EventCategoryBadge';
+import EventCategoryBadge from '@/components/categories/CategoryBadge';
 import CopyLinkButton from '@/components/events/CopyLinkButton';
 import EventDetailActions from '@/components/events/EventDetailActions';
 import EventDetailSkeleton from '@/components/events/EventDetailSkeleton';

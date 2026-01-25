@@ -28,14 +28,11 @@ import {
   Bookmark as BookmarkIcon,
   Edit as EditIcon,
 } from '@mui/icons-material';
-import {
-  GetAllEventsDocument,
-  GetSavedEventsDocument,
-  GetUserByUsernameDocument,
-} from '@/data/graphql/types/graphql';
+import { GetAllEventsDocument, GetSavedEventsDocument, GetUserByUsernameDocument } from '@/data/graphql/types/graphql';
 import { EventPreview } from '@/data/graphql/query/Event/types';
-import EventsCarousel from '@/components/events/carousel';
-import EventCategoryBadge from '@/components/events/category/EventCategoryBadge';
+import Carousel from '@/components/carousel';
+import EventBoxSm from '@/components/events/eventBoxSm';
+import EventCategoryBadge from '@/components/categories/CategoryBadge';
 import UserProfileStats from '@/components/users/UserProfileStats';
 import UserProfileActions from '@/components/users/UserProfileActions';
 import UserProfilePageSkeleton from '@/components/users/UserProfilePageSkeleton';
@@ -61,11 +58,19 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
   const token = session?.user?.token;
   const isOwnProfile = session?.user?.username === username;
 
-  const { data: userData, loading: userLoading, error: userError } = useQuery(GetUserByUsernameDocument, {
+  const {
+    data: userData,
+    loading: userLoading,
+    error: userError,
+  } = useQuery(GetUserByUsernameDocument, {
     variables: { username },
     fetchPolicy: 'cache-and-network',
   });
-  const { data: eventsData, loading: eventsLoading, error: eventsError } = useQuery(GetAllEventsDocument, {
+  const {
+    data: eventsData,
+    loading: eventsLoading,
+    error: eventsError,
+  } = useQuery(GetAllEventsDocument, {
     fetchPolicy: 'cache-and-network',
   });
   const { data: savedData, loading: savedLoading } = useQuery(GetSavedEventsDocument, {
@@ -350,10 +355,7 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
                         {interests
                           .filter((interest) => interest.eventCategoryId != null)
                           .map((interest) => (
-                            <EventCategoryBadge
-                              key={interest.eventCategoryId}
-                              category={interest}
-                            />
+                            <EventCategoryBadge key={interest.eventCategoryId} category={interest} />
                           ))}
                       </Box>
                     ) : (
@@ -392,14 +394,14 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
               </Typography>
             </Box>
             {organizedEvents.length > 0 ? (
-              <EventsCarousel
-                events={organizedEvents}
+              <Carousel
+                items={organizedEvents}
                 title=""
                 autoplay
                 autoplayInterval={6000}
                 itemWidth={350}
                 showIndicators
-                viewAllEventsButton={false}
+                renderItem={(event) => <EventBoxSm event={event} />}
               />
             ) : (
               <Card elevation={0} sx={CARD_STYLES}>
@@ -442,14 +444,14 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
               </Typography>
             </Box>
             {rsvpdEvents.length > 0 ? (
-              <EventsCarousel
-                events={rsvpdEvents}
+              <Carousel
+                items={rsvpdEvents}
                 title=""
                 autoplay
                 autoplayInterval={6000}
                 itemWidth={350}
                 showIndicators
-                viewAllEventsButton={false}
+                renderItem={(event) => <EventBoxSm event={event} />}
               />
             ) : (
               <Card elevation={0} sx={CARD_STYLES}>
@@ -500,14 +502,14 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
               </Typography>
             </Box>
             {savedEvents.length > 0 ? (
-              <EventsCarousel
-                events={savedEvents}
+              <Carousel
+                items={savedEvents}
                 title=""
                 autoplay
                 autoplayInterval={6000}
                 itemWidth={350}
                 showIndicators
-                viewAllEventsButton={false}
+                renderItem={(event) => <EventBoxSm event={event} />}
               />
             ) : (
               <Card elevation={0} sx={CARD_STYLES}>
