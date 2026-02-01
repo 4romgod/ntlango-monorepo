@@ -1,5 +1,5 @@
 import React from 'react';
-import { renderHook, waitFor } from '@testing-library/react';
+import { renderHook } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
 import { useMigrateSessionState } from '@/lib/utils/migrateSessionState';
 import { SaveSessionStateDocument } from '@/data/graphql/mutation/SessionState/mutation';
@@ -70,11 +70,9 @@ describe('useMigrateSessionState', () => {
 
       const migrationResult = await result.current.migrate(mockToken, mockUserId, namespace);
 
-      await waitFor(() => {
-        expect(migrationResult.migratedKeys).toEqual(['event-filter']);
-        expect(migrationResult.migratedKeys).toHaveLength(1);
-        expect(migrationResult.success).toBe(true);
-      });
+      expect(migrationResult.migratedKeys).toEqual(['event-filter']);
+      expect(migrationResult.migratedKeys).toHaveLength(1);
+      expect(migrationResult.success).toBe(true);
     });
 
     it('should skip entries with expired TTL', async () => {
@@ -123,11 +121,9 @@ describe('useMigrateSessionState', () => {
 
       const migrationResult = await result.current.migrate(mockToken, mockUserId, namespace);
 
-      await waitFor(() => {
-        expect(migrationResult.migratedKeys).toEqual(['valid-filter']);
-        expect(migrationResult.migratedKeys).not.toContain('expired-filter');
-        expect(migrationResult.success).toBe(true);
-      });
+      expect(migrationResult.migratedKeys).toEqual(['valid-filter']);
+      expect(migrationResult.migratedKeys).not.toContain('expired-filter');
+      expect(migrationResult.success).toBe(true);
     });
 
     it('should handle entries without expiresAt field', async () => {
@@ -171,10 +167,8 @@ describe('useMigrateSessionState', () => {
 
       const migrationResult = await result.current.migrate(mockToken, mockUserId, namespace);
 
-      await waitFor(() => {
-        expect(migrationResult.migratedKeys).toContain('permanent-filter');
-        expect(migrationResult.success).toBe(true);
-      });
+      expect(migrationResult.migratedKeys).toContain('permanent-filter');
+      expect(migrationResult.success).toBe(true);
     });
   });
 
@@ -224,12 +218,10 @@ describe('useMigrateSessionState', () => {
 
       const migrationResult = await result.current.migrate(mockToken, mockUserId, namespace);
 
-      await waitFor(() => {
-        expect(migrationResult.migratedKeys).toEqual(['valid-key']);
-        expect(migrationResult.migratedKeys).not.toContain('invalid-json');
-        expect(consoleWarnSpy).toHaveBeenCalled();
-        expect(migrationResult.success).toBe(true);
-      });
+      expect(migrationResult.migratedKeys).toEqual(['valid-key']);
+      expect(migrationResult.migratedKeys).not.toContain('invalid-json');
+      expect(consoleWarnSpy).toHaveBeenCalled();
+      expect(migrationResult.success).toBe(true);
 
       consoleWarnSpy.mockRestore();
     });
@@ -315,11 +307,9 @@ describe('useMigrateSessionState', () => {
 
       const migrationResult = await result.current.migrate(mockToken, mockUserId, namespace);
 
-      await waitFor(() => {
-        expect(migrationResult.migratedKeys).toEqual(['filter-1', 'filter-2', 'filter-3']);
-        expect(migrationResult.errors).toEqual([]);
-        expect(migrationResult.success).toBe(true);
-      });
+      expect(migrationResult.migratedKeys).toEqual(['filter-1', 'filter-2', 'filter-3']);
+      expect(migrationResult.errors).toEqual([]);
+      expect(migrationResult.success).toBe(true);
     });
 
     it('should call onProgress callback during migration', async () => {
@@ -381,11 +371,9 @@ describe('useMigrateSessionState', () => {
       const onProgress = jest.fn();
       await result.current.migrate(mockToken, mockUserId, namespace, onProgress);
 
-      await waitFor(() => {
-        expect(onProgress).toHaveBeenCalledTimes(2);
-        expect(onProgress).toHaveBeenNthCalledWith(1, 1, 2, 'filter-1');
-        expect(onProgress).toHaveBeenNthCalledWith(2, 2, 2, 'filter-2');
-      });
+      expect(onProgress).toHaveBeenCalledTimes(2);
+      expect(onProgress).toHaveBeenNthCalledWith(1, 1, 2, 'filter-1');
+      expect(onProgress).toHaveBeenNthCalledWith(2, 2, 2, 'filter-2');
     });
   });
 
@@ -439,11 +427,9 @@ describe('useMigrateSessionState', () => {
 
       const migrationResult = await result.current.migrate(mockToken, mockUserId, namespace);
 
-      await waitFor(() => {
-        expect(migrationResult.success).toBe(false);
-        expect(migrationResult.migratedKeys).toEqual(['filter-2']);
-        expect(migrationResult.errors).toEqual([{ key: 'filter-1', error: 'Network error' }]);
-      });
+      expect(migrationResult.success).toBe(false);
+      expect(migrationResult.migratedKeys).toEqual(['filter-2']);
+      expect(migrationResult.errors).toEqual([{ key: 'filter-1', error: 'Network error' }]);
     });
 
     it('should continue migration after individual failures', async () => {
@@ -516,12 +502,10 @@ describe('useMigrateSessionState', () => {
 
       const migrationResult = await result.current.migrate(mockToken, mockUserId, namespace);
 
-      await waitFor(() => {
-        expect(migrationResult.success).toBe(false);
-        expect(migrationResult.migratedKeys).toEqual(['filter-1', 'filter-3']);
-        expect(migrationResult.errors).toHaveLength(1);
-        expect(migrationResult.errors[0]).toEqual({ key: 'filter-2', error: 'Authorization failed' });
-      });
+      expect(migrationResult.success).toBe(false);
+      expect(migrationResult.migratedKeys).toEqual(['filter-1', 'filter-3']);
+      expect(migrationResult.errors).toHaveLength(1);
+      expect(migrationResult.errors[0]).toEqual({ key: 'filter-2', error: 'Authorization failed' });
     });
   });
 
@@ -539,11 +523,9 @@ describe('useMigrateSessionState', () => {
 
       const migrationResult = await result.current.migrate(mockToken, mockUserId, namespace);
 
-      await waitFor(() => {
-        expect(migrationResult.migratedKeys).toEqual([]);
-        expect(migrationResult.errors).toEqual([]);
-        expect(migrationResult.success).toBe(true);
-      });
+      expect(migrationResult.migratedKeys).toEqual([]);
+      expect(migrationResult.errors).toEqual([]);
+      expect(migrationResult.success).toBe(true);
     });
 
     it('should handle empty localStorage', async () => {
@@ -557,11 +539,9 @@ describe('useMigrateSessionState', () => {
 
       const migrationResult = await result.current.migrate(mockToken, mockUserId, namespace);
 
-      await waitFor(() => {
-        expect(migrationResult.migratedKeys).toEqual([]);
-        expect(migrationResult.errors).toEqual([]);
-        expect(migrationResult.success).toBe(true);
-      });
+      expect(migrationResult.migratedKeys).toEqual([]);
+      expect(migrationResult.errors).toEqual([]);
+      expect(migrationResult.success).toBe(true);
     });
 
     it('should use default namespace when not provided', async () => {
@@ -603,10 +583,8 @@ describe('useMigrateSessionState', () => {
       // Call without namespace parameter
       const migrationResult = await result.current.migrate(mockToken, mockUserId);
 
-      await waitFor(() => {
-        expect(migrationResult.migratedKeys).toEqual(['filter']);
-        expect(migrationResult.success).toBe(true);
-      });
+      expect(migrationResult.migratedKeys).toEqual(['filter']);
+      expect(migrationResult.success).toBe(true);
     });
   });
 });
