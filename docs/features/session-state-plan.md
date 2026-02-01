@@ -586,7 +586,8 @@ User-facing UI for resetting session data. Located in Account Settings → "Sess
 
 **Backend Sync (disabled) & Migration Tests:**
 
-**Note**: Cross-device backend sync (`syncToBackend` option) is currently **disabled** in all components. The infrastructure remains in place for future enablement, but testing focus is on localStorage-only persistence.
+**Note**: Cross-device backend sync (`syncToBackend` option) is currently **disabled** in all components. The
+infrastructure remains in place for future enablement, but testing focus is on localStorage-only persistence.
 
 **Test Suite**: `apps/webapp/test/unit/spec/utils/migrateSessionState.test.tsx`
 
@@ -629,7 +630,8 @@ jest.mock('@apollo/client', () => ({
 
 ### localStorage Persistence Testing Checklist
 
-This testing guide covers localStorage-only session state persistence. Cross-device backend sync is **disabled** but infrastructure remains for future enablement.
+This testing guide covers localStorage-only session state persistence. Cross-device backend sync is **disabled** but
+infrastructure remains for future enablement.
 
 #### Test Environment Setup
 
