@@ -245,17 +245,42 @@ describe('OrganizationMembershipService', () => {
       // Wait for async notification to fail gracefully
       await new Promise((resolve) => setTimeout(resolve, 10));
     });
+
+    it('throws error when user tries to modify their own role', async () => {
+      (OrganizationMembershipDAO.readMembershipById as jest.Mock).mockResolvedValue(mockMembership);
+
+      await expect(
+        OrganizationMembershipService.updateMemberRole(
+          { membershipId: 'membership-1', role: OrganizationRole.Owner },
+          'user-1', // Same as membership userId
+        ),
+      ).rejects.toThrow('Users cannot modify their own role');
+
+      expect(OrganizationMembershipDAO.update).not.toHaveBeenCalled();
+    });
   });
 
   describe('removeMember', () => {
     it('removes membership without sending notification', async () => {
+      (OrganizationMembershipDAO.readMembershipById as jest.Mock).mockResolvedValue(mockMembership);
       (OrganizationMembershipDAO.delete as jest.Mock).mockResolvedValue(mockMembership);
 
-      const result = await OrganizationMembershipService.removeMember('membership-1');
+      const result = await OrganizationMembershipService.removeMember('membership-1', 'admin-user');
 
+      expect(OrganizationMembershipDAO.readMembershipById).toHaveBeenCalledWith('membership-1');
       expect(OrganizationMembershipDAO.delete).toHaveBeenCalledWith('membership-1');
       expect(result).toEqual(mockMembership);
       expect(NotificationService.notify).not.toHaveBeenCalled();
+    });
+
+    it('throws error when user tries to remove themselves', async () => {
+      (OrganizationMembershipDAO.readMembershipById as jest.Mock).mockResolvedValue(mockMembership);
+
+      await expect(
+        OrganizationMembershipService.removeMember('membership-1', 'user-1'), // Same as membership userId
+      ).rejects.toThrow('Users cannot remove themselves from an organization');
+
+      expect(OrganizationMembershipDAO.delete).not.toHaveBeenCalled();
     });
   });
 });

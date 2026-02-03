@@ -3,7 +3,7 @@ import { CustomError, ErrorTypes } from '@/utils/exceptions';
 import { ERROR_MESSAGES } from '@/validation';
 import type { User } from '@ntlango/commons/types';
 import { UserRole } from '@ntlango/commons/types';
-import { OPERATION_NAMES } from '@/constants';
+import { OPERATIONS } from '@/constants';
 import { verify, sign } from 'jsonwebtoken';
 import { EventDAO } from '@/mongodb/dao';
 import type { ServerContext } from '@/graphql';
@@ -71,7 +71,7 @@ describe('Auth Utilities', () => {
   describe('isAuthorizedByOperation', () => {
     it('should authorize user for their own update by userId', async () => {
       const result = await isAuthorizedByOperation(
-        OPERATION_NAMES.UPDATE_USER,
+        OPERATIONS.USER.UPDATE_USER,
         { input: { userId: 'user-id' } },
         mockUser,
       );
@@ -80,7 +80,7 @@ describe('Auth Utilities', () => {
 
     it("should deny user for another user's update by userId", async () => {
       const result = await isAuthorizedByOperation(
-        OPERATION_NAMES.UPDATE_USER,
+        OPERATIONS.USER.UPDATE_USER,
         { input: { userId: 'another-id' } },
         mockUser,
       );
@@ -89,19 +89,19 @@ describe('Auth Utilities', () => {
 
     it('should authorize user for their own event update', async () => {
       (EventDAO.readEventById as jest.Mock).mockResolvedValue({ organizers: [{ user: 'user-id', role: 'Host' }] });
-      const result = await isAuthorizedByOperation(OPERATION_NAMES.UPDATE_EVENT, { eventId: 'event-id' }, mockUser);
+      const result = await isAuthorizedByOperation(OPERATIONS.EVENT.UPDATE_EVENT, { eventId: 'event-id' }, mockUser);
       expect(result).toBe(true);
     });
 
     it("should deny user for another user's event update", async () => {
       (EventDAO.readEventById as jest.Mock).mockResolvedValue({ organizers: [{ user: 'another-id', role: 'Host' }] });
-      const result = await isAuthorizedByOperation(OPERATION_NAMES.UPDATE_EVENT, { eventId: 'event-id' }, mockUser);
+      const result = await isAuthorizedByOperation(OPERATIONS.EVENT.UPDATE_EVENT, { eventId: 'event-id' }, mockUser);
       expect(result).toBe(false);
     });
 
     it('should handle various organizer ID formats - string ID', async () => {
       (EventDAO.readEventById as jest.Mock).mockResolvedValue({ organizers: [{ user: 'user-id', role: 'Host' }] });
-      const result = await isAuthorizedByOperation(OPERATION_NAMES.UPDATE_EVENT, { eventId: 'event-id' }, mockUser);
+      const result = await isAuthorizedByOperation(OPERATIONS.EVENT.UPDATE_EVENT, { eventId: 'event-id' }, mockUser);
       expect(result).toBe(true);
     });
 
@@ -112,7 +112,7 @@ describe('Auth Utilities', () => {
       });
       const mockUserWithObjectId = { ...mockUser, userId: '507f1f77bcf86cd799439011' };
       const result = await isAuthorizedByOperation(
-        OPERATION_NAMES.UPDATE_EVENT,
+        OPERATIONS.EVENT.UPDATE_EVENT,
         { eventId: 'event-id' },
         mockUserWithObjectId,
       );
@@ -125,7 +125,7 @@ describe('Auth Utilities', () => {
       });
       const mockUserWithObjectId = { ...mockUser, userId: '507f1f77bcf86cd799439011' };
       const result = await isAuthorizedByOperation(
-        OPERATION_NAMES.UPDATE_EVENT,
+        OPERATIONS.EVENT.UPDATE_EVENT,
         { eventId: 'event-id' },
         mockUserWithObjectId,
       );
@@ -136,7 +136,7 @@ describe('Auth Utilities', () => {
       (EventDAO.readEventById as jest.Mock).mockResolvedValue({
         organizers: [{ user: 'user-id', role: 'CoHost' }],
       });
-      const result = await isAuthorizedByOperation(OPERATION_NAMES.UPDATE_EVENT, { eventId: 'event-id' }, mockUser);
+      const result = await isAuthorizedByOperation(OPERATIONS.EVENT.UPDATE_EVENT, { eventId: 'event-id' }, mockUser);
       expect(result).toBe(true);
     });
 
@@ -147,7 +147,7 @@ describe('Auth Utilities', () => {
           { userId: null, role: 'Host' },
         ],
       });
-      const result = await isAuthorizedByOperation(OPERATION_NAMES.UPDATE_EVENT, { eventId: 'event-id' }, mockUser);
+      const result = await isAuthorizedByOperation(OPERATIONS.EVENT.UPDATE_EVENT, { eventId: 'event-id' }, mockUser);
       expect(result).toBe(false);
     });
 
@@ -159,7 +159,7 @@ describe('Auth Utilities', () => {
           { user: 'another-id', role: 'Volunteer' },
         ],
       });
-      const result = await isAuthorizedByOperation(OPERATION_NAMES.UPDATE_EVENT, { eventId: 'event-id' }, mockUser);
+      const result = await isAuthorizedByOperation(OPERATIONS.EVENT.UPDATE_EVENT, { eventId: 'event-id' }, mockUser);
       expect(result).toBe(true);
     });
   });
@@ -175,120 +175,120 @@ describe('Auth Utilities', () => {
     describe('operation tests', () => {
       const testCases = [
         {
-          operationName: OPERATION_NAMES.UPDATE_USER,
+          operationName: OPERATIONS.USER.UPDATE_USER,
           args: { input: { userId: 'current-user-id' } },
           roles: [UserRole.User],
           expectAuthorized: true,
-          testDescription: `should AUTHORIZE a user with the correct role and permission for ${OPERATION_NAMES.UPDATE_USER} on item`,
+          testDescription: `should AUTHORIZE a user with the correct role and permission for ${OPERATIONS.USER.UPDATE_USER} on item`,
         },
         {
-          operationName: OPERATION_NAMES.UPDATE_USER,
+          operationName: OPERATIONS.USER.UPDATE_USER,
           args: { input: { userId: 'another-id' } },
           roles: [UserRole.User],
           expectAuthorized: false,
-          testDescription: `should throw UNAUTHORIZED Error when user lacks permission for ${OPERATION_NAMES.UPDATE_USER} on item`,
+          testDescription: `should throw UNAUTHORIZED Error when user lacks permission for ${OPERATIONS.USER.UPDATE_USER} on item`,
         },
         {
-          operationName: OPERATION_NAMES.UPDATE_USER,
+          operationName: OPERATIONS.USER.UPDATE_USER,
           args: { input: { userId: 'current-user-id' } },
           roles: [UserRole.Guest],
           expectAuthorized: false,
-          testDescription: `should throw UNAUTHORIZED Error for user with inccorrect role ${OPERATION_NAMES.UPDATE_USER} on item`,
+          testDescription: `should throw UNAUTHORIZED Error for user with inccorrect role ${OPERATIONS.USER.UPDATE_USER} on item`,
         },
         {
-          operationName: OPERATION_NAMES.DELETE_USER_BY_ID,
+          operationName: OPERATIONS.USER.DELETE_USER_BY_ID,
           args: { userId: 'current-user-id' },
           roles: [UserRole.User],
           expectAuthorized: true,
-          testDescription: `should AUTHORIZE a user with the correct role and permission for ${OPERATION_NAMES.DELETE_USER_BY_ID} on item`,
+          testDescription: `should AUTHORIZE a user with the correct role and permission for ${OPERATIONS.USER.DELETE_USER_BY_ID} on item`,
         },
         {
-          operationName: OPERATION_NAMES.DELETE_USER_BY_ID,
+          operationName: OPERATIONS.USER.DELETE_USER_BY_ID,
           args: { userId: 'another-id' },
           roles: [UserRole.User],
           expectAuthorized: false,
-          testDescription: `should throw UNAUTHORIZED Error when user lacks permission for ${OPERATION_NAMES.DELETE_USER_BY_ID} on item`,
+          testDescription: `should throw UNAUTHORIZED Error when user lacks permission for ${OPERATIONS.USER.DELETE_USER_BY_ID} on item`,
         },
         {
-          operationName: OPERATION_NAMES.DELETE_USER_BY_ID,
+          operationName: OPERATIONS.USER.DELETE_USER_BY_ID,
           args: { input: { userId: 'current-user-id' } },
           roles: [UserRole.Guest],
           expectAuthorized: false,
-          testDescription: `should throw UNAUTHORIZED Error for user with inccorrect role ${OPERATION_NAMES.DELETE_USER_BY_ID} on item`,
+          testDescription: `should throw UNAUTHORIZED Error for user with inccorrect role ${OPERATIONS.USER.DELETE_USER_BY_ID} on item`,
         },
         {
-          operationName: OPERATION_NAMES.DELETE_USER_BY_EMAIL,
+          operationName: OPERATIONS.USER.DELETE_USER_BY_EMAIL,
           args: { email: 'user@example.com' },
           roles: [UserRole.User],
           expectAuthorized: true,
-          testDescription: `should AUTHORIZE a user with the correct role and permission for ${OPERATION_NAMES.DELETE_USER_BY_EMAIL} on item`,
+          testDescription: `should AUTHORIZE a user with the correct role and permission for ${OPERATIONS.USER.DELETE_USER_BY_EMAIL} on item`,
         },
         {
-          operationName: OPERATION_NAMES.DELETE_USER_BY_EMAIL,
+          operationName: OPERATIONS.USER.DELETE_USER_BY_EMAIL,
           args: { userId: 'another@email.com' },
           roles: [UserRole.User],
           expectAuthorized: false,
-          testDescription: `should throw UNAUTHORIZED Error when user lacks permission for ${OPERATION_NAMES.DELETE_USER_BY_EMAIL} on item`,
+          testDescription: `should throw UNAUTHORIZED Error when user lacks permission for ${OPERATIONS.USER.DELETE_USER_BY_EMAIL} on item`,
         },
         {
-          operationName: OPERATION_NAMES.DELETE_USER_BY_EMAIL,
+          operationName: OPERATIONS.USER.DELETE_USER_BY_EMAIL,
           args: { input: { userId: 'user@example.com' } },
           roles: [UserRole.Guest],
           expectAuthorized: false,
-          testDescription: `should throw UNAUTHORIZED Error for user with inccorrect role ${OPERATION_NAMES.DELETE_USER_BY_EMAIL} on item`,
+          testDescription: `should throw UNAUTHORIZED Error for user with inccorrect role ${OPERATIONS.USER.DELETE_USER_BY_EMAIL} on item`,
         },
         {
-          operationName: OPERATION_NAMES.DELETE_USER_BY_USERNAME,
+          operationName: OPERATIONS.USER.DELETE_USER_BY_USERNAME,
           args: { username: 'username' },
           roles: [UserRole.User],
           expectAuthorized: true,
-          testDescription: `should AUTHORIZE a user with the correct role and permission for ${OPERATION_NAMES.DELETE_USER_BY_USERNAME} on item`,
+          testDescription: `should AUTHORIZE a user with the correct role and permission for ${OPERATIONS.USER.DELETE_USER_BY_USERNAME} on item`,
         },
         {
-          operationName: OPERATION_NAMES.DELETE_USER_BY_USERNAME,
+          operationName: OPERATIONS.USER.DELETE_USER_BY_USERNAME,
           args: { username: 'another-username' },
           roles: [UserRole.User],
           expectAuthorized: false,
-          testDescription: `should throw UNAUTHORIZED Error when user lacks permission for ${OPERATION_NAMES.DELETE_USER_BY_USERNAME} on item`,
+          testDescription: `should throw UNAUTHORIZED Error when user lacks permission for ${OPERATIONS.USER.DELETE_USER_BY_USERNAME} on item`,
         },
         {
-          operationName: OPERATION_NAMES.DELETE_USER_BY_USERNAME,
+          operationName: OPERATIONS.USER.DELETE_USER_BY_USERNAME,
           args: { input: { username: 'username' } },
           roles: [UserRole.Guest],
           expectAuthorized: false,
-          testDescription: `should throw UNAUTHORIZED Error for user with inccorrect role ${OPERATION_NAMES.DELETE_USER_BY_USERNAME} on item`,
+          testDescription: `should throw UNAUTHORIZED Error for user with inccorrect role ${OPERATIONS.USER.DELETE_USER_BY_USERNAME} on item`,
         },
         {
-          operationName: OPERATION_NAMES.UPDATE_EVENT,
+          operationName: OPERATIONS.EVENT.UPDATE_EVENT,
           args: { eventId: 'event-id' },
           roles: [UserRole.User],
           expectAuthorized: true,
           mockDAO: true,
           eventDAOResult: [{ user: 'current-user-id' }],
-          testDescription: `should AUTHORIZE a user with the correct role and permission for ${OPERATION_NAMES.UPDATE_EVENT} on item`,
+          testDescription: `should AUTHORIZE a user with the correct role and permission for ${OPERATIONS.EVENT.UPDATE_EVENT} on item`,
         },
         {
-          operationName: OPERATION_NAMES.UPDATE_EVENT,
+          operationName: OPERATIONS.EVENT.UPDATE_EVENT,
           args: { eventId: 'event-id' },
           roles: [UserRole.User],
           expectAuthorized: false,
           mockDAO: true,
           eventDAOResult: [{ user: 'another-id' }],
-          testDescription: `should throw UNAUTHORIZED Error when user lacks permission for ${OPERATION_NAMES.UPDATE_EVENT} on item`,
+          testDescription: `should throw UNAUTHORIZED Error when user lacks permission for ${OPERATIONS.EVENT.UPDATE_EVENT} on item`,
         },
         {
-          operationName: OPERATION_NAMES.UPDATE_EVENT,
+          operationName: OPERATIONS.EVENT.UPDATE_EVENT,
           args: { input: { eventId: 'event-id', title: 'updated event title' } },
           roles: [UserRole.Guest],
           expectAuthorized: false,
-          testDescription: `should throw UNAUTHORIZED Error for user with inccorrect role ${OPERATION_NAMES.UPDATE_EVENT} on item`,
+          testDescription: `should throw UNAUTHORIZED Error for user with inccorrect role ${OPERATIONS.EVENT.UPDATE_EVENT} on item`,
         },
         {
           operationName: OPERATION_NAMES.CREATE_EVENT,
           args: { title: 'updated event title' },
           roles: [UserRole.User],
           expectAuthorized: true,
-          testDescription: `should AUTHORIZE a user with the correct role for ${OPERATION_NAMES.UPDATE_EVENT} on item`,
+          testDescription: `should AUTHORIZE a user with the correct role for ${OPERATIONS.EVENT.UPDATE_EVENT} on item`,
         },
       ];
 
@@ -333,22 +333,22 @@ describe('Auth Utilities', () => {
 
       const testCases = [
         {
-          operationName: OPERATION_NAMES.UPDATE_USER,
+          operationName: OPERATIONS.USER.UPDATE_USER,
           args: { input: { id: 'another-id' } },
           roles: [UserRole.Admin],
-          testDescription: `should AUTHORIZE Admin user for ${OPERATION_NAMES.UPDATE_USER} on any item`,
+          testDescription: `should AUTHORIZE Admin user for ${OPERATIONS.USER.UPDATE_USER} on any item`,
         },
         {
-          operationName: OPERATION_NAMES.DELETE_USER_BY_ID,
+          operationName: OPERATIONS.USER.DELETE_USER_BY_ID,
           args: { id: 'another-id' },
           roles: [UserRole.Admin],
-          testDescription: `should AUTHORIZE Admin user for ${OPERATION_NAMES.DELETE_USER_BY_ID} on any item`,
+          testDescription: `should AUTHORIZE Admin user for ${OPERATIONS.USER.DELETE_USER_BY_ID} on any item`,
         },
         {
-          operationName: OPERATION_NAMES.UPDATE_EVENT,
+          operationName: OPERATIONS.EVENT.UPDATE_EVENT,
           args: { eventId: 'event-id' },
           roles: [UserRole.Admin],
-          testDescription: `should AUTHORIZE Admin user for ${OPERATION_NAMES.UPDATE_EVENT} on any item`,
+          testDescription: `should AUTHORIZE Admin user for ${OPERATIONS.EVENT.UPDATE_EVENT} on any item`,
         },
         {
           operationName: OPERATION_NAMES.CREATE_EVENT,

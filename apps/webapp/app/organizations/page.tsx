@@ -77,6 +77,8 @@ export default async function OrganizationsPage() {
               <Button
                 variant="outlined"
                 size="large"
+                component={Link}
+                href={ROUTES.ACCOUNT.ORGANIZATIONS.CREATE}
                 startIcon={<Add />}
                 sx={{
                   fontWeight: 600,
