@@ -18,6 +18,40 @@ jest.mock('@/constants', () => ({
     INTERNAL_SERVER_ERROR: 500,
   },
   REGEXT_MONGO_DB_ERROR: /\{ (.*?): (.*?) \}/,
+  OPERATIONS: {
+    USER: {
+      UPDATE_USER: 'updateUser',
+      DELETE_USER_BY_ID: 'deleteUserById',
+      DELETE_USER_BY_EMAIL: 'deleteUserByEmail',
+      DELETE_USER_BY_USERNAME: 'deleteUserByUsername',
+    },
+    EVENT: {
+      UPDATE_EVENT: 'updateEvent',
+      DELETE_EVENT: 'deleteEventById',
+      DELETE_EVENT_BY_SLUG: 'deleteEventBySlug',
+      CREATE_EVENT: 'createEvent',
+    },
+    EVENT_PARTICIPANT: {
+      UPSERT_EVENT_PARTICIPANT: 'upsertEventParticipant',
+      CANCEL_EVENT_PARTICIPANT: 'cancelEventParticipant',
+      READ_EVENT_PARTICIPANTS: 'readEventParticipants',
+    },
+    ORGANIZATION: {
+      CREATE_ORGANIZATION: 'createOrganization',
+      UPDATE_ORGANIZATION: 'updateOrganization',
+      DELETE_ORGANIZATION: 'deleteOrganizationById',
+    },
+    ORGANIZATION_MEMBERSHIP: {
+      CREATE_ORGANIZATION_MEMBERSHIP: 'createOrganizationMembership',
+      UPDATE_ORGANIZATION_MEMBERSHIP: 'updateOrganizationMembership',
+      DELETE_ORGANIZATION_MEMBERSHIP: 'deleteOrganizationMembership',
+    },
+    VENUE: {
+      CREATE_VENUE: 'createVenue',
+      UPDATE_VENUE: 'updateVenue',
+      DELETE_VENUE: 'deleteVenueById',
+    },
+  },
   OPERATION_NAMES: {
     UPDATE_USER: 'updateUser',
     DELETE_USER_BY_ID: 'deleteUserById',
@@ -34,6 +68,7 @@ jest.mock('@/mongodb/dao', () => ({
     update: jest.fn(),
     delete: jest.fn(),
     readMembershipById: jest.fn(),
+    readMembershipsByOrgId: jest.fn(),
   },
   OrganizationDAO: {
     readOrganizationById: jest.fn(),
@@ -72,11 +107,17 @@ describe('OrganizationMembershipService', () => {
     orgId: 'org-1',
     name: 'Test Org',
     slug: 'test-org',
+    ownerId: 'admin-user',
   };
 
   beforeEach(() => {
     // Mock OrganizationDAO for notification URL generation
     (OrganizationDAO.readOrganizationById as jest.Mock).mockResolvedValue(mockOrganization);
+    // Mock readMembershipsByOrgId to support verifyOrganizationAdminAccess
+    (OrganizationMembershipDAO.readMembershipsByOrgId as jest.Mock).mockResolvedValue([
+      { ...mockMembership, userId: 'admin-user', role: OrganizationRole.Admin },
+      mockMembership,
+    ]);
   });
 
   afterEach(() => {
@@ -194,17 +235,14 @@ describe('OrganizationMembershipService', () => {
     });
 
     it('does NOT send notification when user updates their own role', async () => {
-      const updatedMembership = { ...mockMembership, role: OrganizationRole.Admin };
       (OrganizationMembershipDAO.readMembershipById as jest.Mock).mockResolvedValue(mockMembership);
-      (OrganizationMembershipDAO.update as jest.Mock).mockResolvedValue(updatedMembership);
 
-      await OrganizationMembershipService.updateMemberRole(
-        { membershipId: 'membership-1', role: OrganizationRole.Admin },
-        'user-1', // Same as membership userId
-      );
-
-      // Wait for potential async notification
-      await new Promise((resolve) => setTimeout(resolve, 10));
+      await expect(
+        OrganizationMembershipService.updateMemberRole(
+          { membershipId: 'membership-1', role: OrganizationRole.Admin },
+          'user-1', // Same as membership userId
+        ),
+      ).rejects.toThrow('Users cannot modify their own role');
 
       expect(NotificationService.notify).not.toHaveBeenCalled();
     });

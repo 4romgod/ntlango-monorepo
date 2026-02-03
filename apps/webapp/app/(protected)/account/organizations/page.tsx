@@ -5,9 +5,9 @@ import { getClient } from '@/data/graphql';
 import { GetOrganizationMembershipsByOrgIdDocument } from '@/data/graphql/query/OrganizationMembership/query';
 import { GetAllOrganizationsDocument } from '@/data/graphql/query/Organization/query';
 import { ROUTES } from '@/lib/constants';
-import Link from 'next/link';
 import OrganizationManagementCard from '@/components/organization/OrganizationManagementCard';
 import { Organization, OrganizationMembership } from '@/data/graphql/types/graphql';
+import LinkComponent from '@/components/navigation/LinkComponent';
 
 export default async function AccountOrganizationsPage() {
   const session = await auth();
@@ -117,7 +117,7 @@ export default async function AccountOrganizationsPage() {
             <Button
               variant="contained"
               size="large"
-              component={Link}
+              component={LinkComponent}
               href={ROUTES.ACCOUNT.ORGANIZATIONS.CREATE}
               startIcon={<Add />}
               sx={{
@@ -161,7 +161,7 @@ export default async function AccountOrganizationsPage() {
             </Typography>
             <Button
               variant="contained"
-              component={Link}
+              component={LinkComponent}
               href={ROUTES.ACCOUNT.ORGANIZATIONS.CREATE}
               startIcon={<Add />}
               sx={{

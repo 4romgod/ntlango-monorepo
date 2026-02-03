@@ -164,3 +164,11 @@ export const SECRET_KEYS = {
   MONGO_DB_URL: 'MONGO_DB_URL',
   JWT_SECRET: 'JWT_SECRET',
 };
+
+export const CONTENT_TYPE_MAP: Record<string, string> = {
+  jpg: 'image/jpeg',
+  jpeg: 'image/jpeg',
+  png: 'image/png',
+  webp: 'image/webp',
+  gif: 'image/gif',
+};

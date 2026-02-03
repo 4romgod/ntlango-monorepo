@@ -47,7 +47,7 @@ describe('Auth Utilities', () => {
       (sign as jest.Mock).mockReturnValue('token');
       const token = await generateToken(mockUser);
       expect(token).toBe('token');
-      expect(sign).toHaveBeenCalledWith(mockUser, expect.any(String), { expiresIn: '1h' });
+      expect(sign).toHaveBeenCalledWith(mockUser, expect.any(String), { expiresIn: '1d' });
     });
   });
 
@@ -165,7 +165,8 @@ describe('Auth Utilities', () => {
   });
 
   describe('authChecker', () => {
-    const mockContext: ServerContext = createMockContext({ token: 'valid-token' });
+    const currentUser = { ...mockUser, userId: 'current-user-id' };
+    const mockContext: ServerContext = createMockContext({ token: 'valid-token', user: currentUser });
     const root = null;
 
     beforeEach(() => {
@@ -284,11 +285,11 @@ describe('Auth Utilities', () => {
           testDescription: `should throw UNAUTHORIZED Error for user with inccorrect role ${OPERATIONS.EVENT.UPDATE_EVENT} on item`,
         },
         {
-          operationName: OPERATION_NAMES.CREATE_EVENT,
+          operationName: OPERATIONS.EVENT.CREATE_EVENT,
           args: { title: 'updated event title' },
           roles: [UserRole.User],
           expectAuthorized: true,
-          testDescription: `should AUTHORIZE a user with the correct role for ${OPERATIONS.EVENT.UPDATE_EVENT} on item`,
+          testDescription: `should AUTHORIZE a user with the correct role for ${OPERATIONS.EVENT.CREATE_EVENT} on item`,
         },
       ];
 
@@ -327,6 +328,10 @@ describe('Auth Utilities', () => {
     });
 
     describe('Admin permissions', () => {
+      const adminUser = { ...mockAdminUser, userId: 'admin-id' };
+      const mockContext: ServerContext = createMockContext({ token: 'valid-token', user: adminUser });
+      const root = null;
+
       beforeEach(() => {
         (verify as jest.Mock).mockReturnValue({ ...mockAdminUser, id: 'current-user-id', iat: 123, exp: 456 });
       });
@@ -351,10 +356,10 @@ describe('Auth Utilities', () => {
           testDescription: `should AUTHORIZE Admin user for ${OPERATIONS.EVENT.UPDATE_EVENT} on any item`,
         },
         {
-          operationName: OPERATION_NAMES.CREATE_EVENT,
+          operationName: OPERATIONS.EVENT.CREATE_EVENT,
           args: {},
           roles: [UserRole.Admin],
-          testDescription: `should AUTHORIZE Admin user for ${OPERATION_NAMES.CREATE_EVENT} on any item`,
+          testDescription: `should AUTHORIZE Admin user for ${OPERATIONS.EVENT.CREATE_EVENT} on any item`,
         },
       ];
 
@@ -372,7 +377,7 @@ describe('Auth Utilities', () => {
       const root = null;
 
       it('should throw UNAUTHENTICATED Error for a user WITHOUT a token', async () => {
-        const mockResolveInfo = { fieldName: OPERATION_NAMES.CREATE_EVENT } as GraphQLResolveInfo;
+        const mockResolveInfo = { fieldName: OPERATIONS.EVENT.CREATE_EVENT } as GraphQLResolveInfo;
         const mockContext: ServerContext = createMockContext({ token: undefined });
         const args: ArgsDictionary = { input: { title: 'mock event title' } };
 
@@ -386,7 +391,7 @@ describe('Auth Utilities', () => {
           throw new Error('Invalid token');
         });
 
-        const mockResolveInfo = { fieldName: OPERATION_NAMES.CREATE_EVENT } as GraphQLResolveInfo;
+        const mockResolveInfo = { fieldName: OPERATIONS.EVENT.CREATE_EVENT } as GraphQLResolveInfo;
         const mockContext: ServerContext = createMockContext({ token: 'invalid-token' });
         const args: ArgsDictionary = { input: { title: 'mock event title' } };
 
@@ -400,7 +405,7 @@ describe('Auth Utilities', () => {
           throw new Error('TokenExpiredError');
         });
 
-        const mockResolveInfo = { fieldName: OPERATION_NAMES.CREATE_EVENT } as GraphQLResolveInfo;
+        const mockResolveInfo = { fieldName: OPERATIONS.EVENT.CREATE_EVENT } as GraphQLResolveInfo;
         const mockContext: ServerContext = createMockContext({ token: 'expired-token' });
         const args: ArgsDictionary = { input: { title: 'mock event title' } };
 

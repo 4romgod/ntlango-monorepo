@@ -16,6 +16,7 @@ export * from './Follow/query';
 export * from './Follow/types';
 export * from './Notification/query';
 export * from './Notification/types';
+export * from './Image/query';
 export * from '../mutation/Follow/mutation';
 export * from '../mutation/EventParticipant/mutation';
 export * from '../mutation/Organization/mutation';

@@ -185,7 +185,7 @@ The `Event` document is the heart of the platform—taking organizer intent, loc
 it as a single source of truth for listing feeds and resolver pipelines.
 
 - Identity: `eventId`, `slug`, `orgId?`.
-- Content: `title`, `summary`, `description`, `heroImage`, `media`, `mediaAssets[]`.
+- Content: `title`, `summary`, `description`, `heroImage`, `media`.
 - Status: `status` (Cancelled|Completed|Ongoing|Upcoming).
 - Lifecycle: `lifecycleStatus` (Draft|Published|Cancelled|Completed).
 - Visibility: `visibility` (Public|Private|Unlisted|Invitation), `privacySetting` (Public|Private|Invitation).

@@ -19,6 +19,7 @@ import { getAuthenticatedUser } from '@/utils';
 import { OrganizationMembershipService } from '@/services';
 import { logger } from '@/utils/logger';
 import type { ServerContext } from '@/graphql';
+import { deleteFromS3, getKeyFromPublicUrl } from '@/clients/AWS/s3Client';
 
 @Resolver(() => Organization)
 export class OrganizationResolver {
@@ -50,6 +51,7 @@ export class OrganizationResolver {
     input.ownerId = user.userId;
 
     validateInput<CreateOrganizationInput>(CreateOrganizationInputSchema, input);
+
     const organization = await OrganizationDAO.create(input);
 
     // Automatically create Owner membership for the creator.
@@ -65,6 +67,7 @@ export class OrganizationResolver {
         user.userId,
       );
     } catch (error) {
+      // Rollback: delete organization if membership creation fails
       if (organization.orgId) {
         try {
           await OrganizationDAO.deleteOrganizationById(organization.orgId);
@@ -96,7 +99,30 @@ export class OrganizationResolver {
   @Mutation(() => Organization, { description: RESOLVER_DESCRIPTIONS.ORGANIZATION.deleteOrganizationById })
   async deleteOrganizationById(@Arg('orgId', () => String) orgId: string): Promise<Organization> {
     validateMongodbId(orgId, ERROR_MESSAGES.NOT_FOUND('Organization', 'ID', orgId));
-    return OrganizationDAO.deleteOrganizationById(orgId);
+    const organization = await OrganizationDAO.deleteOrganizationById(orgId);
+    const keysToDelete = new Set<string>();
+
+    if (organization.logo) {
+      const key = getKeyFromPublicUrl(organization.logo);
+      if (key) {
+        keysToDelete.add(key);
+      }
+    }
+
+    if (keysToDelete.size > 0) {
+      await Promise.all(
+        Array.from(keysToDelete).map(async (key) => {
+          try {
+            await deleteFromS3(key);
+            logger.info('Deleted associated S3 object after organization removal', { orgId, key });
+          } catch (err) {
+            logger.warn('Failed to delete S3 object for removed organization', { orgId, key, error: err });
+          }
+        }),
+      );
+    }
+
+    return organization;
   }
 
   @Query(() => Organization, { description: RESOLVER_DESCRIPTIONS.ORGANIZATION.readOrganizationById })

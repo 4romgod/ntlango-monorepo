@@ -312,12 +312,12 @@ const isAuthorizedToManageVenue = async (venueId: string | undefined, user: User
   try {
     const { VenueDAO } = await import('@/mongodb/dao');
     const venue = await VenueDAO.readVenueById(venueId);
-    
+
     // If venue has no organization, only admins can manage it
     if (!venue.orgId) {
       return false;
     }
-    
+
     return await isAuthorizedToManageOrganization(venue.orgId, user);
   } catch (error) {
     logger.debug(`Error checking venue authorization for user ${user.userId} on venue ${venueId}`, error);

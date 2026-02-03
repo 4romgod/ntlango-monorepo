@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useMutation } from '@apollo/client';
+import { useMutation, useLazyQuery } from '@apollo/client';
 import {
   Box,
   Container,
@@ -19,10 +19,12 @@ import {
 import { ArrowBack, Save, CloudUpload, Close } from '@mui/icons-material';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { kebabCase } from 'lodash';
 import { ROUTES } from '@/lib/constants';
-import { CreateOrganizationDocument } from '@/data/graphql/query';
+import { CreateOrganizationDocument, GetImageUploadUrlDocument } from '@/data/graphql/query';
 import { useSession } from 'next-auth/react';
-import { getAuthHeader } from '@/lib/utils';
+import { getAuthHeader, getFileExtension, logger } from '@/lib/utils';
+import { CreateOrganizationInput } from '@/data/graphql/types/graphql';
 
 export default function CreateOrganizationPage() {
   const router = useRouter();
@@ -44,6 +46,65 @@ export default function CreateOrganizationPage() {
     context: { headers: getAuthHeader(token) },
   });
 
+  const [getUploadUrl] = useLazyQuery(GetImageUploadUrlDocument, {
+    context: { headers: getAuthHeader(token) },
+  });
+
+  const handleFileSelect = (file: File) => {
+    // Just show preview, don't upload yet
+    setLogoFile(file);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setLogoPreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const uploadLogoToS3 = async (file: File, orgName: string): Promise<string> => {
+    const slug = kebabCase(orgName);
+    const extension = getFileExtension(file) || 'jpg';
+    const filename = `${slug}.${extension}`;
+
+    logger.info('Uploading logo:', { slug, filename, fileType: file.type, fileSize: file.size });
+
+    // Get pre-signed URL from API
+    const { data, error: queryError } = await getUploadUrl({
+      variables: {
+        folder: 'organizations/logos',
+        filename,
+      },
+    });
+
+    if (queryError) {
+      throw new Error(queryError.message || 'Failed to get upload URL');
+    }
+
+    if (!data?.getImageUploadUrl) {
+      throw new Error('Failed to get upload URL - no data returned');
+    }
+
+    const { uploadUrl, readUrl } = data.getImageUploadUrl;
+    logger.info('Got upload URL for:', filename);
+
+    // Upload directly to S3
+    const uploadResponse = await fetch(uploadUrl, {
+      method: 'PUT',
+      body: file,
+      headers: {
+        'Content-Type': file.type,
+      },
+    });
+
+    if (!uploadResponse.ok) {
+      const errorText = await uploadResponse.text();
+      logger.error('S3 upload failed:', errorText);
+      throw new Error(`Failed to upload image: ${uploadResponse.status}`);
+    }
+
+    logger.debug('Read URL for preview:', readUrl);
+    return readUrl;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -60,27 +121,41 @@ export default function CreateOrganizationPage() {
     try {
       setError(null);
 
+      let logoUrl: string | null = null;
+
+      // Upload logo first if selected
+      if (logoFile) {
+        try {
+          logoUrl = await uploadLogoToS3(logoFile, formData.name);
+        } catch (err: any) {
+          setError(`Failed to upload logo: ${err.message}`);
+          return;
+        }
+      }
+
+      const createOrgInput: CreateOrganizationInput = {
+        name: formData.name.trim(),
+        description: formData.description.trim() || null,
+        logo: logoUrl || formData.logo.trim() || null,
+        billingEmail: formData.billingEmail.trim() || null,
+        ownerId: session.user.userId,
+        tags: formData.tags
+          ? formData.tags
+              .split(',')
+              .map((t) => t.trim())
+              .filter(Boolean)
+          : [],
+      };
+
       const result = await createOrganization({
         variables: {
-          input: {
-            name: formData.name.trim(),
-            description: formData.description.trim() || null,
-            logo: formData.logo.trim() || null,
-            billingEmail: formData.billingEmail.trim() || null,
-            ownerId: session.user.userId,
-            tags: formData.tags
-              ? formData.tags
-                  .split(',')
-                  .map((t) => t.trim())
-                  .filter(Boolean)
-              : [],
-          },
+          input: createOrgInput,
         },
       });
 
       const createdOrg = result.data?.createOrganization;
       if (createdOrg?.slug) {
-        router.push(ROUTES.ACCOUNT.ORGANIZATIONS.SETTINGS(createdOrg.slug));
+        router.push(ROUTES.ORGANIZATIONS.ORG(createdOrg.slug));
       } else {
         router.push(ROUTES.ACCOUNT.ORGANIZATIONS.ROOT);
       }
@@ -152,21 +227,16 @@ export default function CreateOrganizationPage() {
                     Organization Logo
                   </Typography>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                    <Button component="label" variant="outlined" startIcon={<CloudUpload />}>
+                    <Button component="label" variant="outlined" startIcon={<CloudUpload />} disabled={loading}>
                       {logoFile ? logoFile.name : 'Upload Image'}
                       <input
                         type="file"
                         hidden
-                        accept="image/*"
+                        accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
                         onChange={(e) => {
                           const file = e.target.files?.[0];
                           if (file) {
-                            setLogoFile(file);
-                            const reader = new FileReader();
-                            reader.onloadend = () => {
-                              setLogoPreview(reader.result as string);
-                            };
-                            reader.readAsDataURL(file);
+                            handleFileSelect(file);
                           }
                         }}
                       />
@@ -204,8 +274,7 @@ export default function CreateOrganizationPage() {
                     </Box>
                   )}
                   <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
-                    Select an image from your device to preview how your logo will look. This image is only used locally
-                    and is not uploaded automatically when you create the organization.
+                    Upload your logo (max 5MB). Supported formats: JPG, PNG, WebP, GIF
                   </Typography>
                 </Box>
 
