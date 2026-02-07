@@ -136,6 +136,21 @@ describe('Query', () => {
       expect(mockQuery.where).toHaveBeenCalledWith('status');
       expect(mockQuery.equals).toHaveBeenCalledWith('Completed');
     });
+
+    it('should add "search" filter with multi-field OR', () => {
+      const mockQuery = { or: jest.fn().mockReturnThis() } as unknown as Query<any, any>;
+      const filters: FilterInput[] = [
+        {
+          field: 'username,email',
+          value: 'Ali',
+          operator: FilterOperatorInput.search,
+        },
+      ];
+
+      addFiltersToQuery(mockQuery, filters);
+
+      expect(mockQuery.or).toHaveBeenCalledWith([{ username: expect.any(RegExp) }, { email: expect.any(RegExp) }]);
+    });
   });
 
   describe('transformOptionsToQuery', () => {

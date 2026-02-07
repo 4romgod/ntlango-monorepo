@@ -361,7 +361,7 @@ export const QUERY_DESCRIPTIONS = {
   },
   FILTER: {
     INPUT: 'Filter options for querying specific fields',
-    OPERATOR: "The operator to apply ('eq', 'ne', 'gt', 'lt', 'gte', 'lte')",
+    OPERATOR: "The operator to apply ('eq', 'ne', 'gt', 'lt', 'gte', 'lte', 'search')",
     SELECTOR_OPERATOR: "The selector operator to apply ('and', 'nor', 'or', 'search', 'caseSensitive')",
     FIELD: 'The field to filter by',
     VALUE: 'The value to filter by, (e.g. {"field": "name", "value": "Midoriya"})',
