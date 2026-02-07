@@ -17,6 +17,7 @@ export enum FilterOperatorInput {
   lt = 'lt',
   gte = 'gte',
   lte = 'lte',
+  search = 'search',
 }
 
 export enum SelectorOperatorInput {

@@ -1,6 +1,8 @@
 import type { FilterInput, PaginationInput, QueryOptionsInput, SortInput } from '@ntlango/commons/types';
 import type { Model, Query } from 'mongoose';
 
+const escapeRegex = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
 export const addSortToQuery = <ResultType, DocType>(query: Query<ResultType, DocType>, sortInput: SortInput[]) => {
   const sortOptions: Record<string, 1 | -1> = {};
   sortInput.forEach((sort) => {
@@ -45,6 +47,25 @@ export const addFiltersToQuery = <ResultType, DocType>(query: Query<ResultType, 
         case 'lte':
           query.lte(field, value);
           break;
+        case 'search': {
+          if (typeof value !== 'string' || value.trim().length === 0) {
+            break;
+          }
+
+          const terms = field
+            .split(',')
+            .map((entry) => entry.trim())
+            .filter(Boolean);
+          const regex = new RegExp(escapeRegex(value.trim()), 'i');
+
+          if (terms.length <= 1) {
+            const targetField = terms[0] ?? field;
+            query.where(targetField).regex(regex);
+          } else {
+            query.or(terms.map((targetField) => ({ [targetField]: regex })));
+          }
+          break;
+        }
         default:
           query.where(field).equals(value);
           break;
