@@ -37,11 +37,18 @@ import { EventDetail } from '@/data/graphql/query/Event/types';
 import { ROUTES } from '@/lib/constants';
 import CopyLinkButton from '@/components/events/CopyLinkButton';
 import { auth } from '@/auth';
-import LinkComponent from '@/components/navigation/LinkComponent';
+import type { Metadata } from 'next';
+import { buildPageMetadata } from '@/lib/metadata';
 
 interface Props {
   params: Promise<{ slug: string }>;
 }
+
+export const metadata: Metadata = buildPageMetadata({
+  title: 'Manage Event',
+  description: 'View event performance, participant details, and organizer controls.',
+  noIndex: true,
+});
 
 export default async function Page(props: Props) {
   const params = await props.params;
@@ -178,7 +185,6 @@ export default async function Page(props: Props) {
           }}
         >
           <Button
-            component={LinkComponent}
             href={ROUTES.ACCOUNT.EVENTS.ROOT}
             startIcon={<ArrowBack />}
             sx={{
@@ -204,7 +210,6 @@ export default async function Page(props: Props) {
           </Button>
           <Box sx={{ display: 'flex', gap: 1 }}>
             <Button
-              component={LinkComponent}
               href={ROUTES.ACCOUNT.EVENTS.EDIT_EVENT(params.slug)}
               startIcon={<Edit />}
               variant="contained"

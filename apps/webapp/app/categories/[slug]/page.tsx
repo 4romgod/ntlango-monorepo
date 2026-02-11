@@ -17,12 +17,7 @@ import { getEventCategoryIcon } from '@/lib/constants';
 import { CategoryExplorer } from '@/components/home';
 import CategoryInterestToggleButton from '@/components/categories/CategoryInterestToggleButton';
 import { isGraphQLErrorNotFound } from '@/lib/utils/error-utils';
-import LinkComponent from '@/components/navigation/LinkComponent';
-
-export const metadata: Metadata = {
-  title: 'Categories · Ntlango',
-  description: 'Browse every event stacked under a single category.',
-};
+import { buildPageMetadata } from '@/lib/metadata';
 
 export const revalidate = 60;
 
@@ -33,6 +28,36 @@ type CategoryPageParams = {
 type CategoryPageProps = {
   params: Promise<CategoryPageParams>;
 };
+
+export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
+  const { slug } = await params;
+
+  try {
+    const { data } = await getClient().query<GetEventCategoryBySlugQuery>({
+      query: GetEventCategoryBySlugDocument,
+      variables: { slug },
+    });
+    const category = data.readEventCategoryBySlug;
+
+    if (category) {
+      return buildPageMetadata({
+        title: `${category.name} Events`,
+        description:
+          category.description ||
+          `Explore upcoming ${category.name.toLowerCase()} events, communities, and related categories on Ntlango.`,
+        keywords: [category.name, 'event category', 'discover events', 'community events'],
+      });
+    }
+  } catch {
+    // TODO: Fall through to fallback metadata
+  }
+
+  return buildPageMetadata({
+    title: 'Category Events',
+    description: 'Browse events by category and discover related interests on Ntlango.',
+    keywords: ['event categories', 'discover events by interest'],
+  });
+}
 
 export default async function CategoryDetailPage({ params }: CategoryPageProps) {
   const { slug } = await params;
@@ -140,7 +165,6 @@ export default async function CategoryDetailPage({ params }: CategoryPageProps) 
               >
                 <CategoryInterestToggleButton category={category} />
                 <Button
-                  component={LinkComponent}
                   href={ROUTES.CATEGORIES.ROOT}
                   variant="outlined"
                   sx={{ borderRadius: 10, textTransform: 'none', fontWeight: 600 }}

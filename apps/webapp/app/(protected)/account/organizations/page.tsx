@@ -7,7 +7,14 @@ import { GetAllOrganizationsDocument } from '@/data/graphql/query/Organization/q
 import { ROUTES } from '@/lib/constants';
 import OrganizationCard from '@/components/organization/organizationBox';
 import { Organization, OrganizationMembership } from '@/data/graphql/types/graphql';
-import LinkComponent from '@/components/navigation/LinkComponent';
+import type { Metadata } from 'next';
+import { buildPageMetadata } from '@/lib/metadata';
+
+export const metadata: Metadata = buildPageMetadata({
+  title: 'My Organizations',
+  description: 'Manage the organizations you own or belong to and collaborate with your team.',
+  noIndex: true,
+});
 
 export default async function AccountOrganizationsPage() {
   const session = await auth();
@@ -117,7 +124,6 @@ export default async function AccountOrganizationsPage() {
             <Button
               variant="contained"
               size="large"
-              component={LinkComponent}
               href={ROUTES.ACCOUNT.ORGANIZATIONS.CREATE}
               startIcon={<Add />}
               sx={{
@@ -161,7 +167,6 @@ export default async function AccountOrganizationsPage() {
             </Typography>
             <Button
               variant="contained"
-              component={LinkComponent}
               href={ROUTES.ACCOUNT.ORGANIZATIONS.CREATE}
               startIcon={<Add />}
               sx={{

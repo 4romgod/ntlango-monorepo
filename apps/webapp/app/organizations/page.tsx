@@ -1,13 +1,15 @@
 import { Container, Typography, Box, Button } from '@mui/material';
 import { ROUTES } from '@/lib/constants';
-import type { Metadata } from 'next';
 import { Groups, Add } from '@mui/icons-material';
 import OrganizationsClient from '@/components/organization/organizationsPageClient';
-import LinkComponent from '@/components/navigation/LinkComponent';
+import { buildPageMetadata } from '@/lib/metadata';
 
-export const metadata: Metadata = {
-  title: 'Organizations · Ntlango',
-};
+export const metadata = buildPageMetadata({
+  title: 'Organizations Hosting Events',
+  description:
+    'Discover organizations, collectives, and communities creating events on Ntlango and follow their latest activity.',
+  keywords: ['organizations', 'event organizers', 'community groups', 'collectives'],
+});
 
 // Enable ISR with 120-second revalidation (organizations change less frequently)
 export const revalidate = 120;
@@ -61,7 +63,6 @@ export default async function OrganizationsPage() {
               <Button
                 variant="contained"
                 size="large"
-                component={LinkComponent}
                 href={ROUTES.EVENTS.ROOT}
                 sx={{
                   fontWeight: 700,
@@ -77,7 +78,6 @@ export default async function OrganizationsPage() {
               <Button
                 variant="outlined"
                 size="large"
-                component={LinkComponent}
                 href={ROUTES.ACCOUNT.ORGANIZATIONS.CREATE}
                 startIcon={<Add />}
                 sx={{

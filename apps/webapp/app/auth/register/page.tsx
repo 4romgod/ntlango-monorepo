@@ -1,6 +1,13 @@
 import Logo from '@/components/logo';
 import { Box, Container, Paper, Typography } from '@mui/material';
 import RegisterForm from '@/components/forms/auth/Register';
+import { buildPageMetadata } from '@/lib/metadata';
+
+export const metadata = buildPageMetadata({
+  title: 'Create Account',
+  description: 'Create your Ntlango account to discover events, host experiences, and connect with your community.',
+  noIndex: true,
+});
 
 export default function RegisterPage() {
   return (

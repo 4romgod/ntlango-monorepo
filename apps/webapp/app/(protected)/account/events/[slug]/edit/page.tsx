@@ -7,12 +7,19 @@ import { GetAllEventCategoriesDocument, GetEventBySlugDocument } from '@/data/gr
 import EventMutationForm from '@/components/forms/eventMutation';
 import { EventDetail } from '@/data/graphql/query/Event/types';
 import { ROUTES, BUTTON_STYLES, SECTION_TITLE_STYLES } from '@/lib/constants';
-import LinkComponent from '@/components/navigation/LinkComponent';
 import { auth } from '@/auth';
+import type { Metadata } from 'next';
+import { buildPageMetadata } from '@/lib/metadata';
 
 interface Props {
   params: Promise<{ slug: string }>;
 }
+
+export const metadata: Metadata = buildPageMetadata({
+  title: 'Edit Event',
+  description: 'Update event details, schedule, categories, and organizer settings.',
+  noIndex: true,
+});
 
 export default async function Page(props: Props) {
   const params = await props.params;
@@ -65,7 +72,6 @@ export default async function Page(props: Props) {
       >
         <Container maxWidth="lg">
           <Button
-            component={LinkComponent}
             href={ROUTES.ACCOUNT.EVENTS.EVENT(params.slug)}
             startIcon={<ArrowBack />}
             sx={{ ...BUTTON_STYLES, mb: 2 }}

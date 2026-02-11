@@ -1,6 +1,13 @@
 import { Box, Container, Paper, Typography } from '@mui/material';
 import Logo from '@/components/logo';
 import ForgotPasswordForm from '@/components/forms/auth/ForgotPassword';
+import { buildPageMetadata } from '@/lib/metadata';
+
+export const metadata = buildPageMetadata({
+  title: 'Reset Password',
+  description: 'Request a password reset link to regain access to your Ntlango account.',
+  noIndex: true,
+});
 
 export default function ForgotPasswordPage() {
   return (
