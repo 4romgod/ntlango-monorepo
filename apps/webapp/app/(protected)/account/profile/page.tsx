@@ -1,4 +1,5 @@
 import React, { Suspense } from 'react';
+import type { Metadata } from 'next';
 import {
   Avatar,
   Box,
@@ -44,10 +45,16 @@ import {
 } from '@/lib/constants';
 import { omit } from 'lodash';
 import Link from 'next/link';
-import LinkComponent from '@/components/navigation/LinkComponent';
 import { getAvatarSrc, logger, isApolloAuthError, getAuthHeader } from '@/lib/utils';
 import UserProfilePageSkeleton from '@/components/users/UserProfilePageSkeleton';
 import { redirect } from 'next/navigation';
+import { buildPageMetadata } from '@/lib/metadata';
+
+export const metadata: Metadata = buildPageMetadata({
+  title: 'My Profile',
+  description: 'Review your profile details, activity, interests, and saved events.',
+  noIndex: true,
+});
 
 export default function UserPublicProfile() {
   return (
@@ -390,7 +397,6 @@ async function AuthenticatedProfileContent() {
                   <Button
                     variant="contained"
                     color="secondary"
-                    component={LinkComponent}
                     href={ROUTES.ACCOUNT.EVENTS.CREATE}
                     sx={{ ...BUTTON_STYLES, mt: 2 }}
                   >
@@ -441,7 +447,6 @@ async function AuthenticatedProfileContent() {
                   <Button
                     variant="contained"
                     color="secondary"
-                    component={LinkComponent}
                     href={ROUTES.EVENTS.ROOT}
                     sx={{ ...BUTTON_STYLES, mt: 2 }}
                   >
@@ -492,7 +497,6 @@ async function AuthenticatedProfileContent() {
                   <Button
                     variant="contained"
                     color="secondary"
-                    component={LinkComponent}
                     href={ROUTES.EVENTS.ROOT}
                     sx={{ ...BUTTON_STYLES, mt: 2 }}
                   >

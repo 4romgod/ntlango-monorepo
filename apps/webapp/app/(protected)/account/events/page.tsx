@@ -5,7 +5,14 @@ import { auth } from '@/auth';
 import { ROUTES } from '@/lib/constants';
 import { Box, Button, Container, Grid, Typography } from '@mui/material';
 import { Add, Event as EventIcon } from '@mui/icons-material';
-import LinkComponent from '@/components/navigation/LinkComponent';
+import type { Metadata } from 'next';
+import { buildPageMetadata } from '@/lib/metadata';
+
+export const metadata: Metadata = buildPageMetadata({
+  title: 'My Events',
+  description: 'Manage hosted events, edit details, and track participation activity.',
+  noIndex: true,
+});
 
 export default async function EventsPage() {
   const session = await auth();
@@ -76,7 +83,6 @@ export default async function EventsPage() {
             <Button
               variant="contained"
               size="large"
-              component={LinkComponent}
               href={ROUTES.ACCOUNT.EVENTS.CREATE}
               startIcon={<Add />}
               sx={{
@@ -120,7 +126,6 @@ export default async function EventsPage() {
             </Typography>
             <Button
               variant="contained"
-              component={LinkComponent}
               href={ROUTES.ACCOUNT.EVENTS.CREATE}
               startIcon={<Add />}
               sx={{

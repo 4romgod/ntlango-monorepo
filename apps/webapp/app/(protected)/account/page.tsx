@@ -14,19 +14,13 @@ import { auth } from '@/auth';
 import { getClient } from '@/data/graphql';
 import { GetAllEventCategoryGroupsDocument } from '@/data/graphql/types/graphql';
 import { omit } from 'lodash';
+import { buildPageMetadata } from '@/lib/metadata';
 
-export const metadata: Metadata = {
-  title: {
-    default: 'Settings | Ntlango',
-    template: '%s | Ntlango',
-  },
-  description: 'Manage your Ntlango account settings',
-  icons: {
-    icon: '/logo-img.png',
-    shortcut: '/logo-img.png',
-    apple: '/logo-img.png',
-  },
-};
+export const metadata: Metadata = buildPageMetadata({
+  title: 'Account Settings',
+  description: 'Manage your profile, privacy, interests, notifications, and account security settings.',
+  noIndex: true,
+});
 
 export default async function SettingsPage() {
   const session = await auth();

@@ -1,4 +1,11 @@
 import ErrorPage from '@/components/errors/ErrorPage';
+import { buildPageMetadata } from '@/lib/metadata';
+
+export const metadata = buildPageMetadata({
+  title: 'Access Denied',
+  description: 'You do not have permission to view this page.',
+  noIndex: true,
+});
 
 export default function ForbiddenPage() {
   return (

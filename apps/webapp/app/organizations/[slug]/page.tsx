@@ -3,6 +3,7 @@ import { getClient } from '@/data/graphql';
 import { GetOrganizationBySlugDocument } from '@/data/graphql/query';
 import { Organization } from '@/data/graphql/types/graphql';
 import OrganizationPageClient from '@/components/organization/organizationDetailPageClient';
+import { buildPageMetadata } from '@/lib/metadata';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -18,19 +19,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const organization = organizationResult.data.readOrganizationBySlug;
 
     if (organization) {
-      return {
-        title: `${organization.name} · Ntlango`,
-        description: organization.description || `Discover events by ${organization.name} on Ntlango.`,
-      };
+      return buildPageMetadata({
+        title: organization.name,
+        description: organization.description || `Discover events hosted by ${organization.name} on Ntlango.`,
+        keywords: [organization.name, 'organization events', 'community organizers'],
+      });
     }
   } catch (error) {
     console.error('Unable to load organization metadata', error);
   }
 
-  return {
-    title: 'Organization · Ntlango',
-    description: 'Discover organizations powering events on Ntlango.',
-  };
+  return buildPageMetadata({
+    title: 'Organization',
+    description: 'Discover organizations powering events and communities on Ntlango.',
+    keywords: ['organizations', 'event organizers', 'community groups'],
+  });
 }
 
 export default async function OrganizationPage({ params }: Props) {

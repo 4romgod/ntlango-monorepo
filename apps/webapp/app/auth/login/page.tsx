@@ -4,6 +4,13 @@ import { Box, Button, Container, Divider, Paper, Typography } from '@mui/materia
 import { FaFacebookF } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
 import { MdEmail } from 'react-icons/md';
+import { buildPageMetadata } from '@/lib/metadata';
+
+export const metadata = buildPageMetadata({
+  title: 'Sign In',
+  description: 'Sign in to Ntlango to manage events, follow communities, and personalize your event feed.',
+  noIndex: true,
+});
 
 export default function LoginPage() {
   return (

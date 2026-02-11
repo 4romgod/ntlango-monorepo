@@ -2,11 +2,13 @@ import type { Metadata } from 'next';
 import { Box, Container, Stack, Typography } from '@mui/material';
 import { auth } from '@/auth';
 import VenueCreationForm from '@/components/venue/VenueCreationForm';
+import { buildPageMetadata } from '@/lib/metadata';
 
-export const metadata: Metadata = {
-  title: 'Add Venue · Ntlango',
-  description: 'Add a new venue to the network so organizers can reuse it in future events.',
-};
+export const metadata: Metadata = buildPageMetadata({
+  title: 'Add Venue',
+  description: 'Create a reusable venue profile with address, map details, and amenities for future events.',
+  noIndex: true,
+});
 
 export const dynamic = 'force-dynamic';
 

@@ -14,6 +14,7 @@ const config: Config = {
     '^@ntlango/commons$': '<rootDir>/../../packages/commons/lib/index.ts',
     '^@ntlango/commons/(.*)$': '<rootDir>/../../packages/commons/lib/$1',
     'next/font/google$': '<rootDir>/test/unit/mocks/nextFontMock.ts',
+    'next/font/local$': '<rootDir>/test/unit/mocks/nextFontLocalMock.ts',
   },
   transform: {
     '^.+\\.(ts|tsx)$': [

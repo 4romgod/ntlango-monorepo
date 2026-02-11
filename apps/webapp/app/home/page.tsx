@@ -1,5 +1,12 @@
 import { auth } from '@/auth';
 import PersonalizedHome from '@/components/home/PersonalizedHome';
+import { buildPageMetadata } from '@/lib/metadata';
+
+export const metadata = buildPageMetadata({
+  title: 'Your Personalized Feed',
+  description: 'View personalized recommendations, social activity, and event updates tailored to your interests.',
+  noIndex: true,
+});
 
 export default async function HomePage() {
   const session = await auth();

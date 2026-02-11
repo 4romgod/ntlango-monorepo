@@ -1,4 +1,5 @@
-import Link from 'next/link';
+'use client';
+
 import { Box, Button, Container, Stack, Typography } from '@mui/material';
 import { ROUTES } from '@/lib/constants';
 
@@ -42,11 +43,7 @@ export default function ErrorPage({
           <Typography variant="body1" color="text.secondary">
             {message}
           </Typography>
-          <Button
-            variant="contained"
-            size="large"
-            {...(ctaOnClick ? { onClick: ctaOnClick } : { component: Link, href: ctaHref })}
-          >
+          <Button variant="contained" size="large" {...(ctaOnClick ? { onClick: ctaOnClick } : { href: ctaHref })}>
             {ctaLabel}
           </Button>
         </Stack>

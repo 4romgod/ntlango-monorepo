@@ -1,10 +1,11 @@
-import type { Metadata } from 'next';
 import UsersPageClient from '@/components/users/UsersPageClient';
+import { buildPageMetadata } from '@/lib/metadata';
 
-export const metadata: Metadata = {
-  title: 'Community · Ntlango',
-  description: 'Discover and connect with people in your community who share your interests.',
-};
+export const metadata = buildPageMetadata({
+  title: 'Community Members',
+  description: 'Discover people in the Ntlango community, follow profiles, and connect through shared interests.',
+  keywords: ['community', 'user profiles', 'follow creators', 'event community'],
+});
 
 export const revalidate = 120;
 

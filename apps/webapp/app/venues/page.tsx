@@ -1,13 +1,15 @@
 import { Container, Typography, Box, Button } from '@mui/material';
-import type { Metadata } from 'next';
 import { LocationOn, Add } from '@mui/icons-material';
 import VenuesClient from '@/components/venue/VenuesClient';
 import { ROUTES } from '@/lib/constants';
-import LinkComponent from '@/components/navigation/LinkComponent';
+import { buildPageMetadata } from '@/lib/metadata';
 
-export const metadata: Metadata = {
-  title: 'Venues · Ntlango',
-};
+export const metadata = buildPageMetadata({
+  title: 'Event Venues',
+  description:
+    'Explore event venues across the network, compare amenities, and find the right space for your next gathering.',
+  keywords: ['event venues', 'venue discovery', 'spaces for events', 'venue listings'],
+});
 
 // Enable ISR with 120-second revalidation (venues change less frequently)
 export const revalidate = 120;
@@ -61,7 +63,6 @@ export default function VenuesPage() {
               <Button
                 variant="contained"
                 size="large"
-                component={LinkComponent}
                 href={ROUTES.EVENTS.ROOT}
                 sx={{
                   fontWeight: 700,
@@ -78,7 +79,6 @@ export default function VenuesPage() {
                 variant="outlined"
                 size="large"
                 startIcon={<Add />}
-                component={LinkComponent}
                 href={ROUTES.VENUES.ADD}
                 sx={{
                   fontWeight: 600,

@@ -6,20 +6,13 @@ import { getClient } from '@/data/graphql';
 import { GetAllEventCategoriesDocument } from '@/data/graphql/types/graphql';
 import EventMutationForm from '@/components/forms/eventMutation';
 import { ROUTES } from '@/lib/constants';
-import LinkComponent from '@/components/navigation/LinkComponent';
+import { buildPageMetadata } from '@/lib/metadata';
 
-export const metadata: Metadata = {
-  title: {
-    default: 'Create Event | Ntlango',
-    template: '%s | Ntlango',
-  },
-  description: 'Create a new event on Ntlango',
-  icons: {
-    icon: '/logo-img.png',
-    shortcut: '/logo-img.png',
-    apple: '/logo-img.png',
-  },
-};
+export const metadata: Metadata = buildPageMetadata({
+  title: 'Create Event',
+  description: 'Publish a new event with categories, timing, and venue details.',
+  noIndex: true,
+});
 
 export default async function CreateEvent() {
   const { data: eventCategories } = await getClient().query({
@@ -50,7 +43,6 @@ export default async function CreateEvent() {
             <Box>
               <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 1 }}>
                 <Button
-                  component={LinkComponent}
                   href={ROUTES.ACCOUNT.EVENTS.ROOT}
                   startIcon={<ArrowBack />}
                   sx={{

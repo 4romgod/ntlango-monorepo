@@ -4,12 +4,14 @@ import { auth } from '@/auth';
 import { ROUTES } from '@/lib/constants';
 import { UserRole } from '@/data/graphql/types/graphql';
 import AdminDashboard from '@/components/admin/AdminDashboard';
-import LinkComponent from '@/components/navigation/LinkComponent';
+import { buildPageMetadata } from '@/lib/metadata';
 
-export const metadata: Metadata = {
-  title: 'Admin Console · Ntlango',
-  description: 'Manage events, categories, groups, and users in one secure dashboard.',
-};
+export const metadata: Metadata = buildPageMetadata({
+  title: 'Admin Console',
+  description: 'Manage categories, users, groups, and operational workflows for the Ntlango platform.',
+  noIndex: true,
+});
+
 export const dynamic = 'force-dynamic';
 
 export default async function AdminPage() {
@@ -27,7 +29,7 @@ export default async function AdminPage() {
             This section is restricted to administrators. If you believe you should have access, reach out to another
             admin. Otherwise, head back to the homepage.
           </Typography>
-          <Button component={LinkComponent} href={ROUTES.HOME} variant="contained" color="secondary">
+          <Button href={ROUTES.HOME} variant="contained" color="secondary">
             Return home
           </Button>
         </Stack>
