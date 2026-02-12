@@ -1,6 +1,7 @@
 import { MongoDbClient } from '@/clients';
 import { getConfigValue } from '@/clients/AWS/secretsManager';
 import { SECRET_KEYS } from '@/constants';
+import { getIntegrationTestConfig } from './config';
 import {
   User,
   Event,
@@ -40,8 +41,19 @@ const buildPrefixRegex = (prefixes: readonly string[]): RegExp => {
  * Global teardown for integration tests.
  * Cleans up test data using patterns that identify test-created records.
  * This catches orphaned data from failed tests or incomplete per-test cleanup.
+ *
+ * Note: Cleanup only runs for STAGE=Dev. Beta/Prod stages skip cleanup to avoid
+ * accidental data deletion on shared environments.
  */
 const teardown = async () => {
+  const config = getIntegrationTestConfig();
+
+  if (!config.useLocalServer) {
+    console.log(`\nSkipping test data cleanup (STAGE=${config.stage})`);
+    console.log('Run cleanup manually against deployed environments if needed.');
+    return;
+  }
+
   console.log('\nTearing down integration tests - cleaning up test data...');
 
   try {
