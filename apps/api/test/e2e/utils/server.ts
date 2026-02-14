@@ -5,9 +5,9 @@ import { startExpressApolloServer } from '@/graphql/apollo';
 import type { ServerContext } from '@/graphql/apollo/server';
 import type { ApolloServer } from '@apollo/server';
 import { MongoDbClient } from '@/clients';
-import { getIntegrationTestConfig } from '../config';
+import { getE2ETestConfig } from '../config';
 
-export interface IntegrationServer {
+export interface E2EServer {
   url: string;
   expressApp?: Express;
   apolloServer?: ApolloServer<ServerContext>;
@@ -16,13 +16,13 @@ export interface IntegrationServer {
 }
 
 /**
- * Starts integration test server based on STAGE environment variable.
+ * Starts e2e test server based on STAGE environment variable.
  *
  * - STAGE=Dev: Starts a local Express/Apollo server
  * - STAGE=Beta/Prod: Returns the GRAPHQL_URL without starting a server
  */
-export const startIntegrationServer = async (options: ListenOptions): Promise<IntegrationServer> => {
-  const config = getIntegrationTestConfig();
+export const startE2EServer = async (options: ListenOptions): Promise<E2EServer> => {
+  const config = getE2ETestConfig();
 
   if (!config.useLocalServer) {
     // Beta/Prod stage - use deployed endpoint
@@ -44,10 +44,10 @@ export const startIntegrationServer = async (options: ListenOptions): Promise<In
 };
 
 /**
- * Stops integration test server if it was started locally.
+ * Stops e2e test server if it was started locally.
  * If testing against deployed endpoint, this is a no-op.
  */
-export const stopIntegrationServer = async (server: IntegrationServer) => {
+export const stopE2EServer = async (server: E2EServer) => {
   if (!server.isLocal) {
     // Deployed endpoint - nothing to stop
     return;

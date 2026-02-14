@@ -1,6 +1,6 @@
 import request from 'supertest';
-import type { IntegrationServer } from '@/test/integration/utils/server';
-import { startIntegrationServer, stopIntegrationServer } from '@/test/integration/utils/server';
+import type { E2EServer } from '@/test/e2e/utils/server';
+import { startE2EServer, stopE2EServer } from '@/test/e2e/utils/server';
 import { eventsMockData } from '@/mongodb/mockData';
 import type { CreateEventInput, UserWithToken } from '@ntlango/commons/types';
 import {
@@ -29,13 +29,13 @@ import {
   getReadIntentsByUserQuery,
   getUnfollowMutation,
 } from '@/test/utils';
-import { getSeededTestUsers, loginSeededUser, readFirstEventCategory } from '@/test/integration/utils/helpers';
-import { createEventOnServer, createOrganizationOnServer } from '@/test/integration/utils/eventResolverHelpers';
+import { getSeededTestUsers, loginSeededUser, readFirstEventCategory } from '@/test/e2e/utils/helpers';
+import { createEventOnServer, createOrganizationOnServer } from '@/test/e2e/utils/eventResolverHelpers';
 
 const TEST_PORT = 5010;
 
-describe('Social resolver integration', () => {
-  let server: IntegrationServer;
+describe('Social resolver e2e', () => {
+  let server: E2EServer;
   let url = '';
   let actorUser: UserWithToken;
   let targetUser: UserWithToken;
@@ -48,7 +48,7 @@ describe('Social resolver integration', () => {
   })();
 
   beforeAll(async () => {
-    server = await startIntegrationServer({ port: TEST_PORT });
+    server = await startE2EServer({ port: TEST_PORT });
     url = server.url;
 
     const seededUsers = getSeededTestUsers();
@@ -104,7 +104,7 @@ describe('Social resolver integration', () => {
     );
 
     if (server) {
-      await stopIntegrationServer(server);
+      await stopE2EServer(server);
     }
   });
 

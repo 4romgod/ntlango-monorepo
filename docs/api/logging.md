@@ -133,11 +133,11 @@ logger.graphql('GetAllEvents', queryString, variables);
 LOG_LEVEL=debug npm run dev
 ```
 
-### CI/CD Integration Tests
+### CI/CD E2E Tests
 
 ```bash
 # Only see info and above, skip debug noise
-LOG_LEVEL=info npm run test:integration
+LOG_LEVEL=info npm run test:e2e
 ```
 
 ### Production Lambda

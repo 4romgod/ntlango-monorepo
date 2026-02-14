@@ -53,7 +53,7 @@ class SummaryReporter implements Reporter {
     const timestamp = new Date().toISOString();
 
     lines.push('');
-    lines.push('📊 INTEGRATION TEST RESULTS SUMMARY');
+    lines.push('📊 E2E TEST RESULTS SUMMARY');
     lines.push(`⏰ ${timestamp}`);
     lines.push('');
 

@@ -3,7 +3,7 @@
 ## Project Structure & Module Organization
 
 - Monorepo root uses npm workspaces; run commands from the root.
-- `apps/api`: TypeScript GraphQL API (Apollo/Express). Tests live in `apps/api/test/{unit,integration,canary}`.
+- `apps/api`: TypeScript GraphQL API (Apollo/Express). Tests live in `apps/api/test/{unit,e2e,canary}`.
 - `apps/webapp`: Next.js frontend (MUI + Tailwind). Codegen depends on `NEXT_PUBLIC_GRAPHQL_URL`.
 - `packages/commons`: Shared types, validation, and constants consumed by other workspaces.
 - `infra`: AWS CDK stacks for API deployment; expects AWS creds and bootstrap.
@@ -28,7 +28,7 @@
 - Install deps: `npm install` (root). Workspace-only: `npm install -w <workspace>`.
 - API dev server: `npm run dev:api` (scoped; avoids workspace fan-out).
 - API build + unit tests: `npm run build -w @ntlango/api`; TS-only: `npm run build:ts -w @ntlango/api`.
-- API test suites: `npm run test:unit -w @ntlango/api`, `npm run test:integration -w @ntlango/api`,
+- API test suites: `npm run test:unit -w @ntlango/api`, `npm run test:e2e -w @ntlango/api`,
   `npm run test:canary -w @ntlango/api`.
 - Web dev: export `NEXT_PUBLIC_GRAPHQL_URL`, then `npm run dev:web`. Prod build: `npm run build -w @ntlango/webapp`.
 - Commons build: `npm run build -w @ntlango/commons`. CDK synth: `npm run build:cdk -w @ntlango/cdk`.
@@ -45,13 +45,12 @@
 
 ## Testing Guidelines
 
-- API tests use Jest; files end with `.test.ts` under `apps/api/test/{unit,integration,canary}/spec`.
-- Unit tests run in-band for stability; integration tests expect MongoDB + JWT config. Use `.env` per workspace or
-  exported vars before running.
+- API tests use Jest; files end with `.test.ts` under `apps/api/test/{unit,e2e,canary}/spec`.
+- Unit tests run in-band for stability; e2e tests expect MongoDB + JWT config. Use `.env` per workspace or exported vars
+  before running.
 - Aim to cover resolvers, validation, and query helpers when touching API logic; add fixtures under
   `apps/api/test/utils`.
-- Web app currently lacks automated tests—add component or integration tests colocated with features when introducing
-  new UI.
+- Web app currently lacks automated tests—add component or e2e tests colocated with features when introducing new UI.
 
 ## Commit & Pull Request Guidelines
 
@@ -89,22 +88,21 @@
 ## CI/CD Secrets & Environment Variables
 
 - The pipeline uses GitHub Workflows (`.github/workflows/pipeline.yaml`) with two jobs: `pr-check` (lint/build/test) and
-  `api-deploy` (CDK deploy + integration tests). Ensure each job runs from the root so workspace commands resolve
-  correctly.
+  `api-deploy` (CDK deploy + e2e tests). Ensure each job runs from the root so workspace commands resolve correctly.
 - Global workflow env: `STAGE` defaults to `Beta`, but production pushes should override via GitHub repository variables
   (matching the stage naming in `packages/commons`).
 - Secrets/variables required in GitHub:
   - `ASSUME_ROLE_ARN`: Role the CDK deploy job assumes (set under repo Settings → Secrets).
   - `AWS_REGION`: Region used both for `configure-aws-credentials` and to satisfy `apps/api` env expectations.
   - Repository `Variables`: `STAGE` (e.g., `Beta`, `Prod`) and `NTLANGO_SECRET_ARN` variants (e.g.,
-    `${{ vars.STAGE }}/ntlango/graphql-api`) so integration tests know where to resolve secrets.
+    `${{ vars.STAGE }}/ntlango/graphql-api`) so e2e tests know where to resolve secrets.
 - Workflow flow for `api-deploy`:
   1. Checkout → Install deps → CDK tools.
   2. Build API/commons/CDK packages.
   3. Configure AWS creds via the assumed role secret + `AWS_REGION`.
   4. Deploy CDK stacks (`npm run cdk -w @ntlango/cdk -- deploy '*' --verbose`) with `STAGE` from repo vars.
   5. Query CloudFormation output for `apiPath`, expose as `GRAPHQL_URL` via `$GITHUB_ENV`/`$GITHUB_OUTPUT`.
-  6. Run integration tests with `STAGE`, `NTLANGO_SECRET_ARN`, `GRAPHQL_URL`.
+  6. Run e2e tests with `STAGE`, `NTLANGO_SECRET_ARN`, `GRAPHQL_URL`.
 - Future webapp deploys should consume `NEXT_PUBLIC_GRAPHQL_URL` + `NEXT_PUBLIC_JWT_SECRET` from the API deploy output
   or stored secrets and include a secure way to inject these into the build (e.g., GitHub Actions env or
   `next.config.js` referencing process env).

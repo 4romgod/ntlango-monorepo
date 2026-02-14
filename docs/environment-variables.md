@@ -54,19 +54,19 @@ The following commands work without any environment variables:
   - `S3_BUCKET_NAME` (S3 bucket for image storage; must be configured in deployment environment).
   - `NODE_OPTIONS` (handled in CDK, no manual change).
 
-### Integration tests
+### E2E tests
 
-Integration tests use the `STAGE` environment variable to determine which endpoint to test against.
+E2E tests use the `STAGE` environment variable to determine which endpoint to test against.
 
 #### Local testing (STAGE=Dev, default)
 
-- Run: `npm run test:integration -w @ntlango/api`
+- Run: `npm run test:e2e -w @ntlango/api`
 - Requires: `MONGO_DB_URL`, `JWT_SECRET`, `STAGE=Dev`
 - Behavior: Spins up local server at `http://localhost:9000/v1/graphql`, runs tests, cleans up test data automatically
 
 #### Remote testing (STAGE=Beta or STAGE=Prod)
 
-- Run: `STAGE=Beta GRAPHQL_URL=<endpoint> npm run test:integration -w @ntlango/api`
+- Run: `STAGE=Beta GRAPHQL_URL=<endpoint> npm run test:e2e -w @ntlango/api`
 - Required env: `STAGE`, `GRAPHQL_URL`, `NTLANGO_SECRET_ARN`, `AWS_REGION`
 - Behavior: Tests against deployed endpoint without starting a server, skips automatic cleanup
 - Example: Post-deployment tests in CI/CD run against the freshly deployed API endpoint with `STAGE=Beta`
@@ -94,15 +94,15 @@ Integration tests use the `STAGE` environment variable to determine which endpoi
   1. `ASSUME_ROLE_ARN` – secret, used when configuring AWS credentials.
   2. `AWS_REGION` – can live in repository **variables** (no need to mark it as a secret).
   3. `STAGE` – repository variable (default `Beta`, override for prod).
-  4. `NTLANGO_SECRET_ARN` – if tests or later steps run outside AWS, pass the ARN (or re-export it) so integration
-     tests/webapp builds can reach the same secrets.
+  4. `NTLANGO_SECRET_ARN` – if tests or later steps run outside AWS, pass the ARN (or re-export it) so e2e tests/webapp
+     builds can reach the same secrets.
 - CDK deploy step passes:
   - `STAGE` (via `vars.STAGE`).
   - `AWS_REGION` (via props, default `eu-west-1`).
   - `NTLANGO_SECRET_ARN` (the actual ARN from the secret).
 - After deployment:
   - Capture `GRAPHQL_URL` output.
-  - Run integration tests with `STAGE`, `NTLANGO_SECRET_ARN`, `GRAPHQL_URL`.
+  - Run e2e tests with `STAGE`, `NTLANGO_SECRET_ARN`, `GRAPHQL_URL`.
   - For the frontend deploy, surface `NEXT_PUBLIC_GRAPHQL_URL` (`GRAPHQL_URL`) plus `NEXT_PUBLIC_JWT_SECRET` (from the
     secret) using GitHub env/outputs without hardcoding.
 

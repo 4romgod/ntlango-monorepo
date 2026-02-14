@@ -1,7 +1,7 @@
 import request from 'supertest';
 import { Types } from 'mongoose';
-import type { IntegrationServer } from '@/test/integration/utils/server';
-import { startIntegrationServer, stopIntegrationServer } from '@/test/integration/utils/server';
+import type { E2EServer } from '@/test/e2e/utils/server';
+import { startE2EServer, stopE2EServer } from '@/test/e2e/utils/server';
 import type { UserWithToken } from '@ntlango/commons/types';
 import { OrganizationRole } from '@ntlango/commons/types';
 import {
@@ -15,14 +15,14 @@ import {
   getReadOrganizationsWithOptionsQuery,
   getUpdateOrganizationMutation,
 } from '@/test/utils';
-import { getSeededTestUsers, loginSeededUser } from '@/test/integration/utils/helpers';
-import { createMembershipOnServer, createOrganizationOnServer } from '@/test/integration/utils/eventResolverHelpers';
+import { getSeededTestUsers, loginSeededUser } from '@/test/e2e/utils/helpers';
+import { createMembershipOnServer, createOrganizationOnServer } from '@/test/e2e/utils/eventResolverHelpers';
 
 type TrackedOrg = { orgId: string; token: string };
 type TrackedMembership = { membershipId: string; token: string };
 
 describe('Organization Resolver', () => {
-  let server: IntegrationServer;
+  let server: E2EServer;
   let url = '';
   const TEST_PORT = 5003;
   let adminUser: UserWithToken;
@@ -63,7 +63,7 @@ describe('Organization Resolver', () => {
   };
 
   beforeAll(async () => {
-    server = await startIntegrationServer({ port: TEST_PORT });
+    server = await startE2EServer({ port: TEST_PORT });
     url = server.url;
 
     const seededUsers = getSeededTestUsers();
@@ -73,7 +73,7 @@ describe('Organization Resolver', () => {
 
   afterAll(async () => {
     if (server) {
-      await stopIntegrationServer(server);
+      await stopE2EServer(server);
     }
   });
 
@@ -114,11 +114,7 @@ describe('Organization Resolver', () => {
     });
 
     it('reads organization by id and slug after creation', async () => {
-      const createdOrganization = await createOrganization(
-        adminUser.token,
-        adminUser.userId,
-        `integration-org-${randomId()}`,
-      );
+      const createdOrganization = await createOrganization(adminUser.token, adminUser.userId, `e2e-org-${randomId()}`);
       expect(createdOrganization.slug).toBeDefined();
       const createdSlug = createdOrganization.slug as string;
 

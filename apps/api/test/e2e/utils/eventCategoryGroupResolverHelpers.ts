@@ -27,7 +27,7 @@ export const readSeededEventCategories = async (url: string): Promise<EventCateg
 
   const categories = (response.body.data?.readEventCategories ?? []) as EventCategoryRef[];
   if (categories.length < 2) {
-    throw new Error('Expected at least 2 seeded event categories for eventCategoryGroup integration tests.');
+    throw new Error('Expected at least 2 seeded event categories for eventCategoryGroup e2e tests.');
   }
   return categories;
 };

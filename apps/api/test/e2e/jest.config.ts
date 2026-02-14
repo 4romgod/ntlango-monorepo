@@ -7,14 +7,14 @@ const config: Config = {
   rootDir: '../../',
   testPathIgnorePatterns: ['<rootDir>/dist/', '<rootDir>/node_modules/'],
   testTimeout: 20000,
-  testMatch: ['<rootDir>/test/integration/**/*.test.[jt]s?(x)'],
+  testMatch: ['<rootDir>/test/e2e/**/*.test.[jt]s?(x)'],
   moduleNameMapper: {
     '^@/(?!test)(.*)$': '<rootDir>/lib/$1',
     '^@/test/(.*)$': '<rootDir>/test/$1',
     '^@ntlango/commons$': '<rootDir>/../../packages/commons/lib/index.ts',
     '^@ntlango/commons/(.*)$': '<rootDir>/../../packages/commons/lib/$1',
   },
-  globalSetup: '<rootDir>/test/integration/setup.ts',
+  globalSetup: '<rootDir>/test/e2e/setup.ts',
   detectOpenHandles: true,
   forceExit: true,
   // Enhanced reporting for clear test results
@@ -23,7 +23,7 @@ const config: Config = {
     [
       'jest-junit',
       {
-        outputDirectory: '<rootDir>/test/integration/reports',
+        outputDirectory: '<rootDir>/test/e2e/reports',
         outputName: 'junit.xml',
         classNameTemplate: '{classname}',
         titleTemplate: '{title}',
@@ -34,7 +34,7 @@ const config: Config = {
     [
       '<rootDir>/test/utils/summaryReporter.ts',
       {
-        outputFile: '<rootDir>/test/integration/reports/summary.txt',
+        outputFile: '<rootDir>/test/e2e/reports/summary.txt',
       },
     ],
   ],

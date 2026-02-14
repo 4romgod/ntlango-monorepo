@@ -357,7 +357,7 @@ if (initialLoadDoneRef.current && wasFollowingRef.current !== isCurrentlyFollowi
 ### Automated Testing
 
 - ✅ 526 unit tests passing (including Phase 2 tests for privacy, blocking, and remove follower)
-- ✅ Integration tests for social resolvers (follow, intent, activity)
+- ✅ E2E tests for social resolvers (follow, intent, activity)
 - ✅ Unit tests for FollowResolver (with FollowPolicy and visibility handling)
 - ✅ Unit tests for Organization followersCount FieldResolver
 - ✅ Authorization checks for accept/reject/removeFollower mutations
@@ -678,7 +678,7 @@ properly reflect pending states. Follower counts are dynamically computed ensuri
 - Implemented optimistic UI updates with useRef pattern
 - Fixed useFollowing hook cache issues (added skip + cache-and-network)
 - Migrated DAOs to find+save pattern for consistent Mongoose hook execution
-- Updated all related unit and integration tests
+- Updated all related unit and e2e tests
 
 ### 12 January 2026 - Initial Implementation
 

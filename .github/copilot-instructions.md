@@ -17,8 +17,8 @@ making changes in this repository.
 
 - **Update tests with code changes**: Whenever you modify application code, ensure corresponding unit tests are updated
   or created.
-- **Integration tests**: If changes affect API endpoints, GraphQL resolvers, or cross-module interactions, update or
-  create integration tests in `apps/api/test/integration/`.
+- **e2e tests**: If changes affect API endpoints, GraphQL resolvers, or cross-module interactions, update or create e2e
+  tests in `apps/api/test/e2e/`.
 - **Test coverage**: Maintain or improve test coverage when adding new features or modifying existing functionality.
 
 ## Framework-Specific Guidelines

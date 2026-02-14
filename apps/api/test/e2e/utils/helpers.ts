@@ -60,7 +60,7 @@ export const readFirstEventCategory = async (url: string): Promise<EventCategory
 
   const [firstCategory] = categoriesResponse.body.data?.readEventCategories ?? [];
   if (!firstCategory?.eventCategoryId) {
-    throw new Error('No seeded event categories were found. Run the seed script before integration tests.');
+    throw new Error('No seeded event categories were found. Run the seed script before e2e tests.');
   }
 
   return {

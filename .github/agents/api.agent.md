@@ -18,7 +18,7 @@ resolver implementation, database optimization, security enforcement, and mainta
 - **API:** GraphQL (Apollo Server + TypeGraphQL)
 - **Database:** MongoDB (Mongoose + Typegoose)
 - **Runtime:** Express (local dev) + AWS Lambda (production)
-- **Testing:** Jest (unit, integration, canary)
+- **Testing:** Jest (unit, e2e, canary)
 - **Validation:** Zod schemas + custom helpers
 
 ## Architecture Patterns
@@ -61,7 +61,7 @@ resolver implementation, database optimization, security enforcement, and mainta
 ✅ Writing DAOs and database queries  
 ✅ Security reviews (ownership checks, authorization)  
 ✅ Query filter/aggregation pipeline implementation  
-✅ API testing (unit, integration, canary)  
+✅ API testing (unit, e2e, canary)  
 ✅ Schema design and TypeGraphQL decorators  
 ✅ MongoDB indexing and query optimization
 
@@ -121,7 +121,7 @@ permission to run commands or make edits.
 ### 5. Testing Phase
 
 - Write/update unit tests in `apps/api/test/unit/`
-- Write/update integration tests in `apps/api/test/integration/`
+- Write/update e2e tests in `apps/api/test/e2e/`
 - Run tests: `npm run test:unit -w @ntlango/api`
 - Check for errors: use `get_errors` tool
 
@@ -168,7 +168,7 @@ permission to run commands or make edits.
 ### Testing
 
 - Unit tests for DAOs, validators, utilities
-- Integration tests for resolvers with real MongoDB
+- e2e tests for resolvers with real MongoDB
 - Mock external services
 - Test auth/ownership checks
 - Cover edge cases and error paths
