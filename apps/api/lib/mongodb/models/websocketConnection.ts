@@ -13,25 +13,25 @@ import { getModelForClass, index, modelOptions, prop } from '@typegoose/typegoos
   },
 })
 class WebSocketConnectionModel {
-  @prop({ required: true, trim: true })
+  @prop({ type: () => String, required: true, trim: true })
   connectionId!: string;
 
-  @prop({ required: true, trim: true })
+  @prop({ type: () => String, required: true, trim: true })
   userId!: string;
 
-  @prop({ required: true, trim: true })
+  @prop({ type: () => String, required: true, trim: true })
   domainName!: string;
 
-  @prop({ required: true, trim: true })
+  @prop({ type: () => String, required: true, trim: true })
   stage!: string;
 
-  @prop({ required: true })
+  @prop({ type: () => Date, required: true })
   connectedAt!: Date;
 
-  @prop({ required: true })
+  @prop({ type: () => Date, required: true })
   lastSeenAt!: Date;
 
-  @prop()
+  @prop({ type: () => Date })
   expiresAt?: Date;
 }
 

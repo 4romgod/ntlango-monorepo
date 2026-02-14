@@ -103,7 +103,9 @@
   1. Checkout → Install deps → CDK tools.
   2. Build API/commons/CDK packages.
   3. Configure AWS creds via the assumed role secret + `AWS_REGION`.
-  4. Deploy CDK stacks (`npm run cdk -w @ntlango/cdk -- deploy '*' --verbose`) with `STAGE` from repo vars.
+  4. Deploy runtime CDK stacks (for example
+     `npm run cdk -w @ntlango/cdk -- deploy S3BucketStack GraphQLStack WebSocketApiStack MonitoringDashboardStack --require-approval never --exclusively`)
+     with `STAGE` from repo vars, and deploy `SecretsManagementStack` only when secrets intentionally change.
   5. Query CloudFormation output for `apiPath`, expose as `GRAPHQL_URL` via `$GITHUB_ENV`/`$GITHUB_OUTPUT`.
   6. Run e2e tests with `STAGE`, `NTLANGO_SECRET_ARN`, `GRAPHQL_URL`.
 - Future webapp deploys should consume `NEXT_PUBLIC_GRAPHQL_URL` + `NEXT_PUBLIC_JWT_SECRET` from the API deploy output
