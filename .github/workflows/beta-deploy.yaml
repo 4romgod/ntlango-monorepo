@@ -87,12 +87,12 @@ jobs:
           NEXT_PUBLIC_GRAPHQL_URL: ${{ steps.get_endpoint.outputs.graphql_url }}
           NEXT_PUBLIC_JWT_SECRET: ${{ secrets.JWT_SECRET }}
         run: |
-          vercel deploy --yes --token=${{ secrets.VERCEL_TOKEN }} > deployment-url.txt
-          DEPLOYMENT_URL=$(grep -Eo 'https://[^[:space:]]+\.vercel\.app' deployment-url.txt | tail -n 1)
-          if [ -z "$DEPLOYMENT_URL" ]; then
-            echo "Failed to capture deployment URL from Vercel CLI output."
+          vercel deploy --yes --token=${{ secrets.VERCEL_TOKEN }} --json > deployment.json
+          DEPLOYMENT_URL=$(jq -r '.url' deployment.json)
+          if [ -z "$DEPLOYMENT_URL" ] || [ "$DEPLOYMENT_URL" = "null" ]; then
+            echo "Failed to capture deployment URL from Vercel CLI JSON output."
             echo "Captured output:"
-            cat deployment-url.txt
+            cat deployment.json
             exit 1
           fi
           echo "deployment_url=$DEPLOYMENT_URL" >> "$GITHUB_OUTPUT"
