@@ -99,6 +99,23 @@ jobs:
           echo "PLAYWRIGHT_BASE_URL=$DEPLOYMENT_URL" >> "$GITHUB_ENV"
           echo "Deployed URL: $DEPLOYMENT_URL"
 
+      - name: Verify Captured Deployment URL
+        env:
+          PLAYWRIGHT_BASE_URL: ${{ steps.deploy_webapp.outputs.deployment_url }}
+        run: |
+          if [ -z "$PLAYWRIGHT_BASE_URL" ]; then
+            echo "PLAYWRIGHT_BASE_URL is empty."
+            exit 1
+          fi
+          echo "Deployment URL captured (value may be masked in logs)."
+          echo "URL length: ${#PLAYWRIGHT_BASE_URL}"
+          echo "Checking URL reachability..."
+          curl -fsSIL "$PLAYWRIGHT_BASE_URL" | head -n 1
+
+      - name: Install Playwright Browser Dependencies
+        working-directory: ./apps/webapp
+        run: npx playwright install --with-deps chromium
+
       - name: Run Webapp E2E Tests
         env:
           PLAYWRIGHT_BASE_URL: ${{ steps.deploy_webapp.outputs.deployment_url }}
