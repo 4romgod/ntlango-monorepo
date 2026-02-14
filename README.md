@@ -41,7 +41,8 @@ Unified workspace for the Ntlango stack: GraphQL API, web app, shared commons, i
   - **Important:** `MONGO_DB_URL` **must include a database name** (e.g., `mongodb://localhost:27017/ntlango`). Without
     a database name, Mongoose defaults to the "test" database, which can cause collections (RSVPs, org memberships) to
     vanish on reconnects.
-- Web (`apps/webapp`): needs `NEXT_PUBLIC_GRAPHQL_URL` pointing at the running API for codegen/build.
+- Web (`apps/webapp`): needs `NEXT_PUBLIC_GRAPHQL_URL` pointing at the running API for codegen/build, plus optional
+  `NEXT_PUBLIC_WEBSOCKET_URL` for realtime notifications.
 - Place env vars in a `.env` per workspace or export them before running commands.
 
 ## Run / Build

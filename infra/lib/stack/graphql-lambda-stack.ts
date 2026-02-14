@@ -34,8 +34,9 @@ export class GraphQLStack extends Stack {
 
   constructor(scope: Construct, id: string, props: GraphQLStackProps) {
     super(scope, id, props);
+    const stageSegment = `${process.env.STAGE ?? 'Beta'}`.toLowerCase();
 
-    const ntlangoSecret = Secret.fromSecretNameV2(this, 'ImportedSecret', `${process.env.STAGE}/ntlango/graphql-api`);
+    const ntlangoSecret = Secret.fromSecretNameV2(this, 'ImportedSecret', `ntlango/backend/${stageSegment}`);
 
     this.lambdaLogGroup = new LogGroup(this, 'GraphqlLambdaLogGroup', {
       logGroupName: '/aws/lambda/GraphqlLambdaFunction',
@@ -47,7 +48,7 @@ export class GraphQLStack extends Stack {
       functionName: 'GraphqlLambdaFunction',
       description:
         'This lambda function is a GraphQL Lambda that uses Apollo server: https://www.apollographql.com/docs/apollo-server/deployment/lambda',
-      runtime: Runtime.NODEJS_20_X,
+      runtime: Runtime.NODEJS_24_X,
       timeout: Duration.seconds(30),
       memorySize: 256,
       handler: 'graphqlLambdaHandler',

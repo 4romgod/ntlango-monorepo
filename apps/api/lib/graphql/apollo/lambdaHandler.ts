@@ -28,6 +28,7 @@ const CORS_HEADERS = {
 let cachedServer: Awaited<ReturnType<typeof createApolloServer>> | null = null;
 let cachedLambdaHandler: Awaited<ReturnType<typeof startServerAndCreateLambdaHandler>> | null = null;
 let isDbConnected = false;
+const noopCallback: Callback<APIGatewayProxyResult> = () => {};
 
 async function initializeResources() {
   // Validate environment configuration on first invocation
@@ -101,8 +102,7 @@ async function initializeResources() {
 export const graphqlLambdaHandler = async (
   event: APIGatewayProxyEvent,
   context: Context,
-  callback: Callback<APIGatewayProxyResult>,
-) => {
+): Promise<APIGatewayProxyResult> => {
   // Set request ID for all logs in this invocation
   const requestId = context.awsRequestId;
   logger.setRequestId(requestId);
@@ -131,7 +131,7 @@ export const graphqlLambdaHandler = async (
 
     logger.info('Executing lambda handler...');
     const startTime = Date.now();
-    const result = await lambdaHandler(event, context, callback);
+    const result = await lambdaHandler(event, context, noopCallback);
     const duration = Date.now() - startTime;
     logger.info('Lambda handler execution completed', { durationMs: duration });
     logger.debug('Response details', {

@@ -12,6 +12,7 @@ import CustomThemeProvider from '@/components/context/providers/ThemeProvider';
 import ToastProvider from '@/components/context/providers/ToastProvider';
 import MainNavigation from '@/components/navigation/main';
 import Footer from '@/components/footer';
+import NotificationRealtimeListener from '@/components/notifications/NotificationRealtimeListener';
 import { Box } from '@mui/material';
 import { Session } from 'next-auth';
 import { logger } from '@/lib/utils';
@@ -38,6 +39,7 @@ export default function RootLayout({ children, session }: RootLayoutProps) {
             <SessionProvider key={sessionProviderKey} session={session}>
               <CustomAppContextProvider>
                 <CustomThemeProvider>
+                  <NotificationRealtimeListener />
                   <ToastProvider />
                   <TopProgressBar />
                   <MainNavigation isAuthN={isAuthN} />

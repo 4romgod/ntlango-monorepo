@@ -26,6 +26,7 @@
   "dependencies": {
     "@apollo/server": "^4.10.4",
     "@as-integrations/aws-lambda": "^3.1.0",
+    "@aws-sdk/client-apigatewaymanagementapi": "^3.990.0",
     "@aws-sdk/client-s3": "^3.981.0",
     "@aws-sdk/client-secrets-manager": "^3.981.0",
     "@aws-sdk/s3-request-presigner": "^3.981.0",

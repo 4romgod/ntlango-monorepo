@@ -8,4 +8,5 @@ export * from './useBlock';
 export * from './useSaveEvent';
 export * from './useRsvp';
 export * from './useNotifications';
+export * from './useNotificationRealtime';
 export * from './useIsAdmin';

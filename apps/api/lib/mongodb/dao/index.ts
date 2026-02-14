@@ -10,3 +10,4 @@ export { default as FollowDAO } from '@/mongodb/dao/follow';
 export { default as IntentDAO } from '@/mongodb/dao/intent';
 export { default as ActivityDAO } from '@/mongodb/dao/activity';
 export { default as NotificationDAO } from '@/mongodb/dao/notification';
+export { default as WebSocketConnectionDAO } from '@/mongodb/dao/websocketConnection';

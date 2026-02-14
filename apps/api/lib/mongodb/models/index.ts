@@ -10,3 +10,4 @@ export { default as Activity } from './activity';
 export { default as Follow } from './follow';
 export { default as Intent } from './intent';
 export { default as Notification } from './notification';
+export { default as WebSocketConnection } from './websocketConnection';

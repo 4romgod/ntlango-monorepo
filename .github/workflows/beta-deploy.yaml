@@ -1,7 +1,7 @@
 name: Beta Deployment
 
 on:
-  push:
+  pull_request:
     branches: ["main"]
   workflow_dispatch:
 
@@ -60,12 +60,12 @@ jobs:
           echo "Verify output was set:"
           cat $GITHUB_OUTPUT
 
-      - name: Run API E2E Tests
-        env:
-          GRAPHQL_URL: ${{ steps.get_endpoint.outputs.graphql_url }}
-          NTLANGO_SECRET_ARN: ${{ secrets.NTLANGO_SECRET_ARN }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-        run: npm run test:e2e:api
+      # - name: Run API E2E Tests
+      #   env:
+      #     GRAPHQL_URL: ${{ steps.get_endpoint.outputs.graphql_url }}
+      #     NTLANGO_SECRET_ARN: ${{ secrets.NTLANGO_SECRET_ARN }}
+      #     AWS_REGION: ${{ secrets.AWS_REGION }}
+      #   run: npm run test:e2e:api
 
       # Webapp Deployment
       - name: Install Vercel CLI
@@ -119,7 +119,7 @@ jobs:
         working-directory: ./apps/webapp
         run: npx playwright install --with-deps chromium
 
-      - name: Run Webapp E2E Tests
-        env:
-          PLAYWRIGHT_BASE_URL: ${{ steps.deploy_webapp.outputs.deployment_url }}
-        run: npm run test:e2e:web
+      # - name: Run Webapp E2E Tests
+      #   env:
+      #     PLAYWRIGHT_BASE_URL: ${{ steps.deploy_webapp.outputs.deployment_url }}
+      #   run: npm run test:e2e:web

@@ -5,6 +5,7 @@ import {
   SecretsManagementStack,
   S3BucketStack,
   MonitoringDashboardStack,
+  WebSocketApiStack,
 } from '../stack';
 import { ServiceAccount } from '../constants';
 
@@ -50,6 +51,16 @@ export const setupServiceAccount = (app: App, account: ServiceAccount) => {
 
   graphqlStack.addDependency(secretsManagementStack);
   graphqlStack.addDependency(s3BucketStack);
+
+  const webSocketApiStack = new WebSocketApiStack(app, 'WebSocketApiStack', {
+    env: {
+      account: account.accountNumber,
+      region: account.awsRegion,
+    },
+    description: 'This stack includes infrastructure for websocket routes used by realtime features.',
+  });
+
+  webSocketApiStack.addDependency(secretsManagementStack);
 
   // Grant Lambda permissions to access S3 bucket
   s3BucketStack.imagesBucket.grantReadWrite(graphqlStack.graphqlLambda);
