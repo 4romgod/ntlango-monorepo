@@ -15,17 +15,16 @@ if (!baseURL) {
  * Set PLAYWRIGHT_CI_WORKERS=1 if your CI environment requires strictly
  * sequential execution due to shared state or resource constraints.
  */
-const ciWorkers =
-  process.env.CI
-    ? (() => {
-        const fromEnv = process.env.PLAYWRIGHT_CI_WORKERS;
-        if (!fromEnv) {
-          return 2;
-        }
-        const parsed = Number(fromEnv);
-        return Number.isFinite(parsed) && parsed > 0 ? parsed : 2;
-      })()
-    : undefined;
+const ciWorkers = process.env.CI
+  ? (() => {
+      const fromEnv = process.env.PLAYWRIGHT_CI_WORKERS;
+      if (!fromEnv) {
+        return 2;
+      }
+      const parsed = Number(fromEnv);
+      return Number.isFinite(parsed) && parsed > 0 ? parsed : 2;
+    })()
+  : undefined;
 
 export default defineConfig({
   testDir: './test/e2e',
