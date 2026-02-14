@@ -1,14 +1,14 @@
 import { STAGE } from '@/constants';
 import { APPLICATION_STAGES } from '@ntlango/commons';
 
-export interface IntegrationTestConfig {
+export interface E2ETestConfig {
   testUrl?: string;
   stage: string;
   useLocalServer: boolean;
   localServerPort: number;
 }
 
-export const getIntegrationTestConfig = (): IntegrationTestConfig => {
+export const getE2ETestConfig = (): E2ETestConfig => {
   const stage = STAGE;
   const useLocalServer = stage === APPLICATION_STAGES.DEV;
   const localServerPort = parseInt(process.env.TEST_PORT || '5000', 10);
@@ -18,7 +18,7 @@ export const getIntegrationTestConfig = (): IntegrationTestConfig => {
   if (useLocalServer) {
     // Dev stage - will start local server
     testUrl = `http://localhost:${localServerPort}/v1/graphql`;
-    console.log(`[Integration Tests] Stage: ${stage} - Will start local server on port ${localServerPort}`);
+    console.log(`[E2E Tests] Stage: ${stage} - Will start local server on port ${localServerPort}`);
   } else {
     // Beta/Prod - use deployed endpoint from GRAPHQL_URL
     testUrl = process.env.GRAPHQL_URL;
@@ -27,7 +27,7 @@ export const getIntegrationTestConfig = (): IntegrationTestConfig => {
         `GRAPHQL_URL environment variable is required for STAGE=${stage}. ` + `Set it to the deployed API endpoint.`,
       );
     }
-    console.log(`[Integration Tests] Stage: ${stage} - Testing against: ${testUrl}`);
+    console.log(`[E2E Tests] Stage: ${stage} - Testing against: ${testUrl}`);
   }
 
   return {

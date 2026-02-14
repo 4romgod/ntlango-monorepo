@@ -830,6 +830,6 @@ For each test, document:
 
 - [x] Unit tests for `usePersistentState` hook (18 tests)
 - [x] Unit tests for `migrateSessionState` utility (11 tests)
-- [ ] Integration test for TTL expiration with real timers
+- [ ] E2E test for TTL expiration with real timers
 - [ ] E2E test with Playwright for full user flows
 - [ ] Performance benchmarks for large state objects

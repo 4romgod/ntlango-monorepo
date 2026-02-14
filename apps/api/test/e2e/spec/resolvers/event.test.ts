@@ -1,7 +1,7 @@
 import request from 'supertest';
 import { kebabCase } from 'lodash';
-import type { IntegrationServer } from '@/test/integration/utils/server';
-import { startIntegrationServer, stopIntegrationServer } from '@/test/integration/utils/server';
+import type { E2EServer } from '@/test/e2e/utils/server';
+import { startE2EServer, stopE2EServer } from '@/test/e2e/utils/server';
 import { eventsMockData } from '@/mongodb/mockData';
 import type { CreateEventInput, UserWithToken } from '@ntlango/commons/types';
 import { SortOrderInput, OrganizationRole } from '@ntlango/commons/types';
@@ -20,17 +20,17 @@ import {
   loginSeededUser,
   readFirstEventCategory,
   type EventCategoryRef,
-} from '@/test/integration/utils/helpers';
+} from '@/test/e2e/utils/helpers';
 import {
   createEventOnServer,
   createMembershipOnServer,
   createOrganizationOnServer,
   untrackCreatedId,
   updateMembershipRoleOnServer,
-} from '@/test/integration/utils/eventResolverHelpers';
+} from '@/test/e2e/utils/eventResolverHelpers';
 
 describe('Event Resolver', () => {
-  let server: IntegrationServer;
+  let server: E2EServer;
   let url = '';
   const TEST_PORT = 5002;
   let adminUser: UserWithToken;
@@ -72,7 +72,7 @@ describe('Event Resolver', () => {
     updateMembershipRoleOnServer(url, adminUser.token, membershipId, role);
 
   beforeAll(async () => {
-    server = await startIntegrationServer({ port: TEST_PORT });
+    server = await startE2EServer({ port: TEST_PORT });
     url = server.url;
 
     const seededUsers = getSeededTestUsers();
@@ -86,7 +86,7 @@ describe('Event Resolver', () => {
 
   afterAll(async () => {
     if (server) {
-      await stopIntegrationServer(server);
+      await stopE2EServer(server);
     }
   });
 

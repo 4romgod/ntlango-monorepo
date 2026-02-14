@@ -20,7 +20,7 @@
     "typecheck": "tsc --noEmit --pretty",
     "test": "npm-run-all test:*",
     "test:canary": "jest --config=test/canary/jest.config.ts",
-    "test:integration": "jest --config=test/integration/jest.config.ts",
+    "test:e2e": "jest --config=test/e2e/jest.config.ts",
     "test:unit": "jest --config=test/unit/jest.config.ts --runInBand"
   },
   "dependencies": {

@@ -1,6 +1,6 @@
 import request from 'supertest';
-import type { IntegrationServer } from '@/test/integration/utils/server';
-import { startIntegrationServer, stopIntegrationServer } from '@/test/integration/utils/server';
+import type { E2EServer } from '@/test/e2e/utils/server';
+import { startE2EServer, stopE2EServer } from '@/test/e2e/utils/server';
 import { eventsMockData } from '@/mongodb/mockData';
 import type { CreateEventInput, UserWithToken } from '@ntlango/commons/types';
 import { ParticipantStatus } from '@ntlango/commons/types';
@@ -10,13 +10,13 @@ import {
   getReadEventParticipantsQuery,
   getUpsertEventParticipantMutation,
 } from '@/test/utils';
-import { getSeededTestUsers, loginSeededUser, readFirstEventCategory } from '@/test/integration/utils/helpers';
-import { createEventOnServer } from '@/test/integration/utils/eventResolverHelpers';
+import { getSeededTestUsers, loginSeededUser, readFirstEventCategory } from '@/test/e2e/utils/helpers';
+import { createEventOnServer } from '@/test/e2e/utils/eventResolverHelpers';
 
 const TEST_PORT = 5005;
 
 describe('EventParticipant Resolver', () => {
-  let server: IntegrationServer;
+  let server: E2EServer;
   let url = '';
   let participantUser: UserWithToken;
   let participantUser2: UserWithToken;
@@ -37,7 +37,7 @@ describe('EventParticipant Resolver', () => {
   });
 
   beforeAll(async () => {
-    server = await startIntegrationServer({ port: TEST_PORT });
+    server = await startE2EServer({ port: TEST_PORT });
     url = server.url;
 
     const seededUsers = getSeededTestUsers();
@@ -67,7 +67,7 @@ describe('EventParticipant Resolver', () => {
 
   afterAll(async () => {
     if (server) {
-      await stopIntegrationServer(server);
+      await stopE2EServer(server);
     }
   });
 

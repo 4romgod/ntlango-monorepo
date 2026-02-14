@@ -436,8 +436,8 @@ deployment □ Implement basic CloudWatch alarms (errors, latency) □ Add API G
 Lambda memory to 512MB
 
 Priority 2 - Should have before launch: □ Add Redis caching for user sessions □ Implement GraphQL query complexity
-limits □ Add AWS X-Ray tracing □ Setup error tracking (Sentry) □ Implement comprehensive integration tests □ Add
-database query optimization (indexes review)
+limits □ Add AWS X-Ray tracing □ Setup error tracking (Sentry) □ Implement comprehensive e2e tests □ Add database query
+optimization (indexes review)
 
 Priority 3 - Nice to have: □ Implement Automatic Persisted Queries (APQ) □ Add Lambda provisioned concurrency □ Setup
 custom CloudWatch dashboards □ Implement cache warming strategy
@@ -641,8 +641,7 @@ headers
 
 ```
 Unit Tests: ~60% (good)
-Integration Tests: ~20% (insufficient)
-E2E Tests: 0% (critical gap)
+E2E Tests: ~20% (insufficient)
 Load Tests: 0% (critical gap)
 Security Tests: 0% (critical gap)
 ```

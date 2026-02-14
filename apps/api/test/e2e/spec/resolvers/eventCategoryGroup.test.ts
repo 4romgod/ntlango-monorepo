@@ -1,6 +1,6 @@
 import request from 'supertest';
-import type { IntegrationServer } from '@/test/integration/utils/server';
-import { startIntegrationServer, stopIntegrationServer } from '@/test/integration/utils/server';
+import type { E2EServer } from '@/test/e2e/utils/server';
+import { startE2EServer, stopE2EServer } from '@/test/e2e/utils/server';
 import type { QueryOptionsInput, UserWithToken } from '@ntlango/commons/types';
 import {
   getCreateEventCategoryGroupMutation,
@@ -10,18 +10,18 @@ import {
   getReadEventCategoryGroupsWithOptionsQuery,
   getUpdateEventCategoryGroupMutation,
 } from '@/test/utils';
-import { getSeededTestUsers, loginSeededUser } from '@/test/integration/utils/helpers';
+import { getSeededTestUsers, loginSeededUser } from '@/test/e2e/utils/helpers';
 import {
   createEventCategoryGroupOnServer,
   readSeededEventCategories,
   type EventCategoryRef,
   uniqueGroupName,
-} from '@/test/integration/utils/eventCategoryGroupResolverHelpers';
+} from '@/test/e2e/utils/eventCategoryGroupResolverHelpers';
 
 const TEST_PORT = 5004;
 
 describe('EventCategoryGroup Resolver', () => {
-  let server: IntegrationServer;
+  let server: E2EServer;
   let url = '';
   let adminUser: UserWithToken;
   let categories: EventCategoryRef[] = [];
@@ -39,7 +39,7 @@ describe('EventCategoryGroup Resolver', () => {
   };
 
   beforeAll(async () => {
-    server = await startIntegrationServer({ port: TEST_PORT });
+    server = await startE2EServer({ port: TEST_PORT });
     url = server.url;
 
     const seededUsers = getSeededTestUsers();
@@ -50,7 +50,7 @@ describe('EventCategoryGroup Resolver', () => {
 
   afterAll(async () => {
     if (server) {
-      await stopIntegrationServer(server);
+      await stopE2EServer(server);
     }
   });
 

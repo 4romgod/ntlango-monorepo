@@ -1,7 +1,7 @@
 import request from 'supertest';
 import { Types } from 'mongoose';
-import type { IntegrationServer } from '@/test/integration/utils/server';
-import { startIntegrationServer, stopIntegrationServer } from '@/test/integration/utils/server';
+import type { E2EServer } from '@/test/e2e/utils/server';
+import { startE2EServer, stopE2EServer } from '@/test/e2e/utils/server';
 import type { UserWithToken } from '@ntlango/commons/types';
 import { OrganizationRole } from '@ntlango/commons/types';
 import {
@@ -12,11 +12,11 @@ import {
   getDeleteOrganizationByIdMutation,
   getUpdateOrganizationMembershipMutation,
 } from '@/test/utils';
-import { getSeededTestUsers, loginSeededUser } from '@/test/integration/utils/helpers';
-import { createMembershipOnServer, createOrganizationOnServer } from '@/test/integration/utils/eventResolverHelpers';
+import { getSeededTestUsers, loginSeededUser } from '@/test/e2e/utils/helpers';
+import { createMembershipOnServer, createOrganizationOnServer } from '@/test/e2e/utils/eventResolverHelpers';
 
 describe('OrganizationMembership Resolver', () => {
-  let server: IntegrationServer;
+  let server: E2EServer;
   let url = '';
   const TEST_PORT = 5005;
   let adminUser: UserWithToken;
@@ -31,7 +31,7 @@ describe('OrganizationMembership Resolver', () => {
     createMembershipOnServer(url, adminUser.token, orgId, userId, OrganizationRole.Member, createdMembershipIds);
 
   beforeAll(async () => {
-    server = await startIntegrationServer({ port: TEST_PORT });
+    server = await startE2EServer({ port: TEST_PORT });
     url = server.url;
 
     const seededUsers = getSeededTestUsers();
@@ -41,7 +41,7 @@ describe('OrganizationMembership Resolver', () => {
 
   afterAll(async () => {
     if (server) {
-      await stopIntegrationServer(server);
+      await stopE2EServer(server);
     }
   });
 

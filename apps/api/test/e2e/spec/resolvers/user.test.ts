@@ -1,7 +1,7 @@
 import { Types } from 'mongoose';
 import request from 'supertest';
-import type { IntegrationServer } from '@/test/integration/utils/server';
-import { startIntegrationServer, stopIntegrationServer } from '@/test/integration/utils/server';
+import type { E2EServer } from '@/test/e2e/utils/server';
+import { startE2EServer, stopE2EServer } from '@/test/e2e/utils/server';
 import { usersMockData } from '@/mongodb/mockData';
 import {
   getCreateUserMutation,
@@ -19,17 +19,17 @@ import {
 import type { CreateUserInput, QueryOptionsInput, UserWithToken } from '@ntlango/commons/types';
 import { Gender } from '@ntlango/commons/types';
 import { ERROR_MESSAGES } from '@/validation';
-import { getSeededTestUsers, loginSeededUser } from '@/test/integration/utils/helpers';
+import { getSeededTestUsers, loginSeededUser } from '@/test/e2e/utils/helpers';
 import {
   buildCreateUserInput,
   cleanupUsersById,
   createUserOnServer,
   loginUserOnServer,
   uniqueSuffix,
-} from '@/test/integration/utils/userResolverHelpers';
+} from '@/test/e2e/utils/userResolverHelpers';
 
 describe('User Resolver', () => {
-  let server: IntegrationServer;
+  let server: E2EServer;
   let url = '';
   const TEST_PORT = 5003;
   const testPassword = 'testPassword';
@@ -47,7 +47,7 @@ describe('User Resolver', () => {
     buildCreateUserInput(usersMockData.at(0)! as CreateUserInput, testPassword, suffix);
 
   beforeAll(async () => {
-    server = await startIntegrationServer({ port: TEST_PORT });
+    server = await startE2EServer({ port: TEST_PORT });
     url = server.url;
 
     const seededUsers = getSeededTestUsers();
@@ -56,7 +56,7 @@ describe('User Resolver', () => {
 
   afterAll(async () => {
     if (server) {
-      await stopIntegrationServer(server);
+      await stopE2EServer(server);
     }
   });
 
