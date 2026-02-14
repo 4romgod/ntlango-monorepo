@@ -71,8 +71,6 @@ Integration tests use the `STAGE` environment variable to determine which endpoi
 - Behavior: Tests against deployed endpoint without starting a server, skips automatic cleanup
 - Example: Post-deployment tests in CI/CD run against the freshly deployed API endpoint with `STAGE=Beta`
 
-See [apps/api/test/integration/README.md](../apps/api/test/integration/README.md) for detailed configuration.
-
 ## Webapp (`apps/webapp`)
 
 ### Local development
