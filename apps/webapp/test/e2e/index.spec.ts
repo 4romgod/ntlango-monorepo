@@ -12,7 +12,7 @@ test.describe('Index Page', () => {
 
     await expect(page.getByRole('heading', { name: 'Where unforgettable experiences find their people.' })).toBeVisible(
       {
-        timeout: 20_000,
+        timeout: 10_000,
       },
     );
     await expect(heroSection.getByRole('link', { name: 'Browse events' })).toBeVisible();
