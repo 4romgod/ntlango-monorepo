@@ -2,6 +2,7 @@ import type { Notification, NotificationTargetType, CreateNotificationInput } fr
 import { NotificationType, ParticipantStatus } from '@ntlango/commons/types';
 import { NotificationDAO, UserDAO } from '@/mongodb/dao';
 import { logger } from '@/utils/logger';
+import { publishNotificationCreated, publishNotificationsCreated } from '@/websocket/publisher';
 
 /**
  * Parameters for creating a notification
@@ -243,6 +244,8 @@ class NotificationService {
 
     const notification = await NotificationDAO.create(input);
 
+    await publishNotificationCreated(notification);
+
     // TODO: Future - dispatch to email/push based on user preferences
     // await this.dispatchToChannels(notification, recipientUserId);
 
@@ -318,6 +321,8 @@ class NotificationService {
     });
 
     const notifications = await NotificationDAO.createMany(inputs);
+
+    await publishNotificationsCreated(notifications);
 
     // TODO: Future - dispatch to email/push based on user preferences
     return notifications;

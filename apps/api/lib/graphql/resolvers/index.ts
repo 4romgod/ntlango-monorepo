@@ -10,5 +10,6 @@ export * from './venue';
 export * from './follow';
 export * from './intent';
 export * from './activity';
+export * from './chat';
 export * from './notification';
 export * from './image';

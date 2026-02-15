@@ -5,6 +5,7 @@ import {
   SecretsManagementStack,
   S3BucketStack,
   MonitoringDashboardStack,
+  WebSocketApiStack,
 } from '../stack';
 import { ServiceAccount } from '../constants';
 
@@ -51,6 +52,16 @@ export const setupServiceAccount = (app: App, account: ServiceAccount) => {
   graphqlStack.addDependency(secretsManagementStack);
   graphqlStack.addDependency(s3BucketStack);
 
+  const webSocketApiStack = new WebSocketApiStack(app, 'WebSocketApiStack', {
+    env: {
+      account: account.accountNumber,
+      region: account.awsRegion,
+    },
+    description: 'This stack includes infrastructure for websocket routes used by realtime features.',
+  });
+
+  webSocketApiStack.addDependency(secretsManagementStack);
+
   // Grant Lambda permissions to access S3 bucket
   s3BucketStack.imagesBucket.grantReadWrite(graphqlStack.graphqlLambda);
 
@@ -60,11 +71,16 @@ export const setupServiceAccount = (app: App, account: ServiceAccount) => {
       account: account.accountNumber,
       region: account.awsRegion,
     },
-    lambdaFunction: graphqlStack.graphqlLambda,
-    lambdaLogGroup: graphqlStack.lambdaLogGroup,
-    apiAccessLogGroup: graphqlStack.apiAccessLogGroup,
-    description: 'This stack includes CloudWatch dashboards and alarms for monitoring the GraphQL API',
+    graphqlLambdaFunction: graphqlStack.graphqlLambda,
+    graphqlLambdaLogGroup: graphqlStack.graphqlLambdaLogGroup,
+    graphqlApiAccessLogGroup: graphqlStack.graphqlApiAccessLogGroup,
+    websocketLambdaFunction: webSocketApiStack.websocketLambda,
+    websocketLambdaLogGroup: webSocketApiStack.websocketLambdaLogGroup,
+    websocketApi: webSocketApiStack.websocketApi,
+    websocketStage: webSocketApiStack.websocketStage,
+    description: 'This stack includes CloudWatch dashboards for monitoring both the GraphQL and WebSocket APIs',
   });
 
   monitoringStack.addDependency(graphqlStack);
+  monitoringStack.addDependency(webSocketApiStack);
 };

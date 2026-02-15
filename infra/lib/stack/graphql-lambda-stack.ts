@@ -29,15 +29,16 @@ export class GraphQLStack extends Stack {
   readonly graphqlApi: RestApi;
   readonly graphql: ResourceBase;
   readonly graphqlApiPathOutput: CfnOutput;
-  readonly lambdaLogGroup: LogGroup;
-  readonly apiAccessLogGroup: LogGroup;
+  readonly graphqlLambdaLogGroup: LogGroup;
+  readonly graphqlApiAccessLogGroup: LogGroup;
 
   constructor(scope: Construct, id: string, props: GraphQLStackProps) {
     super(scope, id, props);
+    const stageSegment = `${process.env.STAGE ?? 'Beta'}`.toLowerCase();
 
-    const ntlangoSecret = Secret.fromSecretNameV2(this, 'ImportedSecret', `${process.env.STAGE}/ntlango/graphql-api`);
+    const ntlangoSecret = Secret.fromSecretNameV2(this, 'ImportedSecret', `ntlango/backend/${stageSegment}`);
 
-    this.lambdaLogGroup = new LogGroup(this, 'GraphqlLambdaLogGroup', {
+    this.graphqlLambdaLogGroup = new LogGroup(this, 'GraphqlLambdaLogGroup', {
       logGroupName: '/aws/lambda/GraphqlLambdaFunction',
       retention: RetentionDays.ONE_MONTH,
       removalPolicy: RemovalPolicy.DESTROY,
@@ -47,7 +48,7 @@ export class GraphQLStack extends Stack {
       functionName: 'GraphqlLambdaFunction',
       description:
         'This lambda function is a GraphQL Lambda that uses Apollo server: https://www.apollographql.com/docs/apollo-server/deployment/lambda',
-      runtime: Runtime.NODEJS_20_X,
+      runtime: Runtime.NODEJS_24_X,
       timeout: Duration.seconds(30),
       memorySize: 256,
       handler: 'graphqlLambdaHandler',
@@ -66,12 +67,12 @@ export class GraphQLStack extends Stack {
         S3_BUCKET_NAME: props.s3BucketName || '',
         NODE_OPTIONS: '--enable-source-maps',
       },
-      logGroup: this.lambdaLogGroup,
+      logGroup: this.graphqlLambdaLogGroup,
     });
 
     ntlangoSecret.grantRead(this.graphqlLambda);
 
-    this.apiAccessLogGroup = new LogGroup(this, 'GraphqlRestApiAccessLogs', {
+    this.graphqlApiAccessLogGroup = new LogGroup(this, 'GraphqlRestApiAccessLogs', {
       logGroupName: 'GraphqlRestApiAccessLogs',
       retention: RetentionDays.ONE_MONTH,
       removalPolicy: RemovalPolicy.DESTROY,
@@ -81,8 +82,9 @@ export class GraphQLStack extends Stack {
       handler: this.graphqlLambda,
       proxy: false,
       cloudWatchRole: true,
+      description: 'REST API Gateway for GraphQL Lambda function',
       deployOptions: {
-        accessLogDestination: new LogGroupLogDestination(this.apiAccessLogGroup),
+        accessLogDestination: new LogGroupLogDestination(this.graphqlApiAccessLogGroup),
         accessLogFormat: AccessLogFormat.clf(),
         stageName: `${process.env.STAGE}`.toLowerCase(),
       },

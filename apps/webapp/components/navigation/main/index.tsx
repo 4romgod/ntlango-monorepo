@@ -18,7 +18,7 @@ import { ROUTES } from '@/lib/constants';
 import NavLinksList from '@/components/navigation/main/NavLinksList';
 import { getAvatarSrc } from '@/lib/utils';
 import { useSession } from 'next-auth/react';
-import { useUnreadNotificationCount } from '@/hooks';
+import { useUnreadChatCount, useUnreadNotificationCount } from '@/hooks';
 import Logo from '@/components/logo';
 
 type MainNavigationProps = {
@@ -33,6 +33,7 @@ export default function MainNavigation({ isAuthN }: MainNavigationProps) {
 
   // Get unread notification count for badge (polls every 5 minutes only when tab is visible)
   const { unreadCount } = useUnreadNotificationCount(isAuthN ? 300000 : undefined);
+  const { unreadCount: unreadChatCount } = useUnreadChatCount(isAuthN ? 30000 : undefined);
 
   const theme = useTheme();
   const isMdUp = useMediaQuery(theme.breakpoints.up('md'));
@@ -156,7 +157,20 @@ export default function MainNavigation({ isAuthN }: MainNavigationProps) {
                   '&:hover': { color: 'text.primary' },
                 }}
               >
-                <MailOutline />
+                <Badge
+                  badgeContent={unreadChatCount}
+                  color="error"
+                  sx={{
+                    '& .MuiBadge-badge': {
+                      fontSize: '0.65rem',
+                      height: 16,
+                      minWidth: 16,
+                      fontWeight: 700,
+                    },
+                  }}
+                >
+                  <MailOutline />
+                </Badge>
               </IconButton>
 
               <IconButton

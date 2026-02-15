@@ -4,34 +4,50 @@ import {
   Dashboard,
   GraphWidget,
   LogQueryWidget,
+  Metric,
   TextWidget,
   LogQueryVisualizationType,
 } from 'aws-cdk-lib/aws-cloudwatch';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { ILogGroup } from 'aws-cdk-lib/aws-logs';
+import { WebSocketApi, WebSocketStage } from 'aws-cdk-lib/aws-apigatewayv2';
 import { APPLICATION_STAGES } from '@ntlango/commons';
 
 export interface MonitoringDashboardStackProps extends StackProps {
-  lambdaFunction: IFunction;
-  lambdaLogGroup: ILogGroup;
-  apiAccessLogGroup: ILogGroup;
+  graphqlLambdaFunction: IFunction;
+  graphqlLambdaLogGroup: ILogGroup;
+  graphqlApiAccessLogGroup: ILogGroup;
+  websocketLambdaFunction: IFunction;
+  websocketLambdaLogGroup: ILogGroup;
+  websocketApi: WebSocketApi;
+  websocketStage: WebSocketStage;
 }
 
 export class MonitoringDashboardStack extends Stack {
-  readonly dashboard: Dashboard;
+  readonly graphqlDashboard: Dashboard;
+  readonly websocketDashboard: Dashboard;
 
   constructor(scope: Construct, id: string, props: MonitoringDashboardStackProps) {
     super(scope, id, props);
 
-    const { lambdaFunction, lambdaLogGroup, apiAccessLogGroup } = props;
+    const stageName = process.env.STAGE || APPLICATION_STAGES.BETA;
+    const {
+      graphqlLambdaFunction,
+      graphqlLambdaLogGroup,
+      graphqlApiAccessLogGroup,
+      websocketLambdaFunction,
+      websocketLambdaLogGroup,
+      websocketApi,
+      websocketStage,
+    } = props;
 
-    this.dashboard = new Dashboard(this, 'NtlangoApiDashboard', {
-      dashboardName: `Ntlango-API-${process.env.STAGE || APPLICATION_STAGES.BETA}`,
+    this.graphqlDashboard = new Dashboard(this, 'NtlangoGraphqlDashboard', {
+      dashboardName: `Ntlango-GraphQL-${stageName}`,
     });
 
-    this.dashboard.addWidgets(
+    this.graphqlDashboard.addWidgets(
       new TextWidget({
-        markdown: `# Ntlango API Monitoring Dashboard\n\n**Stage:** ${process.env.STAGE || APPLICATION_STAGES.BETA}\n**Lambda Function:** ${lambdaFunction.functionName}`,
+        markdown: `# Ntlango GraphQL Monitoring Dashboard\n\n**Stage:** ${stageName}\n**Lambda Function:** ${graphqlLambdaFunction.functionName}`,
         width: 24,
         height: 2,
       }),
@@ -40,25 +56,29 @@ export class MonitoringDashboardStack extends Stack {
     // ============================================
     // Row 1: Lambda Function Metrics
     // ============================================
-    this.dashboard.addWidgets(
+    this.graphqlDashboard.addWidgets(
       new GraphWidget({
         title: 'Lambda Invocations',
-        left: [lambdaFunction.metricInvocations({ statistic: 'Sum' })],
+        left: [graphqlLambdaFunction.metricInvocations({ statistic: 'Sum' })],
         width: 8,
         height: 6,
       }),
       new GraphWidget({
         title: 'Lambda Errors',
-        left: [lambdaFunction.metricErrors({ statistic: 'Sum', color: '#d62728' })],
+        left: [graphqlLambdaFunction.metricErrors({ statistic: 'Sum', color: '#d62728' })],
         width: 8,
         height: 6,
       }),
       new GraphWidget({
         title: 'Lambda Duration (P50, P95, P99)',
         left: [
-          lambdaFunction.metricDuration({ statistic: 'p50', label: 'P50' }),
-          lambdaFunction.metricDuration({ statistic: 'p95', label: 'P95', color: '#ff7f0e' }),
-          lambdaFunction.metricDuration({ statistic: 'p99', label: 'P99', color: '#d62728' }),
+          graphqlLambdaFunction.metricDuration({ statistic: 'p50', label: 'P50' }),
+          graphqlLambdaFunction.metricDuration({
+            statistic: 'p95',
+            label: 'P95',
+            color: '#ff7f0e',
+          }),
+          graphqlLambdaFunction.metricDuration({ statistic: 'p99', label: 'P99', color: '#d62728' }),
         ],
         width: 8,
         height: 6,
@@ -68,7 +88,7 @@ export class MonitoringDashboardStack extends Stack {
     // ============================================
     // Row 2: Error and Warning Logs
     // ============================================
-    this.dashboard.addWidgets(
+    this.graphqlDashboard.addWidgets(
       new TextWidget({
         markdown: '## Application Errors & Warnings',
         width: 24,
@@ -77,10 +97,10 @@ export class MonitoringDashboardStack extends Stack {
     );
 
     // Error logs widget - search for ERROR level in JSON logs
-    this.dashboard.addWidgets(
+    this.graphqlDashboard.addWidgets(
       new LogQueryWidget({
         title: '🔴 Error Logs',
-        logGroupNames: [lambdaLogGroup.logGroupName],
+        logGroupNames: [graphqlLambdaLogGroup.logGroupName],
         queryLines: [
           'fields @timestamp, error.name as errorName, error.message as errorMessage, message',
           'filter level = "ERROR"',
@@ -92,7 +112,7 @@ export class MonitoringDashboardStack extends Stack {
       }),
       new LogQueryWidget({
         title: '⚠️ Warning Logs',
-        logGroupNames: [lambdaLogGroup.logGroupName],
+        logGroupNames: [graphqlLambdaLogGroup.logGroupName],
         queryLines: [
           'fields @timestamp, error.name as errorName, error.message as errorMessage, message',
           'filter level = "WARN"',
@@ -107,7 +127,7 @@ export class MonitoringDashboardStack extends Stack {
     // ============================================
     // Row 3: Request Performance
     // ============================================
-    this.dashboard.addWidgets(
+    this.graphqlDashboard.addWidgets(
       new TextWidget({
         markdown: '## Request Performance',
         width: 24,
@@ -115,10 +135,10 @@ export class MonitoringDashboardStack extends Stack {
       }),
     );
 
-    this.dashboard.addWidgets(
+    this.graphqlDashboard.addWidgets(
       new LogQueryWidget({
         title: 'Cold Starts Detected',
-        logGroupNames: [lambdaLogGroup.logGroupName],
+        logGroupNames: [graphqlLambdaLogGroup.logGroupName],
         view: LogQueryVisualizationType.LINE,
         queryLines: [
           'fields @timestamp',
@@ -131,7 +151,7 @@ export class MonitoringDashboardStack extends Stack {
       }),
       new GraphWidget({
         title: 'Lambda Throttles',
-        left: [lambdaFunction.metricThrottles({ statistic: 'Sum', label: 'Throttled Requests' })],
+        left: [graphqlLambdaFunction.metricThrottles({ statistic: 'Sum', label: 'Throttled Requests' })],
         width: 12,
         height: 6,
       }),
@@ -140,7 +160,7 @@ export class MonitoringDashboardStack extends Stack {
     // ============================================
     // Row 4: GraphQL Operations
     // ============================================
-    this.dashboard.addWidgets(
+    this.graphqlDashboard.addWidgets(
       new TextWidget({
         markdown: '## GraphQL Operations',
         width: 24,
@@ -148,10 +168,10 @@ export class MonitoringDashboardStack extends Stack {
       }),
     );
 
-    this.dashboard.addWidgets(
+    this.graphqlDashboard.addWidgets(
       new LogQueryWidget({
         title: 'Top Operations',
-        logGroupNames: [lambdaLogGroup.logGroupName],
+        logGroupNames: [graphqlLambdaLogGroup.logGroupName],
         view: LogQueryVisualizationType.TABLE,
         queryLines: [
           'fields context.operation as operation',
@@ -166,7 +186,7 @@ export class MonitoringDashboardStack extends Stack {
       }),
       new LogQueryWidget({
         title: 'Operations with Errors',
-        logGroupNames: [lambdaLogGroup.logGroupName],
+        logGroupNames: [graphqlLambdaLogGroup.logGroupName],
         view: LogQueryVisualizationType.TABLE,
         queryLines: [
           'fields context.operation as operation',
@@ -183,7 +203,7 @@ export class MonitoringDashboardStack extends Stack {
     // ============================================
     // Row 5: Error Patterns
     // ============================================
-    this.dashboard.addWidgets(
+    this.graphqlDashboard.addWidgets(
       new TextWidget({
         markdown: '## Error Patterns',
         width: 24,
@@ -191,10 +211,10 @@ export class MonitoringDashboardStack extends Stack {
       }),
     );
 
-    this.dashboard.addWidgets(
+    this.graphqlDashboard.addWidgets(
       new LogQueryWidget({
         title: 'Error Types Distribution',
-        logGroupNames: [lambdaLogGroup.logGroupName],
+        logGroupNames: [graphqlLambdaLogGroup.logGroupName],
         view: LogQueryVisualizationType.PIE,
         queryLines: [
           'fields error.name as errorType',
@@ -209,7 +229,7 @@ export class MonitoringDashboardStack extends Stack {
     // ============================================
     // Row 6: API Gateway Metrics
     // ============================================
-    this.dashboard.addWidgets(
+    this.graphqlDashboard.addWidgets(
       new TextWidget({
         markdown: '## API Gateway Metrics',
         width: 24,
@@ -217,10 +237,10 @@ export class MonitoringDashboardStack extends Stack {
       }),
     );
 
-    this.dashboard.addWidgets(
+    this.graphqlDashboard.addWidgets(
       new LogQueryWidget({
         title: 'Request Rate (Requests per 5 minutes)',
-        logGroupNames: [apiAccessLogGroup.logGroupName],
+        logGroupNames: [graphqlApiAccessLogGroup.logGroupName],
         view: LogQueryVisualizationType.LINE,
         queryLines: ['fields @timestamp', 'stats count() as requestCount by bin(5m)'],
         width: 12,
@@ -228,7 +248,7 @@ export class MonitoringDashboardStack extends Stack {
       }),
       new LogQueryWidget({
         title: 'Response Status Codes',
-        logGroupNames: [apiAccessLogGroup.logGroupName],
+        logGroupNames: [graphqlApiAccessLogGroup.logGroupName],
         view: LogQueryVisualizationType.TABLE,
         queryLines: [
           'fields @timestamp, @message',
@@ -242,10 +262,10 @@ export class MonitoringDashboardStack extends Stack {
       }),
     );
 
-    this.dashboard.addWidgets(
+    this.graphqlDashboard.addWidgets(
       new LogQueryWidget({
         title: 'Response Size Distribution (bytes)',
-        logGroupNames: [apiAccessLogGroup.logGroupName],
+        logGroupNames: [graphqlApiAccessLogGroup.logGroupName],
         view: LogQueryVisualizationType.LINE,
         queryLines: [
           'fields @timestamp',
@@ -258,9 +278,148 @@ export class MonitoringDashboardStack extends Stack {
       }),
       new GraphWidget({
         title: 'Concurrent Executions',
-        left: [lambdaFunction.metricInvocations({ statistic: 'Sum', period: Duration.seconds(60) })],
+        left: [graphqlLambdaFunction.metricInvocations({ statistic: 'Sum', period: Duration.seconds(60) })],
         width: 12,
         height: 6,
+      }),
+    );
+
+    this.websocketDashboard = new Dashboard(this, 'NtlangoWebSocketDashboard', {
+      dashboardName: `Ntlango-WebSocket-${stageName}`,
+    });
+
+    this.websocketDashboard.addWidgets(
+      new TextWidget({
+        markdown: `# Ntlango WebSocket Monitoring Dashboard\n\n**Stage:** ${stageName}\n**Lambda Function:** ${websocketLambdaFunction.functionName}\n**WebSocket API Id:** ${websocketApi.apiId}`,
+        width: 24,
+        height: 2,
+      }),
+    );
+
+    this.websocketDashboard.addWidgets(
+      new GraphWidget({
+        title: 'Lambda Invocations',
+        left: [websocketLambdaFunction.metricInvocations({ statistic: 'Sum' })],
+        width: 8,
+        height: 6,
+      }),
+      new GraphWidget({
+        title: 'Lambda Errors',
+        left: [websocketLambdaFunction.metricErrors({ statistic: 'Sum', color: '#d62728' })],
+        width: 8,
+        height: 6,
+      }),
+      new GraphWidget({
+        title: 'Lambda Duration (P50, P95, P99)',
+        left: [
+          websocketLambdaFunction.metricDuration({ statistic: 'p50', label: 'P50' }),
+          websocketLambdaFunction.metricDuration({
+            statistic: 'p95',
+            label: 'P95',
+            color: '#ff7f0e',
+          }),
+          websocketLambdaFunction.metricDuration({
+            statistic: 'p99',
+            label: 'P99',
+            color: '#d62728',
+          }),
+        ],
+        width: 8,
+        height: 6,
+      }),
+    );
+
+    const webSocketMetric = (metricName: string, label: string, color?: string) =>
+      new Metric({
+        namespace: 'AWS/ApiGateway',
+        metricName,
+        label,
+        dimensionsMap: {
+          ApiId: websocketApi.apiId,
+          Stage: websocketStage.stageName,
+        },
+        statistic: 'Sum',
+        period: Duration.minutes(5),
+        color,
+      });
+
+    this.websocketDashboard.addWidgets(
+      new TextWidget({
+        markdown: '## API Gateway WebSocket Metrics',
+        width: 24,
+        height: 1,
+      }),
+    );
+
+    this.websocketDashboard.addWidgets(
+      new GraphWidget({
+        title: 'Connections',
+        left: [
+          webSocketMetric('ConnectCount', 'ConnectCount'),
+          webSocketMetric('DisconnectCount', 'DisconnectCount', '#ff7f0e'),
+        ],
+        width: 12,
+        height: 6,
+      }),
+      new GraphWidget({
+        title: 'Message Throughput',
+        left: [webSocketMetric('MessageCount', 'MessageCount')],
+        width: 12,
+        height: 6,
+      }),
+    );
+
+    this.websocketDashboard.addWidgets(
+      new GraphWidget({
+        title: 'Gateway Errors',
+        left: [
+          webSocketMetric('ClientError', 'ClientError', '#d62728'),
+          webSocketMetric('IntegrationError', 'IntegrationError', '#9467bd'),
+          webSocketMetric('ExecutionError', 'ExecutionError', '#8c564b'),
+        ],
+        width: 12,
+        height: 6,
+      }),
+      new GraphWidget({
+        title: 'Lambda Throttles',
+        left: [websocketLambdaFunction.metricThrottles({ statistic: 'Sum', label: 'Throttles' })],
+        width: 12,
+        height: 6,
+      }),
+    );
+
+    this.websocketDashboard.addWidgets(
+      new TextWidget({
+        markdown: '## WebSocket Logs',
+        width: 24,
+        height: 1,
+      }),
+    );
+
+    this.websocketDashboard.addWidgets(
+      new LogQueryWidget({
+        title: 'Recent Errors',
+        logGroupNames: [websocketLambdaLogGroup.logGroupName],
+        queryLines: [
+          'fields @timestamp, message, level, routeKey, connectionId',
+          'filter level = "ERROR"',
+          'sort @timestamp desc',
+          'limit 100',
+        ],
+        width: 12,
+        height: 8,
+      }),
+      new LogQueryWidget({
+        title: 'Connect / Disconnect Events',
+        logGroupNames: [websocketLambdaLogGroup.logGroupName],
+        view: LogQueryVisualizationType.LINE,
+        queryLines: [
+          'fields @timestamp, routeKey',
+          'filter routeKey = "$connect" or routeKey = "$disconnect"',
+          'stats count() as events by routeKey, bin(5m)',
+        ],
+        width: 12,
+        height: 8,
       }),
     );
   }

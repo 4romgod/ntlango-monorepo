@@ -12,6 +12,8 @@ export * from './Organization/query';
 export * from './OrganizationMembership/query';
 export * from './Venue/query';
 export * from './Activity/query';
+export * from './Chat/query';
+export * from './Chat/types';
 export * from './Follow/query';
 export * from './Follow/types';
 export * from './Notification/query';

@@ -44,12 +44,13 @@ The following commands work without any environment variables:
 ### Deployed stages (Staging/Prod)
 
 - Secrets Manager stores `MONGO_DB_URL` and `JWT_SECRET` inside a secret whose name follows
-  `${STAGE}/ntlango/graphql-api`.
+  `ntlango/backend/${STAGE.toLowerCase()}` (for example `ntlango/backend/beta`).
 - CDK injects these into the lambda by looking up that secret via `Secret.fromSecretNameV2` and supplying
   `NTLANGO_SECRET_ARN` (the actual ARN returned by Secrets Manager) and `AWS_REGION`.
 - Lambda environment:
   - `STAGE` (from CI/CD).
-  - `NTLANGO_SECRET_ARN` (required ARN, not just the string `${STAGE}/ntlango/graphql-api`; the ARN is passed verbatim).
+  - `NTLANGO_SECRET_ARN` (required ARN, not just the string `ntlango/backend/${STAGE.toLowerCase()}`; the ARN is passed
+    verbatim).
   - `AWS_REGION` (should align with where the stack is deployed).
   - `S3_BUCKET_NAME` (S3 bucket for image storage; must be configured in deployment environment).
   - `NODE_OPTIONS` (handled in CDK, no manual change).
@@ -79,11 +80,14 @@ E2E tests use the `STAGE` environment variable to determine which endpoint to te
 - Keys:
   - `NEXT_PUBLIC_JWT_SECRET` (mirrors API secret for client-side helpers).
   - `NEXT_PUBLIC_GRAPHQL_URL` (e.g., `http://localhost:9000/v1/graphql`).
+  - `NEXT_PUBLIC_WEBSOCKET_URL` (e.g., `ws://localhost:3001` or deployed `wss://.../<stage>` endpoint for realtime
+    notifications).
 - These values stay local and are never checked in (respect `.gitignore` for `.env*`).
 
 ### Production & Staging
 
 - Host or CI (e.g., Vercel) should inject `NEXT_PUBLIC_JWT_SECRET` and `NEXT_PUBLIC_GRAPHQL_URL`.
+- Also inject `NEXT_PUBLIC_WEBSOCKET_URL` when realtime notification updates are enabled.
 - `NEXT_PUBLIC_GRAPHQL_URL` can come from the API deploy job output (`GRAPHQL_URL`).
 - `NEXT_PUBLIC_JWT_SECRET` should be sourced from the same Secrets Manager secret or another secure vault and exposed
   only to the frontend build pipeline.
