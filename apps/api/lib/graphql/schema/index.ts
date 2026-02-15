@@ -13,6 +13,7 @@ import {
   FollowResolver,
   IntentResolver,
   ActivityResolver,
+  ChatResolver,
   NotificationResolver,
   ImageResolver,
 } from '@/graphql/resolvers';
@@ -31,6 +32,7 @@ const createSchema = () => {
       FollowResolver,
       IntentResolver,
       ActivityResolver,
+      ChatResolver,
       OrganizationResolver,
       OrganizationMembershipResolver,
       VenueResolver,

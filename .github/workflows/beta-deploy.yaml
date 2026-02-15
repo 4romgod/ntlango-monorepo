@@ -48,7 +48,11 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Deploy AWS CDK
-        run: npm run cdk -w @ntlango/cdk -- deploy "*" --require-approval never
+        env:
+          CDK_DEPLOY_STACKS: "S3BucketStack GraphQLStack WebSocketApiStack MonitoringDashboardStack"
+        run: |
+          # Intentionally excludes SecretsManagementStack to avoid overwriting existing secrets.
+          npm run cdk -w @ntlango/cdk -- deploy $CDK_DEPLOY_STACKS --require-approval never --exclusively
 
       - name: Get API Gateway endpoint
         id: get_endpoint

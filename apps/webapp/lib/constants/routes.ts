@@ -13,6 +13,7 @@ export const ROUTES = {
       CREATE: '/account/organizations/create',
     },
     MESSAGES: '/account/messages',
+    MESSAGE_WITH_USERNAME: (username: string) => `/account/messages/${encodeURIComponent(username)}`,
     NOTIFICATIONS: '/account/notifications',
     PROFILE: '/account/profile',
     ROOT: '/account',

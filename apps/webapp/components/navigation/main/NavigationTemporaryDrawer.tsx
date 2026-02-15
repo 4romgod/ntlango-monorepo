@@ -34,7 +34,7 @@ import NavLinksList from '@/components/navigation/main/NavLinksList';
 import { logoutUserAction } from '@/data/actions/server/auth/logout';
 import { ROUTES } from '@/lib/constants';
 import { getDisplayName, getAvatarSrc } from '@/lib/utils';
-import { useIsAdmin, useUnreadNotificationCount } from '@/hooks';
+import { useIsAdmin, useUnreadChatCount, useUnreadNotificationCount } from '@/hooks';
 
 export default function TemporaryDrawer({ isAuthN }: { isAuthN: boolean }) {
   const [open, setOpen] = useState(false);
@@ -43,6 +43,7 @@ export default function TemporaryDrawer({ isAuthN }: { isAuthN: boolean }) {
 
   // Get unread notification count for badge (polls every 5 minutes only when tab is visible)
   const { unreadCount } = useUnreadNotificationCount(isAuthN ? 300000 : undefined);
+  const { unreadCount: unreadChatCount } = useUnreadChatCount(isAuthN ? 30000 : undefined);
 
   const toggleDrawer = (newOpen: boolean) => () => {
     setOpen(newOpen);
@@ -124,7 +125,20 @@ export default function TemporaryDrawer({ isAuthN }: { isAuthN: boolean }) {
             <ListItem disablePadding>
               <ListItemButton component={Link} href={ROUTES.ACCOUNT.MESSAGES}>
                 <ListItemIcon>
-                  <MailOutline />
+                  <Badge
+                    badgeContent={unreadChatCount}
+                    color="error"
+                    sx={{
+                      '& .MuiBadge-badge': {
+                        fontSize: '0.65rem',
+                        height: 16,
+                        minWidth: 16,
+                        fontWeight: 700,
+                      },
+                    }}
+                  >
+                    <MailOutline />
+                  </Badge>
                 </ListItemIcon>
                 <ListItemText primary={'Messages'} />
               </ListItemButton>

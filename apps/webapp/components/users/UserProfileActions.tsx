@@ -1,8 +1,9 @@
 'use client';
 
+import Link from 'next/link';
 import { useState } from 'react';
-import { IconButton, Menu, MenuItem, ListItemIcon, ListItemText, Stack } from '@mui/material';
-import { MoreVert, Block, RemoveCircleOutline } from '@mui/icons-material';
+import { Button, IconButton, Menu, MenuItem, ListItemIcon, ListItemText, Stack } from '@mui/material';
+import { MoreVert, Block, RemoveCircleOutline, MailOutline } from '@mui/icons-material';
 import { useBlock, useBlockedUsers, useAppContext } from '@/hooks';
 import { useRouter } from 'next/navigation';
 import FollowButton from './FollowButton';
@@ -10,9 +11,16 @@ import FollowButton from './FollowButton';
 interface UserProfileActionsProps {
   userId: string;
   username: string;
+  canMessage?: boolean;
+  messageHref?: string;
 }
 
-export default function UserProfileActions({ userId, username }: UserProfileActionsProps) {
+export default function UserProfileActions({
+  userId,
+  username,
+  canMessage = false,
+  messageHref,
+}: UserProfileActionsProps) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const { blockUser, unblockUser, isLoading } = useBlock();
   const { blockedUsers } = useBlockedUsers();
@@ -77,6 +85,28 @@ export default function UserProfileActions({ userId, username }: UserProfileActi
 
   return (
     <Stack direction="row" spacing={1}>
+      {canMessage && messageHref && (
+        <Button
+          component={Link}
+          href={messageHref}
+          variant="outlined"
+          size="small"
+          startIcon={<MailOutline />}
+          sx={{
+            borderRadius: 2,
+            bgcolor: 'background.paper',
+            borderColor: 'divider',
+            textTransform: 'none',
+            fontWeight: 600,
+            '&:hover': {
+              bgcolor: 'background.default',
+              borderColor: 'text.secondary',
+            },
+          }}
+        >
+          Message
+        </Button>
+      )}
       <FollowButton targetId={userId} size="small" />
       <IconButton
         onClick={handleMenuOpen}

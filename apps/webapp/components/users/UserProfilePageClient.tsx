@@ -34,6 +34,7 @@ import {
   GetAllEventsDocument,
   GetSavedEventsDocument,
   GetUserByUsernameDocument,
+  SocialVisibility,
 } from '@/data/graphql/types/graphql';
 import { EventPreview } from '@/data/graphql/query/Event/types';
 import Carousel from '@/components/carousel';
@@ -124,6 +125,12 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
     ? { filter: 'blur(4px)', pointerEvents: 'none', userSelect: 'none', transition: 'filter 0.2s ease' }
     : undefined;
   const maskLabel = user ? getVisibilityLabelText(user.defaultVisibility) : 'Private profile';
+  const canMessageUser = Boolean(
+    user &&
+    viewerUserId &&
+    !isOwnProfile &&
+    (followingUserIds.has(user.userId) || user.defaultVisibility === SocialVisibility.Public),
+  );
 
   const rsvpdEvents = useMemo(
     () => events.filter((event) => event.participants?.some((p) => p.userId === user?.userId)),
@@ -273,7 +280,12 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
                     right: 20,
                   }}
                 >
-                  <UserProfileActions userId={user.userId} username={user.username} />
+                  <UserProfileActions
+                    userId={user.userId}
+                    username={user.username}
+                    canMessage={canMessageUser}
+                    messageHref={ROUTES.ACCOUNT.MESSAGE_WITH_USERNAME(user.username)}
+                  />
                 </Box>
               )}
             </Box>
