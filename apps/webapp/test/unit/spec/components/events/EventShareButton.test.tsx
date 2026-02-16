@@ -1,4 +1,5 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, screen, waitFor } from '@testing-library/dom';
+import { render } from '@testing-library/react';
 import type { ComponentProps } from 'react';
 import EventShareButton from '@/components/events/EventShareButton';
 

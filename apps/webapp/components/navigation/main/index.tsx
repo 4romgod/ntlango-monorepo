@@ -70,7 +70,7 @@ export default function MainNavigation({ isAuthN }: MainNavigationProps) {
           color="primary"
           sx={{
             px: { xs: 2, sm: 3, md: 4 },
-            minHeight: 58,
+            minHeight: 64,
             gap: 1.25,
           }}
         >

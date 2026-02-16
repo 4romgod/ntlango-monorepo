@@ -3,6 +3,7 @@
 import '@/components/global.css';
 import 'nprogress/nprogress.css';
 import dynamic from 'next/dynamic';
+import { usePathname } from 'next/navigation';
 import { ReactNode, useEffect } from 'react';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter';
 import { CustomAppContextProvider } from '@/components/context/AppContext';
@@ -20,10 +21,13 @@ import { logger } from '@/lib/utils';
 
 const TopProgressBar = dynamic(() => import('@/components/core/progress/TopProgressBar'), { ssr: false });
 
+export const NAV_HEIGHT = 64;
+
 type RootLayoutProps = { children: ReactNode; session: Session | null };
 
 export default function RootLayout({ children, session }: RootLayoutProps) {
-  const navHeight = 64;
+  const pathname = usePathname();
+  const isMessagesRoute = pathname?.startsWith('/account/messages') ?? false;
 
   const isAuthN = Boolean(session?.user?.userId && session?.user?.token);
   useEffect(() => {
@@ -48,15 +52,24 @@ export default function RootLayout({ children, session }: RootLayoutProps) {
                   <MainNavigation isAuthN={isAuthN} />
                   <Box
                     sx={{
-                      minHeight: '100vh',
-                      marginTop: `${navHeight}px`,
+                      marginTop: `${NAV_HEIGHT}px`,
+                      ...(isMessagesRoute
+                        ? {
+                            height: `calc(100dvh - ${NAV_HEIGHT}px)`,
+                            overflow: 'hidden',
+                          }
+                        : {
+                            minHeight: '100vh',
+                          }),
                     }}
                   >
                     {children}
                   </Box>
-                  <Box>
-                    <Footer />
-                  </Box>
+                  {!isMessagesRoute && (
+                    <Box>
+                      <Footer />
+                    </Box>
+                  )}
                 </CustomThemeProvider>
               </CustomAppContextProvider>
             </SessionProvider>

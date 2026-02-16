@@ -4,7 +4,7 @@ import React, { createContext, useMemo, ReactNode } from 'react';
 import { EventStatus } from '@/data/graphql/types/graphql';
 import dayjs, { Dayjs } from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween';
-import { usePersistentState } from '@/hooks/usePersistentState';
+import { usePersistentState, STORAGE_KEYS, STORAGE_NAMESPACES } from '@/hooks/usePersistentState';
 
 dayjs.extend(isBetween);
 
@@ -106,8 +106,8 @@ export const EventFilterProvider: React.FC<EventFilterProviderProps> = ({ childr
     setValue: setFilters,
     clearStorage,
     isHydrated,
-  } = usePersistentState<EventFilters>('events-filter-state', initialFilters, {
-    namespace: 'filters',
+  } = usePersistentState<EventFilters>(STORAGE_KEYS.EVENTS_FILTER_STATE, initialFilters, {
+    namespace: STORAGE_NAMESPACES.FILTERS,
     userId,
     ttl: 1000 * 60 * 60 * 24 * 7, // 7 days
     serialize: serializeFilters,

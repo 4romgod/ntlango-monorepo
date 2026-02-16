@@ -3,6 +3,7 @@ export { useEventFilters } from './useEventFilters';
 export { useFilteredEvents } from './useFilteredEvents';
 export { useNetworkActivity, installNetworkInterceptor, subscribeToNetworkActivity } from './useNetworkActivity';
 export { usePersistentState } from './usePersistentState';
+export { STORAGE_KEYS, STORAGE_NAMESPACES } from './usePersistentState';
 export * from './useFollow';
 export * from './useBlock';
 export * from './useSaveEvent';

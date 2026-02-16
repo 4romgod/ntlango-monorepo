@@ -8,7 +8,6 @@ import {
   Box,
   Button,
   CircularProgress,
-  Container,
   Divider,
   IconButton,
   InputAdornment,
@@ -17,7 +16,6 @@ import {
   ListItemAvatar,
   ListItemButton,
   ListItemText,
-  Paper,
   Popover,
   Tab,
   Tabs,
@@ -26,7 +24,7 @@ import {
 } from '@mui/material';
 import { alpha, useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { ArrowBack, Search, Send, SentimentSatisfiedAlt } from '@mui/icons-material';
+import { ArrowBack, KeyboardArrowDown, Search, Send, SentimentSatisfiedAlt } from '@mui/icons-material';
 import { useSession } from 'next-auth/react';
 import { GetUserByUsernameDocument } from '@/data/graphql/types/graphql';
 import {
@@ -53,14 +51,12 @@ import {
   type ChatEmojiCategoryKey,
   type ChatEmojiOption,
 } from '@/components/messages/chatEmojiPickerData';
+import { STORAGE_KEYS } from '@/hooks/usePersistentState';
 
 const CHAT_MESSAGES_LIMIT = 100;
 const CHAT_CONVERSATIONS_LIMIT = 100;
-const DESKTOP_PANEL_HEIGHT = 'calc(100vh - 220px)';
-const LAST_OPEN_CHAT_USERNAME_KEY = 'ntlango:last-open-chat-username';
 const MESSAGE_GROUP_WINDOW_MINUTES = 10;
 const STICKY_BOTTOM_THRESHOLD_PX = 96;
-const CHAT_EMOJI_RECENTS_KEY = 'ntlango:chat-emoji-recents';
 const CHAT_EMOJI_RECENTS_LIMIT = 18;
 
 type ThreadRenderItem =
@@ -264,7 +260,7 @@ export default function ConversationThread({ username }: ConversationThreadProps
 
   useEffect(() => {
     if (typeof window !== 'undefined' && username) {
-      window.localStorage.setItem(LAST_OPEN_CHAT_USERNAME_KEY, username);
+      window.localStorage.setItem(STORAGE_KEYS.LAST_OPEN_CHAT_USERNAME, username);
     }
   }, [username]);
 
@@ -274,7 +270,7 @@ export default function ConversationThread({ username }: ConversationThreadProps
     }
 
     try {
-      const storedValue = window.localStorage.getItem(CHAT_EMOJI_RECENTS_KEY);
+      const storedValue = window.localStorage.getItem(STORAGE_KEYS.CHAT_EMOJI_RECENTS);
       if (!storedValue) {
         return;
       }
@@ -502,7 +498,7 @@ export default function ConversationThread({ username }: ConversationThreadProps
     setRecentEmojis((previous) => {
       const next = [emoji, ...previous.filter((item) => item !== emoji)].slice(0, CHAT_EMOJI_RECENTS_LIMIT);
       if (typeof window !== 'undefined') {
-        window.localStorage.setItem(CHAT_EMOJI_RECENTS_KEY, JSON.stringify(next));
+        window.localStorage.setItem(STORAGE_KEYS.CHAT_EMOJI_RECENTS, JSON.stringify(next));
       }
       return next;
     });
@@ -584,7 +580,16 @@ export default function ConversationThread({ username }: ConversationThreadProps
   }, [targetUserId]);
 
   const threadPane = (
-    <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, p: 2 }}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        flex: 1,
+        minHeight: 0,
+        p: 2,
+        pb: 'max(16px, env(safe-area-inset-bottom))',
+      }}
+    >
       {!isDesktop && (
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
           <IconButton
@@ -628,7 +633,6 @@ export default function ConversationThread({ username }: ConversationThreadProps
               </Typography>
               <Typography variant="caption" color={isConnected ? 'success.main' : 'text.secondary'} noWrap>
                 {isConnected ? 'Online' : 'Offline'}
-                {displayIdentity.handleLabel ? ` · ${displayIdentity.handleLabel}` : ''}
               </Typography>
             </Box>
           </Box>
@@ -640,7 +644,7 @@ export default function ConversationThread({ username }: ConversationThreadProps
             onScroll={updateScrollStickiness}
             display="flex"
             flexDirection="column"
-            sx={{ flex: 1, minHeight: 0, overflowY: 'auto', pr: 1, py: 0.5 }}
+            sx={{ flex: 1, minHeight: 0, overflowY: 'auto', px: 3, py: 0.5 }}
           >
             {messagesLoading && threadItems.length === 0 ? (
               <Box sx={{ py: 3, display: 'flex', justifyContent: 'center' }}>
@@ -727,9 +731,23 @@ export default function ConversationThread({ username }: ConversationThreadProps
 
           {showJumpToLatest && (
             <Box sx={{ display: 'flex', justifyContent: 'center', pt: 1 }}>
-              <Button size="small" variant="outlined" onClick={() => scrollToLatest('smooth')}>
-                New messages
-              </Button>
+              <IconButton
+                onClick={() => scrollToLatest('smooth')}
+                aria-label="Jump to latest messages"
+                sx={{
+                  width: 36,
+                  height: 36,
+                  border: '1px solid',
+                  borderColor: 'primary.main',
+                  color: 'primary.main',
+                  backgroundColor: 'background.paper',
+                  '&:hover': {
+                    backgroundColor: (muiTheme) => alpha(muiTheme.palette.primary.main, 0.08),
+                  },
+                }}
+              >
+                <KeyboardArrowDown />
+              </IconButton>
             </Box>
           )}
 
@@ -754,11 +772,6 @@ export default function ConversationThread({ username }: ConversationThreadProps
                   : muiTheme.palette.background.default,
               boxShadow: (muiTheme) =>
                 muiTheme.palette.mode === 'light' ? `0 1px 2px ${alpha(muiTheme.palette.common.black, 0.08)}` : 'none',
-              transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
-              '&:focus-within': {
-                borderColor: 'primary.main',
-                boxShadow: (muiTheme) => `0 0 0 3px ${alpha(muiTheme.palette.primary.main, 0.18)}`,
-              },
             }}
           >
             <IconButton
@@ -799,7 +812,7 @@ export default function ConversationThread({ username }: ConversationThreadProps
               onSelect={captureDraftSelection}
               onKeyUp={captureDraftSelection}
               onFocus={captureDraftSelection}
-              placeholder="Type your message..."
+              placeholder="Message..."
               slotProps={{
                 input: {
                   disableUnderline: true,
@@ -1029,208 +1042,197 @@ export default function ConversationThread({ username }: ConversationThreadProps
   );
 
   return (
-    <Box sx={{ py: 6 }}>
-      <Container maxWidth="xl">
-        <Typography variant="h4" fontWeight="bold" mb={3}>
-          Messages
-        </Typography>
-
-        <Paper
+    <Box
+      sx={{
+        height: '100%',
+        display: 'flex',
+        flexDirection: { xs: 'column', md: 'row' },
+        overflow: 'hidden',
+      }}
+    >
+      {isDesktop && (
+        <Box
           sx={{
-            minHeight: { xs: '70vh', md: DESKTOP_PANEL_HEIGHT },
-            height: { md: DESKTOP_PANEL_HEIGHT },
-            display: 'flex',
-            flexDirection: { xs: 'column', md: 'row' },
-            overflow: 'hidden',
-            border: '1px solid',
+            width: 360,
+            borderRight: '1px solid',
             borderColor: surfaceLineColor,
+            display: 'flex',
+            flexDirection: 'column',
           }}
         >
-          {isDesktop && (
-            <Box
-              sx={{
-                width: 360,
-                borderRight: '1px solid',
-                borderColor: surfaceLineColor,
-                display: 'flex',
-                flexDirection: 'column',
+          <Box sx={{ p: 2, borderBottom: '1px solid', borderColor: surfaceLineColor }}>
+            <Typography variant="subtitle1" fontWeight={700}>
+              Conversations
+            </Typography>
+            <TextField
+              fullWidth
+              value={conversationSearch}
+              onChange={(event) => setConversationSearch(event.target.value)}
+              size="small"
+              placeholder="Search conversations"
+              sx={{ mt: 1.5 }}
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Search fontSize="small" />
+                    </InputAdornment>
+                  ),
+                },
               }}
-            >
-              <Box sx={{ p: 2, borderBottom: '1px solid', borderColor: surfaceLineColor }}>
-                <Typography variant="subtitle1" fontWeight={700}>
-                  Conversations
+            />
+          </Box>
+
+          <Box sx={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
+            {conversationsLoading && conversations.length === 0 ? (
+              <Box sx={{ p: 3, display: 'flex', justifyContent: 'center' }}>
+                <CircularProgress size={24} />
+              </Box>
+            ) : conversationsError ? (
+              <Box sx={{ p: 3 }}>
+                <Typography color="error">Failed to load conversations.</Typography>
+              </Box>
+            ) : filteredConversationItems.length === 0 ? (
+              <Box sx={{ p: 3 }}>
+                <Typography color="text.secondary">
+                  {conversationSearch.trim() ? 'No conversations match your search.' : 'No messages yet.'}
                 </Typography>
-                <TextField
-                  fullWidth
-                  value={conversationSearch}
-                  onChange={(event) => setConversationSearch(event.target.value)}
-                  size="small"
-                  placeholder="Search conversations"
-                  sx={{ mt: 1.5 }}
-                  slotProps={{
-                    input: {
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <Search fontSize="small" />
-                        </InputAdornment>
-                      ),
-                    },
-                  }}
-                />
               </Box>
-
-              <Box sx={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
-                {conversationsLoading && conversations.length === 0 ? (
-                  <Box sx={{ p: 3, display: 'flex', justifyContent: 'center' }}>
-                    <CircularProgress size={24} />
-                  </Box>
-                ) : conversationsError ? (
-                  <Box sx={{ p: 3 }}>
-                    <Typography color="error">Failed to load conversations.</Typography>
-                  </Box>
-                ) : filteredConversationItems.length === 0 ? (
-                  <Box sx={{ p: 3 }}>
-                    <Typography color="text.secondary">
-                      {conversationSearch.trim() ? 'No conversations match your search.' : 'No messages yet.'}
-                    </Typography>
-                  </Box>
-                ) : (
-                  <List disablePadding>
-                    {filteredConversationItems.map((conversation, index) => (
-                      <React.Fragment key={conversation.conversationWithUserId}>
-                        <ListItem disablePadding>
-                          {conversation.href ? (
-                            <ListItemButton
-                              component={Link}
-                              href={conversation.href}
-                              sx={{
-                                mx: 1,
-                                my: 0.5,
-                                px: 2,
-                                py: 1.5,
-                                borderRadius: 1.5,
-                                borderLeft: '3px solid',
-                                borderLeftColor: conversation.isSelected ? 'primary.main' : 'transparent',
-                                backgroundColor: (muiTheme) =>
-                                  conversation.isSelected
-                                    ? muiTheme.palette.mode === 'light'
-                                      ? alpha(muiTheme.palette.primary.main, 0.18)
-                                      : alpha(muiTheme.palette.primary.main, 0.24)
-                                    : 'inherit',
-                                boxShadow: (muiTheme) =>
-                                  conversation.isSelected
-                                    ? `inset 0 0 0 1px ${
-                                        muiTheme.palette.mode === 'light'
-                                          ? alpha(muiTheme.palette.primary.main, 0.28)
-                                          : alpha(muiTheme.palette.primary.main, 0.34)
-                                      }`
-                                    : 'none',
-                                '&:hover': {
-                                  backgroundColor: (muiTheme) =>
-                                    conversation.isSelected
-                                      ? muiTheme.palette.mode === 'light'
-                                        ? alpha(muiTheme.palette.primary.main, 0.24)
-                                        : alpha(muiTheme.palette.primary.main, 0.28)
-                                      : muiTheme.palette.action.hover,
-                                },
-                              }}
-                            >
-                              <ListItemAvatar>
-                                <Avatar src={conversation.avatarSrc} alt={conversation.displayName} />
-                              </ListItemAvatar>
-                              <ListItemText
-                                primary={
-                                  <Box
-                                    sx={{
-                                      display: 'flex',
-                                      justifyContent: 'space-between',
-                                      gap: 1,
-                                      alignItems: 'flex-start',
-                                    }}
-                                  >
-                                    <Box sx={{ minWidth: 0 }}>
-                                      <Typography
-                                        variant="subtitle2"
-                                        noWrap
-                                        fontWeight={conversation.unreadCount > 0 ? 700 : 500}
-                                      >
-                                        {conversation.displayName}
-                                      </Typography>
-                                      {conversation.handleLabel && (
-                                        <Typography variant="caption" color="text.secondary" noWrap display="block">
-                                          {conversation.handleLabel}
-                                        </Typography>
-                                      )}
-                                    </Box>
-                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexShrink: 0 }}>
-                                      <Typography variant="caption" color="text.secondary">
-                                        {conversation.relativeTime}
-                                      </Typography>
-                                      {conversation.unreadCount > 0 && (
-                                        <Box
-                                          sx={{
-                                            minWidth: 20,
-                                            height: 20,
-                                            px: 0.75,
-                                            borderRadius: 10,
-                                            backgroundColor: 'primary.main',
-                                            color: 'primary.contrastText',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            fontSize: '0.7rem',
-                                            fontWeight: 700,
-                                          }}
-                                        >
-                                          {conversation.unreadCount > 99 ? '99+' : conversation.unreadCount}
-                                        </Box>
-                                      )}
-                                    </Box>
-                                  </Box>
-                                }
-                                secondary={
+            ) : (
+              <List disablePadding>
+                {filteredConversationItems.map((conversation, index) => (
+                  <React.Fragment key={conversation.conversationWithUserId}>
+                    <ListItem disablePadding>
+                      {conversation.href ? (
+                        <ListItemButton
+                          component={Link}
+                          href={conversation.href}
+                          sx={{
+                            mx: 1,
+                            my: 0.5,
+                            px: 2,
+                            py: 1.5,
+                            borderRadius: 1.5,
+                            borderLeft: '3px solid',
+                            borderLeftColor: conversation.isSelected ? 'primary.main' : 'transparent',
+                            backgroundColor: (muiTheme) =>
+                              conversation.isSelected
+                                ? muiTheme.palette.mode === 'light'
+                                  ? alpha(muiTheme.palette.primary.main, 0.18)
+                                  : alpha(muiTheme.palette.primary.main, 0.24)
+                                : 'inherit',
+                            boxShadow: (muiTheme) =>
+                              conversation.isSelected
+                                ? `inset 0 0 0 1px ${
+                                    muiTheme.palette.mode === 'light'
+                                      ? alpha(muiTheme.palette.primary.main, 0.28)
+                                      : alpha(muiTheme.palette.primary.main, 0.34)
+                                  }`
+                                : 'none',
+                            '&:hover': {
+                              backgroundColor: (muiTheme) =>
+                                conversation.isSelected
+                                  ? muiTheme.palette.mode === 'light'
+                                    ? alpha(muiTheme.palette.primary.main, 0.24)
+                                    : alpha(muiTheme.palette.primary.main, 0.28)
+                                  : muiTheme.palette.action.hover,
+                            },
+                          }}
+                        >
+                          <ListItemAvatar>
+                            <Avatar src={conversation.avatarSrc} alt={conversation.displayName} />
+                          </ListItemAvatar>
+                          <ListItemText
+                            primary={
+                              <Box
+                                sx={{
+                                  display: 'flex',
+                                  justifyContent: 'space-between',
+                                  gap: 1,
+                                  alignItems: 'flex-start',
+                                }}
+                              >
+                                <Box sx={{ minWidth: 0 }}>
                                   <Typography
-                                    variant="body2"
-                                    component="span"
+                                    variant="subtitle2"
                                     noWrap
-                                    color={conversation.unreadCount > 0 ? 'text.primary' : 'text.secondary'}
-                                    fontWeight={conversation.unreadCount > 0 ? 600 : 400}
+                                    fontWeight={conversation.unreadCount > 0 ? 700 : 500}
                                   >
-                                    {conversation.preview}
+                                    {conversation.displayName}
                                   </Typography>
-                                }
-                              />
-                            </ListItemButton>
-                          ) : (
-                            <ListItemButton disabled sx={{ px: 2, py: 1.5 }}>
-                              <ListItemAvatar>
-                                <Avatar src={conversation.avatarSrc} alt={conversation.displayName} />
-                              </ListItemAvatar>
-                              <ListItemText
-                                primary={conversation.displayName}
-                                secondary={
-                                  <Typography variant="body2" color="text.secondary" component="span" noWrap>
-                                    {conversation.preview}
+                                  {conversation.handleLabel && (
+                                    <Typography variant="caption" color="text.secondary" noWrap display="block">
+                                      {conversation.handleLabel}
+                                    </Typography>
+                                  )}
+                                </Box>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexShrink: 0 }}>
+                                  <Typography variant="caption" color="text.secondary">
+                                    {conversation.relativeTime}
                                   </Typography>
-                                }
-                              />
-                            </ListItemButton>
-                          )}
-                        </ListItem>
-                        {index < filteredConversationItems.length - 1 && (
-                          <Divider component="li" sx={{ borderColor: surfaceLineColor, mx: 1 }} />
-                        )}
-                      </React.Fragment>
-                    ))}
-                  </List>
-                )}
-              </Box>
-            </Box>
-          )}
+                                  {conversation.unreadCount > 0 && (
+                                    <Box
+                                      sx={{
+                                        minWidth: 20,
+                                        height: 20,
+                                        px: 0.75,
+                                        borderRadius: 10,
+                                        backgroundColor: 'primary.main',
+                                        color: 'primary.contrastText',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        fontSize: '0.7rem',
+                                        fontWeight: 700,
+                                      }}
+                                    >
+                                      {conversation.unreadCount > 99 ? '99+' : conversation.unreadCount}
+                                    </Box>
+                                  )}
+                                </Box>
+                              </Box>
+                            }
+                            secondary={
+                              <Typography
+                                variant="body2"
+                                component="span"
+                                noWrap
+                                color={conversation.unreadCount > 0 ? 'text.primary' : 'text.secondary'}
+                                fontWeight={conversation.unreadCount > 0 ? 600 : 400}
+                              >
+                                {conversation.preview}
+                              </Typography>
+                            }
+                          />
+                        </ListItemButton>
+                      ) : (
+                        <ListItemButton disabled sx={{ px: 2, py: 1.5 }}>
+                          <ListItemAvatar>
+                            <Avatar src={conversation.avatarSrc} alt={conversation.displayName} />
+                          </ListItemAvatar>
+                          <ListItemText
+                            primary={conversation.displayName}
+                            secondary={
+                              <Typography variant="body2" color="text.secondary" component="span" noWrap>
+                                {conversation.preview}
+                              </Typography>
+                            }
+                          />
+                        </ListItemButton>
+                      )}
+                    </ListItem>
+                    {index < filteredConversationItems.length - 1 && (
+                      <Divider component="li" sx={{ borderColor: surfaceLineColor, mx: 1 }} />
+                    )}
+                  </React.Fragment>
+                ))}
+              </List>
+            )}
+          </Box>
+        </Box>
+      )}
 
-          {threadPane}
-        </Paper>
-      </Container>
+      {threadPane}
     </Box>
   );
 }

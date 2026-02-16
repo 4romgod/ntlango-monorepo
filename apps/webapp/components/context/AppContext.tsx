@@ -6,6 +6,7 @@ import { createTheme } from '@mui/material/styles';
 import type { LinkProps as MuiLinkProps } from '@mui/material/Link';
 import NextLink, { LinkProps as NextLinkProps } from 'next/link';
 import { getDesignTokens } from '@/components/theme/DesignTokens';
+import { usePersistentState, STORAGE_KEYS, STORAGE_NAMESPACES } from '@/hooks/usePersistentState';
 
 type ToastProps = SnackbarProps & AlertProps & { message: string };
 
@@ -42,7 +43,17 @@ export const CustomAppContext = createContext<CustomAppContextType>({
 });
 
 export const CustomAppContextProvider = ({ children }: { children: ReactNode }) => {
-  const [themeMode, setThemeMode] = useState<PaletteMode>('light');
+  const { value: themeMode, setValue: setThemeMode } = usePersistentState<PaletteMode>(
+    STORAGE_KEYS.THEME_MODE,
+    'light',
+    {
+      namespace: STORAGE_NAMESPACES.PREFERENCES,
+      syncToBackend: false,
+      serialize: (mode) => mode,
+      deserialize: (mode) => (mode === 'dark' || mode === 'light' ? mode : 'light'),
+    },
+  );
+
   const theme = useMemo(
     () =>
       createTheme(getDesignTokens(themeMode), {
