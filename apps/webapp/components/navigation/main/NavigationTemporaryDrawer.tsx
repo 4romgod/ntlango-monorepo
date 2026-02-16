@@ -28,6 +28,8 @@ import {
   Security,
   Logout,
   Business,
+  DarkMode,
+  LightMode,
 } from '@mui/icons-material';
 import { useSession } from 'next-auth/react';
 import NavLinksList from '@/components/navigation/main/NavLinksList';
@@ -35,11 +37,13 @@ import { logoutUserAction } from '@/data/actions/server/auth/logout';
 import { ROUTES } from '@/lib/constants';
 import { getDisplayName, getAvatarSrc } from '@/lib/utils';
 import { useIsAdmin, useUnreadChatCount, useUnreadNotificationCount } from '@/hooks';
+import { useAppContext } from '@/hooks/useAppContext';
 
 export default function TemporaryDrawer({ isAuthN }: { isAuthN: boolean }) {
   const [open, setOpen] = useState(false);
   const { data: session } = useSession();
   const isAdmin = useIsAdmin();
+  const { themeMode, setThemeMode } = useAppContext();
 
   // Unread badges are primarily websocket-driven; queries provide initial/fallback state.
   const { unreadCount } = useUnreadNotificationCount();
@@ -172,6 +176,15 @@ export default function TemporaryDrawer({ isAuthN }: { isAuthN: boolean }) {
                   <Settings />
                 </ListItemIcon>
                 <ListItemText primary={'Settings'} />
+              </ListItemButton>
+            </ListItem>
+
+            <ListItem disablePadding>
+              <ListItemButton
+                onClick={() => setThemeMode((currentThemeMode) => (currentThemeMode === 'dark' ? 'light' : 'dark'))}
+              >
+                <ListItemIcon>{themeMode === 'dark' ? <LightMode /> : <DarkMode />}</ListItemIcon>
+                <ListItemText primary={themeMode === 'dark' ? 'Light mode' : 'Dark mode'} />
               </ListItemButton>
             </ListItem>
 

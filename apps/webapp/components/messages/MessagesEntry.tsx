@@ -8,9 +8,9 @@ import { useEffect, useMemo, useState } from 'react';
 import { useChatConversations, useResolveConversationUsers } from '@/hooks';
 import { ROUTES } from '@/lib/constants';
 import MessagesPanel from '@/components/messages/MessagesPanel';
+import { STORAGE_KEYS } from '@/hooks/usePersistentState';
 
 const CHAT_CONVERSATIONS_LIMIT = 100;
-const LAST_OPEN_CHAT_USERNAME_KEY = 'ntlango:last-open-chat-username';
 
 export default function MessagesEntry() {
   const router = useRouter();
@@ -37,7 +37,7 @@ export default function MessagesEntry() {
     }
 
     const storedLastOpenUsername =
-      typeof window !== 'undefined' ? window.localStorage.getItem(LAST_OPEN_CHAT_USERNAME_KEY) : null;
+      typeof window !== 'undefined' ? window.localStorage.getItem(STORAGE_KEYS.LAST_OPEN_CHAT_USERNAME) : null;
 
     const targetUsername =
       storedLastOpenUsername && availableUsernames.includes(storedLastOpenUsername)
@@ -54,7 +54,7 @@ export default function MessagesEntry() {
 
   if (isDesktop && loading && conversations.length === 0) {
     return (
-      <Box sx={{ minHeight: '60vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <Box sx={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <CircularProgress size={28} />
       </Box>
     );
@@ -62,7 +62,7 @@ export default function MessagesEntry() {
 
   if (isDesktop && availableUsernames.length > 0) {
     return (
-      <Box sx={{ minHeight: '60vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <Box sx={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <CircularProgress size={28} />
       </Box>
     );

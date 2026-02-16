@@ -6,7 +6,6 @@ import {
   Avatar,
   Box,
   CircularProgress,
-  Container,
   Divider,
   InputAdornment,
   List,
@@ -14,7 +13,6 @@ import {
   ListItemAvatar,
   ListItemButton,
   ListItemText,
-  Paper,
   TextField,
   Typography,
 } from '@mui/material';
@@ -31,7 +29,6 @@ import {
 } from '@/components/messages/chatUiUtils';
 
 const CHAT_CONVERSATIONS_LIMIT = 100;
-const DESKTOP_PANEL_HEIGHT = 'calc(100vh - 220px)';
 
 export default function MessagesPanel() {
   const theme = useTheme();
@@ -98,160 +95,144 @@ export default function MessagesPanel() {
   }, [conversationItems, searchQuery]);
 
   return (
-    <Box sx={{ py: 6 }}>
-      <Container maxWidth="lg">
-        <Typography variant="h4" fontWeight="bold" mb={3}>
+    <Box
+      sx={{
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+      }}
+    >
+      <Box sx={{ p: 2, borderBottom: '1px solid', borderColor: surfaceLineColor }}>
+        <Typography variant="subtitle1" fontWeight={700}>
           Messages
         </Typography>
-
-        <Paper
-          sx={{
-            minHeight: { xs: '70vh', md: DESKTOP_PANEL_HEIGHT },
-            height: { md: DESKTOP_PANEL_HEIGHT },
-            display: 'flex',
-            flexDirection: 'column',
-            border: '1px solid',
-            borderColor: surfaceLineColor,
+        <TextField
+          fullWidth
+          value={searchQuery}
+          onChange={(event) => setSearchQuery(event.target.value)}
+          size="small"
+          placeholder="Search conversations"
+          sx={{ mt: 1.5 }}
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search fontSize="small" />
+                </InputAdornment>
+              ),
+            },
           }}
-        >
-          <Box sx={{ p: 2, borderBottom: '1px solid', borderColor: surfaceLineColor }}>
-            <Typography variant="subtitle1" fontWeight={700}>
-              Conversations
+        />
+      </Box>
+
+      <Box sx={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
+        {conversationsLoading && conversations.length === 0 ? (
+          <Box sx={{ p: 3, display: 'flex', justifyContent: 'center' }}>
+            <CircularProgress size={24} />
+          </Box>
+        ) : conversationsError ? (
+          <Box sx={{ p: 3 }}>
+            <Typography color="error">Failed to load conversations.</Typography>
+          </Box>
+        ) : filteredConversationItems.length === 0 ? (
+          <Box sx={{ p: 3 }}>
+            <Typography color="text.secondary">
+              {searchQuery.trim() ? 'No conversations match your search.' : 'No messages yet.'}
             </Typography>
-            <TextField
-              fullWidth
-              value={searchQuery}
-              onChange={(event) => setSearchQuery(event.target.value)}
-              size="small"
-              placeholder="Search conversations"
-              sx={{ mt: 1.5 }}
-              slotProps={{
-                input: {
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Search fontSize="small" />
-                    </InputAdornment>
-                  ),
-                },
-              }}
-            />
           </Box>
-
-          <Box sx={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
-            {conversationsLoading && conversations.length === 0 ? (
-              <Box sx={{ p: 3, display: 'flex', justifyContent: 'center' }}>
-                <CircularProgress size={24} />
-              </Box>
-            ) : conversationsError ? (
-              <Box sx={{ p: 3 }}>
-                <Typography color="error">Failed to load conversations.</Typography>
-              </Box>
-            ) : filteredConversationItems.length === 0 ? (
-              <Box sx={{ p: 3 }}>
-                <Typography color="text.secondary">
-                  {searchQuery.trim() ? 'No conversations match your search.' : 'No messages yet.'}
-                </Typography>
-              </Box>
-            ) : (
-              <List disablePadding>
-                {filteredConversationItems.map((conversation, index) => {
-                  const rowContent = (
-                    <>
-                      <ListItemAvatar>
-                        <Avatar src={conversation.avatarSrc} alt={conversation.displayName} />
-                      </ListItemAvatar>
-                      <ListItemText
-                        primary={
-                          <Box
-                            sx={{ display: 'flex', justifyContent: 'space-between', gap: 1, alignItems: 'flex-start' }}
-                          >
-                            <Box sx={{ minWidth: 0 }}>
-                              <Typography
-                                variant="subtitle2"
-                                noWrap
-                                fontWeight={conversation.unreadCount > 0 ? 700 : 500}
-                              >
-                                {conversation.displayName}
-                              </Typography>
-                              {conversation.handleLabel && (
-                                <Typography variant="caption" color="text.secondary" noWrap display="block">
-                                  {conversation.handleLabel}
-                                </Typography>
-                              )}
-                            </Box>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexShrink: 0 }}>
-                              <Typography variant="caption" color="text.secondary">
-                                {conversation.relativeTime}
-                              </Typography>
-                              {conversation.unreadCount > 0 && (
-                                <Box
-                                  sx={{
-                                    minWidth: 20,
-                                    height: 20,
-                                    px: 0.75,
-                                    borderRadius: 10,
-                                    backgroundColor: 'primary.main',
-                                    color: 'primary.contrastText',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    fontSize: '0.7rem',
-                                    fontWeight: 700,
-                                  }}
-                                >
-                                  {conversation.unreadCount > 99 ? '99+' : conversation.unreadCount}
-                                </Box>
-                              )}
-                            </Box>
-                          </Box>
-                        }
-                        secondary={
-                          <Typography
-                            variant="body2"
-                            component="span"
-                            noWrap
-                            color={conversation.unreadCount > 0 ? 'text.primary' : 'text.secondary'}
-                            fontWeight={conversation.unreadCount > 0 ? 600 : 400}
-                          >
-                            {conversation.preview}
+        ) : (
+          <List disablePadding>
+            {filteredConversationItems.map((conversation, index) => {
+              const rowContent = (
+                <>
+                  <ListItemAvatar>
+                    <Avatar src={conversation.avatarSrc} alt={conversation.displayName} />
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary={
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 1, alignItems: 'flex-start' }}>
+                        <Box sx={{ minWidth: 0 }}>
+                          <Typography variant="subtitle2" noWrap fontWeight={conversation.unreadCount > 0 ? 700 : 500}>
+                            {conversation.displayName}
                           </Typography>
-                        }
-                      />
-                    </>
-                  );
+                          {conversation.handleLabel && (
+                            <Typography variant="caption" color="text.secondary" noWrap display="block">
+                              {conversation.handleLabel}
+                            </Typography>
+                          )}
+                        </Box>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexShrink: 0 }}>
+                          <Typography variant="caption" color="text.secondary">
+                            {conversation.relativeTime}
+                          </Typography>
+                          {conversation.unreadCount > 0 && (
+                            <Box
+                              sx={{
+                                minWidth: 20,
+                                height: 20,
+                                px: 0.75,
+                                borderRadius: 10,
+                                backgroundColor: 'primary.main',
+                                color: 'primary.contrastText',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: '0.7rem',
+                                fontWeight: 700,
+                              }}
+                            >
+                              {conversation.unreadCount > 99 ? '99+' : conversation.unreadCount}
+                            </Box>
+                          )}
+                        </Box>
+                      </Box>
+                    }
+                    secondary={
+                      <Typography
+                        variant="body2"
+                        component="span"
+                        noWrap
+                        color={conversation.unreadCount > 0 ? 'text.primary' : 'text.secondary'}
+                        fontWeight={conversation.unreadCount > 0 ? 600 : 400}
+                      >
+                        {conversation.preview}
+                      </Typography>
+                    }
+                  />
+                </>
+              );
 
-                  return (
-                    <React.Fragment key={conversation.conversationWithUserId}>
-                      <ListItem disablePadding>
-                        {conversation.href ? (
-                          <ListItemButton
-                            component={Link}
-                            href={conversation.href}
-                            sx={{
-                              px: 2,
-                              py: 1.5,
-                              '&:hover': { backgroundColor: 'action.hover' },
-                            }}
-                          >
-                            {rowContent}
-                          </ListItemButton>
-                        ) : (
-                          <ListItemButton disabled sx={{ px: 2, py: 1.5 }}>
-                            {rowContent}
-                          </ListItemButton>
-                        )}
-                      </ListItem>
-                      {index < filteredConversationItems.length - 1 && (
-                        <Divider component="li" sx={{ borderColor: surfaceLineColor }} />
-                      )}
-                    </React.Fragment>
-                  );
-                })}
-              </List>
-            )}
-          </Box>
-        </Paper>
-      </Container>
+              return (
+                <React.Fragment key={conversation.conversationWithUserId}>
+                  <ListItem disablePadding>
+                    {conversation.href ? (
+                      <ListItemButton
+                        component={Link}
+                        href={conversation.href}
+                        sx={{
+                          px: 2,
+                          py: 1.5,
+                          '&:hover': { backgroundColor: 'action.hover' },
+                        }}
+                      >
+                        {rowContent}
+                      </ListItemButton>
+                    ) : (
+                      <ListItemButton disabled sx={{ px: 2, py: 1.5 }}>
+                        {rowContent}
+                      </ListItemButton>
+                    )}
+                  </ListItem>
+                  {index < filteredConversationItems.length - 1 && (
+                    <Divider component="li" sx={{ borderColor: surfaceLineColor }} />
+                  )}
+                </React.Fragment>
+              );
+            })}
+          </List>
+        )}
+      </Box>
     </Box>
   );
 }

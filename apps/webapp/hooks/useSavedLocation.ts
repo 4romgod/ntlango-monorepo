@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { usePersistentState } from '@/hooks/usePersistentState';
+import { usePersistentState, STORAGE_KEYS, STORAGE_NAMESPACES } from '@/hooks/usePersistentState';
 import type { LocationFilter } from '@/components/events/filters/EventFilterContext';
 
 const DEFAULT_LOCATION: LocationFilter = {};
@@ -11,8 +11,8 @@ export const useSavedLocation = (userId?: string) => {
     setValue: setLocationValue,
     clearStorage,
     isHydrated,
-  } = usePersistentState<LocationFilter>('user-location', DEFAULT_LOCATION, {
-    namespace: 'location',
+  } = usePersistentState<LocationFilter>(STORAGE_KEYS.USER_LOCATION, DEFAULT_LOCATION, {
+    namespace: STORAGE_NAMESPACES.LOCATION,
     userId,
     ttl: LOCATION_TTL_MS,
   });

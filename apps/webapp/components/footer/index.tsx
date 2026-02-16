@@ -2,17 +2,12 @@
 
 import React from 'react';
 import { Box, Container, Grid, Typography, Link, Divider, Button } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
 import darkModeColors from '@/components/theme/colors/DarkMode';
-import ThemeToggle from '@/components/theme/ThemeToggle';
-import { useAppContext } from '@/hooks/useAppContext';
 import { footerSections, socialLinks } from './NavigationItems';
 import { ROUTES } from '@/lib/constants';
 import { BUTTON_STYLES, SECTION_TITLE_STYLES } from '@/lib/constants';
 
 const Footer = () => {
-  const { themeMode, setThemeMode } = useAppContext();
-
   const currentYear = new Date().getFullYear();
 
   return (
@@ -112,10 +107,6 @@ const Footer = () => {
             </Grid>
           ))}
         </Grid>
-
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
-          <ThemeToggle setThemeMode={setThemeMode} themeMode={themeMode} />
-        </Box>
 
         <Divider sx={{ my: 4, borderColor: 'divider' }} />
 

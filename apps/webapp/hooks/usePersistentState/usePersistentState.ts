@@ -96,10 +96,7 @@ export const usePersistentState = <T>(
     });
   }, [isEnabled, storageKey, storageType]);
 
-  const [value, setValue] = useState<T>(() => {
-    const storedValue = readFromStorage();
-    return storedValue !== null ? storedValue : defaultValueRef.current;
-  });
+  const [value, setValue] = useState<T>(defaultValueRef.current);
   const [isHydrated, setIsHydrated] = useState(false);
 
   useLayoutEffect(() => {

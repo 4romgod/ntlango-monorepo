@@ -90,6 +90,14 @@ export const getDesignTokens = (mode: PaletteMode): ThemeOptions => ({
     MuiInputBase: {
       styleOverrides: {
         root: ({ theme }) => ({
+          '& .MuiInputBase-input:focus': {
+            outline: 'none',
+            boxShadow: 'none',
+          },
+          '& textarea:focus': {
+            outline: 'none',
+            boxShadow: 'none',
+          },
           '&.Mui-disabled': {
             opacity: 1,
             color: theme.palette.text.primary,
@@ -112,6 +120,9 @@ export const getDesignTokens = (mode: PaletteMode): ThemeOptions => ({
     MuiOutlinedInput: {
       styleOverrides: {
         root: ({ theme }) => ({
+          '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+            borderWidth: 1,
+          },
           '&.Mui-disabled .MuiOutlinedInput-notchedOutline': {
             borderColor: theme.palette.divider,
             borderStyle: 'solid',

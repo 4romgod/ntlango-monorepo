@@ -21,6 +21,7 @@ export default async function ConversationPage({ params }: Props) {
   return (
     <Box
       sx={{
+        height: '100%',
         backgroundColor: 'background.paper',
       }}
     >

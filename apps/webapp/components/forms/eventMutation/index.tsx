@@ -46,6 +46,7 @@ import EventLocationInput from './EventLocationInput';
 import EventDateInput from './EventDateInput';
 import ConfirmDialog from '@/components/admin/ConfirmDialog';
 import { usePersistentState } from '@/hooks';
+import { STORAGE_NAMESPACES } from '@/hooks/usePersistentState';
 import { useSession } from 'next-auth/react';
 import { GetMyOrganizationsDocument } from '@/data/graphql/query/Organization/query';
 import { getAuthHeader } from '@/lib/utils/auth';
@@ -102,7 +103,7 @@ export default function EventMutationForm({ categoryList, event }: EventMutation
     clearStorage,
     isHydrated,
   } = usePersistentState<CreateEventInput>(persistenceId, defaultEventData, {
-    namespace: 'event-mutation',
+    namespace: STORAGE_NAMESPACES.EVENT_MUTATION,
     userId: sessionData?.user?.userId,
     ttl: 1000 * 60 * 60 * 24 * 7,
     disabled: sessionStatus === 'unauthenticated',

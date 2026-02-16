@@ -5,11 +5,12 @@ import { usePathname } from 'next/navigation';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { Divider, ListItemIcon, ListItemText } from '@mui/material';
-import { AccountCircle, Logout, Settings, Business, Security } from '@mui/icons-material';
+import { AccountCircle, Logout, Settings, Business, Security, DarkMode, LightMode } from '@mui/icons-material';
 import { ROUTES } from '@/lib/constants';
 import { logoutUserAction } from '@/data/actions/server/auth/logout';
 import NProgress from 'nprogress';
 import { useIsAdmin } from '@/hooks/useIsAdmin';
+import { useAppContext } from '@/hooks/useAppContext';
 
 type ProfilesMenuProps = {
   ProfilesMenuAnchorEl: HTMLElement | null;
@@ -26,6 +27,7 @@ export default function ProfilesMenu({
 }: ProfilesMenuProps) {
   const pathname = usePathname();
   const isAdmin = useIsAdmin();
+  const { themeMode, setThemeMode } = useAppContext();
 
   const handleNavClick = (targetPath: string) => {
     // Only start progress bar if navigating to a different page
@@ -114,6 +116,24 @@ export default function ProfilesMenu({
           </ListItemText>
         </MenuItem>
       )}
+
+      <MenuItem
+        onClick={() => {
+          setThemeMode((currentThemeMode) => (currentThemeMode === 'dark' ? 'light' : 'dark'));
+          handleProfilesMenuClose();
+        }}
+      >
+        <ListItemIcon>
+          {themeMode === 'dark' ? <LightMode fontSize="medium" /> : <DarkMode fontSize="medium" />}
+        </ListItemIcon>
+        <ListItemText
+          slotProps={{
+            primary: { fontSize: '1rem' },
+          }}
+        >
+          {themeMode === 'dark' ? 'Light mode' : 'Dark mode'}
+        </ListItemText>
+      </MenuItem>
 
       <Divider />
 

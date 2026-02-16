@@ -15,6 +15,7 @@ export default function MessagesPage() {
   return (
     <Box
       sx={{
+        height: '100%',
         backgroundColor: 'background.paper',
       }}
     >

@@ -23,6 +23,7 @@ import { getAuthHeader } from '@/lib/utils/auth';
 import { ROUTES } from '@/lib/constants';
 import { logger } from '@/lib/utils';
 import { usePersistentState } from '@/hooks';
+import { STORAGE_KEYS, STORAGE_NAMESPACES } from '@/hooks/usePersistentState';
 import ConfirmDialog from '@/components/admin/ConfirmDialog';
 
 type FormState = {
@@ -65,8 +66,8 @@ export default function VenueCreationForm({ token, defaultOrgId }: VenueCreation
     setValue: setFormState,
     clearStorage,
     isHydrated,
-  } = usePersistentState<FormState>('venue-creation-form', defaultFormState, {
-    namespace: 'venue-mutation',
+  } = usePersistentState<FormState>(STORAGE_KEYS.VENUE_CREATION_FORM, defaultFormState, {
+    namespace: STORAGE_NAMESPACES.VENUE_MUTATION,
     userId,
     ttl: 1000 * 60 * 60 * 24 * 7, // 7 days
     disabled: sessionStatus === 'unauthenticated',

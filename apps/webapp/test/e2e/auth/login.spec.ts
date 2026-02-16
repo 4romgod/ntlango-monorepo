@@ -21,7 +21,10 @@ test.describe('Login Page', () => {
     await page.goto('/auth/login');
     const forgotPasswordLink = page.getByRole('link', { name: 'Forgot password?' });
     await expect(forgotPasswordLink).toBeVisible();
-    await Promise.all([page.waitForURL(/\/auth\/forgot-password\/?$/, { timeout: 20_000 }), forgotPasswordLink.click()]);
+    await Promise.all([
+      page.waitForURL(/\/auth\/forgot-password\/?$/, { timeout: 20_000 }),
+      forgotPasswordLink.click(),
+    ]);
     await expect(page.getByRole('heading', { level: 1, name: 'Reset your password' })).toBeVisible();
   });
 
