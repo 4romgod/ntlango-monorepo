@@ -25,7 +25,7 @@ class EventCategoryDAO {
       const query = EventCategoryModel.findById(eventCategoryId);
       eventCategory = await query.exec();
     } catch (error) {
-      logger.error(`Error reading event category by evenCategoryId ${eventCategoryId}`, { error });
+      logger.error(`Error reading event category by eventCategoryId ${eventCategoryId}`, { error });
       throw KnownCommonError(error);
     }
     if (!eventCategory) {
