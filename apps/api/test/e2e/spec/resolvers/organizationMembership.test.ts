@@ -18,7 +18,7 @@ import { createMembershipOnServer, createOrganizationOnServer } from '@/test/e2e
 describe('OrganizationMembership Resolver', () => {
   let server: E2EServer;
   let url = '';
-  const TEST_PORT = 5005;
+  const TEST_PORT = 5008;
   let adminUser: UserWithToken;
   let testUser2: UserWithToken;
   const createdMembershipIds: string[] = [];
