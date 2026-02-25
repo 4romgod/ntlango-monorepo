@@ -4,6 +4,7 @@ import { GetOrganizationBySlugDocument } from '@/data/graphql/query';
 import { Organization } from '@/data/graphql/types/graphql';
 import OrganizationPageClient from '@/components/organization/organizationDetailPageClient';
 import { buildPageMetadata } from '@/lib/metadata';
+import { logger } from '@/lib/utils';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -26,7 +27,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       });
     }
   } catch (error) {
-    console.error('Unable to load organization metadata', error);
+    logger.error('Unable to load organization metadata', error);
   }
 
   return buildPageMetadata({

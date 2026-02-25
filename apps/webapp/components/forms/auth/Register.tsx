@@ -24,6 +24,7 @@ import { useAppContext } from '@/hooks/useAppContext';
 import { FcGoogle } from 'react-icons/fc';
 import { FaFacebookF } from 'react-icons/fa';
 import NProgress from 'nprogress';
+import { logger } from '@/lib/utils';
 
 export default function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -46,7 +47,7 @@ export default function RegisterForm() {
 
   useEffect(() => {
     if (formState.apiError) {
-      console.log(formState.apiError);
+      logger.info(formState.apiError);
       setToastProps({
         ...toastProps,
         open: true,

@@ -39,6 +39,7 @@ describe('useFilteredEvents', () => {
     expect(loadEvents).not.toHaveBeenCalled();
     expect(result.current.events).toEqual(initialEvents);
     expect(result.current.error).toBeNull();
+    expect(result.current.hasMore).toBe(false);
   });
 
   it('loads events when filters are applied and stores results', async () => {
@@ -87,6 +88,7 @@ describe('useFilteredEvents', () => {
             longitude: 2,
             radiusKm: 25,
           },
+          pagination: { limit: 10, skip: 0 },
         },
       },
       fetchPolicy: 'network-only',
@@ -158,7 +160,7 @@ describe('useFilteredEvents', () => {
       categories: ['Food'],
     };
 
-    const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+    const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
 
     const { result } = renderHook(() => useFilteredEvents(filters, initialEvents));
 
@@ -171,5 +173,74 @@ describe('useFilteredEvents', () => {
     expect(consoleSpy).toHaveBeenCalled();
 
     consoleSpy.mockRestore();
+  });
+
+  it('indicates hasMore is true when page returns >= 10 events', async () => {
+    const tenEvents = Array.from({ length: 10 }, (_, i) => ({ eventId: `event-${i}` })) as any[];
+    const loadEvents = jest.fn().mockResolvedValue({ data: { readEvents: tenEvents } });
+    mockUseLazyQuery.mockReturnValue([loadEvents, { loading: false }]);
+
+    const filters: EventFilters = { ...baseFilters, categories: ['Music'] };
+    const { result } = renderHook(() => useFilteredEvents(filters, initialEvents));
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    expect(result.current.hasMore).toBe(true);
+  });
+
+  it('indicates hasMore is false when page returns < 10 events', async () => {
+    const fewEvents = [{ eventId: 'event-1' }] as any[];
+    const loadEvents = jest.fn().mockResolvedValue({ data: { readEvents: fewEvents } });
+    mockUseLazyQuery.mockReturnValue([loadEvents, { loading: false }]);
+
+    const filters: EventFilters = { ...baseFilters, categories: ['Music'] };
+    const { result } = renderHook(() => useFilteredEvents(filters, initialEvents));
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    expect(result.current.hasMore).toBe(false);
+  });
+
+  it('loadMore appends the next page of events', async () => {
+    const firstPage = Array.from({ length: 10 }, (_, i) => ({ eventId: `event-${i}` })) as any[];
+    const secondPage = [{ eventId: 'event-10' }, { eventId: 'event-11' }] as any[];
+    const loadEvents = jest
+      .fn()
+      .mockResolvedValueOnce({ data: { readEvents: firstPage } })
+      .mockResolvedValueOnce({ data: { readEvents: secondPage } });
+    mockUseLazyQuery.mockReturnValue([loadEvents, { loading: false }]);
+
+    const filters: EventFilters = { ...baseFilters, categories: ['Music'] };
+    const { result } = renderHook(() => useFilteredEvents(filters, initialEvents));
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    expect(result.current.events).toEqual(firstPage);
+    expect(result.current.hasMore).toBe(true);
+
+    await act(async () => {
+      await result.current.loadMore();
+    });
+
+    expect(result.current.events).toEqual([...firstPage, ...secondPage]);
+    expect(result.current.hasMore).toBe(false);
+    expect(loadEvents).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        variables: expect.objectContaining({
+          options: expect.objectContaining({
+            pagination: { limit: 10, skip: 10 },
+          }),
+        }),
+      }),
+    );
   });
 });

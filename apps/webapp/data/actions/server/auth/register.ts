@@ -51,7 +51,7 @@ export async function registerUserAction(prevState: ActionState, formData: FormD
     const errorMessage = getApolloErrorMessage(error as ApolloError);
 
     if (errorMessage) {
-      console.error('Error Message', errorMessage);
+      logger.error('Error Message', errorMessage);
       return {
         ...prevState,
         apiError: errorMessage,

@@ -96,7 +96,7 @@ export async function updateUserPasswordAction(prevState: ActionState, formData:
       success: true,
     };
   } catch (error) {
-    console.error('Failed when calling Update User Mutation', error);
+    logger.error('Failed when calling Update User Mutation', error);
     const errorMessage = extractApolloErrorMessage(error, 'An error occurred while updating your password');
 
     return {

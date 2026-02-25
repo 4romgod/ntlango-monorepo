@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Button, Snackbar, Alert } from '@mui/material';
 import { Check, ContentCopy } from '@mui/icons-material';
+import { logger } from '@/lib/utils';
 
 interface CopyLinkButtonProps {
   url: string;
@@ -19,7 +20,7 @@ export default function CopyLinkButton({ url }: CopyLinkButtonProps) {
       setOpen(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      console.error('Failed to copy link:', err);
+      logger.error('Failed to copy link:', err);
     }
   };
 

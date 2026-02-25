@@ -13,7 +13,18 @@ const makeClient = () => {
   });
 
   return new ApolloClient({
-    cache: new InMemoryCache(),
+    cache: new InMemoryCache({
+      typePolicies: {
+        Query: {
+          fields: {
+            readEvents: {
+              keyArgs: ['options', ['filters', 'dateFilterOption', 'customDate', 'location', 'sort', 'pagination']],
+              merge: false,
+            },
+          },
+        },
+      },
+    }),
     link: httpLink,
   });
 };

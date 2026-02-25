@@ -46,7 +46,7 @@ export default function CarouselSkeleton({
         <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
           {title ? (
             <Typography variant="h5" fontWeight={700}>
-              <Skeleton variant="text" width={180} height={34} />
+              {title}
             </Typography>
           ) : (
             <Skeleton variant="text" width={120} height={34} />

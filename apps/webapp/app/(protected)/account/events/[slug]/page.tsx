@@ -39,6 +39,7 @@ import CopyLinkButton from '@/components/events/CopyLinkButton';
 import { auth } from '@/auth';
 import type { Metadata } from 'next';
 import { buildPageMetadata } from '@/lib/metadata';
+import { logger } from '@/lib/utils';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -131,7 +132,7 @@ export default async function Page(props: Props) {
     try {
       return upperFirst(RRule.fromString(rule).toText());
     } catch (error) {
-      console.error('Unable to parse recurrence rule', error);
+      logger.error('Unable to parse recurrence rule', error);
       return 'Schedule coming soon';
     }
   };

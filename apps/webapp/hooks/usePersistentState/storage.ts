@@ -1,3 +1,4 @@
+import { logger } from '@/lib/utils';
 import type { PersistedValue, StorageType } from './types';
 
 export const getStorage = (storageType: StorageType): Storage | null => {
@@ -8,7 +9,7 @@ export const getStorage = (storageType: StorageType): Storage | null => {
   try {
     return window[storageType];
   } catch (error) {
-    console.warn('usePersistentState: Unable to access storage', error);
+    logger.warn('usePersistentState: Unable to access storage', error);
     return null;
   }
 };
@@ -49,7 +50,7 @@ export const readPersistedValue = <T>({
     return deserialize(parsed.value);
   } catch (error) {
     storage.removeItem(storageKey);
-    console.warn('usePersistentState: Failed to parse persisted value', error);
+    logger.warn('usePersistentState: Failed to parse persisted value', error);
     return null;
   }
 };
@@ -84,7 +85,7 @@ export const writePersistedValue = <T>({
   try {
     storage.setItem(storageKey, JSON.stringify(payload));
   } catch (error) {
-    console.warn(errorMessage, error);
+    logger.warn(errorMessage, error);
   }
 };
 

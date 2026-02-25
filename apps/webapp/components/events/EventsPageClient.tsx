@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo } from 'react';
-import { Box, Button, Grid, Typography } from '@mui/material';
+import { Box, Button, Grid, Stack, Typography } from '@mui/material';
 import dayjs from 'dayjs';
 import { useQuery } from '@apollo/client';
 import { EventCategory, EventStatus, Organization, SortInput, SortOrderInput } from '@/data/graphql/types/graphql';
@@ -9,14 +9,14 @@ import { EventPreview } from '@/data/graphql/query/Event/types';
 import {
   GetAllEventCategoriesDocument,
   GetAllEventsDocument,
+  GetEventsCountDocument,
   GetPopularOrganizationsDocument,
 } from '@/data/graphql/query';
 import { DATE_FILTER_LABELS, DATE_FILTER_OPTIONS } from '@/lib/constants/date-filters';
 import { getAuthHeader } from '@/lib/utils';
 import { useSession } from 'next-auth/react';
-import EventTileSkeleton from '@/components/events/EventTileSkeleton';
+import EventsPageSkeleton from '@/components/events/EventsPageSkeleton';
 import EventsSidebar, { PlatformStats } from '@/components/events/EventsSidebar';
-import EventsHeader from '@/components/events/filters/EventsHeader';
 import ActiveFiltersPills from '@/components/events/filters/ActiveFiltersPills';
 import EventsList from '@/components/events/filters/EventsList';
 import { CategoryMenu, DateMenu, LocationMenu, StatusMenu } from '@/components/events/filters/FilterMenus';
@@ -24,8 +24,13 @@ import { EventFilterProvider, initialFilters } from '@/components/events/filters
 import { useEventFilters } from '@/hooks/useEventFilters';
 import { useFilteredEvents } from '@/hooks/useFilteredEvents';
 import { useSavedLocation } from '@/hooks/useSavedLocation';
+import EventSearchBar from '@/components/search/EventSearchBar';
 
-const DEFAULT_EVENTS_SORT: SortInput[] = [{ field: 'rsvpCount', order: SortOrderInput.Desc }];
+const DEFAULT_EVENTS_SORT: SortInput[] = [
+  { field: 'rsvpCount', order: SortOrderInput.Desc },
+  { field: '_id', order: SortOrderInput.Asc },
+];
+const DEFAULT_PAGE_SIZE = 10;
 
 export default function EventsPageClient() {
   const { data: session } = useSession();
@@ -43,6 +48,7 @@ export default function EventsPageClient() {
     variables: {
       options: {
         sort: DEFAULT_EVENTS_SORT,
+        pagination: { limit: DEFAULT_PAGE_SIZE, skip: 0 },
       },
     },
   });
@@ -62,6 +68,10 @@ export default function EventsPageClient() {
   } = useQuery(GetPopularOrganizationsDocument, {
     fetchPolicy: 'cache-and-network',
   });
+  const { data: totalEventsData } = useQuery(GetEventsCountDocument, {
+    context: authContext,
+    fetchPolicy: 'cache-and-network',
+  });
 
   const eventsList = (eventsData?.readEvents ?? []) as EventPreview[];
   const categories = (categoriesData?.readEventCategories ?? []) as EventCategory[];
@@ -78,12 +88,14 @@ export default function EventsPageClient() {
     }, orgs[0]);
   }, [orgs]);
 
+  const totalEventsCount = totalEventsData?.readEventsCount ?? eventsList.length;
+
   const stats = useMemo(
     () => ({
-      totalEvents: eventsList.length,
+      totalEvents: totalEventsCount,
       activeOrganizations: orgs.length,
     }),
-    [eventsList.length, orgs.length],
+    [totalEventsCount, orgs.length],
   );
 
   const isLoading = eventsLoading || categoriesLoading || organizationsLoading;
@@ -100,7 +112,7 @@ export default function EventsPageClient() {
   return (
     <>
       {isLoading && eventsList.length === 0 ? (
-        <EventTileSkeleton count={4} />
+        <EventsPageSkeleton />
       ) : (
         <EventFilterProvider userId={userId} token={token}>
           <EventsContent
@@ -109,6 +121,7 @@ export default function EventsPageClient() {
             popularOrganization={popularOrganization}
             stats={stats}
             userId={userId}
+            totalEventsCount={totalEventsCount}
           />
         </EventFilterProvider>
       )}
@@ -122,9 +135,17 @@ interface EventsContentProps {
   popularOrganization: Organization | null;
   stats: PlatformStats;
   userId?: string;
+  totalEventsCount: number;
 }
 
-function EventsContent({ categories, initialEvents, popularOrganization, stats, userId }: EventsContentProps) {
+function EventsContent({
+  categories,
+  initialEvents,
+  popularOrganization,
+  stats,
+  userId,
+  totalEventsCount,
+}: EventsContentProps) {
   const { data: session } = useSession();
   const token = session?.user?.token;
   const {
@@ -160,7 +181,14 @@ function EventsContent({ categories, initialEvents, popularOrganization, stats, 
 
   // Wait for filters to hydrate before applying them to prevent double-fetch on page load
   const filtersToUse = isHydrated ? filters : initialFilters;
-  const { events: serverEvents, loading, error } = useFilteredEvents(filtersToUse, initialEvents, token);
+  const {
+    events: serverEvents,
+    loading,
+    error,
+    hasMore,
+    loadMore,
+    loadingMore,
+  } = useFilteredEvents(filtersToUse, initialEvents, token, DEFAULT_EVENTS_SORT);
 
   const hasCoordinates =
     typeof filters.location?.latitude === 'number' && typeof filters.location?.longitude === 'number';
@@ -225,13 +253,21 @@ function EventsContent({ categories, initialEvents, popularOrganization, stats, 
     }
   }
 
-  const eventTitles = filteredEvents.map((item) => item.title).filter((title): title is string => !!title);
-
   return (
     <Box component="main" sx={{ minHeight: '100vh', py: 4 }}>
       <Grid container spacing={3}>
         <Grid size={{ xs: 12, lg: 8 }}>
-          <EventsHeader eventCount={filteredEvents.length} />
+          <Box mb={4}>
+            <Stack direction="row" alignItems="center" justifyContent="space-between" mb={3}>
+              <Box>
+                <Typography variant="h3" fontWeight={700} className="glow-text" sx={{ mb: 1 }}>
+                  Discover Events
+                </Typography>
+              </Box>
+            </Stack>
+
+            <EventSearchBar placeholder="Search events by title, location, or category..." size="medium" />
+          </Box>
 
           {hasActiveFilters && (
             <Box sx={{ mb: 2 }}>
@@ -356,6 +392,10 @@ function EventsContent({ categories, initialEvents, popularOrganization, stats, 
             error={error}
             hasActiveFilters={hasActiveFilters}
             onClearFilters={clearAllFilters}
+            hasMore={hasMore}
+            onLoadMore={loadMore}
+            loadingMore={loadingMore}
+            totalCount={hasActiveFilters ? undefined : totalEventsCount}
           />
         </Grid>
 

@@ -21,7 +21,7 @@ export default function CategoryExplorer({
     return null;
   }
 
-  const skeletonCount = 6;
+  const skeletonCount = 10;
 
   return (
     <Box
@@ -32,33 +32,26 @@ export default function CategoryExplorer({
       }}
     >
       <Container>
-        {isLoading ? (
-          <>
-            <Skeleton variant="text" width={260} height={34} sx={{ ...SECTION_TITLE_STYLES, mb: 1, mx: 'auto' }} />
-            <Skeleton variant="text" width={280} height={20} sx={{ mb: 4, mx: 'auto' }} />
-          </>
-        ) : (
-          <>
-            {title && (
-              <Typography
-                variant="h4"
-                sx={{
-                  ...SECTION_TITLE_STYLES,
-                  mb: 1,
-                  textAlign: 'center',
-                  fontSize: { xs: '1.5rem', md: '2rem' },
-                }}
-              >
-                {title}
-              </Typography>
-            )}
-            {description && (
-              <Typography variant="body1" color="text.secondary" sx={{ mb: 4, textAlign: 'center' }}>
-                {description}
-              </Typography>
-            )}
-          </>
-        )}
+        <>
+          {title && (
+            <Typography
+              variant="h4"
+              sx={{
+                ...SECTION_TITLE_STYLES,
+                mb: 1,
+                textAlign: 'center',
+                fontSize: { xs: '1.5rem', md: '2rem' },
+              }}
+            >
+              {title}
+            </Typography>
+          )}
+          {description && (
+            <Typography variant="body1" color="text.secondary" sx={{ mb: 4, textAlign: 'center' }}>
+              {description}
+            </Typography>
+          )}
+        </>
 
         <Box
           sx={{

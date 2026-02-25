@@ -1,6 +1,7 @@
 import { useMutation } from '@apollo/client';
 import { SaveSessionStateDocument } from '@/data/graphql/mutation/SessionState/mutation';
 import { getAuthHeader } from '@/lib/utils/auth';
+import { logger } from './logger';
 
 interface MigrationResult {
   success: boolean;
@@ -51,7 +52,7 @@ export const useMigrateSessionState = () => {
                 keysToMigrate.push({ stateKey, value: parsed.value });
               }
             } catch (error) {
-              console.warn(`Failed to parse ${fullKey}`, error);
+              logger.warn(`Failed to parse ${fullKey}`, error);
             }
           }
         }
@@ -78,7 +79,7 @@ export const useMigrateSessionState = () => {
 
       return result;
     } catch (error) {
-      console.error('Migration failed', error);
+      logger.error('Migration failed', error);
       result.success = false;
       return result;
     }

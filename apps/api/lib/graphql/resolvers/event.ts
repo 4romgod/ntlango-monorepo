@@ -91,6 +91,11 @@ export class EventResolver {
     return EventDAO.readEvents(options);
   }
 
+  @Query(() => Int, { description: 'Read the total number of events.' })
+  async readEventsCount(): Promise<number> {
+    return EventDAO.count();
+  }
+
   @FieldResolver(() => [EventCategory], { nullable: true })
   async eventCategories(@Root() event: Event, @Ctx() context: ServerContext): Promise<EventCategory[]> {
     // If already populated (from DAO), return as-is
