@@ -20,7 +20,7 @@ import { createOrganizationOnServer } from '@/test/e2e/utils/eventResolverHelper
 describe('Venue Resolver', () => {
   let server: E2EServer;
   let url = '';
-  const TEST_PORT = 5004;
+  const TEST_PORT = 5007;
   let adminUser: UserWithToken;
   const createdVenueIds: string[] = [];
   const createdOrgIds: string[] = [];

@@ -24,7 +24,7 @@ type TrackedMembership = { membershipId: string; token: string };
 describe('Organization Resolver', () => {
   let server: E2EServer;
   let url = '';
-  const TEST_PORT = 5003;
+  const TEST_PORT = 5006;
   let adminUser: UserWithToken;
   let testUser: UserWithToken;
   const createdOrgs: TrackedOrg[] = [];

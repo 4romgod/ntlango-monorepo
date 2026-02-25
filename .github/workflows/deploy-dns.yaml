@@ -40,9 +40,6 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Install AWS CDK
-        run: npm i -g aws-cdk
-
       - name: Commons TypeScript Artifacts Build
         run: npm run build:ts -w @gatherle/commons
 
