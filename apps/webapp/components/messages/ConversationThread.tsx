@@ -24,7 +24,7 @@ import {
 } from '@mui/material';
 import { alpha, useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { ArrowBack, KeyboardArrowDown, Search, Send, SentimentSatisfiedAlt } from '@mui/icons-material';
+import { AccessTime, ArrowBack, KeyboardArrowDown, Search, Send, SentimentSatisfiedAlt } from '@mui/icons-material';
 import { useSession } from 'next-auth/react';
 import { GetUserByUsernameDocument } from '@/data/graphql/types/graphql';
 import {
@@ -59,6 +59,13 @@ const MESSAGE_GROUP_WINDOW_MINUTES = 10;
 const STICKY_BOTTOM_THRESHOLD_PX = 96;
 const CHAT_EMOJI_RECENTS_LIMIT = 18;
 
+interface PendingMessage {
+  clientId: string;
+  recipientUserId: string;
+  message: string;
+  createdAt: string;
+}
+
 type ThreadRenderItem =
   | {
       kind: 'divider';
@@ -71,6 +78,7 @@ type ThreadRenderItem =
       fromMe: boolean;
       isGroupStart: boolean;
       isGroupEnd: boolean;
+      pending?: boolean;
       message: {
         chatMessageId: string;
         senderUserId: string;
@@ -97,6 +105,8 @@ export default function ConversationThread({ username }: ConversationThreadProps
 
   const [draftMessage, setDraftMessage] = useState('');
   const [sendError, setSendError] = useState<string | null>(null);
+  const [pendingMessages, setPendingMessages] = useState<PendingMessage[]>([]);
+  const pendingIdCounterRef = useRef(0);
   const [conversationSearch, setConversationSearch] = useState('');
   const [showJumpToLatest, setShowJumpToLatest] = useState(false);
   const [emojiAnchorEl, setEmojiAnchorEl] = useState<HTMLButtonElement | null>(null);
@@ -373,11 +383,50 @@ export default function ConversationThread({ username }: ConversationThreadProps
       .filter((option): option is ChatEmojiOption => Boolean(option));
   }, [recentEmojis]);
 
+  // Prune pending messages that have been confirmed by the server
+  useEffect(() => {
+    if (pendingMessages.length === 0 || messages.length === 0) {
+      return;
+    }
+
+    setPendingMessages((prev) => {
+      const confirmed = prev.filter((pending) => {
+        return messages.some(
+          (msg) =>
+            msg.senderUserId === currentUserId &&
+            msg.recipientUserId === pending.recipientUserId &&
+            msg.message === pending.message &&
+            Math.abs(new Date(msg.createdAt).getTime() - new Date(pending.createdAt).getTime()) < 30_000,
+        );
+      });
+
+      if (confirmed.length === 0) {
+        return prev;
+      }
+
+      const confirmedIds = new Set(confirmed.map((m) => m.clientId));
+      return prev.filter((m) => !confirmedIds.has(m.clientId));
+    });
+  }, [currentUserId, messages, pendingMessages.length]);
+
   const renderedMessages = useMemo(() => {
-    return [...messages].sort(
+    const serverMessages = [...messages].sort(
       (left, right) => new Date(left.createdAt).getTime() - new Date(right.createdAt).getTime(),
     );
-  }, [messages]);
+
+    // Append pending messages that haven't been confirmed yet
+    const pendingAsMessages = pendingMessages.map((pending) => ({
+      chatMessageId: pending.clientId,
+      senderUserId: currentUserId || '',
+      recipientUserId: pending.recipientUserId,
+      message: pending.message,
+      isRead: false,
+      createdAt: pending.createdAt,
+      __pending: true as const,
+    }));
+
+    return [...serverMessages, ...pendingAsMessages];
+  }, [currentUserId, messages, pendingMessages]);
 
   const threadItems = useMemo<ThreadRenderItem[]>(() => {
     if (renderedMessages.length === 0) {
@@ -428,6 +477,7 @@ export default function ConversationThread({ username }: ConversationThreadProps
         fromMe: message.senderUserId === currentUserId,
         isGroupStart: startsGroup,
         isGroupEnd: endsGroup,
+        pending: '__pending' in message && message.__pending === true,
       });
     });
 
@@ -488,6 +538,16 @@ export default function ConversationThread({ username }: ConversationThreadProps
       setSendError('Unable to send message right now. Reconnecting...');
       return;
     }
+
+    // Optimistically add the message so the sender sees it immediately
+    pendingIdCounterRef.current += 1;
+    const pendingMsg: PendingMessage = {
+      clientId: `pending-${Date.now()}-${pendingIdCounterRef.current}`,
+      recipientUserId: targetUserId,
+      message: trimmedMessage,
+      createdAt: new Date().toISOString(),
+    };
+    setPendingMessages((prev) => [...prev, pendingMsg]);
 
     setSendError(null);
     setDraftMessage('');
@@ -702,6 +762,7 @@ export default function ConversationThread({ username }: ConversationThreadProps
                       sx={{
                         backgroundColor: item.fromMe ? 'primary.main' : 'background.default',
                         color: item.fromMe ? 'primary.contrastText' : 'text.primary',
+                        opacity: item.pending ? 0.7 : 1,
                         px: 1.5,
                         py: 1,
                         ...bubbleBorderRadius,
@@ -717,17 +778,32 @@ export default function ConversationThread({ username }: ConversationThreadProps
                         sx={{
                           mt: 0.4,
                           display: 'flex',
-                          gap: 1,
+                          gap: 0.5,
+                          alignItems: 'center',
                           justifyContent: item.fromMe ? 'flex-end' : 'flex-start',
                         }}
                       >
-                        <Typography variant="caption" color="text.secondary">
-                          {formatThreadTime(item.message.createdAt)}
-                        </Typography>
-                        {item.fromMe && (
-                          <Typography variant="caption" color={item.message.isRead ? 'primary.main' : 'text.secondary'}>
-                            {item.message.isRead ? 'Read' : 'Sent'}
-                          </Typography>
+                        {item.pending ? (
+                          <>
+                            <AccessTime sx={{ fontSize: 12, color: 'text.disabled' }} />
+                            <Typography variant="caption" color="text.disabled">
+                              Sending…
+                            </Typography>
+                          </>
+                        ) : (
+                          <>
+                            <Typography variant="caption" color="text.secondary">
+                              {formatThreadTime(item.message.createdAt)}
+                            </Typography>
+                            {item.fromMe && (
+                              <Typography
+                                variant="caption"
+                                color={item.message.isRead ? 'primary.main' : 'text.secondary'}
+                              >
+                                {item.message.isRead ? 'Read' : 'Sent'}
+                              </Typography>
+                            )}
+                          </>
                         )}
                       </Box>
                     )}
@@ -1079,12 +1155,37 @@ export default function ConversationThread({ username }: ConversationThreadProps
               onChange={(event) => setConversationSearch(event.target.value)}
               size="small"
               placeholder="Search conversations"
-              sx={{ mt: 1.5 }}
+              sx={(muiTheme) => ({
+                mt: 1.5,
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 4,
+                  boxShadow:
+                    muiTheme.palette.mode === 'light'
+                      ? `0 1px 2px ${alpha(muiTheme.palette.common.black, 0.08)}`
+                      : 'none',
+                  '& fieldset': {
+                    borderColor:
+                      muiTheme.palette.mode === 'light'
+                        ? alpha(muiTheme.palette.text.primary, 0.2)
+                        : alpha(muiTheme.palette.common.white, 0.22),
+                  },
+                  '&:hover fieldset': {
+                    borderColor:
+                      muiTheme.palette.mode === 'light'
+                        ? alpha(muiTheme.palette.text.primary, 0.35)
+                        : alpha(muiTheme.palette.common.white, 0.35),
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: muiTheme.palette.primary.main,
+                    borderWidth: 1,
+                  },
+                },
+              })}
               slotProps={{
                 input: {
                   startAdornment: (
-                    <InputAdornment position="start">
-                      <Search fontSize="small" />
+                    <InputAdornment position="start" sx={{ ml: 0.5 }}>
+                      <Search sx={{ color: 'text.secondary', fontSize: 22 }} />
                     </InputAdornment>
                   ),
                 },

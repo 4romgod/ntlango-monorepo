@@ -2,10 +2,11 @@
 
 import { useEffect } from 'react';
 import ErrorPage from '@/components/errors/ErrorPage';
+import { logger } from '@/lib/utils';
 
 export default function GlobalError({ error, reset }: { error: Error; reset: () => void }) {
   useEffect(() => {
-    console.error('Unhandled error:', error);
+    logger.error('Unhandled error:', error);
   }, [error]);
 
   return (

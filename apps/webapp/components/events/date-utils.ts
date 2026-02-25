@@ -1,5 +1,6 @@
 import { RRule } from 'rrule';
 import { upperFirst } from 'lodash';
+import { logger } from '@/lib/utils';
 
 export const formatRecurrenceRule = (rule?: string | null): string => {
   if (!rule) {
@@ -9,7 +10,7 @@ export const formatRecurrenceRule = (rule?: string | null): string => {
   try {
     return upperFirst(RRule.fromString(rule).toText());
   } catch (error) {
-    console.error('Unable to parse recurrence rule', error);
+    logger.error('Unable to parse recurrence rule', error);
     return 'Schedule coming soon';
   }
 };

@@ -1,7 +1,8 @@
 'use client';
 
-import { Box, Stack, Typography, Alert, Button } from '@mui/material';
+import { Box, Stack, Typography, Alert, Button, CircularProgress } from '@mui/material';
 import ClearIcon from '@mui/icons-material/Clear';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { EventPreview } from '@/data/graphql/query/Event/types';
 import EventTileGrid from '@/components/events/EventTileGrid';
 
@@ -14,6 +15,7 @@ interface EventsListProps {
   hasMore?: boolean;
   onLoadMore?: () => void;
   loadingMore?: boolean;
+  totalCount?: number;
 }
 
 export default function EventsList({
@@ -25,6 +27,7 @@ export default function EventsList({
   hasMore = false,
   onLoadMore,
   loadingMore = false,
+  totalCount,
 }: EventsListProps) {
   const showSkeletons = loading;
 
@@ -69,25 +72,47 @@ export default function EventsList({
     <Box>
       <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3}>
         <Typography variant="h6" fontWeight={600} sx={{ color: 'text.primary', marginTop: 5 }}>
-          {showSkeletons ? 'Loading events…' : `${events.length} Event${events.length !== 1 ? 's' : ''} Found`}
+          {showSkeletons
+            ? 'Loading events…'
+            : `${totalCount ?? events.length} Event${(totalCount ?? events.length) !== 1 ? 's' : ''} Found`}
         </Typography>
       </Stack>
       <EventTileGrid events={events} loading={showSkeletons} />
       {hasMore && onLoadMore && (
         <Box
           sx={{
-            mt: 4,
+            mt: 5,
+            mb: 2,
             display: 'flex',
-            justifyContent: 'center',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 1.5,
           }}
         >
+          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+            Showing {events.length} of {totalCount ?? events.length}
+          </Typography>
           <Button
             variant="outlined"
             onClick={onLoadMore}
             disabled={loading || loadingMore}
-            sx={{ textTransform: 'none', px: 4, py: 1.5 }}
+            endIcon={loadingMore ? <CircularProgress size={18} color="inherit" /> : <ExpandMoreIcon />}
+            sx={{
+              textTransform: 'none',
+              px: 4,
+              py: 1.25,
+              borderRadius: 2,
+              fontWeight: 600,
+              fontSize: '0.9rem',
+              borderColor: 'divider',
+              color: 'text.primary',
+              '&:hover': {
+                borderColor: 'primary.main',
+                backgroundColor: 'action.hover',
+              },
+            }}
           >
-            {loadingMore ? 'Loading more events…' : 'Load more events'}
+            {loadingMore ? 'Loading…' : 'Show more events'}
           </Button>
         </Box>
       )}

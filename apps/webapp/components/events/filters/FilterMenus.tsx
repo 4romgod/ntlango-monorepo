@@ -32,6 +32,7 @@ import { useAppContext } from '@/hooks/useAppContext';
 import { LocationFilter } from '@/components/events/filters/EventFilterContext';
 import { useSavedLocation } from '@/hooks/useSavedLocation';
 import { useSession } from 'next-auth/react';
+import { logger } from '@/lib/utils';
 
 // TODO: Refactor filter menu components (CategoryMenu, StatusMenu, DateMenu, LocationMenu) to avoid dual-mode (controlled/uncontrolled) complexity. Prefer either fully controlled or fully uncontrolled with callback props for clarity and maintainability.
 
@@ -502,7 +503,7 @@ export function LocationMenu({
         setGettingLocation(false);
       },
       (error) => {
-        console.error('Error getting location:', error);
+        logger.error('Error getting location:', error);
         showError('Unable to get your location. Please check your browser permissions.');
         setGettingLocation(false);
       },

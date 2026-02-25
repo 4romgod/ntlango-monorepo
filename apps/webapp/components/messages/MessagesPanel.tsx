@@ -17,7 +17,7 @@ import {
   Typography,
 } from '@mui/material';
 import { alpha, useTheme } from '@mui/material/styles';
-import { Search } from '@mui/icons-material';
+import { ChatBubbleOutline, Search } from '@mui/icons-material';
 import { useSession } from 'next-auth/react';
 import { useChatConversations, useResolveConversationUsers } from '@/hooks';
 import { ROUTES } from '@/lib/constants';
@@ -101,30 +101,61 @@ export default function MessagesPanel() {
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
+        maxWidth: 640,
+        mx: 'auto',
       }}
     >
-      <Box sx={{ p: 2, borderBottom: '1px solid', borderColor: surfaceLineColor }}>
-        <Typography variant="subtitle1" fontWeight={700}>
+      <Box sx={{ px: { xs: 2, sm: 3 }, pt: 3, pb: 2 }}>
+        <Typography variant="h5" fontWeight={700} sx={{ mb: conversationItems.length > 0 ? 2 : 0 }}>
           Messages
         </Typography>
-        <TextField
-          fullWidth
-          value={searchQuery}
-          onChange={(event) => setSearchQuery(event.target.value)}
-          size="small"
-          placeholder="Search conversations"
-          sx={{ mt: 1.5 }}
-          slotProps={{
-            input: {
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Search fontSize="small" />
-                </InputAdornment>
-              ),
-            },
-          }}
-        />
+        {conversationItems.length > 0 && (
+          <TextField
+            id="messages-panel-search"
+            fullWidth
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
+            size="small"
+            placeholder="Search conversations"
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start" sx={{ ml: 0.5 }}>
+                    <Search sx={{ color: 'text.secondary', fontSize: 22 }} />
+                  </InputAdornment>
+                ),
+              },
+            }}
+            sx={(muiTheme) => ({
+              '& .MuiOutlinedInput-root': {
+                borderRadius: 4,
+                boxShadow:
+                  muiTheme.palette.mode === 'light'
+                    ? `0 1px 2px ${alpha(muiTheme.palette.common.black, 0.08)}`
+                    : 'none',
+                '& fieldset': {
+                  borderColor:
+                    muiTheme.palette.mode === 'light'
+                      ? alpha(muiTheme.palette.text.primary, 0.2)
+                      : alpha(muiTheme.palette.common.white, 0.22),
+                },
+                '&:hover fieldset': {
+                  borderColor:
+                    muiTheme.palette.mode === 'light'
+                      ? alpha(muiTheme.palette.text.primary, 0.35)
+                      : alpha(muiTheme.palette.common.white, 0.35),
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: muiTheme.palette.primary.main,
+                  borderWidth: 1,
+                },
+              },
+            })}
+          />
+        )}
       </Box>
+
+      <Divider sx={{ borderColor: surfaceLineColor }} />
 
       <Box sx={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
         {conversationsLoading && conversations.length === 0 ? (
@@ -136,9 +167,25 @@ export default function MessagesPanel() {
             <Typography color="error">Failed to load conversations.</Typography>
           </Box>
         ) : filteredConversationItems.length === 0 ? (
-          <Box sx={{ p: 3 }}>
-            <Typography color="text.secondary">
-              {searchQuery.trim() ? 'No conversations match your search.' : 'No messages yet.'}
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              py: 10,
+              px: 3,
+              textAlign: 'center',
+            }}
+          >
+            <ChatBubbleOutline sx={{ fontSize: 48, color: 'text.disabled', mb: 2 }} />
+            <Typography variant="h6" fontWeight={600} sx={{ color: 'text.primary', mb: 1 }}>
+              {searchQuery.trim() ? 'No results' : 'No messages yet'}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {searchQuery.trim()
+                ? 'Try a different search term.'
+                : "Start a conversation by visiting a user's profile and sending them a message."}
             </Typography>
           </Box>
         ) : (

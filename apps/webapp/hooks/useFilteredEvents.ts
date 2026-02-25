@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLazyQuery } from '@apollo/client';
 import {
   FilterInput,
@@ -7,11 +7,15 @@ import {
   GetAllEventsQuery,
   GetAllEventsQueryVariables,
   LocationFilterInput,
+  SortInput,
 } from '@/data/graphql/types/graphql';
 import { EventPreview } from '@/data/graphql/query/Event/types';
 import { EventFilters, LocationFilter } from '@/components/events/filters/EventFilterContext';
 import { DATE_FILTER_OPTIONS } from '@/lib/constants/date-filters';
 import { getAuthHeader } from '@/lib/utils/auth';
+import { logger } from '@/lib/utils';
+
+const DEFAULT_PAGE_SIZE = 10;
 
 /**
  * Builds GraphQL filter inputs from event filters.
@@ -81,79 +85,132 @@ export const buildLocationFilter = (location: LocationFilter): LocationFilterInp
   };
 };
 
-export const useFilteredEvents = (filters: EventFilters, initialEvents: EventPreview[], token?: string | null) => {
+export const useFilteredEvents = (
+  filters: EventFilters,
+  initialEvents: EventPreview[],
+  token?: string | null,
+  sort?: SortInput[],
+) => {
   const [events, setEvents] = useState<EventPreview[]>(initialEvents);
   const [error, setError] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState(initialEvents.length >= DEFAULT_PAGE_SIZE);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const pageRef = useRef(0);
+
   const filterInputs = useMemo(() => buildFilterInputs(filters), [filters.categories, filters.statuses]);
   const dateFilterParams = useMemo(() => buildDateFilterParams(filters), [filters.dateRange]);
   const locationFilter = useMemo(() => buildLocationFilter(filters.location), [filters.location]);
   const [loadEvents, { loading }] = useLazyQuery<GetAllEventsQuery, GetAllEventsQueryVariables>(GetAllEventsDocument);
 
+  const hasActiveBackendFilters =
+    filterInputs.length > 0 || !!dateFilterParams.dateFilterOption || !!dateFilterParams.customDate || !!locationFilter;
+
+  const buildQueryOptions = useCallback(
+    (skip: number) => ({
+      filters: filterInputs.length > 0 ? filterInputs : undefined,
+      dateFilterOption: dateFilterParams.dateFilterOption as any,
+      customDate: dateFilterParams.customDate,
+      location: locationFilter,
+      sort,
+      pagination: { limit: DEFAULT_PAGE_SIZE, skip },
+    }),
+    [filterInputs, dateFilterParams, locationFilter, sort],
+  );
+
+  // When initialEvents change (fresh SSR/cache data), reset only if user hasn't paginated
   useEffect(() => {
+    if (pageRef.current > 0) return;
     setEvents(initialEvents);
+    setHasMore(initialEvents.length >= DEFAULT_PAGE_SIZE);
   }, [initialEvents]);
 
+  // When filters change, fetch page 0
   useEffect(() => {
-    const hasDateFilter = !!dateFilterParams.dateFilterOption || !!dateFilterParams.customDate;
-    const hasLocationFilter = !!locationFilter;
-    if (filterInputs.length === 0 && !hasDateFilter && !hasLocationFilter) {
+    if (!hasActiveBackendFilters) {
       setEvents(initialEvents);
+      setHasMore(initialEvents.length >= DEFAULT_PAGE_SIZE);
       setError(null);
+      pageRef.current = 0;
       return;
     }
 
     let isCurrent = true;
-
-    // Clear previous error when starting new request
     setError(null);
+    pageRef.current = 0;
 
     loadEvents({
-      variables: {
-        options: {
-          filters: filterInputs.length > 0 ? filterInputs : undefined,
-          dateFilterOption: dateFilterParams.dateFilterOption as any,
-          customDate: dateFilterParams.customDate, // GraphQL DateTimeISO scalar accepts ISO 8601 string
-          location: locationFilter,
-        },
-      },
+      variables: { options: buildQueryOptions(0) },
       fetchPolicy: 'network-only',
-      context: {
-        headers: getAuthHeader(token),
-      },
+      context: { headers: getAuthHeader(token) },
     })
       .then((response) => {
-        if (!isCurrent) {
-          return;
-        }
+        if (!isCurrent) return;
         if (response.data?.readEvents) {
-          setEvents(response.data.readEvents as EventPreview[]);
+          const fetched = response.data.readEvents as EventPreview[];
+          setEvents(fetched);
+          setHasMore(fetched.length >= DEFAULT_PAGE_SIZE);
           setError(null);
         } else if (response.error) {
-          console.error('GraphQL error fetching filtered events', response.error);
+          logger.error('GraphQL error fetching filtered events', response.error);
           setError('Failed to load filtered events. Please try again.');
         }
       })
       .catch((caughtError) => {
-        if (!isCurrent) {
-          return;
-        }
-        console.error('Error fetching filtered events', caughtError);
+        if (!isCurrent) return;
+        logger.error('Error fetching filtered events', caughtError);
         setError('Unable to apply filters. Please check your connection and try again.');
       });
 
     return () => {
       isCurrent = false;
     };
-  }, [filterInputs, dateFilterParams, locationFilter, initialEvents, loadEvents]);
+  }, [
+    filterInputs,
+    dateFilterParams,
+    locationFilter,
+    initialEvents,
+    loadEvents,
+    buildQueryOptions,
+    token,
+    hasActiveBackendFilters,
+  ]);
+
+  const loadMore = useCallback(async () => {
+    const nextPage = pageRef.current + 1;
+    const skip = nextPage * DEFAULT_PAGE_SIZE;
+    setLoadingMore(true);
+
+    try {
+      const response = await loadEvents({
+        variables: { options: buildQueryOptions(skip) },
+        fetchPolicy: 'no-cache',
+        context: { headers: getAuthHeader(token) },
+      });
+
+      if (response.data?.readEvents) {
+        const fetched = response.data.readEvents as EventPreview[];
+        setEvents((prev) => {
+          const existingIds = new Set(prev.map((e) => e.eventId));
+          const unique = fetched.filter((e) => !existingIds.has(e.eventId));
+          return [...prev, ...unique];
+        });
+        setHasMore(fetched.length >= DEFAULT_PAGE_SIZE);
+        pageRef.current = nextPage;
+      }
+    } catch (err) {
+      logger.error('Error loading more events', err);
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [loadEvents, buildQueryOptions, token]);
 
   return {
     events,
     loading,
     error,
-    hasFilterInputs:
-      filterInputs.length > 0 ||
-      !!dateFilterParams.dateFilterOption ||
-      !!dateFilterParams.customDate ||
-      !!locationFilter,
+    hasMore,
+    loadMore,
+    loadingMore,
+    hasFilterInputs: hasActiveBackendFilters,
   };
 };

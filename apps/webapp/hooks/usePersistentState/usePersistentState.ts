@@ -8,6 +8,7 @@ import { DEFAULT_NAMESPACE, DEFAULT_STORAGE, MAX_RETRY_ATTEMPTS } from './consta
 import { calculateRetryDelay, sleep } from './retry';
 import { buildStorageKey, clearPersistedValue, readPersistedValue, writePersistedValue } from './storage';
 import type { PendingSyncPayload, PersistentStateOptions, SyncStatus, UsePersistentStateReturn } from './types';
+import { logger } from '@/lib/utils';
 
 /**
  * React hook that manages state persisted across sessions, with optional backend synchronization
@@ -178,7 +179,7 @@ export const usePersistentState = <T>(
       pendingSyncRef.current = null;
     } catch (error) {
       const syncErrorValue = error instanceof Error ? error : new Error('Unknown sync error');
-      console.warn(`usePersistentState: Retry ${attempt + 1}/${maxRetries} failed`, syncErrorValue);
+      logger.warn(`usePersistentState: Retry ${attempt + 1}/${maxRetries} failed`, syncErrorValue);
 
       pendingSyncRef.current = {
         key: syncKey,
@@ -234,7 +235,7 @@ export const usePersistentState = <T>(
               })
               .catch((error) => {
                 const syncErrorValue = error instanceof Error ? error : new Error('Unknown sync error');
-                console.warn('usePersistentState: Initial backend sync failed, will retry', syncErrorValue);
+                logger.warn('usePersistentState: Initial backend sync failed, will retry', syncErrorValue);
 
                 pendingSyncRef.current = {
                   key,

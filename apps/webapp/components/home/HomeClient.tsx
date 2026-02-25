@@ -90,7 +90,6 @@ export default function HomeClient() {
               title="Trending Events"
               autoplay={false}
               autoplayInterval={6000}
-              itemWidth={260}
               showIndicators
               viewAllButton={{ href: ROUTES.EVENTS.ROOT, label: 'Browse all events' }}
               renderItem={(event) => <EventBoxSm event={event} />}

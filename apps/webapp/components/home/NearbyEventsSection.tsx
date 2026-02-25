@@ -186,15 +186,10 @@ export default function NearbyEventsSection() {
 
   const renderContent = () => {
     const renderLoading = () => (
-      <CarouselSkeleton
-        itemCount={3}
-        itemWidth={260}
-        viewAll={false}
-        renderSkeletonItem={() => <EventBoxSmSkeleton />}
-      />
+      <CarouselSkeleton itemCount={3} viewAll={false} renderSkeletonItem={() => <EventBoxSmSkeleton />} />
     );
 
-    if (permissionState === 'requesting') {
+    if (permissionState === 'idle' || permissionState === 'requesting' || !isLocationHydrated) {
       return renderLoading();
     }
 
@@ -262,7 +257,7 @@ export default function NearbyEventsSection() {
             )}
           </Box>
         </Typography>
-        {permissionState !== 'requesting' && (
+        {permissionState !== 'idle' && permissionState !== 'requesting' && isLocationHydrated && (
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
             {helperText}
           </Typography>

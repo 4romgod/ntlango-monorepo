@@ -214,16 +214,11 @@ describe('useMigrateSessionState', () => {
 
       const { result } = renderHook(() => useMigrateSessionState(), { wrapper });
 
-      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
-
       const migrationResult = await result.current.migrate(mockToken, mockUserId, namespace);
 
       expect(migrationResult.migratedKeys).toEqual(['valid-key']);
       expect(migrationResult.migratedKeys).not.toContain('invalid-json');
-      expect(consoleWarnSpy).toHaveBeenCalled();
       expect(migrationResult.success).toBe(true);
-
-      consoleWarnSpy.mockRestore();
     });
   });
 

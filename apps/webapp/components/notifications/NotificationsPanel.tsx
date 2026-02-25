@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Button,
@@ -18,6 +18,7 @@ import { DoneAll as MarkAllReadIcon, Refresh as RefreshIcon } from '@mui/icons-m
 import PendingFollowRequestsList from './follow/PendingFollowRequestsList';
 import NotificationItem from './NotificationItem';
 import { useNotifications, useNotificationActions } from '@/hooks';
+import { logger } from '@/lib/utils';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -73,7 +74,7 @@ export default function NotificationsPage() {
     try {
       await markAsRead(notificationId);
     } catch (error) {
-      console.error('Failed to mark notification as read:', error);
+      logger.error('Failed to mark notification as read:', error);
     }
   };
 
@@ -81,7 +82,7 @@ export default function NotificationsPage() {
     try {
       await markAllAsRead();
     } catch (error) {
-      console.error('Failed to mark all notifications as read:', error);
+      logger.error('Failed to mark all notifications as read:', error);
     }
   };
 
@@ -89,7 +90,7 @@ export default function NotificationsPage() {
     try {
       await deleteNotification(notificationId);
     } catch (error) {
-      console.error('Failed to delete notification:', error);
+      logger.error('Failed to delete notification:', error);
     }
   };
 

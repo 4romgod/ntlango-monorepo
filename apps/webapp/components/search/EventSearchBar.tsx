@@ -17,6 +17,7 @@ import {
   ListItem,
   ListItemButton,
 } from '@mui/material';
+import { alpha } from '@mui/material/styles';
 import { Search, Event as EventIcon, LocationOn } from '@mui/icons-material';
 import Link from 'next/link';
 import { GetAllEventsDocument } from '@/data/graphql/query';
@@ -26,7 +27,6 @@ import { logger } from '@/lib/utils';
 
 interface EventSearchBarProps {
   placeholder?: string;
-  helperText?: string;
   size?: 'small' | 'medium';
   fullWidth?: boolean;
   autoFocus?: boolean;
@@ -59,14 +59,12 @@ interface EventSearchBarProps {
  */
 export default function EventSearchBar({
   placeholder = 'Search events by title, location, or category...',
-  helperText = 'Type at least 2 characters to search',
   size = 'medium',
   fullWidth = true,
   autoFocus = false,
   variant = 'outlined',
 }: EventSearchBarProps) {
   const inputId = 'event-search-input';
-  const helperTextId = `${inputId}-helper-text`;
   const [searchInput, setSearchInput] = useState('');
   const [eventOptions, setEventOptions] = useState<Event[]>([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -146,7 +144,6 @@ export default function EventSearchBar({
       <Box ref={containerRef} sx={{ position: 'relative', width: fullWidth ? '100%' : 'auto' }}>
         <TextField
           id={inputId}
-          FormHelperTextProps={{ id: helperTextId }}
           value={searchInput}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
@@ -158,8 +155,8 @@ export default function EventSearchBar({
           slotProps={{
             input: {
               startAdornment: (
-                <InputAdornment position="start">
-                  <Search sx={{ color: 'text.secondary' }} />
+                <InputAdornment position="start" sx={{ ml: 0.5 }}>
+                  <Search sx={{ color: 'text.secondary', fontSize: 22 }} />
                 </InputAdornment>
               ),
               endAdornment: searchLoading ? (
@@ -169,7 +166,38 @@ export default function EventSearchBar({
               ) : null,
             },
           }}
-          helperText={helperText}
+          sx={(theme) => ({
+            '& .MuiOutlinedInput-root': {
+              borderRadius: 4,
+              boxShadow:
+                theme.palette.mode === 'light' ? `0 1px 2px ${alpha(theme.palette.common.black, 0.08)}` : 'none',
+              '& fieldset': {
+                borderColor:
+                  theme.palette.mode === 'light'
+                    ? alpha(theme.palette.text.primary, 0.2)
+                    : alpha(theme.palette.common.white, 0.22),
+              },
+              '&:hover fieldset': {
+                borderColor:
+                  theme.palette.mode === 'light'
+                    ? alpha(theme.palette.text.primary, 0.35)
+                    : alpha(theme.palette.common.white, 0.35),
+              },
+              '&.Mui-focused fieldset': {
+                borderColor: theme.palette.primary.main,
+                borderWidth: 1,
+              },
+            },
+            '& .MuiOutlinedInput-notchedOutline legend': {
+              display: 'none',
+            },
+            '& .MuiOutlinedInput-notchedOutline': {
+              top: 0,
+            },
+            '& .MuiInputLabel-root': {
+              display: 'none',
+            },
+          })}
         />
 
         {/* Dropdown Results */}

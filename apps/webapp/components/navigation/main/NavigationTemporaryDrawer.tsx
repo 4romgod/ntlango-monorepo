@@ -32,16 +32,18 @@ import {
   LightMode,
 } from '@mui/icons-material';
 import { useSession } from 'next-auth/react';
+import { useApolloClient } from '@apollo/client';
 import NavLinksList from '@/components/navigation/main/NavLinksList';
 import { logoutUserAction } from '@/data/actions/server/auth/logout';
 import { ROUTES } from '@/lib/constants';
-import { getDisplayName, getAvatarSrc } from '@/lib/utils';
+import { getDisplayName, getAvatarSrc, logger } from '@/lib/utils';
 import { useIsAdmin, useUnreadChatCount, useUnreadNotificationCount } from '@/hooks';
 import { useAppContext } from '@/hooks/useAppContext';
 
 export default function TemporaryDrawer({ isAuthN }: { isAuthN: boolean }) {
   const [open, setOpen] = useState(false);
   const { data: session } = useSession();
+  const apolloClient = useApolloClient();
   const isAdmin = useIsAdmin();
   const { themeMode, setThemeMode } = useAppContext();
 
@@ -205,9 +207,20 @@ export default function TemporaryDrawer({ isAuthN }: { isAuthN: boolean }) {
               <ListItemButton
                 onClick={async () => {
                   try {
+                    await apolloClient.clearStore();
+                  } catch {
+                    // Best-effort cache clear
+                  }
+                  try {
                     await logoutUserAction();
                   } catch (error) {
-                    console.error('Failed to log out:', error);
+                    // signOut may throw NEXT_REDIRECT — that's expected
+                    if (error instanceof Error && (error as any).digest === 'NEXT_REDIRECT') {
+                      throw error;
+                    }
+                    // Log unexpected errors to aid debugging
+                    // eslint-disable-next-line no-console
+                    logger.error('Failed to log out user', error);
                   } finally {
                     setOpen(false);
                   }
