@@ -114,7 +114,8 @@ E2E tests use the `STAGE` environment variable to determine which endpoint to te
 
 ## CI/CD (`.github/workflows/deploy-trigger.yaml` + reusable deploy workflows)
 
-- CDK target resolution uses the nested map in `infra/lib/constants/accounts.ts`: `stage -> region -> account`.
+- CDK target resolution uses the nested map in `infrastructure/cdk/lib/constants/accounts.ts`:
+  `stage -> region -> account`.
 - `.github/workflows/deploy-trigger.yaml` is the orchestrator:
   - Triggered on pushes to `main`.
   - Calls DNS deploy first using the region matrix defined in the workflow file.
@@ -206,7 +207,7 @@ aws secretsmanager describe-secret \
   --output text
 ```
 
-- Dedicated app for this step: `infra/lib/secrets-app.ts`.
+- Dedicated app for this step: `infrastructure/cdk/lib/secrets-app.ts`.
 
 ## AWS Org Account Split (DNS + Beta)
 
@@ -214,7 +215,7 @@ aws secretsmanager describe-secret \
   - `Gatherle-dns` account owns root public hosted zone `gatherle.com`.
   - `Gatherle-beta` account owns runtime stacks and stage subdomains.
 - Current beta deployment account configured in code:
-  - `infra/lib/constants/accounts.ts` maps `Beta + af-south-1` to account `327319899143`.
+  - `infrastructure/cdk/lib/constants/accounts.ts` maps `Beta + af-south-1` to account `327319899143`.
 - Deployment bootstrap sequence:
   1. In `Gatherle-beta` account: run CDK bootstrap for `af-south-1`.
   2. In `Gatherle-beta` account: deploy `GitHubAuthStack` once and store role ARN in GitHub environment secret.

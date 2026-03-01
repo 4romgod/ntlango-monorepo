@@ -6,14 +6,15 @@
 - `apps/api`: TypeScript GraphQL API (Apollo/Express). Tests live in `apps/api/test/{unit,e2e,canary}`.
 - `apps/webapp`: Next.js frontend (MUI + Tailwind). Codegen depends on `NEXT_PUBLIC_GRAPHQL_URL`.
 - `packages/commons`: Shared types, validation, and constants consumed by other workspaces.
-- `infra`: AWS CDK stacks for API deployment; expects AWS creds and bootstrap.
+- `infrastructure/cdk`: AWS CDK stacks for API deployment; expects AWS creds and bootstrap.
+- `infrastructure/terraform`: Terraform configurations for provider-managed infrastructure.
 - `apps/ops-cli`: Python utilities; keep in sync with API contracts when modifying schemas.
 
 ## Backend Architecture (API)
 
 - GraphQL schema is built with TypeGraphQL (`apps/api/lib/graphql/schema/index.ts`) and uses resolvers in
   `apps/api/lib/graphql/resolvers`.
-- Apollo server setup lives in `apps/api/lib/graphql/apollo` (Express for local dev, Lambda handler for infra).
+- Apollo server setup lives in `apps/api/lib/graphql/apollo` (Express for local dev, Lambda handler for production).
 - GraphQL endpoint path is `/v1/graphql`; the dev server also exposes `/health`.
 - Models are Typegoose classes defined in `packages/commons/lib/types` and instantiated in
   `apps/api/lib/mongodb/models`.
@@ -149,8 +150,8 @@ work.
 
 - **`.github/agents/api.agent.md`** – Backend engineer instructions for TypeGraphQL/MongoDB work inside `apps/api`.
 - **`.github/agents/webapp.agent.md`** – Frontend/UI agent for Next.js/MUI/Tailwind jobs in `apps/webapp`.
-- **`.github/agents/architect.agent.md`** – Strategic architecture leadership guidance for infra, scalability, and
-  roadmap discussions.
+- **`.github/agents/architect.agent.md`** – Strategic architecture leadership guidance for infrastructure, scalability,
+  and roadmap discussions.
 - **`.github/agents/security.agent.md`** – Security engineering guidance for GraphQL, WebSocket, webapp, CI/CD, AWS IAM,
   and account/domain hardening.
 - **`.github/prompts/*.prompt.md`** – Task/plan templates (the `plan-*` files) and aliases (`pr`, etc.). Open the

@@ -67,7 +67,7 @@ resolver implementation, database optimization, security enforcement, and mainta
 
 ### Secondary Use Cases
 
-⚠️ CDK infrastructure changes (infra/lib) - only API-related configs  
+⚠️ CDK infrastructure changes (`infrastructure/cdk/lib`) - only API-related configs  
 ⚠️ Environment variable management for API  
 ⚠️ CI/CD pipeline fixes affecting API deployment
 

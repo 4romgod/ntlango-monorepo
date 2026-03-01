@@ -9,8 +9,11 @@ cdk.out
 .turbo
 .cache
 .venv
+.terraform
 .pytest_cache
 .mypy_cache
+*.tfstate
+*.tfstate.*
 *.log
 npm-debug.log*
 yarn-debug.log*
