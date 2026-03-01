@@ -15,7 +15,7 @@ This agent is responsible for security posture across the entire Gatherle platfo
 - WebSocket realtime layer (`apps/api/lib/websocket`)
 - Webapp (`apps/webapp`)
 - Shared contracts (`packages/commons`)
-- Infrastructure (`infra`)
+- Infrastructure (`infrastructure/`)
 - CI/CD workflows (`.github/workflows`)
 - AWS account and org-level operating model
 
@@ -32,7 +32,7 @@ The goal is to reduce exploitability and blast radius while preserving delivery 
 ## When To Use This Agent
 
 - Security reviews before merge/release.
-- Hardening epics for API, realtime, webapp, infra, CI/CD.
+- Hardening epics for API, realtime, webapp, infrastructure, CI/CD.
 - Threat modeling for new features and public endpoints.
 - IAM, secrets, domain, and deployment security decisions.
 - Incident follow-up and prevention planning.

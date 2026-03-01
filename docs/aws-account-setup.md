@@ -250,7 +250,7 @@ Important:
 
 - Runtime deploy workflow intentionally excludes `SecretsManagementStack`.
 - Keep secret value changes intentional and manual.
-- The dedicated app for this step is `infra/lib/secrets-app.ts`.
+- The dedicated app for this step is `infrastructure/cdk/lib/secrets-app.ts`.
 
 This step must be completed before runtime service stack deployment.
 
@@ -300,7 +300,7 @@ AWS_REGION=af-south-1 aws cloudformation describe-stacks \
 
 ## 7. Onboard a new account or region
 
-1. Add mapping in `infra/lib/constants/accounts.ts` under `STAGE_REGION_ACCOUNT_CONFIGS`.
+1. Add mapping in `infrastructure/cdk/lib/constants/accounts.ts` under `STAGE_REGION_ACCOUNT_CONFIGS`.
 2. Manually bootstrap `CDKToolkit` in that account+region.
 3. Manually deploy `GitHubAuthStack` in that account.
 4. Create GitHub Environment `<stage-lower>-<region>` and set secrets.
@@ -316,5 +316,5 @@ Fix:
 
 1. Check profile account: `aws sts get-caller-identity --profile <profile>`
 2. Check target account/region in command or stage-region mapping: `aws://<account-id>/<region>` and
-   `infra/lib/constants/accounts.ts`
+   `infrastructure/cdk/lib/constants/accounts.ts`
 3. Re-run with the matching profile.

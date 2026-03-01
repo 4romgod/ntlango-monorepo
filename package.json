@@ -5,7 +5,7 @@
     "apps/api",
     "apps/webapp",
     "packages/*",
-    "infra"
+    "infrastructure/cdk"
   ],
   "scripts": {
     "build": "npm run build:commons && npm run build:api && npm run build:web && npm run build:cdk",

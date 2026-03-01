@@ -25,7 +25,7 @@ import { buildBackendSecretName, buildResourceName, buildTargetSuffix } from '..
 
 configDotenv();
 
-const pathRoot = join(__dirname, '../../../');
+const pathRoot = join(__dirname, '../../../../');
 const pathApi = join(pathRoot, 'apps', 'api');
 const pathHandlerFile = join(pathApi, 'dist', 'apps', 'api', 'lib', 'graphql', 'apollo', 'lambdaHandler.js');
 

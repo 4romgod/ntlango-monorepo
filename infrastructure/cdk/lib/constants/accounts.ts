@@ -62,7 +62,7 @@ export const resolveServiceAccount = (stageInput: string, regionInput: string): 
     throw new Error(
       `No deployment account configured for stage "${applicationStage}" in region "${awsRegion}". ` +
         `Configured regions for "${applicationStage}": ${allowedRegions.length ? allowedRegions.join(', ') : 'none'}. ` +
-        `Add the missing mapping to STAGE_REGION_ACCOUNT_CONFIGS in infra/lib/constants/accounts.ts.`,
+        `Add the missing mapping to STAGE_REGION_ACCOUNT_CONFIGS in infrastructure/cdk/lib/constants/accounts.ts.`,
     );
   }
 
