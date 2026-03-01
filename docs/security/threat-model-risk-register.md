@@ -2,6 +2,8 @@
 
 Created: 2026-02-22
 
+Related design doc: `docs/security/request-abuse-and-ddos-protection-strategy.md`
+
 ## Scope
 
 This threat model covers the current Gatherle architecture in this repository:
